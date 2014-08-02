@@ -1,13 +1,12 @@
-import com.twitter.scrooge.ScroogeSBT
 import org.scoverage.coveralls.CoverallsPlugin.coverallsSettings
+
 import sbt.Keys._
 import sbt._
-import sbtassembly.Plugin._
 import scoverage.ScoverageSbtPlugin.instrumentSettings
 
 object morpheus extends Build {
 
-  val newzlyUtilVersion = "0.1.18"
+  val newzlyUtilVersion = "0.1.19"
   val scalatestVersion = "2.2.0-M1"
   val finagleVersion = "6.17.0"
   val scroogeVersion = "3.15.0"
@@ -167,14 +166,7 @@ object morpheus extends Build {
       "com.twitter"                      %% "util-core"                % finagleVersion,
       "org.scalatest"                    %% "scalatest"                % scalatestVersion,
       "org.scalacheck"                   %% "scalacheck"               % "1.11.3"              % "test",
-      "org.fluttercode.datafactory"      %  "datafactory"              % "0.8",
-      "com.twitter"                      %% "finagle-serversets"       % finagleVersion,
-      "com.twitter"                      %% "finagle-zookeeper"        % finagleVersion,
-      "org.cassandraunit"                %  "cassandra-unit"           % "2.0.2.1"  excludeAll (
-        ExclusionRule("org.slf4j", "slf4j-log4j12"),
-        ExclusionRule("org.slf4j", "slf4j-jdk14")
-      ),
-      "com.google.guava"                 %  "guava"                    % "0.17"
+      "org.fluttercode.datafactory"      %  "datafactory"              % "0.8"
     )
   ).dependsOn(
     morpheusZookeeper
