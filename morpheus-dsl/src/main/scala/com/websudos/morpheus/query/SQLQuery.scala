@@ -36,6 +36,10 @@ case class SQLBuiltQuery(queryString: String) {
   def pad: SQLBuiltQuery = if (spaced) this else SQLBuiltQuery(queryString + " ")
 }
 
+object DefaultSQLOperators {
+  val select = SQLBuiltQuery("SELECT")
+}
+
 trait SQLQuery extends ResultSetOperations {
   protected[morpheus] val query: SQLBuiltQuery
 

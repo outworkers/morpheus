@@ -62,7 +62,7 @@ case class SelectSyntaxBlock[T <: Table[T, _], R](qb: SQLBuiltQuery, tableName: 
   }
 
   def `*`: SQLBuiltQuery = {
-    qb.pad.append(s"* FROM $tableName")
+    qb.pad.append(s"${statements.mkString(" ")} FROM $tableName")
   }
 
   def all: SQLBuiltQuery = {
@@ -70,11 +70,11 @@ case class SelectSyntaxBlock[T <: Table[T, _], R](qb: SQLBuiltQuery, tableName: 
   }
 
   def distinct: SQLBuiltQuery = {
-    qb.pad.append("DISTINCT")
+    qb.pad.append(s"DISTINCT ${statements.mkString(", ")} FROM $tableName")
   }
 
   def distinctRow: SQLBuiltQuery = {
-    qb.pad.append("DISTINCTROW")
+    qb.pad.append(s"DISTINCTROW ${statements.mkString(", ")} FROM $tableName")
   }
 
 }

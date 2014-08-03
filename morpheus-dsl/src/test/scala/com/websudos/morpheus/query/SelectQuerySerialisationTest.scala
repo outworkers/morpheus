@@ -37,6 +37,10 @@ class SelectQuerySerialisationTest extends FlatSpec with Matchers {
     BasicTable.select.where(_.name eqs "test").and(_.count eqs 5).queryString shouldEqual "SELECT * FROM BasicTable WHERE name = test AND count = 5"
   }
 
+  it should "serialise a 2 column partial select query" in {
+    BasicTable.select(_.name, _.count).queryString shouldEqual "SELECT name count FROM BasicTable"
+  }
+
   it should "serialise a conditional clause with an OR operator" in {
     BasicTable.select.where(_.name eqs "test").and(t => { (t.count eqs 5) or (t.name eqs "test") })
   }
