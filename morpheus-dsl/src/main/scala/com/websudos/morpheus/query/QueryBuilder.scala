@@ -65,7 +65,7 @@ case class SelectSyntaxBlock[T <: Table[T, _], R](qb: SQLBuiltQuery, tableName: 
     qb.pad.append(s"${statements.mkString(" ")} FROM $tableName")
   }
 
-  def all: SQLBuiltQuery = `*` _
+  def all: SQLBuiltQuery = this.`*`
 
   def distinct: SQLBuiltQuery = {
     qb.pad.append(s"DISTINCT ${statements.mkString(", ")} FROM $tableName")
@@ -139,7 +139,9 @@ sealed trait AbstractQueryBuilder {
   }
 
   def in(name: String, values: List[String]): SQLBuiltQuery = {
-    SQLBuiltQuery(name).pad.append(DefaultSQLOperators.in.pad)
+    SQLBuiltQuery(name)
+      .pad
+      .append(DefaultSQLOperators.in.pad)
       .append(DefaultSQLOperators.`(`)
       .append(values.mkString(", "))
       .append(DefaultSQLOperators.`)`)

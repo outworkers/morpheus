@@ -31,12 +31,14 @@ private[morpheus] abstract class BaseQueryCondition(val clause: SQLBuiltQuery)
  * Only indexed columns can produce a QueryCondition via "WHERE" and "AND" operators.
  * @param clause The clause to use.
  */
-case class QueryCondition(override val clause: SQLBuiltQuery) extends BaseQueryCondition(clause) {
+case class QueryCondition(override val clause: SQLBuiltQuery, count: Int = 0) extends BaseQueryCondition(clause) {
 
   def or(condition: QueryCondition): QueryCondition = {
+
     QueryCondition(MySQLQueryBuilder.or(
       clause.prependIfAbsent(DefaultSQLOperators.`(`).removeIfLast(DefaultSQLOperators.`)`),
-      condition.clause.append(DefaultSQLOperators.`)`))
+      condition.clause.append(DefaultSQLOperators.`)`)),
+      count + 1
     )
   }
 }

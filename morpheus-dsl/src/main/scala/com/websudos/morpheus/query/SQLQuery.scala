@@ -67,7 +67,7 @@ object DefaultSQLOperators {
   val `)` = SQLBuiltQuery(")")
 }
 
-trait SQLQuery extends ResultSetOperations {
+trait SQLQuery[T <: Table[T, _], R] extends ResultSetOperations {
   protected[morpheus] val query: SQLBuiltQuery
 
   /**
@@ -107,7 +107,7 @@ trait SQLQuery extends ResultSetOperations {
 }
 
 
-trait SQLResultsQuery[T <: Table[T, _], R] extends SQLQuery {
+trait SQLResultsQuery[T <: Table[T, _], R] extends SQLQuery[T, R] {
   def fromRow(r: Row): R
 
   /**
@@ -126,8 +126,41 @@ trait SQLResultsQuery[T <: Table[T, _], R] extends SQLQuery {
 }
 
 
-abstract class BaseSelectQuery[T <: Table[T, _], R](table: T, protected[morpheus] val query: SQLBuiltQuery, rowFunc: Row => R) extends SQLResultsQuery[T, R] {
-  def fromRow(r: Row): R = rowFunc(r)
+/**
+ * This bit of magic allows all extending sub-classes to implement the "where" and "and" SQL clauses with all the necessary operators,
+ * in a type safe way. By providing the third type argument and a custom way to subclass with the predetermined set of arguments, all queries such as UPDATE,
+ * DELETE, ALTER and so on can use the same root implementation of clauses and void the violation of Dry.
+ *
+ * The reason why the "clause" and "andClause" methods below are protected is so that extending classes can decide when and how to expose "where" and "and"
+ * SQL methods to the DSL user. Used mainly to make queries like "select.where(_.a = b).where(_.c = d)" impossible,
+ * or in other words make illegal programming states unrepresentable. There is an awesome book about how to do this in Scala,
+ * I will link to it as soon as the book is published.
+ *
+ * @param table The table owning the record.
+ * @param query The root SQL query to start building from.
+ * @param rowFunc The function mapping a row to a record.
+ * @tparam T The type of the table owning the record.
+ * @tparam R The type of the record held in the table.
+ * @tparam QueryType The query type to subclass with and obtain as a result of a "where" or "and" application, requires all extending subclasses to supply a
+ *                   type that will subclass an SQLQuery[T, R]
+*/
+private[morpheus] abstract class WhereQuery[T <: Table[T, _], R, QueryType <: SQLQuery[T, R]](table: T, query: SQLBuiltQuery, rowFunc: Row => R) {
+  protected[this] def subclass(table: T, query: SQLBuiltQuery, rowFunc: Row => R): QueryType
+
+  def fromRow(row: Row): R = rowFunc(row)
+
+  protected[this] def clause(condition: T => QueryCondition): QueryType = {
+    subclass(table, table.queryBuilder.where(query, condition(table).clause), rowFunc)
+  }
+
+  protected[this] def andClause(condition: T => QueryCondition): QueryType = {
+    subclass(table, table.queryBuilder.and(query, condition(table).clause), rowFunc)
+  }
+
+}
+
+
+trait BaseSelectQuery[T <: Table[T, _], R] extends SQLResultsQuery[T, R] {
 
   def fetch()(implicit client: Client): ScalaFuture[Seq[R]] = {
     twitterToScala(client.select(query.queryString)(fromRow))
@@ -145,16 +178,21 @@ abstract class BaseSelectQuery[T <: Table[T, _], R](table: T, protected[morpheus
     collect().map(_.headOption)
   }
 
-  protected[this] def clause(condition: T => QueryCondition): SelectWhere[T, R] = {
-    new SelectWhere[T, R](table, table.queryBuilder.where(query, condition(table).clause), rowFunc)
-  }
-
-  protected[this] def andClause(condition: T => QueryCondition): SelectWhere[T, R] = {
-    new SelectWhere[T, R](table, table.queryBuilder.and(query, condition(table).clause), rowFunc)
-  }
-
 }
 
+/**
+ * This is the implementation of a root select query, a wrapper around an abstract syntax block.
+ * The basic select of select methods can be seen in {@link com.websudos.morpheus.dsl.SelectTable}
+ *
+ * This is used as the entry point to an SQL query, and it requires the user to provide "one more method" to fully specify a SELECT query.
+ * The implicit conversion from a RootSelectQuery to a SelectQuery will automatically pick the "all" strategy below.
+ *
+ * @param table The table owning the record.
+ * @param st The Abstract syntax block describing the possible decisions.
+ * @param rowFunc The function used to map a result to a type-safe record.
+ * @tparam T The type of the owning table.
+ * @tparam R The type of the record.
+ */
 class RootSelectQuery[T <: Table[T, _], R](val table: T, val st: SelectSyntaxBlock[T, _], val rowFunc: Row => R) {
 
   def fromRow(r: Row): R = rowFunc(r)
@@ -173,12 +211,20 @@ class RootSelectQuery[T <: Table[T, _], R](val table: T, val st: SelectSyntaxBlo
 
 }
 
-class SelectQuery[T <: Table[T, _], R](table: T, query: SQLBuiltQuery, rowFunc: Row => R) extends BaseSelectQuery[T, R](table, query, rowFunc) {
+class SelectQuery[T <: Table[T, _], R](table: T, val query: SQLBuiltQuery, rowFunc: Row => R) extends WhereQuery[T, R, SelectWhere[T,
+  R]](table, query, rowFunc) with BaseSelectQuery[T, R] {
+
+
+  protected[this] def subclass(table: T, query: SQLBuiltQuery, rowFunc: Row => R): SelectWhere[T, R] = new SelectWhere[T, R](table, query, rowFunc)
 
   def where(condition: T => QueryCondition): SelectWhere[T, R] = clause(condition)
 }
 
-class SelectWhere[T <: Table[T, _], R](table: T, query: SQLBuiltQuery, rowFunc: Row => R) extends BaseSelectQuery[T, R](table, query, rowFunc) {
+class SelectWhere[T <: Table[T, _], R](table: T, val query: SQLBuiltQuery, rowFunc: Row => R) extends WhereQuery[T, R, SelectWhere[T,
+  R]](table, query, rowFunc) with BaseSelectQuery[T, R] {
+
+  protected[this] def subclass(table: T, query: SQLBuiltQuery, rowFunc: Row => R): SelectWhere[T, R] = new SelectWhere[T, R](table, query, rowFunc)
+
   def and(condition: T => QueryCondition): SelectWhere[T, R] = andClause(condition)
 }
 
