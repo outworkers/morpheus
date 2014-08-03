@@ -89,7 +89,7 @@ sealed trait AbstractQueryBuilder {
   }
 
   def select(tableName: String, names: String*): SQLBuiltQuery = {
-   new SQLBuiltQuery(s"SELECT (${names.mkString(" ")}) FROM $tableName ")
+   new SQLBuiltQuery(s"SELECT ${names.mkString(" ")} FROM $tableName ")
   }
 }
 

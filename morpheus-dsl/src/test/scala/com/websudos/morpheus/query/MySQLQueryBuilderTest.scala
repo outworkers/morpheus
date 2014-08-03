@@ -86,4 +86,40 @@ class MySQLQueryBuilderTest extends FlatSpec with Matchers with GeneratorDrivenP
       }
     }
   }
+
+  it should "correctly serialise a simple select * query" in {
+    forAll(minSuccessful(300)) { (name: String) =>
+      whenever (name.length > 0) {
+        val query = MySQLQueryBuilder.select(name).queryString
+        query shouldEqual s"SELECT * FROM $name "
+      }
+    }
+  }
+
+  it should "correctly serialise a partial select query where 1 column name is specified" in {
+    forAll(minSuccessful(300)) { (name: String, column: String) =>
+      whenever (name.length > 0 && column.length > 0) {
+        val query = MySQLQueryBuilder.select(name, column).queryString
+        query shouldEqual s"SELECT $column FROM $name "
+      }
+    }
+  }
+
+  it should "correctly serialise a partial select query where 2 column names are specified" in {
+    forAll(minSuccessful(300)) { (name: String, column1: String, column2: String) =>
+      whenever (name.length > 0 && column1.length > 0 && column2.length > 0) {
+        val query = MySQLQueryBuilder.select(name, column1, column2).queryString
+        query shouldEqual s"SELECT $column1 $column2 FROM $name "
+      }
+    }
+  }
+
+  it should "correctly serialise a partial select query where 3 column names are specified" in {
+    forAll(minSuccessful(300)) { (name: String, column1: String, column2: String, column3: String) =>
+      whenever (name.length > 0 && column1.length > 0 && column2.length > 0 && column3.length > 0) {
+        val query = MySQLQueryBuilder.select(name, column1, column2, column3).queryString
+        query shouldEqual s"SELECT $column1 $column2 $column3 FROM $name "
+      }
+    }
+  }
 }
