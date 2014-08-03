@@ -166,6 +166,11 @@ class RootSelectQuery[T <: Table[T, _], R](val table: T, val st: SelectSyntaxBlo
   def distinctRow: SelectQuery[T, R] = {
     new SelectQuery(table, st.distinctRow, rowFunc)
   }
+
+  def all: SelectQuery[T, R] = {
+    new SelectQuery(table, st.*, rowFunc)
+  }
+
 }
 
 class SelectQuery[T <: Table[T, _], R](table: T, query: SQLBuiltQuery, rowFunc: Row => R) extends BaseSelectQuery[T, R](table, query, rowFunc) {
