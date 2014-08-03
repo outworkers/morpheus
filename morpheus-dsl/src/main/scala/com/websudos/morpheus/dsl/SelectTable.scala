@@ -101,7 +101,7 @@ private[morpheus] trait SelectTable[Owner <: Table[Owner, Record], Record] {
   }
 
   /**
-   * This is the SELECT column1 column2 column3 query, where 3 columns are specified to be partially selected.
+   * This is the SELECT column1 column2 column3 column4 query, where 4 columns are specified to be partially selected.
    * @return An instance of a RootSelectQuery.
    */
   def select[T1, T2, T3, T4](f1: Owner => SelectColumn[T1], f2: Owner => SelectColumn[T2], f3: Owner => SelectColumn[T3],
@@ -118,7 +118,38 @@ private[morpheus] trait SelectTable[Owner <: Table[Owner, Record], Record] {
 
     new RootSelectQuery[Owner, (T1, T2, T3, T4)](
       this.asInstanceOf[Owner],
-      new SelectSyntaxBlock[Owner, (T1, T2, T3, T4)](DefaultSQLOperators.select, tableName, rowFunc, List(c1.col.name, c2.col.name, c3.col.name), c4.col.name),
+      new SelectSyntaxBlock[Owner, (T1, T2, T3, T4)](DefaultSQLOperators.select, tableName, rowFunc, List(c1.col.name, c2.col.name, c3.col.name, c4.col.name)),
+      rowFunc
+    )
+  }
+
+  /**
+   * This is the SELECT column1 column2 column3 column4 query, where 4 columns are specified to be partially selected.
+   * @return An instance of a RootSelectQuery.
+   */
+  def select[T1, T2, T3, T4, T5](
+    f1: Owner => SelectColumn[T1],
+    f2: Owner => SelectColumn[T2],
+    f3: Owner => SelectColumn[T3],
+    f4: Owner => SelectColumn[T4],
+    f5: Owner => SelectColumn[T5]): RootSelectQuery[Owner, (T1, T2, T3, T4, T5)] = {
+
+    val t = this.asInstanceOf[Owner]
+    val c1: SelectColumn[T1] = f1(t)
+    val c2: SelectColumn[T2] = f2(t)
+    val c3: SelectColumn[T3] = f3(t)
+    val c4: SelectColumn[T4] = f4(t)
+    val c5: SelectColumn[T5] = f5(t)
+
+    def rowFunc(row: Row): (T1, T2, T3, T4, T5) = Tuple5(c1(row), c2(row), c3(row), c4(row), c5(row))
+
+    new RootSelectQuery[Owner, (T1, T2, T3, T4, T5)](
+      this.asInstanceOf[Owner],
+      new SelectSyntaxBlock[Owner, (T1, T2, T3, T4, T5)](
+        DefaultSQLOperators.select,
+        tableName, rowFunc,
+        List(c1.col.name, c2.col.name, c3.col.name, c4.col.name, c5.col.name)
+      ),
       rowFunc
     )
   }
