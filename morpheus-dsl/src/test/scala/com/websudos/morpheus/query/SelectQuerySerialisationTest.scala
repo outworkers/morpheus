@@ -16,23 +16,21 @@
  *
  */
 
-package com.websudos.morpheus.dsl
+package com.websudos.morpheus.query
 
-import org.scalatest.{FlatSpec, Matchers}
+import org.scalatest.{Matchers, FlatSpec}
 
-class TableTest extends FlatSpec with Matchers {
+import com.websudos.morpheus.dsl.BasicTable
+import com.websudos.morpheus.mysql.Imports._
 
-  it should "correctly initialise table columns via reflection and force greedy object initialisation of Table object members" in {
-    BasicTable.columns.size shouldEqual 2
+class SelectQuerySerialisationTest extends FlatSpec with Matchers {
+
+  it should  "correctly serialise a simple where query" in {
+    BasicTable.select.where(_.name eqs "test").queryString shouldEqual "SELECT * FROM BasicTable WHERE name = test"
   }
 
-  it should "correctly extract the name of a table directly from the Scala object name" in {
-    BasicTable.tableName shouldEqual "BasicTable"
-  }
 
-  it should "correctly extract the name of the columns inside a table" in {
-    BasicTable.count.name shouldEqual "count"
-    BasicTable.name.name shouldEqual "name"
+  it should  "not compile a select query if the value compared against doesn't match the value type of the underlying column" in {
+    """BasicTable.select.where(_.name eqs 5).queryString""" shouldNot compile
   }
-
 }

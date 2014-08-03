@@ -90,7 +90,7 @@ abstract class Table[Owner <: Table[Owner, Record], Record] {
   def tableName: String = _name
 
 
-  def select: SelectQuery[Owner, Record] = new SelectQuery[Owner, Record](queryBuilder.select(tableName), fromRow)
+  def select: SelectQuery[Owner, Record] = new SelectQuery[Owner, Record](this.asInstanceOf[Owner], queryBuilder.select(tableName), fromRow)
 
 
   def columns: List[AbstractColumn[_]] = _columns.toList

@@ -91,6 +91,11 @@ sealed trait AbstractQueryBuilder {
   def select(tableName: String, names: String*): SQLBuiltQuery = {
    new SQLBuiltQuery(s"SELECT ${names.mkString(" ")} FROM $tableName ")
   }
+
+  def where(qb: SQLBuiltQuery, condition: SQLBuiltQuery): SQLBuiltQuery = {
+    qb.append(new SQLBuiltQuery("WHERE ").append(condition))
+  }
+
 }
 
 

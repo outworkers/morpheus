@@ -26,8 +26,8 @@ import com.twitter.util.Future
 import com.websudos.morpheus.dsl.{ResultSetOperations, Table}
 
 class SQLBuiltQuery(val queryString: String) {
-  def append(st: String): SQLBuiltQuery = new SQLBuiltQuery(queryString + st)
-  def prepend(st: String): SQLBuiltQuery = new SQLBuiltQuery(st + queryString)
+  def append(st: SQLBuiltQuery): SQLBuiltQuery = new SQLBuiltQuery(queryString + st.queryString)
+  def prepend(st: SQLBuiltQuery): SQLBuiltQuery = new SQLBuiltQuery(st.queryString + queryString)
 }
 
 trait SQLQuery extends ResultSetOperations {
@@ -89,7 +89,7 @@ trait SQLResultsQuery[T <: Table[T, _], R] extends SQLQuery {
 }
 
 
-sealed class RootSelectQuery[T <: Table[T, _], R](protected[morpheus] val query: SQLBuiltQuery, rowFunc: Row => R) extends SQLResultsQuery[T, R] {
+sealed class RootSelectQuery[T <: Table[T, _], R](table: T, protected[morpheus] val query: SQLBuiltQuery, rowFunc: Row => R) extends SQLResultsQuery[T, R] {
 
   def fromRow(r: Row): R = rowFunc(r)
 
@@ -109,8 +109,17 @@ sealed class RootSelectQuery[T <: Table[T, _], R](protected[morpheus] val query:
     collect().map(_.headOption)
   }
 
+  protected[this] def clause(condition: T => QueryCondition): SelectWhere[T, R] = {
+    new SelectWhere[T, R](table, table.queryBuilder.where(query, condition(table).clause), rowFunc)
+  }
+
 }
 
-class SelectQuery[T <: Table[T, _], R](query: SQLBuiltQuery, rowFunc: Row => R) extends RootSelectQuery[T, R](query, rowFunc) {
+class SelectQuery[T <: Table[T, _], R](table: T, query: SQLBuiltQuery, rowFunc: Row => R) extends RootSelectQuery[T, R](table, query, rowFunc) {
 
+  def where(condition: T => QueryCondition): SelectWhere[T, R] = clause(condition)
+}
+
+class SelectWhere[T <: Table[T, _], R](table: T, query: SQLBuiltQuery, rowFunc: Row => R) extends RootSelectQuery[T, R](table, query, rowFunc) {
+  def and(condition: T => QueryCondition): SelectWhere[T, R] = clause(condition)
 }
