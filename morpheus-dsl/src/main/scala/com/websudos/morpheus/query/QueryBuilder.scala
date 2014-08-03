@@ -1,0 +1,89 @@
+/*
+ *
+ *  * Copyright 2014 websudos ltd.
+ *  *
+ *  * Licensed under the Apache License, Version 2.0 (the "License");
+ *  * you may not use this file except in compliance with the License.
+ *  * You may obtain a copy of the License at
+ *  *
+ *  *     http://www.apache.org/licenses/LICENSE-2.0
+ *  *
+ *  * Unless required by applicable law or agreed to in writing, software
+ *  * distributed under the License is distributed on an "AS IS" BASIS,
+ *  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  * See the License for the specific language governing permissions and
+ *  * limitations under the License.
+ *
+ */
+
+package com.websudos.morpheus.query
+
+import com.websudos.morpheus.SQLPrimitive
+
+
+trait SQLOperatorSet {
+  def eq: String
+  def lt: String
+  def lte: String
+  def gt: String
+  def gte: String
+  def `!=`: String
+  def `<>`: String
+}
+
+object MySQLOperatorSet extends SQLOperatorSet {
+  val eq = "="
+  val lt = "<"
+  val lte = "<="
+  val gt = ">"
+  val gte = ">="
+  val != = "!="
+  val <> = "<>"
+}
+
+
+sealed trait AbstractQueryBuilder {
+  def operators: SQLOperatorSet
+
+  def eqs[T : SQLPrimitive](name: String, value: String): SQLBuiltQuery = {
+    new SQLBuiltQuery(s"$name ${operators.eq} $value")
+  }
+
+  def lt[T :SQLPrimitive](name: String, value: String): SQLBuiltQuery = {
+    new SQLBuiltQuery(s"$name ${operators.lt} $value")
+  }
+
+  def lte[T](name: String, value: String): SQLBuiltQuery = {
+    new SQLBuiltQuery(s"$name ${operators.lte} $value")
+  }
+
+  def gt[T](name: String, value: String): SQLBuiltQuery = {
+    new SQLBuiltQuery(s"$name ${operators.gt} $value")
+  }
+
+  def gte[T](name: String, value: String): SQLBuiltQuery = {
+    new SQLBuiltQuery(s"$name ${operators.gte} $value")
+  }
+
+  def !=[T](name: String, value: String): SQLBuiltQuery = {
+    new SQLBuiltQuery(s"$name ${operators.`!=`} $value")
+  }
+
+  def <>[T](name: String, value: String): SQLBuiltQuery = {
+    new SQLBuiltQuery(s"$name ${operators.`<>`} $value")
+  }
+
+  def select(tableName: String): SQLBuiltQuery = {
+    new SQLBuiltQuery(s"SELECT * FROM $tableName ")
+  }
+
+  def select(tableName: String, names: String*): SQLBuiltQuery = {
+   new SQLBuiltQuery(s"SELECT (${names.mkString(" ")}) FROM $tableName ")
+  }
+}
+
+
+object MySQLQueryBuilder extends AbstractQueryBuilder {
+  val operators = MySQLOperatorSet
+}
+

@@ -18,12 +18,13 @@
 
 package com.websudos.morpheus.dsl
 
-import scala.collection.mutable.{ArrayBuffer => MutableArrayBuffer, SynchronizedBuffer => MutableSyncBuffer }
+import scala.collection.mutable.{ArrayBuffer => MutableArrayBuffer, SynchronizedBuffer => MutableSyncBuffer}
 import scala.reflect.runtime.universe.Symbol
 import scala.reflect.runtime.{currentMirror => cm, universe => ru}
 
 import com.twitter.finagle.exp.mysql.Row
 import com.websudos.morpheus.column.AbstractColumn
+import com.websudos.morpheus.query.{AbstractQueryBuilder, SelectQuery}
 
 /**
  * The basic wrapper definition of an SQL table. This will force greedy initialisation of all column object members and provide a way to map
@@ -42,6 +43,8 @@ import com.websudos.morpheus.column.AbstractColumn
  *                records, as all select all queries will return an instance of Record.
  */
 abstract class Table[Owner <: Table[Owner, Record], Record] {
+
+  val queryBuilder: AbstractQueryBuilder
 
   /**
    * This is a Synchronized mutable buffer allowing us to store references to the objects a user writes inside a table definition to represent columns.
@@ -86,6 +89,10 @@ abstract class Table[Owner <: Table[Owner, Record], Record] {
 
   def tableName: String = _name
 
+
+  def select: SelectQuery[Owner, Record] = new SelectQuery[Owner, Record](queryBuilder.select(tableName), fromRow)
+
+
   def columns: List[AbstractColumn[_]] = _columns.toList
 
   Lock.synchronized {
@@ -108,5 +115,7 @@ abstract class Table[Owner <: Table[Owner, Record], Record] {
     }
   }
 }
+
+
 
 private[morpheus] case object Lock

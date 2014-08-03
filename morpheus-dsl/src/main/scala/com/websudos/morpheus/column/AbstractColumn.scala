@@ -32,7 +32,9 @@ private[morpheus] trait AbstractColumn[@specialized(Int, Double, Float, Long, Bo
 
   def sqlType: String
 
-  def toQueryString(v: T): AnyRef
+  def table: Table[_, _]
+
+  def toQueryString(v: T): String
 }
 
 

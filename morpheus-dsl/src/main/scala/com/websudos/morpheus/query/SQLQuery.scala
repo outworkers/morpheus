@@ -25,16 +25,20 @@ import com.twitter.finagle.exp.mysql.{Client, Result, Row}
 import com.twitter.util.Future
 import com.websudos.morpheus.dsl.{ResultSetOperations, Table}
 
+class SQLBuiltQuery(val queryString: String) {
+  def append(st: String): SQLBuiltQuery = new SQLBuiltQuery(queryString + st)
+  def prepend(st: String): SQLBuiltQuery = new SQLBuiltQuery(st + queryString)
+}
 
 trait SQLQuery extends ResultSetOperations {
-  protected[morpheus] val query: String
+  protected[morpheus] val query: SQLBuiltQuery
 
   def future()(implicit session: Client): ScalaFuture[Result] = {
-    queryToScalaFuture(query)
+    queryToScalaFuture(query.queryString)
   }
 
   def execute()(implicit  session: Client): Future[Result] = {
-    queryToFuture(query)
+    queryToFuture(query.queryString)
   }
 
 }
@@ -59,16 +63,16 @@ trait SQLResultsQuery[T <: Table[T, _], R] extends SQLQuery {
 }
 
 
-class SelectQuery[T <: Table[T, _], R](protected[morpheus] val query: String, rowFunc: Row => R) extends SQLResultsQuery[T, R] {
+sealed class RootSelectQuery[T <: Table[T, _], R](protected[morpheus] val query: SQLBuiltQuery, rowFunc: Row => R) extends SQLResultsQuery[T, R] {
 
   def fromRow(r: Row): R = rowFunc(r)
 
   def fetch()(implicit client: Client): ScalaFuture[Seq[R]] = {
-    twitterToScala(client.select(query)(fromRow))
+    twitterToScala(client.select(query.queryString)(fromRow))
   }
 
   def collect()(implicit client: Client): Future[Seq[R]] = {
-    client.select(query)(fromRow)
+    client.select(query.queryString)(fromRow)
   }
 
   def one()(implicit client: Client): ScalaFuture[Option[R]] = {
@@ -78,5 +82,9 @@ class SelectQuery[T <: Table[T, _], R](protected[morpheus] val query: String, ro
   def get()(implicit client: Client): Future[Option[R]] = {
     collect().map(_.headOption)
   }
+
+}
+
+class SelectQuery[T <: Table[T, _], R](query: SQLBuiltQuery, rowFunc: Row => R) extends RootSelectQuery[T, R](query, rowFunc) {
 
 }
