@@ -21,13 +21,15 @@ package com.websudos.morpheus
 
 import com.twitter.finagle.exp.mysql._
 
-private[morpheus] trait SQLPrimitive[T] {
+case class InvalidTypeDefinitionExecption(msg: String = "Invalid SQL type declared for column") extends RuntimeException(msg)
+
+trait SQLPrimitive[T] {
 
   def sqlType: String
 
   def fromRow(row: Row, name: String): Option[T]
 
-  def toSQL(value: T): AnyRef
+  def toSQL(value: T): String
 }
 
 trait SQLPrimitives {
@@ -41,9 +43,10 @@ trait SQLPrimitives {
     def fromRow(row: Row, name: String): Option[Long] = row(name) map {
       case LongValue(num) => num
       case EmptyValue => 0L
+      case _ => throw InvalidTypeDefinitionExecption()
     }
 
-    def toSQL(value: Long): AnyRef = value.asInstanceOf[AnyRef]
+    def toSQL(value: Long): String = value.toString
 
   }
 
@@ -56,12 +59,13 @@ trait SQLPrimitives {
         case StringValue(str) => Some(str)
         case EmptyValue => Some("")
         case NullValue => None
+        case _ => throw InvalidTypeDefinitionExecption()
       }
 
       case None => None
     }
 
-    def toSQL(value: String): AnyRef = value.asInstanceOf[AnyRef]
+    def toSQL(value: String): String = value
   }
 
 }

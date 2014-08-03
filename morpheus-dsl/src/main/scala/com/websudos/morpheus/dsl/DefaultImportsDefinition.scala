@@ -39,6 +39,7 @@ import com.websudos.morpheus.query.QueryColumn
  */
 trait DefaultImportsDefinition extends SQLPrimitives {
 
+  type SQLPrimitive[T] = com.websudos.morpheus.SQLPrimitive[T]
   type Table[Owner <: Table[Owner, Record], Record] = com.websudos.morpheus.dsl.Table[Owner, Record]
   type PrimitiveColumn[Owner <: Table[Owner, Record], Record, ValueType] = com.websudos.morpheus.column.PrimitiveColumn[Owner, Record, ValueType]
 
@@ -48,7 +49,7 @@ trait DefaultImportsDefinition extends SQLPrimitives {
   type Result = com.twitter.finagle.exp.mysql.Result
   type Row = com.twitter.finagle.exp.mysql.Row
 
-  implicit def columnToQueryColumn[T](col: AbstractColumn[T]): QueryColumn[T]
+  implicit def columnToQueryColumn[T: SQLPrimitive](col: AbstractColumn[T]): QueryColumn[T]
 
 }
 

@@ -51,7 +51,7 @@ class PrimitiveColumn[T <: Table[T, R], R, @specialized(Int, Double, Float, Long
   extends Column[T, R, RR](t) {
 
   def sqlType: String = SQLPrimitives[RR].sqlType
-  def toQueryString(v: RR): AnyRef = SQLPrimitives[RR].toSQL(v)
+  def toQueryString(v: RR): String = SQLPrimitives[RR].toSQL(v)
 
   def optional(r: Row): Option[RR] =
     implicitly[SQLPrimitive[RR]].fromRow(r, name)

@@ -27,8 +27,12 @@ class TableTest extends FlatSpec with Matchers {
   }
 
   it should "correctly extract the name of a table directly from the Scala object name" in {
-    BasicTable.tableName
+    BasicTable.tableName shouldEqual "BasicTable"
   }
 
+  it should "correctly extract the name of the columns inside a table" in {
+    BasicTable.count.name shouldEqual "count"
+    BasicTable.name.name shouldEqual "name"
+  }
 
 }

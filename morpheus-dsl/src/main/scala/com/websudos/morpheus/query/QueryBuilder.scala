@@ -18,8 +18,6 @@
 
 package com.websudos.morpheus.query
 
-import com.websudos.morpheus.SQLPrimitive
-
 /**
  * The hierarchical implementation of operators is designed to account for potential variations between SQL databases.
  * Every specific implementation can provide it's own set of operators and string encoding for them based on the specific semantics.
@@ -58,31 +56,31 @@ sealed trait AbstractQueryBuilder {
 
   def operators: SQLOperatorSet
 
-  def eqs[T : SQLPrimitive](name: String, value: String): SQLBuiltQuery = {
+  def eqs(name: String, value: String): SQLBuiltQuery = {
     new SQLBuiltQuery(s"$name ${operators.eq} $value")
   }
 
-  def lt[T :SQLPrimitive](name: String, value: String): SQLBuiltQuery = {
+  def lt(name: String, value: String): SQLBuiltQuery = {
     new SQLBuiltQuery(s"$name ${operators.lt} $value")
   }
 
-  def lte[T](name: String, value: String): SQLBuiltQuery = {
+  def lte(name: String, value: String): SQLBuiltQuery = {
     new SQLBuiltQuery(s"$name ${operators.lte} $value")
   }
 
-  def gt[T](name: String, value: String): SQLBuiltQuery = {
+  def gt(name: String, value: String): SQLBuiltQuery = {
     new SQLBuiltQuery(s"$name ${operators.gt} $value")
   }
 
-  def gte[T](name: String, value: String): SQLBuiltQuery = {
+  def gte(name: String, value: String): SQLBuiltQuery = {
     new SQLBuiltQuery(s"$name ${operators.gte} $value")
   }
 
-  def !=[T](name: String, value: String): SQLBuiltQuery = {
+  def !=(name: String, value: String): SQLBuiltQuery = {
     new SQLBuiltQuery(s"$name ${operators.`!=`} $value")
   }
 
-  def <>[T](name: String, value: String): SQLBuiltQuery = {
+  def <>(name: String, value: String): SQLBuiltQuery = {
     new SQLBuiltQuery(s"$name ${operators.`<>`} $value")
   }
 

@@ -21,6 +21,6 @@ package com.websudos.morpheus.mysql
 import com.websudos.morpheus.dsl.Table
 import com.websudos.morpheus.query.MySQLQueryBuilder
 
-abstract class MySQLTable[Owner <: Table[Owner, Record], Record] extends Table[Owner, Record] {
+abstract class MySQLTable[Owner <: MySQLTable[Owner, Record], Record] extends Table[Owner, Record] {
   val queryBuilder = MySQLQueryBuilder
 }
