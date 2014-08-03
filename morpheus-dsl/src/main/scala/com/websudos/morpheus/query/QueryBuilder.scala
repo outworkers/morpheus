@@ -20,7 +20,12 @@ package com.websudos.morpheus.query
 
 import com.websudos.morpheus.SQLPrimitive
 
-
+/**
+ * The hierarchical implementation of operators is designed to account for potential variations between SQL databases.
+ * Every specific implementation can provide it's own set of operators and string encoding for them based on the specific semantics.
+ *
+ * A QueryBuilder singleton will exist for every database, and every QueryBuilder will select a specific set of operators.
+ */
 trait SQLOperatorSet {
   def eq: String
   def lt: String
@@ -41,8 +46,16 @@ object MySQLOperatorSet extends SQLOperatorSet {
   val <> = "<>"
 }
 
-
+/**
+ * The AbstractQueryBuilder is designed to define the basic
+ * A QueryBuilder singleton will exist for every database supported by Morpheus.
+ *
+ * Every specific table implementation will automatically select the appropriate QueryBuilder while the user doesn't have to do anything.
+ * Every imports package will carefully swap out the table implementation with the relevant one, so the user doesn't have to bother doing anything crazy like
+ * using different base table implementations for different databases.
+ */
 sealed trait AbstractQueryBuilder {
+
   def operators: SQLOperatorSet
 
   def eqs[T : SQLPrimitive](name: String, value: String): SQLBuiltQuery = {
