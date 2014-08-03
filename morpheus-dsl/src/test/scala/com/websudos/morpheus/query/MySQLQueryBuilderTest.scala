@@ -91,7 +91,7 @@ class MySQLQueryBuilderTest extends FlatSpec with Matchers with GeneratorDrivenP
     forAll(minSuccessful(300)) { (name: String) =>
       whenever (name.length > 0) {
         val query = MySQLQueryBuilder.select(name).queryString
-        query shouldEqual s"SELECT * FROM $name "
+        query shouldEqual s"SELECT * FROM $name"
       }
     }
   }
@@ -100,7 +100,7 @@ class MySQLQueryBuilderTest extends FlatSpec with Matchers with GeneratorDrivenP
     forAll(minSuccessful(300)) { (name: String, column: String) =>
       whenever (name.length > 0 && column.length > 0) {
         val query = MySQLQueryBuilder.select(name, column).queryString
-        query shouldEqual s"SELECT $column FROM $name "
+        query shouldEqual s"SELECT $column FROM $name"
       }
     }
   }
@@ -109,7 +109,7 @@ class MySQLQueryBuilderTest extends FlatSpec with Matchers with GeneratorDrivenP
     forAll(minSuccessful(300)) { (name: String, column1: String, column2: String) =>
       whenever (name.length > 0 && column1.length > 0 && column2.length > 0) {
         val query = MySQLQueryBuilder.select(name, column1, column2).queryString
-        query shouldEqual s"SELECT $column1 $column2 FROM $name "
+        query shouldEqual s"SELECT $column1 $column2 FROM $name"
       }
     }
   }
@@ -118,7 +118,7 @@ class MySQLQueryBuilderTest extends FlatSpec with Matchers with GeneratorDrivenP
     forAll(minSuccessful(300)) { (name: String, column1: String, column2: String, column3: String) =>
       whenever (name.length > 0 && column1.length > 0 && column2.length > 0 && column3.length > 0) {
         val query = MySQLQueryBuilder.select(name, column1, column2, column3).queryString
-        query shouldEqual s"SELECT $column1 $column2 $column3 FROM $name "
+        query shouldEqual s"SELECT $column1 $column2 $column3 FROM $name"
       }
     }
   }

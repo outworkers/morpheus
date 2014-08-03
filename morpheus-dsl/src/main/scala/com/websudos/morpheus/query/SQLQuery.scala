@@ -25,9 +25,15 @@ import com.twitter.finagle.exp.mysql.{Client, Result, Row}
 import com.twitter.util.Future
 import com.websudos.morpheus.dsl.{ResultSetOperations, Table}
 
-class SQLBuiltQuery(val queryString: String) {
+case class SQLBuiltQuery(queryString: String) {
+  def append(st: String): SQLBuiltQuery = new SQLBuiltQuery(queryString + st)
   def append(st: SQLBuiltQuery): SQLBuiltQuery = new SQLBuiltQuery(queryString + st.queryString)
+
+  def prepend(st: String): SQLBuiltQuery = new SQLBuiltQuery(st + queryString)
   def prepend(st: SQLBuiltQuery): SQLBuiltQuery = new SQLBuiltQuery(st.queryString + queryString)
+
+  def spaced: Boolean = queryString.endsWith(" ")
+  def pad: SQLBuiltQuery = if (spaced) this else SQLBuiltQuery(queryString + " ")
 }
 
 trait SQLQuery extends ResultSetOperations {
@@ -89,8 +95,7 @@ trait SQLResultsQuery[T <: Table[T, _], R] extends SQLQuery {
 }
 
 
-sealed class RootSelectQuery[T <: Table[T, _], R](table: T, protected[morpheus] val query: SQLBuiltQuery, rowFunc: Row => R) extends SQLResultsQuery[T, R] {
-
+abstract class BaseSelectQuery[T <: Table[T, _], R](table: T, protected[morpheus] val query: SQLBuiltQuery, rowFunc: Row => R) extends SQLResultsQuery[T, R] {
   def fromRow(r: Row): R = rowFunc(r)
 
   def fetch()(implicit client: Client): ScalaFuture[Seq[R]] = {
@@ -113,13 +118,57 @@ sealed class RootSelectQuery[T <: Table[T, _], R](table: T, protected[morpheus] 
     new SelectWhere[T, R](table, table.queryBuilder.where(query, condition(table).clause), rowFunc)
   }
 
+  protected[this] def andClause(condition: T => QueryCondition): SelectWhere[T, R] = {
+    new SelectWhere[T, R](table, table.queryBuilder.and(query, condition(table).clause), rowFunc)
+  }
+
 }
 
-class SelectQuery[T <: Table[T, _], R](table: T, query: SQLBuiltQuery, rowFunc: Row => R) extends RootSelectQuery[T, R](table, query, rowFunc) {
+class RootSelectQuery[T <: Table[T, _], R](val table: T, val st: SelectSyntaxBlock[T, _], val rowFunc: Row => R) {
+
+  def fromRow(r: Row): R = rowFunc(r)
+
+  def distinct: SelectQuery[T, R] = {
+    new SelectQuery(table, st.distinct, rowFunc)
+  }
+
+  def distinctRow: SelectQuery[T, R] = {
+    new SelectQuery(table, st.distinctRow, rowFunc)
+  }
+}
+
+class SelectQuery[T <: Table[T, _], R](table: T, query: SQLBuiltQuery, rowFunc: Row => R) extends BaseSelectQuery[T, R](table, query, rowFunc) {
 
   def where(condition: T => QueryCondition): SelectWhere[T, R] = clause(condition)
 }
 
-class SelectWhere[T <: Table[T, _], R](table: T, query: SQLBuiltQuery, rowFunc: Row => R) extends RootSelectQuery[T, R](table, query, rowFunc) {
-  def and(condition: T => QueryCondition): SelectWhere[T, R] = clause(condition)
+class SelectWhere[T <: Table[T, _], R](table: T, query: SQLBuiltQuery, rowFunc: Row => R) extends BaseSelectQuery[T, R](table, query, rowFunc) {
+  def and(condition: T => QueryCondition): SelectWhere[T, R] = andClause(condition)
+}
+
+
+private[morpheus] trait SelectImplicits {
+
+  /**
+   * This defines an implicit conversion from a RootSelectQuery to a SelectQuery, making the SELECT syntax block invisible to the end user.
+   * Much like a decision block, a SelectSyntaxBlock needs a decision branch to follow, may that be DISTINCT, ALL or DISTINCTROW as per the SQL spec.
+   *
+   * The one catch is that this form of "exit" from an un-executable RootSelectQuery will directly translate the query to a "SELECT fields* FROM tableName"
+   * query, meaning no SELECT operators will be used in the serialisation.
+   *
+   * The simple assumption made here is that since the user didn't use any other provided method, such as "all", "distinct" or "distinctrow",
+   * the desired behaviour is a full select.
+   *
+   * @param root The RootSelectQuery to convert.
+   * @tparam T The table owning the record.
+   * @tparam R The record type.
+   * @return An executable SelectQuery.
+   */
+  implicit def rootSelectQueryToSelectQuery[T <: Table[T, _], R](root: RootSelectQuery[T, R]): SelectQuery[T, R] = {
+    new SelectQuery[T, R](
+      root.table,
+      root.st.*,
+      root.rowFunc
+    )
+  }
 }

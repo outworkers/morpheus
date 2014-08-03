@@ -23,8 +23,8 @@ import scala.reflect.runtime.universe.Symbol
 import scala.reflect.runtime.{currentMirror => cm, universe => ru}
 
 import com.twitter.finagle.exp.mysql.Row
-import com.websudos.morpheus.column.AbstractColumn
-import com.websudos.morpheus.query.{AbstractQueryBuilder, SelectQuery}
+import com.websudos.morpheus.column.{SelectColumn, AbstractColumn}
+import com.websudos.morpheus.query.{SQLBuiltQuery, AbstractQueryBuilder, RootSelectQuery, SelectSyntaxBlock}
 
 /**
  * The basic wrapper definition of an SQL table. This will force greedy initialisation of all column object members and provide a way to map
@@ -90,7 +90,27 @@ abstract class Table[Owner <: Table[Owner, Record], Record] {
   def tableName: String = _name
 
 
-  def select: SelectQuery[Owner, Record] = new SelectQuery[Owner, Record](this.asInstanceOf[Owner], queryBuilder.select(tableName), fromRow)
+  def select: RootSelectQuery[Owner, Record] = {
+    new RootSelectQuery[Owner, Record](
+      this.asInstanceOf[Owner],
+      new SelectSyntaxBlock[Owner, Record](SQLBuiltQuery("SELECT"), tableName, fromRow),
+      fromRow
+    )
+  }
+
+  def select[T1, T2](f1: Owner => SelectColumn[T1], f2: Owner => SelectColumn[T2]): RootSelectQuery[Owner, (T1, T2)] = {
+
+    val t = this.asInstanceOf[Owner]
+    val c1: SelectColumn[T1] = f1(t)
+    val c2: SelectColumn[T2] = f2(t)
+    def rowFunc(row: Row): (T1, T2) = Tuple2(c1(row), c2(row))
+
+    new RootSelectQuery[Owner, (T1, T2)](
+      this.asInstanceOf[Owner],
+      new SelectSyntaxBlock[Owner, (T1, T2)](queryBuilder.select(tableName), tableName, rowFunc, List(c1.col.name, c2.col.name)),
+      rowFunc
+    )
+  }
 
 
   def columns: List[AbstractColumn[_]] = _columns.toList

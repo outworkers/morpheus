@@ -25,10 +25,21 @@ import com.websudos.morpheus.mysql.Imports._
 
 class SelectQuerySerialisationTest extends FlatSpec with Matchers {
 
-  it should  "correctly serialise a simple where query" in {
+  it should "serialise a simple SELECT ALL query" in {
+    BasicTable.select.queryString shouldEqual "SELECT * FROM BasicTable"
+  }
+
+  it should  "serialise a simple where query" in {
     BasicTable.select.where(_.name eqs "test").queryString shouldEqual "SELECT * FROM BasicTable WHERE name = test"
   }
 
+  it should  "serialise a simple where-and query" in {
+    BasicTable.select.where(_.name eqs "test").and(_.count eqs 5).queryString shouldEqual "SELECT * FROM BasicTable WHERE name = test AND count = 5"
+  }
+
+  it should "serialise a conditional clause with an OR operator" in {
+    BasicTable.select.where(_.name eqs "test").and(t => { (t.count eqs 5) or (t.name eqs "test") })
+  }
 
   it should  "not compile a select query if the value compared against doesn't match the value type of the underlying column" in {
     """BasicTable.select.where(_.name eqs 5).queryString""" shouldNot compile

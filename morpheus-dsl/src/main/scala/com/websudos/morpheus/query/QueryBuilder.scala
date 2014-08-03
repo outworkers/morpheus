@@ -18,6 +18,9 @@
 
 package com.websudos.morpheus.query
 
+import com.twitter.finagle.exp.mysql.Row
+import com.websudos.morpheus.dsl.Table
+
 /**
  * The hierarchical implementation of operators is designed to account for potential variations between SQL databases.
  * Every specific implementation can provide it's own set of operators and string encoding for them based on the specific semantics.
@@ -45,6 +48,39 @@ object MySQLOperatorSet extends SQLOperatorSet {
 }
 
 /**
+ * This is used to represent a syntax block where multiple operations are possible at the same point in the code.
+ * For instance, this is used to create a select block, where up to 10 operators can follow a select statement.
+ */
+sealed trait AbstractSyntaxBlock {
+
+}
+
+case class SelectSyntaxBlock[T <: Table[T, _], R](qb: SQLBuiltQuery, tableName: String, fromRow: Row => R, statements: List[String] = List("*")) {
+
+  def from: SQLBuiltQuery = {
+    qb.pad.append(s"FROM $tableName")
+  }
+
+  def `*`: SQLBuiltQuery = {
+    qb.pad.append(s"* FROM $tableName")
+  }
+
+  def all: SQLBuiltQuery = {
+    qb.pad.append("ALL")
+  }
+
+  def distinct: SQLBuiltQuery = {
+    qb.pad.append("DISTINCT")
+  }
+
+  def distinctRow: SQLBuiltQuery = {
+    qb.pad.append("DISTINCTROW")
+  }
+
+}
+
+
+/**
  * The AbstractQueryBuilder is designed to define the basic
  * A QueryBuilder singleton will exist for every database supported by Morpheus.
  *
@@ -57,43 +93,51 @@ sealed trait AbstractQueryBuilder {
   def operators: SQLOperatorSet
 
   def eqs(name: String, value: String): SQLBuiltQuery = {
-    new SQLBuiltQuery(s"$name ${operators.eq} $value")
+    SQLBuiltQuery(s"$name ${operators.eq} $value")
   }
 
   def lt(name: String, value: String): SQLBuiltQuery = {
-    new SQLBuiltQuery(s"$name ${operators.lt} $value")
+    SQLBuiltQuery(s"$name ${operators.lt} $value")
   }
 
   def lte(name: String, value: String): SQLBuiltQuery = {
-    new SQLBuiltQuery(s"$name ${operators.lte} $value")
+    SQLBuiltQuery(s"$name ${operators.lte} $value")
   }
 
   def gt(name: String, value: String): SQLBuiltQuery = {
-    new SQLBuiltQuery(s"$name ${operators.gt} $value")
+    SQLBuiltQuery(s"$name ${operators.gt} $value")
   }
 
   def gte(name: String, value: String): SQLBuiltQuery = {
-    new SQLBuiltQuery(s"$name ${operators.gte} $value")
+    SQLBuiltQuery(s"$name ${operators.gte} $value")
   }
 
   def !=(name: String, value: String): SQLBuiltQuery = {
-    new SQLBuiltQuery(s"$name ${operators.`!=`} $value")
+    SQLBuiltQuery(s"$name ${operators.`!=`} $value")
   }
 
   def <>(name: String, value: String): SQLBuiltQuery = {
-    new SQLBuiltQuery(s"$name ${operators.`<>`} $value")
+    SQLBuiltQuery(s"$name ${operators.`<>`} $value")
   }
 
   def select(tableName: String): SQLBuiltQuery = {
-    new SQLBuiltQuery(s"SELECT * FROM $tableName ")
+    SQLBuiltQuery(s"SELECT * FROM $tableName")
   }
 
   def select(tableName: String, names: String*): SQLBuiltQuery = {
-   new SQLBuiltQuery(s"SELECT ${names.mkString(" ")} FROM $tableName ")
+    SQLBuiltQuery(s"SELECT ${names.mkString(" ")} FROM $tableName")
   }
 
   def where(qb: SQLBuiltQuery, condition: SQLBuiltQuery): SQLBuiltQuery = {
-    qb.append(new SQLBuiltQuery("WHERE ").append(condition))
+    qb.pad.append(SQLBuiltQuery("WHERE ").append(condition))
+  }
+
+  def and(qb: SQLBuiltQuery, condition: SQLBuiltQuery): SQLBuiltQuery = {
+    qb.pad.append(SQLBuiltQuery("AND ").append(condition))
+  }
+
+  def or(qb: SQLBuiltQuery, condition: SQLBuiltQuery): SQLBuiltQuery = {
+    qb.pad.append(SQLBuiltQuery("OR ").append(condition))
   }
 
 }

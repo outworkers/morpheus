@@ -19,7 +19,7 @@
 package com.websudos.morpheus.dsl
 
 import com.websudos.morpheus.SQLPrimitives
-import com.websudos.morpheus.column.AbstractColumn
+import com.websudos.morpheus.column.{AbstractColumn, FullDslDefinition}
 import com.websudos.morpheus.query.QueryColumn
 
 /**
@@ -37,7 +37,7 @@ import com.websudos.morpheus.query.QueryColumn
  * implementation in a manner that's completely invisible to the API user. The naming of things can stay the same while morpheus invisibly implements all
  * necessary discrepancies.
  */
-trait DefaultImportsDefinition extends SQLPrimitives {
+trait DefaultImportsDefinition extends SQLPrimitives with FullDslDefinition {
 
   type SQLPrimitive[T] = com.websudos.morpheus.SQLPrimitive[T]
   type Table[Owner <: Table[Owner, Record], Record] = com.websudos.morpheus.dsl.Table[Owner, Record]

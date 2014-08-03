@@ -29,7 +29,12 @@ import com.websudos.morpheus.column.AbstractColumn
  * Only indexed columns can produce a QueryCondition via "WHERE" and "AND" operators.
  * @param clause The clause to use.
  */
-case class QueryCondition(clause: SQLBuiltQuery)
+case class QueryCondition(clause: SQLBuiltQuery) {
+
+  def or(condition: QueryCondition): QueryCondition = {
+    QueryCondition(MySQLQueryBuilder.or(clause, condition.clause))
+  }
+}
 
 
 /**
@@ -74,6 +79,8 @@ sealed abstract class AbstractQueryColumn[T: SQLPrimitive](col: AbstractColumn[T
   def <>(value: T): QueryCondition = {
     QueryCondition(col.table.queryBuilder.!=(col.name, col.toQueryString(value)))
   }
+
+
 }
 
 
