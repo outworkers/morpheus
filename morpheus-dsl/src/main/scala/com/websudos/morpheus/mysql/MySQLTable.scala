@@ -16,21 +16,11 @@
  *
  */
 
-package com.websudos.morpheus.dsl
+package com.websudos.morpheus.mysql
 
-import com.websudos.morpheus.mysql.Imports._
+import com.websudos.morpheus.dsl.Table
+import com.websudos.morpheus.query.MySQLQueryBuilder
 
-case class BasicRecord(name: String, count: Long)
-
-class BasicTable extends MySQLTable[BasicTable, BasicRecord] {
-
-  object name extends StringColumn(this)
-  object count extends LongColumn(this)
-
-  def fromRow(row: Row): BasicRecord = {
-    BasicRecord(name(row), count(row))
-  }
-
+abstract class MySQLTable[Owner <: MySQLTable[Owner, Record], Record] extends Table[Owner, Record] {
+  val queryBuilder = MySQLQueryBuilder
 }
-
-object BasicTable extends BasicTable

@@ -21,6 +21,7 @@ package com.websudos.morpheus.column
 import scala.annotation.implicitNotFound
 
 import com.twitter.finagle.exp.mysql.Row
+import com.websudos.morpheus.query.SelectImplicits
 import com.websudos.morpheus.{ SQLPrimitive, SQLPrimitives }
 import com.websudos.morpheus.dsl.Table
 
@@ -32,9 +33,14 @@ private[morpheus] trait AbstractColumn[@specialized(Int, Double, Float, Long, Bo
 
   def sqlType: String
 
-  def toQueryString(v: T): AnyRef
+  def table: Table[_, _]
+
+  def toQueryString(v: T): String
 }
 
+sealed abstract class SelectColumn[T](val col: AbstractColumn[_]) {
+  def apply(r: Row): T
+}
 
 abstract class Column[Owner <: Table[Owner, Record], Record, T](val table: Table[Owner, Record]) extends AbstractColumn[T] {
 
@@ -44,13 +50,25 @@ abstract class Column[Owner <: Table[Owner, Record], Record, T](val table: Table
 }
 
 
-@implicitNotFound(msg = "Type ${RR} must be a Cassandra primitive")
+@implicitNotFound(msg = "Type ${RR} must be a MySQL primitive")
 class PrimitiveColumn[T <: Table[T, R], R, @specialized(Int, Double, Float, Long) RR: SQLPrimitive](t: Table[T, R])
   extends Column[T, R, RR](t) {
 
   def sqlType: String = SQLPrimitives[RR].sqlType
-  def toQueryString(v: RR): AnyRef = SQLPrimitives[RR].toSQL(v)
+  def toQueryString(v: RR): String = SQLPrimitives[RR].toSQL(v)
 
   def optional(r: Row): Option[RR] =
     implicitly[SQLPrimitive[RR]].fromRow(r, name)
+}
+
+
+sealed trait ModifyImplicits {
+  implicit class SelectColumnRequired[Owner <: Table[Owner, Record], Record, T](col: Column[Owner, Record, T]) extends SelectColumn[T](col) {
+    def apply(r: Row): T = col.apply(r)
+  }
+}
+
+
+private[morpheus] trait FullDslDefinition extends ModifyImplicits with SelectImplicits {
+
 }

@@ -16,21 +16,13 @@
  *
  */
 
-package com.websudos.morpheus.dsl
+package com.websudos.morpheus.mysql
 
-import com.websudos.morpheus.mysql.Imports._
+import com.websudos.morpheus.column.AbstractColumn
+import com.websudos.morpheus.dsl.DefaultImportsDefinition
+import com.websudos.morpheus.query.QueryColumn
 
-case class BasicRecord(name: String, count: Long)
-
-class BasicTable extends MySQLTable[BasicTable, BasicRecord] {
-
-  object name extends StringColumn(this)
-  object count extends LongColumn(this)
-
-  def fromRow(row: Row): BasicRecord = {
-    BasicRecord(name(row), count(row))
-  }
-
+object Imports extends DefaultImportsDefinition {
+  override implicit def columnToQueryColumn[T : SQLPrimitive](col: AbstractColumn[T]): QueryColumn[T] = new QueryColumn[T](col)
+  type MySQLTable[Owner <: MySQLTable[Owner, Record], Record] = com.websudos.morpheus.mysql.MySQLTable[Owner, Record]
 }
-
-object BasicTable extends BasicTable
