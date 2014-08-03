@@ -122,4 +122,14 @@ class MySQLQueryBuilderTest extends FlatSpec with Matchers with GeneratorDrivenP
       }
     }
   }
+
+  it should "serialise an $in operator query" in {
+    forAll(minSuccessful(300)) { (name: String, column1: String, column2: String, column3: String) => {
+      whenever(name.length > 0 && column1.length > 0 && column2.length > 0 && column3.length > 0) {
+        val query = MySQLQueryBuilder.in(name, List(column1, column2, column3)).queryString
+        query shouldEqual s"$name IN ($column1, $column2, $column3)"
+      }
+    }
+    }
+  }
 }

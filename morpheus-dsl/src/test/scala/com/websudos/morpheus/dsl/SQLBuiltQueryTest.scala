@@ -54,7 +54,7 @@ class SQLBuiltQueryTest extends FlatSpec with Matchers with GeneratorDrivenPrope
 
   it should "not add a trailing space if the last character of an SQLBuiltQuery is a space" in {
     forAll(minSuccessful(300)) { (part1: String) =>
-      whenever (part1.length > 0) {
+      whenever (part1.length > 0 && !part1.endsWith(" ")) {
         val s = part1 + " "
         val query = SQLBuiltQuery(s).pad.queryString
         query shouldEqual s"$s"

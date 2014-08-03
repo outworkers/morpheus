@@ -141,7 +141,10 @@ sealed trait AbstractQueryBuilder {
   }
 
   def in(name: String, values: List[String]): SQLBuiltQuery = {
-    SQLBuiltQuery(name).pad.append(DefaultSQLOperators.in.pad).append(values.mkString(", "))
+    SQLBuiltQuery(name).pad.append(DefaultSQLOperators.in.pad)
+      .append(DefaultSQLOperators.`(`)
+      .append(values.mkString(", "))
+      .append(DefaultSQLOperators.`)`)
   }
 
 }
