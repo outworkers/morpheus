@@ -22,6 +22,8 @@ import com.websudos.morpheus.SQLPrimitive
 import com.websudos.morpheus.column.AbstractColumn
 
 
+private[morpheus] abstract class BaseQueryCondition(val clause: SQLBuiltQuery)
+
 /**
  * This is a wrapper clause for primary conditions.
  * They wrap the Clause used in a "WHERE" or "AND" query.
@@ -29,13 +31,15 @@ import com.websudos.morpheus.column.AbstractColumn
  * Only indexed columns can produce a QueryCondition via "WHERE" and "AND" operators.
  * @param clause The clause to use.
  */
-case class QueryCondition(clause: SQLBuiltQuery) {
+case class QueryCondition(override val clause: SQLBuiltQuery) extends BaseQueryCondition(clause) {
 
   def or(condition: QueryCondition): QueryCondition = {
-    QueryCondition(MySQLQueryBuilder.or(clause, condition.clause))
+    QueryCondition(MySQLQueryBuilder.or(
+      clause.prependIfAbsent(DefaultSQLOperators.`(`).removeIfLast(DefaultSQLOperators.`)`),
+      condition.clause.append(DefaultSQLOperators.`)`))
+    )
   }
 }
-
 
 /**
  * A class enforcing columns used in where clauses to be indexed.
@@ -60,17 +64,25 @@ sealed abstract class AbstractQueryColumn[T: SQLPrimitive](col: AbstractColumn[T
     QueryCondition(col.table.queryBuilder.lt(col.name, col.toQueryString(value)))
   }
 
+  def < = lt _
+
   def lte(value: T): QueryCondition = {
     QueryCondition(col.table.queryBuilder.lte(col.name, col.toQueryString(value)))
   }
+
+  def <= = lte _
 
   def gt(value: T): QueryCondition = {
     QueryCondition(col.table.queryBuilder.gt(col.name, col.toQueryString(value)))
   }
 
+  def > = gt _
+
   def gte(value: T): QueryCondition = {
     QueryCondition(col.table.queryBuilder.gte(col.name, col.toQueryString(value)))
   }
+
+  def >= = gte _
 
   def !=(value: T): QueryCondition = {
     QueryCondition(col.table.queryBuilder.!=(col.name, col.toQueryString(value)))
@@ -78,6 +90,11 @@ sealed abstract class AbstractQueryColumn[T: SQLPrimitive](col: AbstractColumn[T
 
   def <>(value: T): QueryCondition = {
     QueryCondition(col.table.queryBuilder.!=(col.name, col.toQueryString(value)))
+  }
+
+  def in(values: List[T]) : QueryCondition = {
+    val primitive = implicitly[SQLPrimitive[T]]
+    QueryCondition(col.table.queryBuilder.in(col.name, values.map(primitive.toSQL)))
   }
 
 

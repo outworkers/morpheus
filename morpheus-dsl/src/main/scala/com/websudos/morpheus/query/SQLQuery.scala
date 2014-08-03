@@ -26,11 +26,33 @@ import com.twitter.util.Future
 import com.websudos.morpheus.dsl.{ResultSetOperations, Table}
 
 case class SQLBuiltQuery(queryString: String) {
-  def append(st: String): SQLBuiltQuery = new SQLBuiltQuery(queryString + st)
-  def append(st: SQLBuiltQuery): SQLBuiltQuery = new SQLBuiltQuery(queryString + st.queryString)
+  def append(st: String): SQLBuiltQuery = SQLBuiltQuery(queryString + st)
+  def append(st: SQLBuiltQuery): SQLBuiltQuery = append(st.queryString)
 
-  def prepend(st: String): SQLBuiltQuery = new SQLBuiltQuery(st + queryString)
-  def prepend(st: SQLBuiltQuery): SQLBuiltQuery = new SQLBuiltQuery(st.queryString + queryString)
+  def prepend(st: String): SQLBuiltQuery = SQLBuiltQuery(st + queryString)
+  def prepend(st: SQLBuiltQuery): SQLBuiltQuery = prepend(st.queryString)
+
+  def prependIfAbsent(st: String): SQLBuiltQuery = if (queryString.startsWith(st)) {
+    this
+  } else {
+    prepend(st)
+  }
+
+  def prependIfAbsent(st: SQLBuiltQuery): SQLBuiltQuery = prependIfAbsent(st.queryString)
+
+  def appendIfAbsent(st: String): SQLBuiltQuery = if (queryString.endsWith(st)) {
+    this
+  } else {
+    append(st)
+  }
+
+  def appendIfAbsent(st: SQLBuiltQuery): SQLBuiltQuery = appendIfAbsent(st.queryString)
+
+  def removeIfLast(st: SQLBuiltQuery): SQLBuiltQuery = if (queryString.endsWith(st.queryString)) {
+    SQLBuiltQuery(queryString.dropRight(st.queryString.length))
+  } else  {
+    this
+  }
 
   def spaced: Boolean = queryString.endsWith(" ")
   def pad: SQLBuiltQuery = if (spaced) this else SQLBuiltQuery(queryString + " ")
@@ -38,6 +60,11 @@ case class SQLBuiltQuery(queryString: String) {
 
 object DefaultSQLOperators {
   val select = SQLBuiltQuery("SELECT")
+  val where = SQLBuiltQuery("WHERE")
+  val and = SQLBuiltQuery("AND")
+  val in = SQLBuiltQuery("IN")
+  val `(` = SQLBuiltQuery("(")
+  val `)` = SQLBuiltQuery(")")
 }
 
 trait SQLQuery extends ResultSetOperations {

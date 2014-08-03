@@ -129,7 +129,7 @@ sealed trait AbstractQueryBuilder {
   }
 
   def where(qb: SQLBuiltQuery, condition: SQLBuiltQuery): SQLBuiltQuery = {
-    qb.pad.append(SQLBuiltQuery("WHERE ").append(condition))
+    qb.pad.append(DefaultSQLOperators.where).pad.append(condition)
   }
 
   def and(qb: SQLBuiltQuery, condition: SQLBuiltQuery): SQLBuiltQuery = {
@@ -138,6 +138,10 @@ sealed trait AbstractQueryBuilder {
 
   def or(qb: SQLBuiltQuery, condition: SQLBuiltQuery): SQLBuiltQuery = {
     qb.pad.append(SQLBuiltQuery("OR ").append(condition))
+  }
+
+  def in(name: String, values: List[String]): SQLBuiltQuery = {
+    SQLBuiltQuery(name).pad.append(DefaultSQLOperators.in.pad).append(values.mkString(", "))
   }
 
 }

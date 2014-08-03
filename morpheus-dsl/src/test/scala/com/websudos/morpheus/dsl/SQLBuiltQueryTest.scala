@@ -25,7 +25,7 @@ import com.websudos.morpheus.query.SQLBuiltQuery
 
 class SQLBuiltQueryTest extends FlatSpec with Matchers with GeneratorDrivenPropertyChecks {
 
-  it should "correctly serialise an append on an SQLBuiltQuery" in {
+  it should "serialise an append on an SQLBuiltQuery" in {
     forAll(minSuccessful(300)) { (part1: String, part2: String) =>
       whenever (part1.length > 0 && part2.length > 0) {
         val query = SQLBuiltQuery(part1).append(SQLBuiltQuery(part2)).queryString
@@ -34,7 +34,7 @@ class SQLBuiltQueryTest extends FlatSpec with Matchers with GeneratorDrivenPrope
     }
   }
 
-  it should "correctly serialise a prepend on an SQLBuiltQuery" in {
+  it should "serialise a prepend on an SQLBuiltQuery" in {
     forAll(minSuccessful(300)) { (part1: String, part2: String) =>
       whenever (part1.length > 0 && part2.length > 0) {
         val query = SQLBuiltQuery(part1).prepend(SQLBuiltQuery(part2)).queryString
@@ -43,11 +43,21 @@ class SQLBuiltQueryTest extends FlatSpec with Matchers with GeneratorDrivenPrope
     }
   }
 
-  it should "correctly serialise a pad an SQLBuiltQuery" in {
+  it should "serialise and pad an SQLBuiltQuery with a trailing space if the space is missing" in {
     forAll(minSuccessful(300)) { (part1: String) =>
       whenever (part1.length > 0) {
         val query = SQLBuiltQuery(part1).pad.queryString
         query shouldEqual s"$part1 "
+      }
+    }
+  }
+
+  it should "not add a trailing space if the last character of an SQLBuiltQuery is a space" in {
+    forAll(minSuccessful(300)) { (part1: String) =>
+      whenever (part1.length > 0) {
+        val s = part1 + " "
+        val query = SQLBuiltQuery(s).pad.queryString
+        query shouldEqual s"$s"
       }
     }
   }

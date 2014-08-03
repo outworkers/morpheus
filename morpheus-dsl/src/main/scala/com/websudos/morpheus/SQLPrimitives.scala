@@ -21,7 +21,9 @@ package com.websudos.morpheus
 
 import com.twitter.finagle.exp.mysql._
 
-case class InvalidTypeDefinitionExecption(msg: String = "Invalid SQL type declared for column") extends RuntimeException(msg)
+case class InvalidTypeDefinitionException(msg: String = "Invalid SQL type declared for column") extends RuntimeException(msg)
+
+// sealed case class BooleanValue(f: Boolean) extends Value
 
 trait SQLPrimitive[T] {
 
@@ -43,12 +45,37 @@ trait SQLPrimitives {
     def fromRow(row: Row, name: String): Option[Long] = row(name) map {
       case LongValue(num) => num
       case EmptyValue => 0L
-      case _ => throw InvalidTypeDefinitionExecption()
+      case _ => throw InvalidTypeDefinitionException()
     }
 
     def toSQL(value: Long): String = value.toString
 
   }
+
+  implicit object IntIsSQLPrimitive extends SQLPrimitive[Int] {
+    val sqlType = "int"
+
+    def fromRow(row: Row, name: String): Option[Int] = row(name) map {
+      case IntValue(num) => num
+      case EmptyValue => 0
+      case _ => throw InvalidTypeDefinitionException()
+    }
+
+    def toSQL(value: Int): String = value.toString
+  }
+
+  /*
+  implicit object BooleanIsSQLPrimitive extends SQLPrimitive[Boolean] {
+    val sqlType = "boolean"
+
+    def fromRow(row: Row, name: String): Option[Boolean] = row(name) map {
+      case Value(true) => true
+      case false => false
+      case _ => throw InvalidTypeDefinitionException()
+    }
+
+    def toSQL(value: Boolean): String = value.toString
+  }*/
 
   implicit object StringIsSQLPrimitive extends SQLPrimitive[String] {
 
@@ -59,13 +86,13 @@ trait SQLPrimitives {
         case StringValue(str) => Some(str)
         case EmptyValue => Some("")
         case NullValue => None
-        case _ => throw InvalidTypeDefinitionExecption()
+        case _ => throw InvalidTypeDefinitionException()
       }
 
       case None => None
     }
 
-    def toSQL(value: String): String = value
+    def toSQL(value: String): String = "'" + value + "'"
   }
 
 }
