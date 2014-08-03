@@ -30,7 +30,7 @@ not yet production ready.
 Morpheus was developed at websudos as the foundation of our upcoming book, "Learning Scala by example", which covers all aspects of building an enterprise 
 grada Scala framework from scratch.
 
-* Flavian Alexandru flavian@newzly.com(Project lead)
+* Flavian Alexandru @alexflav23(Project lead)
 * Benjamin Edwards @benjumanji(Project lead)
 
 <a id="copyright">Copyright</a>
