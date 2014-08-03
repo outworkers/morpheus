@@ -33,11 +33,37 @@ class SQLBuiltQuery(val queryString: String) {
 trait SQLQuery extends ResultSetOperations {
   protected[morpheus] val query: SQLBuiltQuery
 
-  def future()(implicit session: Client): ScalaFuture[Result] = {
+  /**
+   * A simple forwarding method to prevent some extra boiler-plate during tests.
+   * This will serialise an existing query to the relevant SQL string.
+   * @return A string representing the query encoded in SQL.
+   */
+  def queryString: String = query.queryString
+
+  /**
+   * This method is used when the query is not returning a data result, such as an UPDATE query.
+   * While it will accurately monitor the execution of the query and the Future will complete when the task is "done" in SQL,
+   * the type-safe mapping of the result is not necessary at this point.
+   *
+   * This method duplicates the API to provide an alternative to people who don't use Twitter Futures or any Twitter libraries in their stack. Until now
+   * anyway. Twitter has been gossiping about making com.twitter.util.Future extend scala.concurrent.Future, but until such times a dual API is best.
+   *
+   * @param client The Finagle MySQL client in the scope of which to execute the query.
+   * @return A Scala Future wrapping a default Finagle MySQL query result object.
+   */
+  def future()(implicit client: Client): ScalaFuture[Result] = {
     queryToScalaFuture(query.queryString)
   }
 
-  def execute()(implicit  session: Client): Future[Result] = {
+  /**
+   * This method is used when the query is not returning a data result, such as an UPDATE query.
+   * While it will accurately monitor the execution of the query and the Future will complete when the task is "done" in SQL,
+   * the type-safe mapping of the result is not necessary at this point.
+   *
+   * @param client The Finagle MySQL client in the scope of which to execute the query.
+   * @return A Scala Future wrapping a default Finagle MySQL query result object.
+   */
+  def execute()(implicit  client: Client): Future[Result] = {
     queryToFuture(query.queryString)
   }
 
