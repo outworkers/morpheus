@@ -108,7 +108,13 @@ sealed trait AbstractQueryBuilder {
   }
 
   def where(qb: SQLBuiltQuery, condition: SQLBuiltQuery): SQLBuiltQuery = {
-    qb.pad.append(DefaultSQLOperators.where).pad.append(condition)
+    qb.pad.append(DefaultSQLOperators.where).forcePad.append(condition)
+  }
+
+  def orderBy(qb: SQLBuiltQuery, condition: SQLBuiltQuery): SQLBuiltQuery = {
+    qb.pad
+      .append(DefaultSQLOperators.orderBy)
+      .forcePad.append(condition)
   }
 
   def having(qb: SQLBuiltQuery, condition: SQLBuiltQuery): SQLBuiltQuery = {
@@ -157,6 +163,15 @@ sealed trait AbstractQueryBuilder {
     qb.append(DefaultSQLOperators.comma)
       .forcePad.append(condition)
   }
+
+  def asc(name: String): SQLBuiltQuery = {
+    SQLBuiltQuery(name).forcePad.append(DefaultSQLOperators.asc)
+  }
+
+  def desc(name: String): SQLBuiltQuery = {
+    SQLBuiltQuery(name).forcePad.append(DefaultSQLOperators.desc)
+  }
+
 
 }
 

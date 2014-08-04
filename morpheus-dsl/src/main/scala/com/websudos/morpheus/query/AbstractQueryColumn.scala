@@ -129,3 +129,10 @@ sealed abstract class AbstractQueryColumn[T: SQLPrimitive](col: AbstractColumn[T
 
 
 class QueryColumn[T: SQLPrimitive](col: AbstractColumn[T]) extends AbstractQueryColumn[T](col)
+
+case class QueryOrder(clause: SQLBuiltQuery)
+
+abstract class AbstractOrderingColumn[T: SQLPrimitive](col: AbstractColumn[T]) {
+  def asc: QueryOrder = QueryOrder(col.table.queryBuilder.asc(col.name))
+  def desc: QueryOrder = QueryOrder(col.table.queryBuilder.desc(col.name))
+}

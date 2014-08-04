@@ -71,6 +71,7 @@ object DefaultSQLOperators {
   val having = "HAVING"
   val update = "UPDATE"
   val delete = "DELETE"
+  val orderBy = "ORDER_BY"
   val limit = "LIMIT"
   val and = "AND"
   val or = "OR"
@@ -82,6 +83,8 @@ object DefaultSQLOperators {
   val `(` = "("
   val comma = ","
   val `)` = ")"
+  val asc = "ASC"
+  val desc = "DESC"
 }
 
 trait SQLQuery[T <: Table[T, _], R] extends ResultSetOperations {
@@ -195,7 +198,7 @@ class Query[
   }
 
   @implicitNotFound("You cannot order a query twice")
-  def orderBy(condition: T => QueryCondition): Query[T, R, Group, Ordered, Lim, Chain, AC] = {
+  def orderBy(condition: T => QueryOrder): Query[T, R, Group, Ordered, Lim, Chain, AC] = {
     new Query(table, table.queryBuilder.where(query, condition(table).clause), rowFunc)
   }
 
@@ -205,26 +208,3 @@ class Query[
   }
 
 }
-
-
-trait BaseSelectQuery[T <: Table[T, _], R] extends SQLResultsQuery[T, R] {
-
-  def fetch()(implicit client: Client): ScalaFuture[Seq[R]] = {
-    twitterToScala(client.select(query.queryString)(fromRow))
-  }
-
-  def collect()(implicit client: Client): Future[Seq[R]] = {
-    client.select(query.queryString)(fromRow)
-  }
-
-  def one()(implicit client: Client): ScalaFuture[Option[R]] = {
-    fetch.map(_.headOption)
-  }
-
-  def get()(implicit client: Client): Future[Option[R]] = {
-    collect().map(_.headOption)
-  }
-
-}
-
-
