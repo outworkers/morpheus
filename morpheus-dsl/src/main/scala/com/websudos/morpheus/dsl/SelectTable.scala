@@ -20,7 +20,7 @@ package com.websudos.morpheus.dsl
 
 import com.twitter.finagle.exp.mysql.Row
 import com.websudos.morpheus.column.SelectColumn
-import com.websudos.morpheus.query.{DefaultSQLOperators, SelectSyntaxBlock, RootSelectQuery}
+import com.websudos.morpheus.query.{SelectSyntaxBlock, DefaultSQLOperators, RootSelectQuery}
 
 
 /**
@@ -40,7 +40,7 @@ private[morpheus] trait SelectTable[Owner <: Table[Owner, Record], Record] {
   def select: RootSelectQuery[Owner, Record] = {
     new RootSelectQuery[Owner, Record](
       this.asInstanceOf[Owner],
-      new SelectSyntaxBlock[Owner, Record](DefaultSQLOperators.select, tableName, fromRow),
+      SelectSyntaxBlock[Owner, Record](DefaultSQLOperators.select, tableName, fromRow),
       fromRow
     )
   }
@@ -57,7 +57,7 @@ private[morpheus] trait SelectTable[Owner <: Table[Owner, Record], Record] {
 
     new RootSelectQuery[Owner, T1](
       this.asInstanceOf[Owner],
-      new SelectSyntaxBlock[Owner, T1](DefaultSQLOperators.select, tableName, rowFunc, List(c1.col.name)),
+      SelectSyntaxBlock[Owner, T1](DefaultSQLOperators.select, tableName, rowFunc, List(c1.col.name)),
       rowFunc
     )
   }
@@ -75,7 +75,7 @@ private[morpheus] trait SelectTable[Owner <: Table[Owner, Record], Record] {
 
     new RootSelectQuery[Owner, (T1, T2)](
       this.asInstanceOf[Owner],
-      new SelectSyntaxBlock[Owner, (T1, T2)](DefaultSQLOperators.select, tableName, rowFunc, List(c1.col.name, c2.col.name)),
+      SelectSyntaxBlock[Owner, (T1, T2)](DefaultSQLOperators.select, tableName, rowFunc, List(c1.col.name, c2.col.name)),
       rowFunc
     )
   }
@@ -95,7 +95,7 @@ private[morpheus] trait SelectTable[Owner <: Table[Owner, Record], Record] {
 
     new RootSelectQuery[Owner, (T1, T2, T3)](
       this.asInstanceOf[Owner],
-      new SelectSyntaxBlock[Owner, (T1, T2, T3)](DefaultSQLOperators.select, tableName, rowFunc, List(c1.col.name, c2.col.name, c3.col.name)),
+      SelectSyntaxBlock[Owner, (T1, T2, T3)](DefaultSQLOperators.select, tableName, rowFunc, List(c1.col.name, c2.col.name, c3.col.name)),
       rowFunc
     )
   }
@@ -118,7 +118,7 @@ private[morpheus] trait SelectTable[Owner <: Table[Owner, Record], Record] {
 
     new RootSelectQuery[Owner, (T1, T2, T3, T4)](
       this.asInstanceOf[Owner],
-      new SelectSyntaxBlock[Owner, (T1, T2, T3, T4)](DefaultSQLOperators.select, tableName, rowFunc, List(c1.col.name, c2.col.name, c3.col.name, c4.col.name)),
+      SelectSyntaxBlock[Owner, (T1, T2, T3, T4)](DefaultSQLOperators.select, tableName, rowFunc, List(c1.col.name, c2.col.name, c3.col.name, c4.col.name)),
       rowFunc
     )
   }
@@ -145,7 +145,7 @@ private[morpheus] trait SelectTable[Owner <: Table[Owner, Record], Record] {
 
     new RootSelectQuery[Owner, (T1, T2, T3, T4, T5)](
       this.asInstanceOf[Owner],
-      new SelectSyntaxBlock[Owner, (T1, T2, T3, T4, T5)](
+      SelectSyntaxBlock[Owner, (T1, T2, T3, T4, T5)](
         DefaultSQLOperators.select,
         tableName, rowFunc,
         List(c1.col.name, c2.col.name, c3.col.name, c4.col.name, c5.col.name)

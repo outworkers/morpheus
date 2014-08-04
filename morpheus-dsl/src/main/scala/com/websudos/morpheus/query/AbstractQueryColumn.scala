@@ -24,6 +24,9 @@ import com.websudos.morpheus.column.AbstractColumn
 
 private[morpheus] abstract class BaseQueryCondition(val clause: SQLBuiltQuery)
 
+
+case class QueryAssignment(clause: SQLBuiltQuery)
+
 /**
  * This is a wrapper clause for primary conditions.
  * They wrap the Clause used in a "WHERE" or "AND" query.
@@ -31,13 +34,37 @@ private[morpheus] abstract class BaseQueryCondition(val clause: SQLBuiltQuery)
  * Only indexed columns can produce a QueryCondition via "WHERE" and "AND" operators.
  * @param clause The clause to use.
  */
-case class QueryCondition(override val clause: SQLBuiltQuery) extends BaseQueryCondition(clause) {
+case class QueryCondition(override val clause: SQLBuiltQuery, count: Int = 0) extends BaseQueryCondition(clause) {
 
+  /**
+   * This rather misterious implementation is used to handle enclosing parentheses for an unknown number of OR operator usages.
+   * Since an unlimited number of OR operators and conditions can be chained to form a single WHERE or AND clause,
+   * we need a way to delimite the full clause by enclosing parentheses without knowing how many OR clauses there are or without knowing what the internals
+   * of a clause look like. Clauses like the IN clause have their own set of parentheses.
+   * An example: {@code SELECT* FROM something WHERE (a = 5 OR a in (5, 10, 15)) }.
+   *
+   * Using the count parameter we can count the number of combinations in a manner invisible to the user. If the count is 0,
+   * append the left '(' and the right ')' and for everyone thereafter, remove the ')', add the new clause, add a ')',
+   * effectively always moving the right ')' to the end of the full WHERE or AND clause.
+   * This is useful since we can't know how many OR clauses will be chained to form a single WHERE or AND clause.
+   *
+   * @param condition The QueryCondition to OR with.
+   * @return A new QueryCondition, where the underlying query has been OR-ed.
+   */
   def or(condition: QueryCondition): QueryCondition = {
-    QueryCondition(MySQLQueryBuilder.or(
-      clause.prependIfAbsent(DefaultSQLOperators.`(`).removeIfLast(DefaultSQLOperators.`)`),
-      condition.clause.append(DefaultSQLOperators.`)`))
-    )
+    if (count == 0) {
+      QueryCondition(MySQLQueryBuilder.or(
+        clause.prepend(DefaultSQLOperators.`(`),
+        condition.clause.append(DefaultSQLOperators.`)`)),
+        count + 1
+      )
+    } else {
+      QueryCondition(MySQLQueryBuilder.or(
+        SQLBuiltQuery(clause.queryString.dropRight(1)),
+        condition.clause.append(DefaultSQLOperators.`)`)),
+        count + 1
+      )
+    }
   }
 }
 
