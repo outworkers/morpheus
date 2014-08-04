@@ -102,9 +102,9 @@ sealed trait AbstractQueryBuilder {
   def select(tableName: String, names: String*): SQLBuiltQuery = {
 
     SQLBuiltQuery(DefaultSQLOperators.select)
-      .forcePad.append(names.mkString(" "))
-      .append(DefaultSQLOperators.from)
-      .forcePad.append(tableName)
+      .pad.append(names.mkString(" "))
+      .pad.append(DefaultSQLOperators.from)
+      .pad.append(tableName)
   }
 
   def where(qb: SQLBuiltQuery, condition: SQLBuiltQuery): SQLBuiltQuery = {

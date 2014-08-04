@@ -27,24 +27,24 @@ case class SelectSyntaxBlock[T <: Table[T, _], R](query: String, tableName: Stri
 
   def `*`: SQLBuiltQuery = {
     qb.pad.append(columns.mkString(" "))
-      .forcePad.append(DefaultSQLOperators.from)
-      .forcePad.append(tableName)
+      .pad.append(DefaultSQLOperators.from)
+      .pad.append(tableName)
   }
 
   def all: SQLBuiltQuery = this.`*`
 
   def distinct: SQLBuiltQuery = {
     qb.pad.append(DefaultSQLOperators.distinct)
-      .forcePad.append(columns.mkString(", "))
-      .forcePad.append(DefaultSQLOperators.from)
-      .forcePad.append(tableName)
+      .pad.append(columns.mkString(", "))
+      .pad.append(DefaultSQLOperators.from)
+      .pad.append(tableName)
   }
 
   def distinctRow: SQLBuiltQuery = {
     qb.pad.append(DefaultSQLOperators.distinctRow)
-      .forcePad.append(columns.mkString(", "))
-      .forcePad.append(DefaultSQLOperators.from)
-      .forcePad.append(tableName)
+      .pad.append(columns.mkString(", "))
+      .pad.append(DefaultSQLOperators.from)
+      .pad.append(tableName)
   }
 }
 
