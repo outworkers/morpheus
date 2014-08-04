@@ -124,7 +124,7 @@ sealed trait AbstractQueryBuilder {
   def in(name: String, values: List[String]): SQLBuiltQuery = {
     SQLBuiltQuery(name)
       .pad.append(DefaultSQLOperators.in)
-      .pad.append(DefaultSQLOperators.`(`)
+      .forcePad.append(DefaultSQLOperators.`(`)
       .append(values.mkString(", "))
       .append(DefaultSQLOperators.`)`)
   }
@@ -136,17 +136,17 @@ sealed trait AbstractQueryBuilder {
   def setTo(name: String, value: String): SQLBuiltQuery = {
     SQLBuiltQuery(name)
       .pad.append(operators.eq)
-      .pad.append(value)
+      .forcePad.append(value)
   }
 
   def set(qb: SQLBuiltQuery, condition: SQLBuiltQuery): SQLBuiltQuery = {
     qb.pad.append(DefaultSQLOperators.set)
-      .pad.append(condition)
+      .forcePad.append(condition)
   }
 
   def andSet(qb: SQLBuiltQuery, condition: SQLBuiltQuery): SQLBuiltQuery = {
     qb.append(DefaultSQLOperators.comma)
-      .pad.append(condition)
+      .forcePad.append(condition)
   }
 
 }
