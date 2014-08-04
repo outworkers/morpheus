@@ -169,46 +169,33 @@ abstract class Unlimited extends LimitBind
  * @param rowFunc The function mapping a row to a record.
  * @tparam T The type of the table owning the record.
  * @tparam R The type of the record held in the table.
- * @tparam QueryType The query type to subclass with and obtain as a result of a "where" or "and" application, requires all extending subclasses to supply a
- *                   type that will subclass an SQLQuery[T, R]
 */
-private[morpheus] abstract class WhereQuery[
+class Query[
   T <: Table[T, _],
-  R, QueryType <: SQLQuery[T, R],
+  R,
   Group <: GroupBind,
   Ord <: OrderBind,
   Lim <: LimitBind,
-  Chain <: ChainBind
-](table: T, query: SQLBuiltQuery, rowFunc: Row => R) {
-
-
-  protected[this] def subclass[
-    Grp <: GroupBind,
-    O <: OrderBind,
-    L <: LimitBind,
-    C <: ChainBind
-  ](table: T, query: SQLBuiltQuery, rowFunc: Row => R): QueryType
+  Chain <: ChainBind,
+  AC <: AssignBind
+](val table: T, val query: SQLBuiltQuery, val rowFunc: Row => R) extends SQLQuery[T, R] {
 
   def fromRow(row: Row): R = rowFunc(row)
 
-  def where(condition: T => QueryCondition)(implicit ev: Chain =:= Unchainned): QueryType = {
-    subclass[
-      Group,
-      Ord,
-      Lim,
-      Chainned](table, table.queryBuilder.where(query, condition(table).clause), rowFunc)
+  def where(condition: T => QueryCondition)(implicit ev: Chain =:= Unchainned): Query[T, R, Group, Ord, Lim, Chainned, AC] = {
+    new Query(table, table.queryBuilder.where(query, condition(table).clause), rowFunc)
   }
 
-  def limit(value: Int)(implicit ev: Lim =:= Unlimited): QueryType = {
-    subclass[Group, Ord, Limited, Chain](table, table.queryBuilder.limit(query, value.toString), rowFunc)
+  def limit(value: Int)(implicit ev: Lim =:= Unlimited): Query[T, R, Group, Ord, Limited, Chain, AC] = {
+    new Query(table, table.queryBuilder.limit(query, value.toString), rowFunc)
   }
 
-  def orderBy(condition: T => QueryCondition): QueryType = {
-    subclass[Group, Ordered, Lim, Chain](table, table.queryBuilder.where(query, condition(table).clause), rowFunc)
+  def orderBy(condition: T => QueryCondition): Query[T, R, Group, Ordered, Lim, Chain, AC] = {
+    new Query(table, table.queryBuilder.where(query, condition(table).clause), rowFunc)
   }
 
-  def and(condition: T => QueryCondition)(implicit ev: Chain =:= Chainned): QueryType = {
-    subclass[Group, Ord, Lim, Chainned](table, table.queryBuilder.and(query, condition(table).clause), rowFunc)
+  def and(condition: T => QueryCondition)(implicit ev: Chain =:= Chainned): Query[T, R, Group, Ord, Lim, Chainned, AC]  = {
+    new Query(table, table.queryBuilder.and(query, condition(table).clause), rowFunc)
   }
 
 }

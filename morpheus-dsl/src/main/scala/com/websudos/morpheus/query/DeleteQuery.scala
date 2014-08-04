@@ -47,38 +47,15 @@ private[morpheus] class RootDeleteQuery[T <: Table[T, _], R](val table: T, val s
 
   def fromRow(r: Row): R = rowFunc(r)
 
-  def lowPriority: DeleteQuery[T, R, Ungroupped, Unordered, Unlimited, Unchainned] = {
-    new DeleteQuery(table, st.lowPriority, rowFunc)
+  def lowPriority: Query[T, R, Ungroupped, Unordered, Unlimited, Unchainned, AssignUnchainned] = {
+    new Query(table, st.lowPriority, rowFunc)
   }
 
-  def ignore: DeleteQuery[T, R, Ungroupped, Unordered, Unlimited, Unchainned] = {
-    new DeleteQuery(table, st.ignore, rowFunc)
+  def ignore: Query[T, R, Ungroupped, Unordered, Unlimited, Unchainned, AssignUnchainned] = {
+    new Query(table, st.ignore, rowFunc)
   }
 
-  private[morpheus] def all: DeleteQuery[T, R, Ungroupped, Unordered, Unlimited, Unchainned] = {
-    new DeleteQuery(table, st.all, rowFunc)
+  private[morpheus] def all: Query[T, R, Ungroupped, Unordered, Unlimited, Unchainned, AssignUnchainned] = {
+    new Query(table, st.all, rowFunc)
   }
-}
-
-
-class DeleteQuery[
-  T <: Table[T, _],
-  R,
-  G <: GroupBind,
-  O <: OrderBind,
-  L <: LimitBind,
-  C <: ChainBind
-](table: T, val query: SQLBuiltQuery, rowFunc: Row => R) extends WhereQuery[T, R, DeleteQuery[T, R, _ <: GroupBind, _ <: OrderBind, _ <: LimitBind, _ <: ChainBind], G, O, L, C](table, query,
-  rowFunc) with SQLQuery[T, R] {
-
-  protected[this] def subclass[
-  Group <: GroupBind,
-  Order <: OrderBind,
-  Limit <: LimitBind,
-  Chain <: ChainBind
-  ](table: T, query: SQLBuiltQuery, rowFunc: Row => R): DeleteQuery[T, R, Group, Order, Limit, Chain] = {
-    new DeleteQuery[T, R, Group, Order, Limit, Chain](table, query, rowFunc)
-  }
-
-
 }
