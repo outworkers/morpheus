@@ -140,14 +140,19 @@ trait SQLResultsQuery[T <: Table[T, _], R] extends SQLQuery[T, R] {
   def get()(implicit client: Client): Future[Option[R]]
 }
 
-abstract class Groupped
-abstract class Ungroupped
-abstract class Chainned
-abstract class Unchainned
-abstract class Ordered
-abstract class Unordered
-abstract class Limited
-abstract class Unlimited
+trait GroupBind
+trait ChainBind
+trait OrderBind
+trait LimitBind
+
+abstract class Groupped extends GroupBind
+abstract class Ungroupped extends GroupBind
+abstract class Chainned extends ChainBind
+abstract class Unchainned extends ChainBind
+abstract class Ordered extends OrderBind
+abstract class Unordered extends OrderBind
+abstract class Limited extends LimitBind
+abstract class Unlimited extends LimitBind
 
 /**
  * This bit of magic allows all extending sub-classes to implement the "where" and "and" SQL clauses with all the necessary operators,
@@ -167,13 +172,31 @@ abstract class Unlimited
  * @tparam QueryType The query type to subclass with and obtain as a result of a "where" or "and" application, requires all extending subclasses to supply a
  *                   type that will subclass an SQLQuery[T, R]
 */
-private[morpheus] abstract class WhereQuery[T <: Table[T, _], R, QueryType <: SQLQuery[T, R], Group, Ord, Lim, Chain](table: T, query: SQLBuiltQuery, rowFunc: Row => R) {
-  protected[this] def subclass[Grp, O, L, C](table: T, query: SQLBuiltQuery, rowFunc: Row => R): QueryType
+private[morpheus] abstract class WhereQuery[
+  T <: Table[T, _],
+  R, QueryType <: SQLQuery[T, R],
+  Group <: GroupBind,
+  Ord <: OrderBind,
+  Lim <: LimitBind,
+  Chain <: ChainBind
+](table: T, query: SQLBuiltQuery, rowFunc: Row => R) {
+
+
+  protected[this] def subclass[
+    Grp <: GroupBind,
+    O <: OrderBind,
+    L <: LimitBind,
+    C <: ChainBind
+  ](table: T, query: SQLBuiltQuery, rowFunc: Row => R): QueryType
 
   def fromRow(row: Row): R = rowFunc(row)
 
   def where(condition: T => QueryCondition)(implicit ev: Chain =:= Unchainned): QueryType = {
-    subclass[Group, Ord, Lim, Chainned](table, table.queryBuilder.where(query, condition(table).clause), rowFunc)
+    subclass[
+      Group,
+      Ord,
+      Lim,
+      Chainned](table, table.queryBuilder.where(query, condition(table).clause), rowFunc)
   }
 
   def limit(value: Int)(implicit ev: Lim =:= Unlimited): QueryType = {

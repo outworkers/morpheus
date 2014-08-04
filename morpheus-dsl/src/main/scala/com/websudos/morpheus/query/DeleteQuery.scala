@@ -61,14 +61,21 @@ private[morpheus] class RootDeleteQuery[T <: Table[T, _], R](val table: T, val s
 }
 
 
-class DeleteQuery[T <: Table[T, _], R, G, O, L, C](table: T, val query: SQLBuiltQuery, rowFunc: Row => R) extends WhereQuery[T, R, DeleteQuery[T, R, G, O, L, C], G, O, L, C](table, query,
+class DeleteQuery[
+  T <: Table[T, _],
+  R,
+  G <: GroupBind,
+  O <: OrderBind,
+  L <: LimitBind,
+  C <: ChainBind
+](table: T, val query: SQLBuiltQuery, rowFunc: Row => R) extends WhereQuery[T, R, DeleteQuery[T, R, _ <: GroupBind, _ <: OrderBind, _ <: LimitBind, _ <: ChainBind], G, O, L, C](table, query,
   rowFunc) with SQLQuery[T, R] {
 
   protected[this] def subclass[
-  Group,
-  Order,
-  Limit,
-  Chain
+  Group <: GroupBind,
+  Order <: OrderBind,
+  Limit <: LimitBind,
+  Chain <: ChainBind
   ](table: T, query: SQLBuiltQuery, rowFunc: Row => R): DeleteQuery[T, R, Group, Order, Limit, Chain] = {
     new DeleteQuery[T, R, Group, Order, Limit, Chain](table, query, rowFunc)
   }

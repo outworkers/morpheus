@@ -41,8 +41,9 @@ case class UpdateSyntaxBlock[T <: Table[T, _], R](query: String, tableName: Stri
   }
 }
 
-private[morpheus] abstract class AssignChainned
-private[morpheus] abstract class AssignUnchainned
+sealed trait AssignBind
+sealed abstract class AssignChainned extends AssignBind
+sealed abstract class AssignUnchainned extends AssignBind
 
 
 /**
@@ -106,30 +107,47 @@ sealed trait AssignQuery[T <: Table[T, _], R, QueryType <: SQLQuery[T, R], Assig
   }
 }
 
-class UpdateQuery[T <: Table[T, _], R, G, O, L, C, AC](val table: T, val query: SQLBuiltQuery, rowFunc: Row => R)
-  extends AssignQuery[T, R, AssignmentsQuery[T, R, G, O, L, C, AC], AC] with SQLQuery[T, R] {
+class UpdateQuery[
+  T <: Table[T, _],
+  R,
+  G <: GroupBind,
+  O <: OrderBind,
+  L <: LimitBind,
+  C <: ChainBind,
+  AC <: AssignBind
+](val table: T, val query: SQLBuiltQuery, rowFunc: Row => R)
+  extends AssignQuery[T, R, AssignmentsQuery[T, R, _ <: GroupBind, _ <: OrderBind, _ <: LimitBind, _ <: ChainBind, _ <: AssignBind], AC] with SQLQuery[T, R] {
 
   def fromRow(row: Row): R = rowFunc(row)
 
-  protected[this] def assignmentClass[ModifiedChain](table: T, query: SQLBuiltQuery, rowFunc: (Row) => R): AssignmentsQuery[T, R, G, O, L, C, ModifiedChain] = {
+  protected[this] def assignmentClass[ModifiedChain <: AssignBind](table: T, query: SQLBuiltQuery, rowFunc: (Row) => R): AssignmentsQuery[T, R, G, O, L, C, ModifiedChain] = {
     new AssignmentsQuery[T, R, G, O, L, C, ModifiedChain](table, query, rowFunc)
   }
 }
 
 
-class AssignmentsQuery[T <: Table[T, _], R, G, O, L, C, AC](val table: T, val query: SQLBuiltQuery, rowFunc: Row => R) extends WhereQuery[T, R, AssignmentsQuery[T, R, G, O, L, C, AC], G, O, L, C](table, query,
-  rowFunc) with AssignQuery[T, R, AssignmentsQuery[T, R, G, O, L, C, AC], AC] with SQLQuery[T, R]  {
+class AssignmentsQuery[
+  T <: Table[T, _],
+  R,
+  G <: GroupBind,
+  O <: OrderBind,
+  L <: LimitBind,
+  C <: ChainBind,
+  AC <: AssignBind
+](val table: T, val query: SQLBuiltQuery, rowFunc: Row => R)
+  extends WhereQuery[T, R, AssignmentsQuery[T, R, _ <: GroupBind, _ <: OrderBind, _ <: LimitBind, _ <: ChainBind, _ <: AssignBind], G, O, L, C](table, query, rowFunc)
+  with AssignQuery[T, R, AssignmentsQuery[T, R,  _ <: GroupBind, _ <: OrderBind, _ <: LimitBind, _ <: ChainBind, _ <: AssignBind], AC] with SQLQuery[T, R]  {
 
   protected[this] def subclass[
-    Group,
-    Order,
-    Limit,
-    Chain
+    Group <: GroupBind,
+    Order <: OrderBind,
+    Limit <: LimitBind,
+    Chain <: ChainBind
   ](table: T, query: SQLBuiltQuery, rowFunc: Row => R): AssignmentsQuery[T, R, Group, Order, Limit, Chain, AC] = {
     new AssignmentsQuery[T, R, Group, Order, Limit, Chain, AC](table, query, rowFunc)
   }
 
-  protected[this] def assignmentClass[ModifiedChain](table: T, query: SQLBuiltQuery, rowFunc: (Row) => R): AssignmentsQuery[T, R, G, O, L, C, ModifiedChain] = {
+  protected[this] def assignmentClass[ModifiedChain <: AssignBind](table: T, query: SQLBuiltQuery, rowFunc: (Row) => R): AssignmentsQuery[T, R, G, O, L, C, ModifiedChain] = {
     new AssignmentsQuery[T, R, G, O, L, C, ModifiedChain](table, query, rowFunc)
   }
 }
