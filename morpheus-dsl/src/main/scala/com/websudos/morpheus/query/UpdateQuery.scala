@@ -41,6 +41,10 @@ case class UpdateSyntaxBlock[T <: Table[T, _], R](query: String, tableName: Stri
   }
 }
 
+private[morpheus] abstract class AssignChainned
+private[morpheus] abstract class AssignUnchainned
+
+
 /**
  * This is the implementation of a root UPDATE query, a wrapper around an abstract syntax block.
  *
@@ -57,19 +61,18 @@ private[morpheus] class RootUpdateQuery[T <: Table[T, _], R](val table: T, val s
 
   def fromRow(r: Row): R = rowFunc(r)
 
-  def lowPriority: UpdateQuery[T, R] = {
+  def lowPriority: UpdateQuery[T, R, Ungroupped, Unordered, Unlimited, Unchainned, AssignUnchainned] = {
     new UpdateQuery(table, st.lowPriority, rowFunc)
   }
 
-  def ignore: UpdateQuery[T, R] = {
+  def ignore: UpdateQuery[T, R, Ungroupped, Unordered, Unlimited, Unchainned, AssignUnchainned] = {
     new UpdateQuery(table, st.ignore, rowFunc)
   }
 
-  private[morpheus] def all: SelectQuery[T, R] = {
-    new SelectQuery(table, st.all, rowFunc)
+  private[morpheus] def all: UpdateQuery[T, R, Ungroupped, Unordered, Unlimited, Unchainned, AssignUnchainned] = {
+    new UpdateQuery(table, st.all, rowFunc)
   }
 }
-
 
 /**
  * This bit of magic allows all extending sub-classes to implement the "set" and "and" SQL clauses with all the necessary operators,
@@ -87,71 +90,46 @@ private[morpheus] class RootUpdateQuery[T <: Table[T, _], R](val table: T, val s
  *                   type that will subclass an SQLQuery[T, R]
  *
  */
-sealed trait AssignQuery[T <: Table[T, _], R, QueryType <: SQLQuery[T, R]] {
-  protected[this] def assignmentClass(table: T, query: SQLBuiltQuery, rowFunc: Row => R): QueryType
+sealed trait AssignQuery[T <: Table[T, _], R, QueryType <: SQLQuery[T, R], AssignChain] {
+  protected[this] def assignmentClass[AC](table: T, query: SQLBuiltQuery, rowFunc: Row => R): QueryType
 
   def fromRow(row: Row): R
   def table: T
   def query: SQLBuiltQuery
 
-  protected[this] def setTo(condition: T => QueryAssignment): QueryType = {
-    assignmentClass(table, table.queryBuilder.set(query, condition(table).clause), fromRow)
+  def set(condition: T => QueryAssignment)(implicit ev: AssignChain =:= AssignUnchainned): QueryType = {
+    assignmentClass[AssignChainned](table, table.queryBuilder.set(query, condition(table).clause), fromRow)
   }
 
-  protected[this] def andSetTo(condition: T => QueryAssignment): QueryType = {
+  def and(condition: T => QueryAssignment)(implicit ev: AssignChain =:= AssignChainned): QueryType = {
     assignmentClass(table, table.queryBuilder.andSet(query, condition(table).clause), fromRow)
   }
 }
 
-class UpdateQuery[T <: Table[T, _], R](val table: T, val query: SQLBuiltQuery, rowFunc: Row => R)
-  extends AssignQuery[T, R, AssignmentsQuery[T, R]] with SQLQuery[T, R] {
+class UpdateQuery[T <: Table[T, _], R, G, O, L, C, AC](val table: T, val query: SQLBuiltQuery, rowFunc: Row => R)
+  extends AssignQuery[T, R, AssignmentsQuery[T, R, G, O, L, C, AC], AC] with SQLQuery[T, R] {
 
   def fromRow(row: Row): R = rowFunc(row)
 
-  protected[this] def assignmentClass(table: T, query: SQLBuiltQuery, rowFunc: (Row) => R): AssignmentsQuery[T, R] = {
-    new AssignmentsQuery[T, R](table, query, rowFunc)
+  protected[this] def assignmentClass[ModifiedChain](table: T, query: SQLBuiltQuery, rowFunc: (Row) => R): AssignmentsQuery[T, R, G, O, L, C, ModifiedChain] = {
+    new AssignmentsQuery[T, R, G, O, L, C, ModifiedChain](table, query, rowFunc)
   }
-
-  def set(condition: T => QueryAssignment): AssignmentsQuery[T, R] = setTo(condition)
-}
-
-class UpdateWhere[T <: Table[T, _], R](table: T, val query: SQLBuiltQuery, rowFunc: Row => R) extends WhereQuery[T, R, UpdateWhere[T, R]](table, query,
-  rowFunc) with SQLQuery[T, R]  {
-
-  protected[this] def subclass(table: T, query: SQLBuiltQuery, rowFunc: (Row) => R): UpdateWhere[T, R] = {
-    new UpdateWhere[T, R](table, query, rowFunc)
-  }
-
-  def and(condition: T => QueryCondition): UpdateWhere[T, R] = andClause(condition)
 }
 
 
-class AssignmentsQuery[T <: Table[T, _], R](val table: T, val query: SQLBuiltQuery, rowFunc: Row => R) extends WhereQuery[T, R, UpdateWhere[T, R]](table, query,
-  rowFunc) with AssignQuery[T, R, AssignmentsAndQuery[T, R]] with SQLQuery[T, R]  {
+class AssignmentsQuery[T <: Table[T, _], R, G, O, L, C, AC](val table: T, val query: SQLBuiltQuery, rowFunc: Row => R) extends WhereQuery[T, R, AssignmentsQuery[T, R, G, O, L, C, AC], G, O, L, C](table, query,
+  rowFunc) with AssignQuery[T, R, AssignmentsQuery[T, R, G, O, L, C, AC], AC] with SQLQuery[T, R]  {
 
-  protected[this] def subclass(table: T, query: SQLBuiltQuery, rowFunc: (Row) => R): UpdateWhere[T, R] = {
-    new UpdateWhere[T, R](table, query, rowFunc)
+  protected[this] def subclass[
+    Group,
+    Order,
+    Limit,
+    Chain
+  ](table: T, query: SQLBuiltQuery, rowFunc: Row => R): AssignmentsQuery[T, R, Group, Order, Limit, Chain, AC] = {
+    new AssignmentsQuery[T, R, Group, Order, Limit, Chain, AC](table, query, rowFunc)
   }
 
-  protected[this] def assignmentClass(table: T, query: SQLBuiltQuery, rowFunc: (Row) => R): AssignmentsAndQuery[T, R] = {
-    new AssignmentsAndQuery[T, R](table, query, rowFunc)
+  protected[this] def assignmentClass[ModifiedChain](table: T, query: SQLBuiltQuery, rowFunc: (Row) => R): AssignmentsQuery[T, R, G, O, L, C, ModifiedChain] = {
+    new AssignmentsQuery[T, R, G, O, L, C, ModifiedChain](table, query, rowFunc)
   }
-
-  def where(condition: T => QueryCondition): UpdateWhere[T, R] = clause(condition)
-  def and(condition: T => QueryAssignment): AssignmentsAndQuery[T, R] = andSetTo(condition)
-}
-
-class AssignmentsAndQuery[T <: Table[T, _], R](val table: T, val query: SQLBuiltQuery, rowFunc: Row => R) extends WhereQuery[T, R, UpdateWhere[T, R]](table,
-  query, rowFunc) with AssignQuery[T, R, AssignmentsAndQuery[T, R]] with SQLQuery[T, R]  {
-
-  protected[this] def subclass(table: T, query: SQLBuiltQuery, rowFunc: (Row) => R): UpdateWhere[T, R] = {
-    new UpdateWhere[T, R](table, query, rowFunc)
-  }
-
-  protected[this] def assignmentClass(table: T, query: SQLBuiltQuery, rowFunc: (Row) => R): AssignmentsAndQuery[T, R] = {
-    new AssignmentsAndQuery[T, R](table, query, rowFunc)
-  }
-
-  def where(condition: T => QueryCondition): UpdateWhere[T, R] = clause(condition)
-  def and(condition: T => QueryAssignment): AssignmentsAndQuery[T, R] = andSetTo(condition)
 }

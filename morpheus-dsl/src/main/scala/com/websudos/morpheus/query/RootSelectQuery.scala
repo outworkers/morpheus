@@ -65,33 +65,28 @@ private[morpheus] class RootSelectQuery[T <: Table[T, _], R](val table: T, val s
 
   def fromRow(r: Row): R = rowFunc(r)
 
-  def distinct: SelectQuery[T, R] = {
+  def distinct: SelectQuery[T, R, Ungroupped, Unordered, Unlimited, Unchainned] = {
     new SelectQuery(table, st.distinct, rowFunc)
   }
 
-  def distinctRow: SelectQuery[T, R] = {
+  def distinctRow: SelectQuery[T, R, Ungroupped, Unordered, Unlimited, Unchainned] = {
     new SelectQuery(table, st.distinctRow, rowFunc)
   }
 
-  def all: SelectQuery[T, R] = {
+  def all: SelectQuery[T, R, Ungroupped, Unordered, Unlimited, Unchainned] = {
     new SelectQuery(table, st.*, rowFunc)
   }
 }
 
 
-class SelectQuery[T <: Table[T, _], R](table: T, val query: SQLBuiltQuery, rowFunc: Row => R) extends WhereQuery[T, R, SelectWhere[T,
-  R]](table, query, rowFunc) with BaseSelectQuery[T, R] {
+class SelectQuery[T <: Table[T, _], R, G, O, L, C](table: T, val query: SQLBuiltQuery, rowFunc: Row => R) extends WhereQuery[T, R, SelectQuery[T, R, G, O, L, C], G, O, L, C](table, query, rowFunc) with BaseSelectQuery[T, R] {
 
-
-  protected[this] def subclass(table: T, query: SQLBuiltQuery, rowFunc: Row => R): SelectWhere[T, R] = new SelectWhere[T, R](table, query, rowFunc)
-
-  def where(condition: T => QueryCondition): SelectWhere[T, R] = clause(condition)
-}
-
-class SelectWhere[T <: Table[T, _], R](table: T, val query: SQLBuiltQuery, rowFunc: Row => R) extends WhereQuery[T, R, SelectWhere[T,
-  R]](table, query, rowFunc) with BaseSelectQuery[T, R] {
-
-  protected[this] def subclass(table: T, query: SQLBuiltQuery, rowFunc: Row => R): SelectWhere[T, R] = new SelectWhere[T, R](table, query, rowFunc)
-
-  def and(condition: T => QueryCondition): SelectWhere[T, R] = andClause(condition)
+  protected[this] def subclass[
+    Group,
+    Order,
+    Limit,
+    Chain
+  ](table: T, query: SQLBuiltQuery, rowFunc: Row => R): SelectQuery[T, R, Group, Order, Limit, Chain] = {
+    new SelectQuery[T, R, Group, Order, Limit, Chain](table, query, rowFunc)
+  }
 }
