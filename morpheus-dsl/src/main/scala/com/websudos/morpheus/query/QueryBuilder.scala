@@ -147,6 +147,26 @@ sealed trait AbstractQueryBuilder {
       .append(DefaultSQLOperators.`)`)
   }
 
+  def update(tableName: String): SQLBuiltQuery = {
+    DefaultSQLOperators.update.pad.append(tableName)
+  }
+
+  def setTo(name: String, value: String): SQLBuiltQuery = {
+    SQLBuiltQuery(name)
+      .pad.append(operators.eq)
+      .pad.append(value)
+  }
+
+  def set(qb: SQLBuiltQuery, condition: SQLBuiltQuery): SQLBuiltQuery = {
+    qb.pad.append(DefaultSQLOperators.set)
+      .pad.append(condition)
+  }
+
+  def andSet(qb: SQLBuiltQuery, condition: SQLBuiltQuery): SQLBuiltQuery = {
+    qb.append(DefaultSQLOperators.comma)
+      .pad.append(condition)
+  }
+
 }
 
 

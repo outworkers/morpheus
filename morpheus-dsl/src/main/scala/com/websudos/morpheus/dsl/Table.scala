@@ -90,6 +90,9 @@ abstract class Table[Owner <: Table[Owner, Record], Record] extends SelectTable[
   def tableName: String = _name
 
 
+  def update: UpdateQuery[Owner, Record] = new UpdateQuery(this.asInstanceOf[Owner], queryBuilder.update(tableName), fromRow)
+
+
   def columns: List[AbstractColumn[_]] = _columns.toList
 
   Lock.synchronized {

@@ -56,14 +56,20 @@ case class SQLBuiltQuery(queryString: String) {
 
   def spaced: Boolean = queryString.endsWith(" ")
   def pad: SQLBuiltQuery = if (spaced) this else SQLBuiltQuery(queryString + " ")
+  def forcePad: SQLBuiltQuery = SQLBuiltQuery(queryString + " ")
 }
 
 object DefaultSQLOperators {
   val select = SQLBuiltQuery("SELECT")
   val where = SQLBuiltQuery("WHERE")
+  val update = SQLBuiltQuery("UPDATE")
   val and = SQLBuiltQuery("AND")
+  val set = SQLBuiltQuery("SET")
   val in = SQLBuiltQuery("IN")
+  val setTo = SQLBuiltQuery("setTo")
+  val eqs = SQLBuiltQuery("=")
   val `(` = SQLBuiltQuery("(")
+  val comma = SQLBuiltQuery(",")
   val `)` = SQLBuiltQuery(")")
 }
 

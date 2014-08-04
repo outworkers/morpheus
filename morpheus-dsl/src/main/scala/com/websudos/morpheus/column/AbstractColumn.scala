@@ -21,7 +21,7 @@ package com.websudos.morpheus.column
 import scala.annotation.implicitNotFound
 
 import com.twitter.finagle.exp.mysql.Row
-import com.websudos.morpheus.query.SelectImplicits
+import com.websudos.morpheus.query.{QueryAssignment, SelectImplicits}
 import com.websudos.morpheus.{ SQLPrimitive, SQLPrimitives }
 import com.websudos.morpheus.dsl.Table
 
@@ -50,6 +50,14 @@ abstract class Column[Owner <: Table[Owner, Record], Record, T](val table: Table
 }
 
 
+private[morpheus] abstract class AbstractModifyColumn[RR](col: AbstractColumn[RR]) {
+
+  def toQueryString(v: RR): String = col.toQueryString(v)
+
+  def setTo(value: RR): QueryAssignment = QueryAssignment(col.table.queryBuilder.setTo(col.name, toQueryString(value)))
+}
+
+
 @implicitNotFound(msg = "Type ${RR} must be a MySQL primitive")
 class PrimitiveColumn[T <: Table[T, R], R, @specialized(Int, Double, Float, Long) RR: SQLPrimitive](t: Table[T, R])
   extends Column[T, R, RR](t) {
@@ -63,9 +71,13 @@ class PrimitiveColumn[T <: Table[T, R], R, @specialized(Int, Double, Float, Long
 
 
 sealed trait ModifyImplicits {
+
   implicit class SelectColumnRequired[Owner <: Table[Owner, Record], Record, T](col: Column[Owner, Record, T]) extends SelectColumn[T](col) {
     def apply(r: Row): T = col.apply(r)
   }
+
+
+  implicit class ModifyColumn[RR](col: AbstractColumn[RR]) extends AbstractModifyColumn[RR](col)
 }
 
 

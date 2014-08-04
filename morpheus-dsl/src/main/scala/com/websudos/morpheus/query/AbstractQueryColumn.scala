@@ -24,6 +24,9 @@ import com.websudos.morpheus.column.AbstractColumn
 
 private[morpheus] abstract class BaseQueryCondition(val clause: SQLBuiltQuery)
 
+
+case class QueryAssignment(clause: SQLBuiltQuery)
+
 /**
  * This is a wrapper clause for primary conditions.
  * They wrap the Clause used in a "WHERE" or "AND" query.
@@ -62,8 +65,6 @@ case class QueryCondition(override val clause: SQLBuiltQuery, count: Int = 0) ex
         count + 1
       )
     }
-
-
   }
 }
 
