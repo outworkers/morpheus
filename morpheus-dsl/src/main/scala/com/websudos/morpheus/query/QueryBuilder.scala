@@ -108,7 +108,28 @@ sealed trait AbstractQueryBuilder {
   }
 
   def where(qb: SQLBuiltQuery, condition: SQLBuiltQuery): SQLBuiltQuery = {
-    qb.pad.append(DefaultSQLOperators.where).pad.append(condition)
+    qb.pad.append(DefaultSQLOperators.where).forcePad.append(condition)
+  }
+
+  def orderBy(qb: SQLBuiltQuery, conditions: Seq[SQLBuiltQuery]): SQLBuiltQuery = {
+    qb.pad
+      .append(DefaultSQLOperators.orderBy)
+      .forcePad.append(conditions.map(_.queryString).mkString(", "))
+  }
+
+  def groupBy(qb: SQLBuiltQuery, columns: Seq[String]): SQLBuiltQuery = {
+    qb.pad
+      .append(DefaultSQLOperators.groupBy)
+      .forcePad.append(columns.mkString(", "))
+  }
+
+  def having(qb: SQLBuiltQuery, condition: SQLBuiltQuery): SQLBuiltQuery = {
+    qb.pad.append(DefaultSQLOperators.having).pad.append(condition)
+  }
+
+  def limit(qb: SQLBuiltQuery, value: String): SQLBuiltQuery = {
+    qb.pad.append(DefaultSQLOperators.limit)
+      .forcePad.append(value)
   }
 
   def and(qb: SQLBuiltQuery, condition: SQLBuiltQuery): SQLBuiltQuery = {
@@ -124,7 +145,7 @@ sealed trait AbstractQueryBuilder {
   def in(name: String, values: List[String]): SQLBuiltQuery = {
     SQLBuiltQuery(name)
       .pad.append(DefaultSQLOperators.in)
-      .pad.append(DefaultSQLOperators.`(`)
+      .forcePad.append(DefaultSQLOperators.`(`)
       .append(values.mkString(", "))
       .append(DefaultSQLOperators.`)`)
   }
@@ -136,18 +157,27 @@ sealed trait AbstractQueryBuilder {
   def setTo(name: String, value: String): SQLBuiltQuery = {
     SQLBuiltQuery(name)
       .pad.append(operators.eq)
-      .pad.append(value)
+      .forcePad.append(value)
   }
 
   def set(qb: SQLBuiltQuery, condition: SQLBuiltQuery): SQLBuiltQuery = {
     qb.pad.append(DefaultSQLOperators.set)
-      .pad.append(condition)
+      .forcePad.append(condition)
   }
 
   def andSet(qb: SQLBuiltQuery, condition: SQLBuiltQuery): SQLBuiltQuery = {
     qb.append(DefaultSQLOperators.comma)
-      .pad.append(condition)
+      .forcePad.append(condition)
   }
+
+  def asc(name: String): SQLBuiltQuery = {
+    SQLBuiltQuery(name).forcePad.append(DefaultSQLOperators.asc)
+  }
+
+  def desc(name: String): SQLBuiltQuery = {
+    SQLBuiltQuery(name).forcePad.append(DefaultSQLOperators.desc)
+  }
+
 
 }
 

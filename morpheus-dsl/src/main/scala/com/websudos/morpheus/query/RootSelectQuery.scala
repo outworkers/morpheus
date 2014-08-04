@@ -18,8 +18,34 @@
 
 package com.websudos.morpheus.query
 
-import com.twitter.finagle.exp.mysql.Row
+import scala.concurrent.{ Future => ScalaFuture}
+import scala.concurrent.ExecutionContext.Implicits.global
+import com.twitter.finagle.exp.mysql.{Client, Row}
+import com.twitter.util.Future
 import com.websudos.morpheus.dsl.Table
+
+
+trait BaseSelectQuery[T <: Table[T, _], R] extends SQLResultsQuery[T, R] {
+
+  def fetch()(implicit client: Client): ScalaFuture[Seq[R]] = {
+    twitterToScala(client.select(query.queryString)(fromRow))
+  }
+
+  def collect()(implicit client: Client): Future[Seq[R]] = {
+    client.select(query.queryString)(fromRow)
+  }
+
+  def one()(implicit client: Client): ScalaFuture[Option[R]] = {
+    fetch.map(_.headOption)
+  }
+
+  def get()(implicit client: Client): Future[Option[R]] = {
+    collect().map(_.headOption)
+  }
+
+}
+
+
 
 case class SelectSyntaxBlock[T <: Table[T, _], R](query: String, tableName: String, fromRow: Row => R, columns: List[String] = List("*")) {
 
@@ -65,60 +91,15 @@ private[morpheus] class RootSelectQuery[T <: Table[T, _], R](val table: T, val s
 
   def fromRow(r: Row): R = rowFunc(r)
 
-  def distinct: SelectQuery[T, R] = {
-    new SelectQuery(table, st.distinct, rowFunc)
+  def distinct: Query[T, R, Ungroupped, Unordered, Unlimited, Unchainned, AssignUnchainned] = {
+    new Query(table, st.distinct, rowFunc)
   }
 
-  def distinctRow: SelectQuery[T, R] = {
-    new SelectQuery(table, st.distinctRow, rowFunc)
+  def distinctRow: Query[T, R, Ungroupped, Unordered, Unlimited, Unchainned, AssignUnchainned] = {
+    new Query(table, st.distinctRow, rowFunc)
   }
 
-  def all: SelectQuery[T, R] = {
-    new SelectQuery(table, st.*, rowFunc)
-  }
-}
-
-
-class SelectQuery[T <: Table[T, _], R](table: T, val query: SQLBuiltQuery, rowFunc: Row => R) extends WhereQuery[T, R, SelectWhere[T,
-  R]](table, query, rowFunc) with BaseSelectQuery[T, R] {
-
-
-  protected[this] def subclass(table: T, query: SQLBuiltQuery, rowFunc: Row => R): SelectWhere[T, R] = new SelectWhere[T, R](table, query, rowFunc)
-
-  def where(condition: T => QueryCondition): SelectWhere[T, R] = clause(condition)
-}
-
-class SelectWhere[T <: Table[T, _], R](table: T, val query: SQLBuiltQuery, rowFunc: Row => R) extends WhereQuery[T, R, SelectWhere[T,
-  R]](table, query, rowFunc) with BaseSelectQuery[T, R] {
-
-  protected[this] def subclass(table: T, query: SQLBuiltQuery, rowFunc: Row => R): SelectWhere[T, R] = new SelectWhere[T, R](table, query, rowFunc)
-
-  def and(condition: T => QueryCondition): SelectWhere[T, R] = andClause(condition)
-}
-
-
-private[morpheus] trait SelectImplicits {
-
-  /**
-   * This defines an implicit conversion from a RootSelectQuery to a SelectQuery, making the SELECT syntax block invisible to the end user.
-   * Much like a decision block, a SelectSyntaxBlock needs a decision branch to follow, may that be DISTINCT, ALL or DISTINCTROW as per the SQL spec.
-   *
-   * The one catch is that this form of "exit" from an un-executable RootSelectQuery will directly translate the query to a "SELECT fields* FROM tableName"
-   * query, meaning no SELECT operators will be used in the serialisation.
-   *
-   * The simple assumption made here is that since the user didn't use any other provided method, such as "all", "distinct" or "distinctrow",
-   * the desired behaviour is a full select.
-   *
-   * @param root The RootSelectQuery to convert.
-   * @tparam T The table owning the record.
-   * @tparam R The record type.
-   * @return An executable SelectQuery.
-   */
-  implicit def rootSelectQueryToSelectQuery[T <: Table[T, _], R](root: RootSelectQuery[T, R]): SelectQuery[T, R] = {
-    new SelectQuery[T, R](
-      root.table,
-      root.st.*,
-      root.rowFunc
-    )
+  def all: Query[T, R, Ungroupped, Unordered, Unlimited, Unchainned, AssignUnchainned] = {
+    new Query(table, st.*, rowFunc)
   }
 }

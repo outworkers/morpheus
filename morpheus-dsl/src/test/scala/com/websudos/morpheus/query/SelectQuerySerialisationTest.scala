@@ -33,6 +33,12 @@ class SelectQuerySerialisationTest extends FlatSpec with Matchers {
     BasicTable.select.where(_.name eqs "test").queryString shouldEqual "SELECT * FROM BasicTable WHERE name = 'test'"
   }
 
+  it should  "serialise a simple select all where query with a limit set" in {
+    BasicTable.select
+      .where(_.name eqs "test")
+      .limit(10).queryString shouldEqual "SELECT * FROM BasicTable WHERE name = 'test' LIMIT 10"
+  }
+
   it should "serialise a select query with an < operator" in {
     BasicTable.select.where(_.count < 5).queryString shouldEqual "SELECT * FROM BasicTable WHERE count < 5"
   }
@@ -66,38 +72,68 @@ class SelectQuerySerialisationTest extends FlatSpec with Matchers {
   }
 
   it should  "serialise a simple select all where-and query" in {
-    BasicTable.select.where(_.name eqs "test").and(_.count eqs 5).queryString shouldEqual "SELECT * FROM BasicTable WHERE name = 'test' AND count = 5"
+    BasicTable.select.where(_.name eqs "test")
+      .and(_.count eqs 5)
+      .queryString shouldEqual "SELECT * FROM BasicTable WHERE name = 'test' AND count = 5"
   }
 
   it should "serialise a 1 column partial select query" in {
-    BasicTable.select(_.name).queryString shouldEqual "SELECT name FROM BasicTable"
+    BasicTable.select(_.name)
+      .queryString shouldEqual "SELECT name FROM BasicTable"
   }
 
   it should "serialise a 1 column partial select query with an where clause" in {
-    BasicTable.select(_.name).where(_.count eqs 5).queryString shouldEqual "SELECT name FROM BasicTable WHERE count = 5"
+    BasicTable.select(_.name)
+      .where(_.count eqs 5)
+      .queryString shouldEqual "SELECT name FROM BasicTable WHERE count = 5"
   }
 
   it should "serialise a 1 column partial select query with an or-where clause" in {
-    BasicTable.select(_.name).where(t => { (t.count eqs 5) or (t.count eqs 10) }).queryString shouldEqual "SELECT name FROM BasicTable WHERE (count = 5 OR " +
+    BasicTable.select(_.name)
+      .where(t => { (t.count eqs 5) or (t.count eqs 10) })
+      .queryString shouldEqual "SELECT name FROM BasicTable WHERE (count = 5 OR " +
       "count = 10)"
   }
 
+  it should "serialise a 1 column partial select query with an or-where clause and a limit" in {
+    BasicTable.select(_.name)
+      .where(t => { (t.count eqs 5) or (t.count eqs 10) })
+      .limit(20)
+      .queryString shouldEqual "SELECT name FROM BasicTable WHERE (count = 5 OR " +
+      "count = 10) LIMIT 20"
+  }
+
   it should "serialise a 1 column partial select query with a multiple or-where clause" in {
-    BasicTable.select(_.name).where(t => { (t.count eqs 5) or (t.count eqs 10) or (t.count >= 15)}).queryString shouldEqual "SELECT name FROM BasicTable " +
+    BasicTable.select(_.name)
+      .where(t => { (t.count eqs 5) or (t.count eqs 10) or (t.count >= 15)})
+      .queryString shouldEqual "SELECT name FROM BasicTable " +
       "WHERE (count = 5 OR count = 10 OR count >= 15)"
   }
 
+  it should "serialise a 1 column partial select query with a multiple or-where clause and a limit" in {
+    BasicTable.select(_.name)
+      .where(t => { (t.count eqs 5) or (t.count eqs 10) or (t.count >= 15)})
+      .limit(15)
+      .queryString shouldEqual "SELECT name FROM BasicTable " +
+      "WHERE (count = 5 OR count = 10 OR count >= 15) LIMIT 15"
+  }
+
   it should "serialise a 2 column partial select query" in {
-    BasicTable.select(_.name, _.count).queryString shouldEqual "SELECT name count FROM BasicTable"
+    BasicTable.select(_.name, _.count)
+      .queryString shouldEqual "SELECT name count FROM BasicTable"
   }
 
   it should "serialise a 2 column partial select query with an WHERE clause" in {
-    BasicTable.select(_.name, _.count).queryString shouldEqual "SELECT name count FROM BasicTable"
+    BasicTable.select(_.name, _.count)
+      .queryString shouldEqual "SELECT name count FROM BasicTable"
   }
 
   it should "serialise a conditional clause with an OR operator" in {
-    BasicTable.select.where(_.name eqs "test").and(t => { (t.count eqs 5) or (t.name eqs "test") }).queryString shouldEqual "SELECT * FROM BasicTable WHERE name = " +
-      "'test' AND (count = 5 OR name = 'test')"
+    BasicTable.select.where(_.name eqs "test")
+      .and(t => { (t.count eqs 5) or (t.name eqs "test") })
+      .limit(25)
+      .queryString shouldEqual "SELECT * FROM BasicTable WHERE name = " +
+      "'test' AND (count = 5 OR name = 'test') LIMIT 25"
   }
 
   it should  "not compile a select query if the value compared against doesn't match the value type of the underlying column" in {
@@ -107,6 +143,11 @@ class SelectQuerySerialisationTest extends FlatSpec with Matchers {
   it should "serialise a simple SELECT ALL query using the all method" in {
     BasicTable.select.all.queryString shouldEqual "SELECT * FROM BasicTable"
   }
+
+  it should "serialise a simple SELECT ALL LIMIT query using the all method" in {
+    BasicTable.select.all.limit(50).queryString shouldEqual "SELECT * FROM BasicTable LIMIT 50"
+  }
+
 
   it should  "serialise a simple select all where query using the all method" in {
     BasicTable.select.all.where(_.name eqs "test").queryString shouldEqual "SELECT * FROM BasicTable WHERE name = 'test'"
@@ -156,10 +197,12 @@ class SelectQuerySerialisationTest extends FlatSpec with Matchers {
     BasicTable.select(_.name).all.where(_.count eqs 5).queryString shouldEqual "SELECT name FROM BasicTable WHERE count = 5"
   }
 
-  it should "serialise a 1 column partial select query with an or-where clause using the all method" in {
-    BasicTable.select(_.name).all.where(t => { (t.count eqs 5) or (t.count eqs 10) }).queryString shouldEqual "SELECT name FROM BasicTable WHERE (count = 5 " +
-      "OR " +
-      "count = 10)"
+  it should "serialise a 1 column partial select query with an or-where clause using the all method and a LIMIT" in {
+    BasicTable.select(_.name)
+      .all
+      .where(t => { (t.count eqs 5) or (t.count eqs 10) })
+      .limit(100)
+      .queryString shouldEqual "SELECT name FROM BasicTable WHERE (count = 5 OR count = 10) LIMIT 100"
   }
 
   it should "serialise a 1 column partial select query with a multiple or-where clause using the all method" in {
@@ -176,9 +219,11 @@ class SelectQuerySerialisationTest extends FlatSpec with Matchers {
   }
 
   it should "serialise a conditional clause with an OR operator using the all method" in {
-    BasicTable.select.all.where(_.name eqs "test").and(t => { (t.count eqs 5) or (t.name eqs "test") }).queryString shouldEqual "SELECT * FROM BasicTable " +
-      "WHERE name = " +
-      "'test' AND (count = 5 OR name = 'test')"
+    BasicTable.select.all
+      .where(_.name eqs "test")
+      .and(t => { (t.count eqs 5) or (t.name eqs "test") })
+      .queryString shouldEqual "SELECT * FROM BasicTable " +
+      "WHERE name = 'test' AND (count = 5 OR name = 'test')"
   }
 
   it should  "not compile a select query if the value compared against doesn't match the value type of the underlying column using the all method" in {
@@ -227,7 +272,8 @@ class SelectQuerySerialisationTest extends FlatSpec with Matchers {
       .select(_.name, _.count)
       .distinct
       .where(_.count >= 10)
-      .and(t => { (t.count <= 100) or (t.name eqs "test")}).queryString shouldEqual "SELECT DISTINCT name, " +
+      .and(t => { (t.count <= 100) or (t.name eqs "test")})
+      .queryString shouldEqual "SELECT DISTINCT name, " +
       "count FROM BasicTable WHERE count >= 10 AND (count <= 100 OR name = 'test')"
   }
 
@@ -290,5 +336,43 @@ class SelectQuerySerialisationTest extends FlatSpec with Matchers {
       .where(t => { (t.name in List("name1", "name2", "name3")) or (t.name in List("name4", "name5")) })
       .and(_.count in List(5, 10, 15))
       .queryString shouldEqual "SELECT * FROM BasicTable WHERE (name IN ('name1', 'name2', 'name3') OR name IN ('name4', 'name5')) AND count IN (5, 10, 15)"
+  }
+
+  it should "serialise a SELECT with a single ORDER BY clause" in {
+    BasicTable.select
+      .orderBy(_.count asc)
+      .queryString shouldEqual "SELECT * FROM BasicTable ORDER BY count ASC"
+  }
+
+  it should "serialise a SELECT with multiple ORDER BY clauses" in {
+    BasicTable.select
+      .orderBy(_.count asc, _.name desc)
+      .queryString shouldEqual "SELECT * FROM BasicTable ORDER BY count ASC, name DESC"
+  }
+
+  it should "serialise a SELECT with multiple ORDER BY clauses and a limit" in {
+    BasicTable.select
+      .orderBy(_.count asc, _.name desc)
+      .limit(10)
+      .queryString shouldEqual "SELECT * FROM BasicTable ORDER BY count ASC, name DESC LIMIT 10"
+  }
+
+  it should "serialise a SELECT with a single GROUP BY clause" in {
+    BasicTable.select
+      .groupBy(_.count)
+      .queryString shouldEqual "SELECT * FROM BasicTable GROUP BY count"
+  }
+
+  it should "serialise a SELECT with multiple GROUP BY clauses" in {
+    BasicTable.select
+      .groupBy(_.count, _.name)
+      .queryString shouldEqual "SELECT * FROM BasicTable GROUP BY count, name"
+  }
+
+  it should "serialise a SELECT with multiple GROUP BY clauses and an orderBy clause" in {
+    BasicTable.select
+      .groupBy(_.count, _.name)
+      .orderBy(_.name asc)
+      .queryString shouldEqual "SELECT * FROM BasicTable GROUP BY count, name ORDER BY name ASC"
   }
 }

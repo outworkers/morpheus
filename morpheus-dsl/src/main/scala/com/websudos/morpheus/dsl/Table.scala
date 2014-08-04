@@ -94,6 +94,12 @@ abstract class Table[Owner <: Table[Owner, Record], Record] extends SelectTable[
     fromRow
   )
 
+  def delete: RootDeleteQuery[Owner, Record] = new RootDeleteQuery(
+    this.asInstanceOf[Owner],
+    DeleteSyntaxBlock(DefaultSQLOperators.delete, tableName, fromRow),
+    fromRow
+  )
+
   def columns: List[AbstractColumn[_]] = _columns.toList
 
   Lock.synchronized {

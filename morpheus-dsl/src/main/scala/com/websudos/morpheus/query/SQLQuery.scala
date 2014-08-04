@@ -18,12 +18,13 @@
 
 package com.websudos.morpheus.query
 
-import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{Future => ScalaFuture}
 
 import com.twitter.finagle.exp.mysql.{Client, Result, Row}
 import com.twitter.util.Future
 import com.websudos.morpheus.dsl.{ResultSetOperations, Table}
+import scala.annotation.implicitNotFound
+import com.websudos.morpheus.column.{SelectColumn, AbstractColumn}
 
 case class SQLBuiltQuery(queryString: String) {
   def append(st: String): SQLBuiltQuery = SQLBuiltQuery(queryString + st)
@@ -64,9 +65,15 @@ object DefaultSQLOperators {
   val distinct = "DISTINCT"
   val lowPriority = "LOW_PRIORITY"
   val ignore = "IGNORE"
+  val quick = "QUICK"
   val distinctRow = "DISTINCTROW"
   val where = "WHERE"
+  val having = "HAVING"
   val update = "UPDATE"
+  val delete = "DELETE"
+  val orderBy = "ORDER BY"
+  val groupBy = "GROUP BY"
+  val limit = "LIMIT"
   val and = "AND"
   val or = "OR"
   val set = "SET"
@@ -77,6 +84,8 @@ object DefaultSQLOperators {
   val `(` = "("
   val comma = ","
   val `)` = ")"
+  val asc = "ASC"
+  val desc = "DESC"
 }
 
 trait SQLQuery[T <: Table[T, _], R] extends ResultSetOperations {
@@ -137,6 +146,19 @@ trait SQLResultsQuery[T <: Table[T, _], R] extends SQLQuery[T, R] {
   def get()(implicit client: Client): Future[Option[R]]
 }
 
+trait GroupBind
+trait ChainBind
+trait OrderBind
+trait LimitBind
+
+abstract class Groupped extends GroupBind
+abstract class Ungroupped extends GroupBind
+abstract class Chainned extends ChainBind
+abstract class Unchainned extends ChainBind
+abstract class Ordered extends OrderBind
+abstract class Unordered extends OrderBind
+abstract class Limited extends LimitBind
+abstract class Unlimited extends LimitBind
 
 /**
  * This bit of magic allows all extending sub-classes to implement the "where" and "and" SQL clauses with all the necessary operators,
@@ -153,43 +175,50 @@ trait SQLResultsQuery[T <: Table[T, _], R] extends SQLQuery[T, R] {
  * @param rowFunc The function mapping a row to a record.
  * @tparam T The type of the table owning the record.
  * @tparam R The type of the record held in the table.
- * @tparam QueryType The query type to subclass with and obtain as a result of a "where" or "and" application, requires all extending subclasses to supply a
- *                   type that will subclass an SQLQuery[T, R]
 */
-private[morpheus] abstract class WhereQuery[T <: Table[T, _], R, QueryType <: SQLQuery[T, R]](table: T, query: SQLBuiltQuery, rowFunc: Row => R) {
-  protected[this] def subclass(table: T, query: SQLBuiltQuery, rowFunc: Row => R): QueryType
+class Query[
+  T <: Table[T, _],
+  R,
+  Group <: GroupBind,
+  Ord <: OrderBind,
+  Lim <: LimitBind,
+  Chain <: ChainBind,
+  AC <: AssignBind
+](val table: T, val query: SQLBuiltQuery, val rowFunc: Row => R) extends SQLQuery[T, R] {
 
   def fromRow(row: Row): R = rowFunc(row)
 
-  protected[this] def clause(condition: T => QueryCondition): QueryType = {
-    subclass(table, table.queryBuilder.where(query, condition(table).clause), rowFunc)
+  @implicitNotFound("You cannot use two where clauses on a single query")
+  def where(condition: T => QueryCondition)(implicit ev: Chain =:= Unchainned): Query[T, R, Group, Ord, Lim, Chainned, AC] = {
+    new Query(table, table.queryBuilder.where(query, condition(table).clause), rowFunc)
   }
 
-  protected[this] def andClause(condition: T => QueryCondition): QueryType = {
-    subclass(table, table.queryBuilder.and(query, condition(table).clause), rowFunc)
+  @implicitNotFound("You cannot set two limits on the same query")
+  def limit(value: Int)(implicit ev: Lim =:= Unlimited): Query[T, R, Group, Ord, Limited, Chain, AC] = {
+    new Query(table, table.queryBuilder.limit(query, value.toString), rowFunc)
+  }
+
+  @implicitNotFound("You cannot ORDER a query more than once")
+  def orderBy(conditions: (T => QueryOrder)*)(implicit ev: Ord =:= Unordered): Query[T, R, Group, Ordered, Lim, Chain, AC] = {
+    val applied = conditions map {
+      fn => fn(table).clause
+    }
+    new Query(table, table.queryBuilder.orderBy(query, applied), rowFunc)
+  }
+
+  @implicitNotFound("You cannot GROUP a query more than once or GROUP after you ORDER a query")
+  def groupBy(columns: (T => SelectColumn[_])*)(implicit ev: Group =:= Ungroupped, ev2: Ord =:= Unordered): Query[T, R, Groupped, Ord, Lim, Chain, AC] = {
+    val applied = columns map {
+      fn => {
+        fn(table).col.name
+      }
+    }
+    new Query(table, table.queryBuilder.groupBy(query, applied), rowFunc)
+  }
+
+  @implicitNotFound("You need to use the where method first")
+  def and(condition: T => QueryCondition)(implicit ev: Chain =:= Chainned): Query[T, R, Group, Ord, Lim, Chainned, AC]  = {
+    new Query(table, table.queryBuilder.and(query, condition(table).clause), rowFunc)
   }
 
 }
-
-
-trait BaseSelectQuery[T <: Table[T, _], R] extends SQLResultsQuery[T, R] {
-
-  def fetch()(implicit client: Client): ScalaFuture[Seq[R]] = {
-    twitterToScala(client.select(query.queryString)(fromRow))
-  }
-
-  def collect()(implicit client: Client): Future[Seq[R]] = {
-    client.select(query.queryString)(fromRow)
-  }
-
-  def one()(implicit client: Client): ScalaFuture[Option[R]] = {
-    fetch.map(_.headOption)
-  }
-
-  def get()(implicit client: Client): Future[Option[R]] = {
-    collect().map(_.headOption)
-  }
-
-}
-
-

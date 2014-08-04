@@ -20,6 +20,7 @@ package com.websudos.morpheus.query
 
 import com.twitter.finagle.exp.mysql.Row
 import com.websudos.morpheus.dsl.Table
+import scala.annotation.implicitNotFound
 
 
 case class UpdateSyntaxBlock[T <: Table[T, _], R](query: String, tableName: String, fromRow: Row => R, columns: List[String] = List("*")) {
@@ -41,6 +42,11 @@ case class UpdateSyntaxBlock[T <: Table[T, _], R](query: String, tableName: Stri
   }
 }
 
+sealed trait AssignBind
+sealed abstract class AssignChainned extends AssignBind
+sealed abstract class AssignUnchainned extends AssignBind
+
+
 /**
  * This is the implementation of a root UPDATE query, a wrapper around an abstract syntax block.
  *
@@ -57,101 +63,57 @@ private[morpheus] class RootUpdateQuery[T <: Table[T, _], R](val table: T, val s
 
   def fromRow(r: Row): R = rowFunc(r)
 
-  def lowPriority: UpdateQuery[T, R] = {
-    new UpdateQuery(table, st.lowPriority, rowFunc)
+  def lowPriority: Query[T, R, Ungroupped, Unordered, Unlimited, Unchainned, AssignUnchainned] = {
+    new Query(table, st.lowPriority, rowFunc)
   }
 
-  def ignore: UpdateQuery[T, R] = {
-    new UpdateQuery(table, st.ignore, rowFunc)
+  def ignore: Query[T, R, Ungroupped, Unordered, Unlimited, Unchainned, AssignUnchainned] = {
+    new Query(table, st.ignore, rowFunc)
   }
 
-  private[morpheus] def all: SelectQuery[T, R] = {
-    new SelectQuery(table, st.all, rowFunc)
+  private[morpheus] def all: Query[T, R, Ungroupped, Unordered, Unlimited, Unchainned, AssignUnchainned] = {
+    new Query(table, st.all, rowFunc)
   }
 }
-
 
 /**
  * This bit of magic allows all extending sub-classes to implement the "set" and "and" SQL clauses with all the necessary operators,
  * in a type safe way. By providing the third type argument and a custom way to subclass with the predetermined set of arguments,
  * all DSL representations of an UPDATE query can use the implementation without violating DRY.
  *
- * The reason why the "setTo" and "andSetTo" methods below are protected is so that extending classes can decide when and how to expose "where" and "and"
- * SQL methods to the DSL user. Used mainly to make queries like "select.set(_.a setTo b).set(_.c = d)" impossible,
- * or in other words make illegal programming states unrepresentable. There is an awesome book about how to do this in Scala,
- * I will link to it as soon as the book is published.
- *
  * @tparam T The type of the table owning the record.
  * @tparam R The type of the record held in the table.
- * @tparam QueryType The query type to subclass with and obtain as a result of a "set" or "and" application, requires all extending subclasses to supply a
- *                   type that will subclass an SQLQuery[T, R]
- *
  */
-sealed trait AssignQuery[T <: Table[T, _], R, QueryType <: SQLQuery[T, R]] {
-  protected[this] def assignmentClass(table: T, query: SQLBuiltQuery, rowFunc: Row => R): QueryType
+class AssignmentsQuery[
+  T <: Table[T, _],
+  R,
+  Group <: GroupBind,
+  Order <: OrderBind,
+  Limit <: LimitBind,
+  Chain <: ChainBind,
+  AssignChain <: AssignBind
+](val query: Query[T, R, Group, Order, Limit, Chain, AssignChain]) {
 
-  def fromRow(row: Row): R
-  def table: T
-  def query: SQLBuiltQuery
-
-  protected[this] def setTo(condition: T => QueryAssignment): QueryType = {
-    assignmentClass(table, table.queryBuilder.set(query, condition(table).clause), fromRow)
+  @implicitNotFound("You can't use 2 SET parts on a single UPDATE query")
+  def set(condition: T => QueryAssignment)(implicit ev: AssignChain =:= AssignUnchainned): AssignmentsQuery[T, R, Group, Order, Limit, Chain, AssignChainned] = {
+    new AssignmentsQuery[T, R, Group, Order, Limit, Chain, AssignChainned](
+      new Query[T, R, Group, Order, Limit, Chain, AssignChainned](
+        query.table,
+        query.table.queryBuilder.set(query.query, condition(query.table).clause),
+        query.rowFunc
+      )
+    )
   }
 
-  protected[this] def andSetTo(condition: T => QueryAssignment): QueryType = {
-    assignmentClass(table, table.queryBuilder.andSet(query, condition(table).clause), fromRow)
-  }
-}
-
-class UpdateQuery[T <: Table[T, _], R](val table: T, val query: SQLBuiltQuery, rowFunc: Row => R)
-  extends AssignQuery[T, R, AssignmentsQuery[T, R]] with SQLQuery[T, R] {
-
-  def fromRow(row: Row): R = rowFunc(row)
-
-  protected[this] def assignmentClass(table: T, query: SQLBuiltQuery, rowFunc: (Row) => R): AssignmentsQuery[T, R] = {
-    new AssignmentsQuery[T, R](table, query, rowFunc)
+  @implicitNotFound("""You need to use the "set" method before using the "and"""")
+  def and(condition: T => QueryAssignment, signChange: Int = 0)(implicit ev: AssignChain =:= AssignChainned): AssignmentsQuery[T, R, Group, Order, Limit, Chain, AssignChainned] = {
+    new AssignmentsQuery[T, R, Group, Order, Limit, Chain, AssignChainned](
+      new Query[T, R, Group, Order, Limit, Chain, AssignChainned](
+        query.table,
+        query.table.queryBuilder.andSet(query.query, condition(query.table).clause),
+        query.rowFunc
+      )
+    )
   }
 
-  def set(condition: T => QueryAssignment): AssignmentsQuery[T, R] = setTo(condition)
-}
-
-class UpdateWhere[T <: Table[T, _], R](table: T, val query: SQLBuiltQuery, rowFunc: Row => R) extends WhereQuery[T, R, UpdateWhere[T, R]](table, query,
-  rowFunc) with SQLQuery[T, R]  {
-
-  protected[this] def subclass(table: T, query: SQLBuiltQuery, rowFunc: (Row) => R): UpdateWhere[T, R] = {
-    new UpdateWhere[T, R](table, query, rowFunc)
-  }
-
-  def and(condition: T => QueryCondition): UpdateWhere[T, R] = andClause(condition)
-}
-
-
-class AssignmentsQuery[T <: Table[T, _], R](val table: T, val query: SQLBuiltQuery, rowFunc: Row => R) extends WhereQuery[T, R, UpdateWhere[T, R]](table, query,
-  rowFunc) with AssignQuery[T, R, AssignmentsAndQuery[T, R]] with SQLQuery[T, R]  {
-
-  protected[this] def subclass(table: T, query: SQLBuiltQuery, rowFunc: (Row) => R): UpdateWhere[T, R] = {
-    new UpdateWhere[T, R](table, query, rowFunc)
-  }
-
-  protected[this] def assignmentClass(table: T, query: SQLBuiltQuery, rowFunc: (Row) => R): AssignmentsAndQuery[T, R] = {
-    new AssignmentsAndQuery[T, R](table, query, rowFunc)
-  }
-
-  def where(condition: T => QueryCondition): UpdateWhere[T, R] = clause(condition)
-  def and(condition: T => QueryAssignment): AssignmentsAndQuery[T, R] = andSetTo(condition)
-}
-
-class AssignmentsAndQuery[T <: Table[T, _], R](val table: T, val query: SQLBuiltQuery, rowFunc: Row => R) extends WhereQuery[T, R, UpdateWhere[T, R]](table,
-  query, rowFunc) with AssignQuery[T, R, AssignmentsAndQuery[T, R]] with SQLQuery[T, R]  {
-
-  protected[this] def subclass(table: T, query: SQLBuiltQuery, rowFunc: (Row) => R): UpdateWhere[T, R] = {
-    new UpdateWhere[T, R](table, query, rowFunc)
-  }
-
-  protected[this] def assignmentClass(table: T, query: SQLBuiltQuery, rowFunc: (Row) => R): AssignmentsAndQuery[T, R] = {
-    new AssignmentsAndQuery[T, R](table, query, rowFunc)
-  }
-
-  def where(condition: T => QueryCondition): UpdateWhere[T, R] = clause(condition)
-  def and(condition: T => QueryAssignment): AssignmentsAndQuery[T, R] = andSetTo(condition)
 }
