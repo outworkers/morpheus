@@ -117,6 +117,12 @@ sealed trait AbstractQueryBuilder {
       .forcePad.append(conditions.map(_.queryString).mkString(", "))
   }
 
+  def groupBy(qb: SQLBuiltQuery, columns: Seq[String]): SQLBuiltQuery = {
+    qb.pad
+      .append(DefaultSQLOperators.groupBy)
+      .forcePad.append(columns.mkString(", "))
+  }
+
   def having(qb: SQLBuiltQuery, condition: SQLBuiltQuery): SQLBuiltQuery = {
     qb.pad.append(DefaultSQLOperators.having).pad.append(condition)
   }

@@ -354,6 +354,25 @@ class SelectQuerySerialisationTest extends FlatSpec with Matchers {
     BasicTable.select
       .orderBy(_.count asc, _.name desc)
       .limit(10)
-      .queryString shouldEqual "SELECT * FROM BasicTable ORDER BY count ASC, name DESC"
+      .queryString shouldEqual "SELECT * FROM BasicTable ORDER BY count ASC, name DESC LIMIT 10"
+  }
+
+  it should "serialise a SELECT with a single GROUP BY clause" in {
+    BasicTable.select
+      .groupBy(_.count)
+      .queryString shouldEqual "SELECT * FROM BasicTable GROUP BY count"
+  }
+
+  it should "serialise a SELECT with multiple GROUP BY clauses" in {
+    BasicTable.select
+      .groupBy(_.count, _.name)
+      .queryString shouldEqual "SELECT * FROM BasicTable GROUP BY count, name"
+  }
+
+  it should "serialise a SELECT with multiple GROUP BY clauses and an orderBy clause" in {
+    BasicTable.select
+      .groupBy(_.count, _.name)
+      .orderBy(_.name asc)
+      .queryString shouldEqual "SELECT * FROM BasicTable GROUP BY count, name ORDER BY name ASC"
   }
 }

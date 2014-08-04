@@ -81,15 +81,9 @@ private[morpheus] class RootUpdateQuery[T <: Table[T, _], R](val table: T, val s
  * in a type safe way. By providing the third type argument and a custom way to subclass with the predetermined set of arguments,
  * all DSL representations of an UPDATE query can use the implementation without violating DRY.
  *
- * The reason why the "setTo" and "andSetTo" methods below are protected is so that extending classes can decide when and how to expose "where" and "and"
- * SQL methods to the DSL user. Used mainly to make queries like "select.set(_.a setTo b).set(_.c = d)" impossible,
- * or in other words make illegal programming states unrepresentable. There is an awesome book about how to do this in Scala,
- * I will link to it as soon as the book is published.
- *
  * @tparam T The type of the table owning the record.
  * @tparam R The type of the record held in the table.
  */
-
 class AssignmentsQuery[
   T <: Table[T, _],
   R,

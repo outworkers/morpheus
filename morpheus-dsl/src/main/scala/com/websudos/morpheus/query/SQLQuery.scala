@@ -24,6 +24,7 @@ import com.twitter.finagle.exp.mysql.{Client, Result, Row}
 import com.twitter.util.Future
 import com.websudos.morpheus.dsl.{ResultSetOperations, Table}
 import scala.annotation.implicitNotFound
+import com.websudos.morpheus.column.{SelectColumn, AbstractColumn}
 
 case class SQLBuiltQuery(queryString: String) {
   def append(st: String): SQLBuiltQuery = SQLBuiltQuery(queryString + st)
@@ -71,6 +72,7 @@ object DefaultSQLOperators {
   val update = "UPDATE"
   val delete = "DELETE"
   val orderBy = "ORDER BY"
+  val groupBy = "GROUP BY"
   val limit = "LIMIT"
   val and = "AND"
   val or = "OR"
@@ -196,12 +198,22 @@ class Query[
     new Query(table, table.queryBuilder.limit(query, value.toString), rowFunc)
   }
 
-  @implicitNotFound("You cannot order a query twice")
+  @implicitNotFound("You cannot ORDER a query more than once")
   def orderBy(conditions: (T => QueryOrder)*)(implicit ev: Ord =:= Unordered): Query[T, R, Group, Ordered, Lim, Chain, AC] = {
     val applied = conditions map {
       fn => fn(table).clause
     }
     new Query(table, table.queryBuilder.orderBy(query, applied), rowFunc)
+  }
+
+  @implicitNotFound("You cannot GROUP a query more than once or GROUP after you ORDER a query")
+  def groupBy(columns: (T => SelectColumn[_])*)(implicit ev: Group =:= Ungroupped, ev2: Ord =:= Unordered): Query[T, R, Groupped, Ord, Lim, Chain, AC] = {
+    val applied = columns map {
+      fn => {
+        fn(table).col.name
+      }
+    }
+    new Query(table, table.queryBuilder.groupBy(query, applied), rowFunc)
   }
 
   @implicitNotFound("You need to use the where method first")
