@@ -111,10 +111,10 @@ sealed trait AbstractQueryBuilder {
     qb.pad.append(DefaultSQLOperators.where).forcePad.append(condition)
   }
 
-  def orderBy(qb: SQLBuiltQuery, condition: SQLBuiltQuery): SQLBuiltQuery = {
+  def orderBy(qb: SQLBuiltQuery, conditions: Seq[SQLBuiltQuery]): SQLBuiltQuery = {
     qb.pad
       .append(DefaultSQLOperators.orderBy)
-      .forcePad.append(condition)
+      .forcePad.append(conditions.map(_.queryString).mkString(", "))
   }
 
   def having(qb: SQLBuiltQuery, condition: SQLBuiltQuery): SQLBuiltQuery = {

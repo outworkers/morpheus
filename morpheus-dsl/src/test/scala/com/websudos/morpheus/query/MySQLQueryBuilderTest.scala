@@ -132,4 +132,50 @@ class MySQLQueryBuilderTest extends FlatSpec with Matchers with GeneratorDrivenP
     }
     }
   }
+
+  it should "serialise an setTo operator query" in {
+    forAll(minSuccessful(300)) { (name: String, value: String) =>
+      whenever (name.length > 0) {
+        val query = MySQLQueryBuilder.setTo(name, value).queryString
+        query shouldEqual s"$name = $value"
+      }
+    }
+  }
+
+
+  it should "serialise an ASC operator query" in {
+    forAll(minSuccessful(300)) { (name: String) =>
+      whenever (name.length > 0) {
+        val query = MySQLQueryBuilder.asc(name).queryString
+        query shouldEqual s"$name ASC"
+      }
+    }
+  }
+
+  it should "serialise a DESC operator query" in {
+    forAll(minSuccessful(300)) { (name: String) =>
+      whenever (name.length > 0) {
+        val query = MySQLQueryBuilder.desc(name).queryString
+        query shouldEqual s"$name DESC"
+      }
+    }
+  }
+
+  it should "serialise a SET query" in {
+    forAll(minSuccessful(300)) { (part: String, name: String) =>
+      whenever (name.length > 0) {
+        val query = MySQLQueryBuilder.set(SQLBuiltQuery(part), SQLBuiltQuery(name)).queryString
+        query shouldEqual s"$part SET $name"
+      }
+    }
+  }
+
+  it should "correctly set multiple conditions" in {
+    forAll(minSuccessful(300)) { (part: String, name: String) =>
+      whenever (name.length > 0) {
+        val query = MySQLQueryBuilder.andSet(SQLBuiltQuery(part), SQLBuiltQuery(name)).queryString
+        query shouldEqual s"$part, $name"
+      }
+    }
+  }
 }

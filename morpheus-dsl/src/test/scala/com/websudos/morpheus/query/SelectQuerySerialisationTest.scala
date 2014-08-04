@@ -337,4 +337,10 @@ class SelectQuerySerialisationTest extends FlatSpec with Matchers {
       .and(_.count in List(5, 10, 15))
       .queryString shouldEqual "SELECT * FROM BasicTable WHERE (name IN ('name1', 'name2', 'name3') OR name IN ('name4', 'name5')) AND count IN (5, 10, 15)"
   }
+
+  it should "serialise a SELECT with a single ORDER BY clause" in {
+    BasicTable.select
+      .orderBy(_.count asc, _.name desc)
+      .queryString shouldEqual "SELECT * FROM BasicTable ORDER BY count ASC, name DESC"
+  }
 }

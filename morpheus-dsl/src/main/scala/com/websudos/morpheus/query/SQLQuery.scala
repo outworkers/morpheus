@@ -18,7 +18,6 @@
 
 package com.websudos.morpheus.query
 
-import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{Future => ScalaFuture}
 
 import com.twitter.finagle.exp.mysql.{Client, Result, Row}
@@ -71,7 +70,7 @@ object DefaultSQLOperators {
   val having = "HAVING"
   val update = "UPDATE"
   val delete = "DELETE"
-  val orderBy = "ORDER_BY"
+  val orderBy = "ORDER BY"
   val limit = "LIMIT"
   val and = "AND"
   val or = "OR"
@@ -198,8 +197,13 @@ class Query[
   }
 
   @implicitNotFound("You cannot order a query twice")
-  def orderBy(condition: T => QueryOrder): Query[T, R, Group, Ordered, Lim, Chain, AC] = {
-    new Query(table, table.queryBuilder.where(query, condition(table).clause), rowFunc)
+  def orderBy(conditions: (T => QueryOrder)*): Query[T, R, Group, Ordered, Lim, Chain, AC] = {
+
+    val applied = conditions map {
+      fn => fn(table).clause
+    }
+
+    new Query(table, table.queryBuilder.orderBy(query, applied), rowFunc)
   }
 
   @implicitNotFound("You need to use the where method first")
