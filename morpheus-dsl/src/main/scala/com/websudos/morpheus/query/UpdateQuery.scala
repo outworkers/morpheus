@@ -21,6 +21,26 @@ package com.websudos.morpheus.query
 import com.twitter.finagle.exp.mysql.Row
 import com.websudos.morpheus.dsl.Table
 
+
+case class UpdateSyntaxBlock[T <: Table[T, _], R](query: String, tableName: String, fromRow: Row => R, columns: List[String] = List("*")) {
+
+  private[this] val qb = SQLBuiltQuery(query)
+
+  def all: SQLBuiltQuery = {
+    qb.pad.append(tableName)
+  }
+
+  def lowPriority: SQLBuiltQuery = {
+    qb.pad.append(DefaultSQLOperators.lowPriority)
+      .pad.append(tableName)
+  }
+
+  def ignore: SQLBuiltQuery = {
+    qb.pad.append(DefaultSQLOperators.ignore)
+      .pad.append(tableName)
+  }
+}
+
 /**
  * This is the implementation of a root UPDATE query, a wrapper around an abstract syntax block.
  *
@@ -33,20 +53,20 @@ import com.websudos.morpheus.dsl.Table
  * @tparam T The type of the owning table.
  * @tparam R The type of the record.
  */
-private[morpheus] class RootUpdateQuery[T <: Table[T, _], R](val table: T, val st: SelectSyntaxBlock[T, _], val rowFunc: Row => R) {
+private[morpheus] class RootUpdateQuery[T <: Table[T, _], R](val table: T, val st: UpdateSyntaxBlock[T, _], val rowFunc: Row => R) {
 
   def fromRow(r: Row): R = rowFunc(r)
 
-  def distinct: SelectQuery[T, R] = {
-    new SelectQuery(table, st.distinct, rowFunc)
+  def lowPriority: UpdateQuery[T, R] = {
+    new UpdateQuery(table, st.lowPriority, rowFunc)
   }
 
-  def distinctRow: SelectQuery[T, R] = {
-    new SelectQuery(table, st.distinctRow, rowFunc)
+  def ignore: UpdateQuery[T, R] = {
+    new UpdateQuery(table, st.ignore, rowFunc)
   }
 
-  def all: SelectQuery[T, R] = {
-    new SelectQuery(table, st.*, rowFunc)
+  private[morpheus] def all: SelectQuery[T, R] = {
+    new SelectQuery(table, st.all, rowFunc)
   }
 }
 

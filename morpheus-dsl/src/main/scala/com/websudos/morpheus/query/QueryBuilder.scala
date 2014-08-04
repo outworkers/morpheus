@@ -130,7 +130,7 @@ sealed trait AbstractQueryBuilder {
   }
 
   def update(tableName: String): SQLBuiltQuery = {
-    SQLBuiltQuery(DefaultSQLOperators.update).pad.append(tableName)
+    SQLBuiltQuery(DefaultSQLOperators.update).forcePad
   }
 
   def setTo(name: String, value: String): SQLBuiltQuery = {

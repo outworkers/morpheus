@@ -62,6 +62,8 @@ case class SQLBuiltQuery(queryString: String) {
 object DefaultSQLOperators {
   val select = "SELECT"
   val distinct = "DISTINCT"
+  val lowPriority = "LOW_PRIORITY"
+  val ignore = "IGNORE"
   val distinctRow = "DISTINCTROW"
   val where = "WHERE"
   val update = "UPDATE"
