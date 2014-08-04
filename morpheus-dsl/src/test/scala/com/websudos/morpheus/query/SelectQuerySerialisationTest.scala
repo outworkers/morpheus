@@ -340,7 +340,20 @@ class SelectQuerySerialisationTest extends FlatSpec with Matchers {
 
   it should "serialise a SELECT with a single ORDER BY clause" in {
     BasicTable.select
+      .orderBy(_.count asc)
+      .queryString shouldEqual "SELECT * FROM BasicTable ORDER BY count ASC"
+  }
+
+  it should "serialise a SELECT with multiple ORDER BY clauses" in {
+    BasicTable.select
       .orderBy(_.count asc, _.name desc)
+      .queryString shouldEqual "SELECT * FROM BasicTable ORDER BY count ASC, name DESC"
+  }
+
+  it should "serialise a SELECT with multiple ORDER BY clauses and a limit" in {
+    BasicTable.select
+      .orderBy(_.count asc, _.name desc)
+      .limit(10)
       .queryString shouldEqual "SELECT * FROM BasicTable ORDER BY count ASC, name DESC"
   }
 }

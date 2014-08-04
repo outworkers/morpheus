@@ -197,12 +197,10 @@ class Query[
   }
 
   @implicitNotFound("You cannot order a query twice")
-  def orderBy(conditions: (T => QueryOrder)*): Query[T, R, Group, Ordered, Lim, Chain, AC] = {
-
+  def orderBy(conditions: (T => QueryOrder)*)(implicit ev: Ord =:= Unordered): Query[T, R, Group, Ordered, Lim, Chain, AC] = {
     val applied = conditions map {
       fn => fn(table).clause
     }
-
     new Query(table, table.queryBuilder.orderBy(query, applied), rowFunc)
   }
 
