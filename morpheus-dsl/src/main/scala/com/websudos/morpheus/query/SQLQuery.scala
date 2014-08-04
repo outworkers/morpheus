@@ -24,6 +24,7 @@ import scala.concurrent.{Future => ScalaFuture}
 import com.twitter.finagle.exp.mysql.{Client, Result, Row}
 import com.twitter.util.Future
 import com.websudos.morpheus.dsl.{ResultSetOperations, Table}
+import scala.annotation.implicitNotFound
 
 case class SQLBuiltQuery(queryString: String) {
   def append(st: String): SQLBuiltQuery = SQLBuiltQuery(queryString + st)
@@ -182,18 +183,22 @@ class Query[
 
   def fromRow(row: Row): R = rowFunc(row)
 
+  @implicitNotFound("You cannot use two where clauses on a single query")
   def where(condition: T => QueryCondition)(implicit ev: Chain =:= Unchainned): Query[T, R, Group, Ord, Lim, Chainned, AC] = {
     new Query(table, table.queryBuilder.where(query, condition(table).clause), rowFunc)
   }
 
+  @implicitNotFound("You cannot set two limits on the same query")
   def limit(value: Int)(implicit ev: Lim =:= Unlimited): Query[T, R, Group, Ord, Limited, Chain, AC] = {
     new Query(table, table.queryBuilder.limit(query, value.toString), rowFunc)
   }
 
+  @implicitNotFound("You cannot order a query twice")
   def orderBy(condition: T => QueryCondition): Query[T, R, Group, Ordered, Lim, Chain, AC] = {
     new Query(table, table.queryBuilder.where(query, condition(table).clause), rowFunc)
   }
 
+  @implicitNotFound("You need to use the where method first")
   def and(condition: T => QueryCondition)(implicit ev: Chain =:= Chainned): Query[T, R, Group, Ord, Lim, Chainned, AC]  = {
     new Query(table, table.queryBuilder.and(query, condition(table).clause), rowFunc)
   }

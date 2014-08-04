@@ -20,6 +20,7 @@ package com.websudos.morpheus.query
 
 import com.twitter.finagle.exp.mysql.Row
 import com.websudos.morpheus.dsl.Table
+import scala.annotation.implicitNotFound
 
 
 case class UpdateSyntaxBlock[T <: Table[T, _], R](query: String, tableName: String, fromRow: Row => R, columns: List[String] = List("*")) {
@@ -99,6 +100,7 @@ class AssignmentsQuery[
   AssignChain <: AssignBind
 ](val query: Query[T, R, Group, Order, Limit, Chain, AssignChain]) {
 
+  @implicitNotFound("You can't use 2 SET parts on a single UPDATE query")
   def set(condition: T => QueryAssignment)(implicit ev: AssignChain =:= AssignUnchainned): AssignmentsQuery[T, R, Group, Order, Limit, Chain, AssignChainned] = {
     new AssignmentsQuery[T, R, Group, Order, Limit, Chain, AssignChainned](
       new Query[T, R, Group, Order, Limit, Chain, AssignChainned](
@@ -109,6 +111,7 @@ class AssignmentsQuery[
     )
   }
 
+  @implicitNotFound("""You need to use the "set" method before using the "and"""")
   def and(condition: T => QueryAssignment, signChange: Int = 0)(implicit ev: AssignChain =:= AssignChainned): AssignmentsQuery[T, R, Group, Order, Limit, Chain, AssignChainned] = {
     new AssignmentsQuery[T, R, Group, Order, Limit, Chain, AssignChainned](
       new Query[T, R, Group, Order, Limit, Chain, AssignChainned](
