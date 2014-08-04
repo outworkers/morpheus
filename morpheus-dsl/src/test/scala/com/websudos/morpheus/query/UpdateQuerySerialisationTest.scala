@@ -111,5 +111,13 @@ class UpdateQuerySerialisationTest extends FlatSpec with Matchers {
       .queryString shouldEqual "UPDATE BasicTable SET count = 10 WHERE name = 'test' AND (count = 5 OR name = 'test')"
   }
 
+  it should "serialise a conditional UPDATE clause with an a double WHERE-OR operator" in {
+    BasicTable.update
+      .set(_.count setTo 10)
+      .where(t => { (t.count eqs 15) or (t.name eqs "test5") })
+      .and(t => { (t.count eqs 5) or (t.name eqs "test") })
+      .queryString shouldEqual "UPDATE BasicTable SET count = 10 WHERE (count = 15 OR name = 'test5') AND (count = 5 OR name = 'test')"
+  }
+
 
 }

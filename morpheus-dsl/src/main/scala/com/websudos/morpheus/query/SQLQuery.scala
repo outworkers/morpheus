@@ -60,17 +60,21 @@ case class SQLBuiltQuery(queryString: String) {
 }
 
 object DefaultSQLOperators {
-  val select = SQLBuiltQuery("SELECT")
-  val where = SQLBuiltQuery("WHERE")
-  val update = SQLBuiltQuery("UPDATE")
-  val and = SQLBuiltQuery("AND")
-  val set = SQLBuiltQuery("SET")
-  val in = SQLBuiltQuery("IN")
-  val setTo = SQLBuiltQuery("setTo")
-  val eqs = SQLBuiltQuery("=")
-  val `(` = SQLBuiltQuery("(")
-  val comma = SQLBuiltQuery(",")
-  val `)` = SQLBuiltQuery(")")
+  val select = "SELECT"
+  val distinct = "DISTINCT"
+  val distinctRow = "DISTINCTROW"
+  val where = "WHERE"
+  val update = "UPDATE"
+  val and = "AND"
+  val or = "OR"
+  val set = "SET"
+  val in = "IN"
+  val from = "FROM"
+  val setTo = "setTo"
+  val eqs = "="
+  val `(` = "("
+  val comma = ","
+  val `)` = ")"
 }
 
 trait SQLQuery[T <: Table[T, _], R] extends ResultSetOperations {

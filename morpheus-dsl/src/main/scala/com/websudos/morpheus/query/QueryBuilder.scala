@@ -18,9 +18,6 @@
 
 package com.websudos.morpheus.query
 
-import com.twitter.finagle.exp.mysql.Row
-import com.websudos.morpheus.dsl.Table
-
 /**
  * The hierarchical implementation of operators is designed to account for potential variations between SQL databases.
  * Every specific implementation can provide it's own set of operators and string encoding for them based on the specific semantics.
@@ -54,29 +51,6 @@ object MySQLOperatorSet extends SQLOperatorSet {
 sealed trait AbstractSyntaxBlock {
 
 }
-
-case class SelectSyntaxBlock[T <: Table[T, _], R](qb: SQLBuiltQuery, tableName: String, fromRow: Row => R, statements: List[String] = List("*")) {
-
-  def from: SQLBuiltQuery = {
-    qb.pad.append(s"FROM $tableName")
-  }
-
-  def `*`: SQLBuiltQuery = {
-    qb.pad.append(s"${statements.mkString(" ")} FROM $tableName")
-  }
-
-  def all: SQLBuiltQuery = this.`*`
-
-  def distinct: SQLBuiltQuery = {
-    qb.pad.append(s"DISTINCT ${statements.mkString(", ")} FROM $tableName")
-  }
-
-  def distinctRow: SQLBuiltQuery = {
-    qb.pad.append(s"DISTINCTROW ${statements.mkString(", ")} FROM $tableName")
-  }
-
-}
-
 
 /**
  * The AbstractQueryBuilder is designed to define the basic
@@ -119,11 +93,18 @@ sealed trait AbstractQueryBuilder {
   }
 
   def select(tableName: String): SQLBuiltQuery = {
-    SQLBuiltQuery(s"SELECT * FROM $tableName")
+    SQLBuiltQuery(DefaultSQLOperators.select)
+      .forcePad.append("*").forcePad
+      .append(DefaultSQLOperators.from)
+      .forcePad.append(tableName)
   }
 
   def select(tableName: String, names: String*): SQLBuiltQuery = {
-    SQLBuiltQuery(s"SELECT ${names.mkString(" ")} FROM $tableName")
+
+    SQLBuiltQuery(DefaultSQLOperators.select)
+      .forcePad.append(names.mkString(" "))
+      .append(DefaultSQLOperators.from)
+      .forcePad.append(tableName)
   }
 
   def where(qb: SQLBuiltQuery, condition: SQLBuiltQuery): SQLBuiltQuery = {
@@ -131,24 +112,25 @@ sealed trait AbstractQueryBuilder {
   }
 
   def and(qb: SQLBuiltQuery, condition: SQLBuiltQuery): SQLBuiltQuery = {
-    qb.pad.append(SQLBuiltQuery("AND ").append(condition))
+    qb.pad
+      .append(DefaultSQLOperators.and)
+      .forcePad.append(condition)
   }
 
   def or(qb: SQLBuiltQuery, condition: SQLBuiltQuery): SQLBuiltQuery = {
-    qb.pad.append(SQLBuiltQuery("OR ").append(condition))
+    qb.pad.append(DefaultSQLOperators.or).forcePad.append(condition)
   }
 
   def in(name: String, values: List[String]): SQLBuiltQuery = {
     SQLBuiltQuery(name)
-      .pad
-      .append(DefaultSQLOperators.in.pad)
-      .append(DefaultSQLOperators.`(`)
+      .pad.append(DefaultSQLOperators.in)
+      .pad.append(DefaultSQLOperators.`(`)
       .append(values.mkString(", "))
       .append(DefaultSQLOperators.`)`)
   }
 
   def update(tableName: String): SQLBuiltQuery = {
-    DefaultSQLOperators.update.pad.append(tableName)
+    SQLBuiltQuery(DefaultSQLOperators.update).pad.append(tableName)
   }
 
   def setTo(name: String, value: String): SQLBuiltQuery = {

@@ -22,6 +22,36 @@ import com.twitter.finagle.exp.mysql.Row
 import com.websudos.morpheus.dsl.Table
 
 /**
+ * This is the implementation of a root UPDATE query, a wrapper around an abstract syntax block.
+ *
+ * This is used as the entry point to an SQL query, and it requires the user to provide "one more method" to fully specify a SELECT query.
+ * The implicit conversion from a RootSelectQuery to a SelectQuery will automatically pick the "all" strategy below.
+ *
+ * @param table The table owning the record.
+ * @param st The Abstract syntax block describing the possible decisions.
+ * @param rowFunc The function used to map a result to a type-safe record.
+ * @tparam T The type of the owning table.
+ * @tparam R The type of the record.
+ */
+private[morpheus] class RootUpdateQuery[T <: Table[T, _], R](val table: T, val st: SelectSyntaxBlock[T, _], val rowFunc: Row => R) {
+
+  def fromRow(r: Row): R = rowFunc(r)
+
+  def distinct: SelectQuery[T, R] = {
+    new SelectQuery(table, st.distinct, rowFunc)
+  }
+
+  def distinctRow: SelectQuery[T, R] = {
+    new SelectQuery(table, st.distinctRow, rowFunc)
+  }
+
+  def all: SelectQuery[T, R] = {
+    new SelectQuery(table, st.*, rowFunc)
+  }
+}
+
+
+/**
  * This bit of magic allows all extending sub-classes to implement the "set" and "and" SQL clauses with all the necessary operators,
  * in a type safe way. By providing the third type argument and a custom way to subclass with the predetermined set of arguments,
  * all DSL representations of an UPDATE query can use the implementation without violating DRY.
@@ -37,7 +67,6 @@ import com.websudos.morpheus.dsl.Table
  *                   type that will subclass an SQLQuery[T, R]
  *
  */
-
 sealed trait AssignQuery[T <: Table[T, _], R, QueryType <: SQLQuery[T, R]] {
   protected[this] def assignmentClass(table: T, query: SQLBuiltQuery, rowFunc: Row => R): QueryType
 

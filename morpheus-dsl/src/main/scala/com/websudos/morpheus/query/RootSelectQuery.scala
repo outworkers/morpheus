@@ -21,6 +21,33 @@ package com.websudos.morpheus.query
 import com.twitter.finagle.exp.mysql.Row
 import com.websudos.morpheus.dsl.Table
 
+case class SelectSyntaxBlock[T <: Table[T, _], R](query: String, tableName: String, fromRow: Row => R, columns: List[String] = List("*")) {
+
+  private[this] val qb = SQLBuiltQuery(query)
+
+  def `*`: SQLBuiltQuery = {
+    qb.pad.append(columns.mkString(" "))
+      .forcePad.append(DefaultSQLOperators.from)
+      .forcePad.append(tableName)
+  }
+
+  def all: SQLBuiltQuery = this.`*`
+
+  def distinct: SQLBuiltQuery = {
+    qb.pad.append(DefaultSQLOperators.distinct)
+      .forcePad.append(columns.mkString(", "))
+      .forcePad.append(DefaultSQLOperators.from)
+      .forcePad.append(tableName)
+  }
+
+  def distinctRow: SQLBuiltQuery = {
+    qb.pad.append(DefaultSQLOperators.distinctRow)
+      .forcePad.append(columns.mkString(", "))
+      .forcePad.append(DefaultSQLOperators.from)
+      .forcePad.append(tableName)
+  }
+}
+
 /**
  * This is the implementation of a root select query, a wrapper around an abstract syntax block.
  * The basic select of select methods can be seen in {@link com.websudos.morpheus.dsl.SelectTable}
@@ -49,7 +76,6 @@ private[morpheus] class RootSelectQuery[T <: Table[T, _], R](val table: T, val s
   def all: SelectQuery[T, R] = {
     new SelectQuery(table, st.*, rowFunc)
   }
-
 }
 
 
