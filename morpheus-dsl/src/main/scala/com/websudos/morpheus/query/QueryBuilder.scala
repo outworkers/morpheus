@@ -111,6 +111,10 @@ sealed trait AbstractQueryBuilder {
     qb.pad.append(DefaultSQLOperators.where).pad.append(condition)
   }
 
+  def having(qb: SQLBuiltQuery, condition: SQLBuiltQuery): SQLBuiltQuery = {
+    qb.pad.append(DefaultSQLOperators.having).pad.append(condition)
+  }
+
   def limit(qb: SQLBuiltQuery, value: String): SQLBuiltQuery = {
     qb.pad.append(DefaultSQLOperators.limit)
       .forcePad.append(value)

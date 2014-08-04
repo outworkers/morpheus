@@ -94,7 +94,8 @@ trait SQLPrimitives {
 
     def toSQL(value: String): String = "'" + value + "'"
   }
-
 }
+
+trait MySQLPrimitives extends SQLPrimitives {}
 
 object SQLPrimitives extends SQLPrimitives

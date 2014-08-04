@@ -68,6 +68,7 @@ object DefaultSQLOperators {
   val quick = "QUICK"
   val distinctRow = "DISTINCTROW"
   val where = "WHERE"
+  val having = "HAVING"
   val update = "UPDATE"
   val delete = "DELETE"
   val limit = "LIMIT"

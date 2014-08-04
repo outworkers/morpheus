@@ -21,8 +21,10 @@ package com.websudos.morpheus.mysql
 import com.websudos.morpheus.column.AbstractColumn
 import com.websudos.morpheus.dsl.DefaultImportsDefinition
 import com.websudos.morpheus.query.QueryColumn
+import com.websudos.morpheus.MySQLPrimitives
 
-object Imports extends DefaultImportsDefinition {
+object Imports extends DefaultImportsDefinition with MySQLPrimitives {
   override implicit def columnToQueryColumn[T : SQLPrimitive](col: AbstractColumn[T]): QueryColumn[T] = new QueryColumn[T](col)
+
   type MySQLTable[Owner <: MySQLTable[Owner, Record], Record] = com.websudos.morpheus.mysql.MySQLTable[Owner, Record]
 }
