@@ -21,9 +21,10 @@ package com.websudos.morpheus.column
 import scala.annotation.implicitNotFound
 
 import com.twitter.finagle.exp.mysql.Row
-import com.websudos.morpheus.query.{UpdateQuery, RootUpdateQuery, QueryAssignment, SelectImplicits}
+import com.websudos.morpheus.query._
 import com.websudos.morpheus.{ SQLPrimitive, SQLPrimitives }
 import com.websudos.morpheus.dsl.Table
+import com.websudos.morpheus.query.QueryAssignment
 
 private[morpheus] trait AbstractColumn[@specialized(Int, Double, Float, Long, Boolean, Short) T] {
 
@@ -101,9 +102,56 @@ sealed trait ModifyImplicits {
       root.rowFunc
     )
   }
+
+
+  /**
+   * This defines an implicit conversion from a RootUpdateQuery to an UpdateQuery, making the UPDATE syntax block invisible to the end user.
+   * Much like a decision block, a UpdateSyntaxBlock needs a decision branch to follow, may that be nothing, LOW_PRIORITY or IGNORE.
+   *
+   * The one catch is that this form of "exit" from an un-executable RootUpdateQuery will directly translate the query to an "UPDATE tableName"
+   * query, meaning no UPDATE operators will be used in the default serialisation.
+   *
+   * The simple assumption made here is that since the user didn't use any other provided method, such as "lowPriority" or "ignore" the desired behaviour is
+   * a full select.
+   *
+   * @param root The RootSelectQuery to convert.
+   * @tparam T The table owning the record.
+   * @tparam R The record type.
+   * @return An executable SelectQuery.
+   */
+  implicit def rootDeleteQueryToDeleteQuery[T <: Table[T, _], R](root: RootDeleteQuery[T, R]): DeleteQuery[T, R] = {
+    new DeleteQuery[T, R](
+      root.table,
+      root.st.all,
+      root.rowFunc
+    )
+  }
+
+  /**
+   * This defines an implicit conversion from a RootSelectQuery to a SelectQuery, making the SELECT syntax block invisible to the end user.
+   * Much like a decision block, a SelectSyntaxBlock needs a decision branch to follow, may that be DISTINCT, ALL or DISTINCTROW as per the SQL spec.
+   *
+   * The one catch is that this form of "exit" from an un-executable RootSelectQuery will directly translate the query to a "SELECT fields* FROM tableName"
+   * query, meaning no SELECT operators will be used in the serialisation.
+   *
+   * The simple assumption made here is that since the user didn't use any other provided method, such as "all", "distinct" or "distinctrow",
+   * the desired behaviour is a full select.
+   *
+   * @param root The RootSelectQuery to convert.
+   * @tparam T The table owning the record.
+   * @tparam R The record type.
+   * @return An executable SelectQuery.
+   */
+  implicit def rootSelectQueryToSelectQuery[T <: Table[T, _], R](root: RootSelectQuery[T, R]): SelectQuery[T, R] = {
+    new SelectQuery[T, R](
+      root.table,
+      root.st.*,
+      root.rowFunc
+    )
+  }
 }
 
 
-private[morpheus] trait FullDslDefinition extends ModifyImplicits with SelectImplicits {
+private[morpheus] trait FullDslDefinition extends ModifyImplicits {
 
 }

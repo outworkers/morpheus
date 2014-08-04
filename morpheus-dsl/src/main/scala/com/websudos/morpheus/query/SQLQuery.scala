@@ -64,9 +64,12 @@ object DefaultSQLOperators {
   val distinct = "DISTINCT"
   val lowPriority = "LOW_PRIORITY"
   val ignore = "IGNORE"
+  val quick = "QUICK"
   val distinctRow = "DISTINCTROW"
   val where = "WHERE"
   val update = "UPDATE"
+  val delete = "DELETE"
+  val limit = "LIMIT"
   val and = "AND"
   val or = "OR"
   val set = "SET"
@@ -137,6 +140,8 @@ trait SQLResultsQuery[T <: Table[T, _], R] extends SQLQuery[T, R] {
   def get()(implicit client: Client): Future[Option[R]]
 }
 
+abstract sealed class Limited
+abstract sealed class Unlimited
 
 /**
  * This bit of magic allows all extending sub-classes to implement the "where" and "and" SQL clauses with all the necessary operators,
@@ -162,6 +167,14 @@ private[morpheus] abstract class WhereQuery[T <: Table[T, _], R, QueryType <: SQ
   def fromRow(row: Row): R = rowFunc(row)
 
   protected[this] def clause(condition: T => QueryCondition): QueryType = {
+    subclass(table, table.queryBuilder.where(query, condition(table).clause), rowFunc)
+  }
+
+  def limit(value: Int): QueryType = {
+    subclass(table, table.queryBuilder.limit(query, value.toString), rowFunc)
+  }
+
+  protected[this] def orderByClause(condition: T => QueryCondition): QueryType = {
     subclass(table, table.queryBuilder.where(query, condition(table).clause), rowFunc)
   }
 

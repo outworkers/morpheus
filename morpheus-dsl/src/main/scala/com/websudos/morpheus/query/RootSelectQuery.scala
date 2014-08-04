@@ -95,30 +95,3 @@ class SelectWhere[T <: Table[T, _], R](table: T, val query: SQLBuiltQuery, rowFu
 
   def and(condition: T => QueryCondition): SelectWhere[T, R] = andClause(condition)
 }
-
-
-private[morpheus] trait SelectImplicits {
-
-  /**
-   * This defines an implicit conversion from a RootSelectQuery to a SelectQuery, making the SELECT syntax block invisible to the end user.
-   * Much like a decision block, a SelectSyntaxBlock needs a decision branch to follow, may that be DISTINCT, ALL or DISTINCTROW as per the SQL spec.
-   *
-   * The one catch is that this form of "exit" from an un-executable RootSelectQuery will directly translate the query to a "SELECT fields* FROM tableName"
-   * query, meaning no SELECT operators will be used in the serialisation.
-   *
-   * The simple assumption made here is that since the user didn't use any other provided method, such as "all", "distinct" or "distinctrow",
-   * the desired behaviour is a full select.
-   *
-   * @param root The RootSelectQuery to convert.
-   * @tparam T The table owning the record.
-   * @tparam R The record type.
-   * @return An executable SelectQuery.
-   */
-  implicit def rootSelectQueryToSelectQuery[T <: Table[T, _], R](root: RootSelectQuery[T, R]): SelectQuery[T, R] = {
-    new SelectQuery[T, R](
-      root.table,
-      root.st.*,
-      root.rowFunc
-    )
-  }
-}
