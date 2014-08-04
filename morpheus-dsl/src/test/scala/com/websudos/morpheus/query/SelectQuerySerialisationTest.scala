@@ -272,7 +272,8 @@ class SelectQuerySerialisationTest extends FlatSpec with Matchers {
       .select(_.name, _.count)
       .distinct
       .where(_.count >= 10)
-      .and(t => { (t.count <= 100) or (t.name eqs "test")}).queryString shouldEqual "SELECT DISTINCT name, " +
+      .and(t => { (t.count <= 100) or (t.name eqs "test")})
+      .queryString shouldEqual "SELECT DISTINCT name, " +
       "count FROM BasicTable WHERE count >= 10 AND (count <= 100 OR name = 'test')"
   }
 
