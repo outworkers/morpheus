@@ -21,6 +21,8 @@ package com.websudos.morpheus.query
 import org.scalatest.prop.GeneratorDrivenPropertyChecks
 import org.scalatest.{FlatSpec, Matchers}
 
+import com.websudos.morpheus.mysql.MySQLQueryBuilder
+
 
 class MySQLQueryBuilderTest extends FlatSpec with Matchers with GeneratorDrivenPropertyChecks {
 

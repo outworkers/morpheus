@@ -96,6 +96,6 @@ trait SQLPrimitives {
   }
 }
 
-trait MySQLPrimitives extends SQLPrimitives {}
+
 
 object SQLPrimitives extends SQLPrimitives

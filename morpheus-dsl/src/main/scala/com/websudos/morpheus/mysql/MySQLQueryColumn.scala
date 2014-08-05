@@ -18,24 +18,8 @@
 
 package com.websudos.morpheus.mysql
 
+import com.websudos.morpheus.SQLPrimitive
 import com.websudos.morpheus.column.AbstractColumn
-import com.websudos.morpheus.dsl.DefaultImportsDefinition
-import com.websudos.morpheus.query._
+import com.websudos.morpheus.query.AbstractQueryColumn
 
-object Imports extends DefaultImportsDefinition with MySQLPrimitives {
-
-
-  override implicit def columnToQueryColumn[T : SQLPrimitive](col: AbstractColumn[T]): MySQLQueryColumn[T] = new MySQLQueryColumn[T](col)
-
-
-  implicit def rootSelectQueryToQuery[T <: Table[T, _], R](root: MySQLRootSelectQuery[T, R]): Query[T, R, Ungroupped, Unordered, Unlimited,
-    Unchainned, AssignUnchainned] = {
-    new Query(
-      root.table,
-      root.st.*,
-      root.rowFunc
-    )
-  }
-
-  type MySQLTable[Owner <: MySQLTable[Owner, Record], Record] = com.websudos.morpheus.mysql.MySQLTable[Owner, Record]
-}
+private[morpheus] class MySQLQueryColumn[T : SQLPrimitive](col: AbstractColumn[T]) extends AbstractQueryColumn[T](col)

@@ -39,21 +39,6 @@ trait SQLOperatorSet {
   def `<=>`: String
 }
 
-object MySQLOperatorSet extends SQLOperatorSet {
-  val eq = "="
-  val lt = "<"
-  val lte = "<="
-  val gt = ">"
-  val gte = ">="
-  val != = "!="
-  val <> = "<>"
-  val like = "LIKE"
-  val notLike = "NOT LIKE"
-  val in = "IN"
-  val notIn = "NOT IN"
-  val <=> = "<=>"
-}
-
 abstract class AbstractSQLSyntax {
   val select = "SELECT"
   val distinct = "DISTINCT"
@@ -82,13 +67,6 @@ abstract class AbstractSQLSyntax {
 
 object DefaultSQLSyntax extends AbstractSQLSyntax
 
-object MySQLSyntax extends AbstractSQLSyntax {
-  val distinctRow = "DISTINCTROW"
-  val highPriority = "HIGH_PRIORITY"
-}
-
-
-
 
 /**
  * This is used to represent a syntax block where multiple operations are possible at the same point in the code.
@@ -106,7 +84,7 @@ private[morpheus] trait AbstractSyntaxBlock {
  * Every imports package will carefully swap out the table implementation with the relevant one, so the user doesn't have to bother doing anything crazy like
  * using different base table implementations for different databases.
  */
-sealed trait AbstractQueryBuilder {
+private[morpheus] trait AbstractQueryBuilder {
 
   def operators: SQLOperatorSet
   def syntax: AbstractSQLSyntax
@@ -183,11 +161,10 @@ sealed trait AbstractQueryBuilder {
   }
 
   def select(tableName: String, names: String*): SQLBuiltQuery = {
-
     SQLBuiltQuery(syntax.select)
       .pad.append(names.mkString(" "))
-      .pad.append(syntax.from)
-      .pad.append(tableName)
+      .forcePad.append(syntax.from)
+      .forcePad.append(tableName)
   }
 
   def where(qb: SQLBuiltQuery, condition: SQLBuiltQuery): SQLBuiltQuery = {
@@ -252,12 +229,8 @@ sealed trait AbstractQueryBuilder {
   def desc(name: String): SQLBuiltQuery = {
     SQLBuiltQuery(name).forcePad.append(syntax.desc)
   }
-
 }
 
 
-object MySQLQueryBuilder extends AbstractQueryBuilder {
-  val operators = MySQLOperatorSet
-  val syntax = MySQLSyntax
-}
+
 

@@ -18,9 +18,10 @@
 
 package com.websudos.morpheus.query
 
+import scala.annotation.implicitNotFound
+
 import com.twitter.finagle.exp.mysql.Row
 import com.websudos.morpheus.dsl.Table
-import scala.annotation.implicitNotFound
 
 
 private[morpheus] abstract class AbstractUpdateSyntaxBlock[T <: Table[T, _], R](query: String, tableName: String, fromRow: Row => R,
@@ -34,20 +35,7 @@ private[morpheus] abstract class AbstractUpdateSyntaxBlock[T <: Table[T, _], R](
 
 }
 
-case class MySQLUpdateSyntaxBlock[T <: Table[T, _], R](query: String, tableName: String, fromRow: Row => R,
-                                                       columns: List[String] = List("*")) extends AbstractUpdateSyntaxBlock[T, R](query, tableName, fromRow) {
-  val syntax = MySQLSyntax
 
-  def lowPriority: SQLBuiltQuery = {
-    qb.pad.append(syntax.lowPriority)
-      .pad.append(tableName)
-  }
-
-  def ignore: SQLBuiltQuery = {
-    qb.pad.append(syntax.ignore)
-      .pad.append(tableName)
-  }
-}
 
 
 sealed trait AssignBind
@@ -77,17 +65,7 @@ private[morpheus] abstract class AbstractRootUpdateQuery[T <: Table[T, _], R](va
   }
 }
 
-private[morpheus] class MySQLRootUpdateQuery[T <: Table[T, _], R](table: T, st: MySQLUpdateSyntaxBlock[T, _],
-                                                                  rowFunc: Row => R) extends AbstractRootUpdateQuery[T, R](table, st, rowFunc) {
 
-  def lowPriority: Query[T, R, Ungroupped, Unordered, Unlimited, Unchainned, AssignUnchainned] = {
-    new Query(table, st.lowPriority, rowFunc)
-  }
-
-  def ignore: Query[T, R, Ungroupped, Unordered, Unlimited, Unchainned, AssignUnchainned] = {
-    new Query(table, st.ignore, rowFunc)
-  }
-}
 
 /**
  * This bit of magic allows all extending sub-classes to implement the "set" and "and" SQL clauses with all the necessary operators,

@@ -66,23 +66,9 @@ private[morpheus] abstract class AbstractSelectSyntaxBlock(
       .pad.append(syntax.from)
       .pad.append(tableName)
   }
-
-
 }
 
-private[morpheus] class MySQLSelectSyntaxBlock(
-  query: String, tableName: String,
-  columns: List[String] = List("*")) extends AbstractSelectSyntaxBlock(query, tableName, columns) {
 
-  val syntax = MySQLSyntax
-
-  def distinctRow: SQLBuiltQuery = {
-    qb.pad.append(syntax.distinctRow)
-      .pad.append(columns.mkString(", "))
-      .pad.append(syntax.from)
-      .pad.append(tableName)
-  }
-}
 
 
 /**
@@ -111,14 +97,7 @@ private[morpheus] abstract class AbstractRootSelectQuery[T <: Table[T, _], R](va
   }
 }
 
-private[morpheus] class MySQLRootSelectQuery[T <: Table[T, _], R](table: T, st: MySQLSelectSyntaxBlock, rowFunc: Row => R)
-  extends AbstractRootSelectQuery[T, R](table, st, rowFunc) {
 
-  def distinctRow: Query[T, R, Ungroupped, Unordered, Unlimited, Unchainned, AssignUnchainned] = {
-    new Query(table, st.distinctRow, rowFunc)
-  }
-
-}
 
 
 /**

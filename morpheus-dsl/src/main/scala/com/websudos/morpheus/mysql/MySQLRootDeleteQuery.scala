@@ -18,24 +18,20 @@
 
 package com.websudos.morpheus.mysql
 
-import com.websudos.morpheus.column.AbstractColumn
-import com.websudos.morpheus.dsl.DefaultImportsDefinition
+import com.twitter.finagle.exp.mysql.Row
+import com.websudos.morpheus.dsl.Table
 import com.websudos.morpheus.query._
 
-object Imports extends DefaultImportsDefinition with MySQLPrimitives {
+private[morpheus] class MySQLRootDeleteQuery[T <: Table[T, _], R](table: T, st: MySQLDeleteSyntaxBlock[T, _], rowFunc: Row => R)  extends AbstractRootDeleteQuery(table, st,
+  rowFunc) {
 
-
-  override implicit def columnToQueryColumn[T : SQLPrimitive](col: AbstractColumn[T]): MySQLQueryColumn[T] = new MySQLQueryColumn[T](col)
-
-
-  implicit def rootSelectQueryToQuery[T <: Table[T, _], R](root: MySQLRootSelectQuery[T, R]): Query[T, R, Ungroupped, Unordered, Unlimited,
-    Unchainned, AssignUnchainned] = {
-    new Query(
-      root.table,
-      root.st.*,
-      root.rowFunc
-    )
+  def lowPriority: Query[T, R, Ungroupped, Unordered, Unlimited, Unchainned, AssignUnchainned] = {
+    new Query(table, st.lowPriority, rowFunc)
   }
 
-  type MySQLTable[Owner <: MySQLTable[Owner, Record], Record] = com.websudos.morpheus.mysql.MySQLTable[Owner, Record]
+  def ignore: Query[T, R, Ungroupped, Unordered, Unlimited, Unchainned, AssignUnchainned] = {
+    new Query(table, st.ignore, rowFunc)
+  }
+
+
 }

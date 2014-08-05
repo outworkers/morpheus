@@ -20,7 +20,6 @@ package com.websudos.morpheus.mysql
 
 import com.twitter.finagle.exp.mysql.Row
 import com.websudos.morpheus.dsl.{SelectTable, Table}
-import com.websudos.morpheus.query._
 
 abstract class MySQLTable[Owner <: MySQLTable[Owner, Record], Record] extends Table[Owner, Record] with SelectTable[Owner, Record,
   MySQLRootSelectQuery, MySQLSelectSyntaxBlock] {
@@ -47,7 +46,7 @@ abstract class MySQLTable[Owner <: MySQLTable[Owner, Record], Record] extends Ta
 
   def delete: MySQLRootDeleteQuery[Owner, Record] = new MySQLRootDeleteQuery(
     this.asInstanceOf[Owner],
-    MySQLDeleteSyntaxBlock(syntax.delete, tableName, fromRow),
+    MySQLDeleteSyntaxBlock(syntax.delete, tableName),
     fromRow
   )
 

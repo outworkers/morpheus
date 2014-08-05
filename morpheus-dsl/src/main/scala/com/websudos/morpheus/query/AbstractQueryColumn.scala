@@ -20,6 +20,7 @@ package com.websudos.morpheus.query
 
 import com.websudos.morpheus.SQLPrimitive
 import com.websudos.morpheus.column.AbstractColumn
+import com.websudos.morpheus.mysql.MySQLQueryBuilder
 
 
 private[morpheus] abstract class BaseQueryCondition(val clause: SQLBuiltQuery)
@@ -138,7 +139,7 @@ private[morpheus] abstract class AbstractQueryColumn[T: SQLPrimitive](col: Abstr
   }
 }
 
-private[morpheus] class MySQLQueryColumn[T : SQLPrimitive](col: AbstractColumn[T]) extends AbstractQueryColumn[T](col)
+
 
 
 
