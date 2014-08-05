@@ -23,24 +23,32 @@ import com.websudos.morpheus.dsl.Table
 import scala.annotation.implicitNotFound
 
 
-case class UpdateSyntaxBlock[T <: Table[T, _], R](query: String, tableName: String, fromRow: Row => R, columns: List[String] = List("*")) {
+private[morpheus] abstract class AbstractUpdateSyntaxBlock[T <: Table[T, _], R](query: String, tableName: String, fromRow: Row => R,
+                                                                       columns: List[String] = List("*")) extends AbstractSyntaxBlock {
 
-  private[this] val qb = SQLBuiltQuery(query)
+  protected[this] val qb = SQLBuiltQuery(query)
 
   def all: SQLBuiltQuery = {
     qb.pad.append(tableName)
   }
 
+}
+
+case class MySQLUpdateSyntaxBlock[T <: Table[T, _], R](query: String, tableName: String, fromRow: Row => R,
+                                                       columns: List[String] = List("*")) extends AbstractUpdateSyntaxBlock[T, R](query, tableName, fromRow) {
+  val syntax = MySQLSyntax
+
   def lowPriority: SQLBuiltQuery = {
-    qb.pad.append(DefaultSQLOperators.lowPriority)
+    qb.pad.append(syntax.lowPriority)
       .pad.append(tableName)
   }
 
   def ignore: SQLBuiltQuery = {
-    qb.pad.append(DefaultSQLOperators.ignore)
+    qb.pad.append(syntax.ignore)
       .pad.append(tableName)
   }
 }
+
 
 sealed trait AssignBind
 sealed abstract class AssignChainned extends AssignBind
@@ -59,9 +67,18 @@ sealed abstract class AssignUnchainned extends AssignBind
  * @tparam T The type of the owning table.
  * @tparam R The type of the record.
  */
-private[morpheus] abstract class AbstractRootUpdateQuery[T <: Table[T, _], R](val table: T, val st: UpdateSyntaxBlock[T, _], val rowFunc: Row => R) {
+private[morpheus] abstract class AbstractRootUpdateQuery[T <: Table[T, _], R](val table: T, val st: AbstractUpdateSyntaxBlock[T, _], val rowFunc: Row => R) {
 
   def fromRow(r: Row): R = rowFunc(r)
+
+
+  private[morpheus] def all: Query[T, R, Ungroupped, Unordered, Unlimited, Unchainned, AssignUnchainned] = {
+    new Query(table, st.all, rowFunc)
+  }
+}
+
+private[morpheus] class MySQLRootUpdateQuery[T <: Table[T, _], R](table: T, st: MySQLUpdateSyntaxBlock[T, _],
+                                                                  rowFunc: Row => R) extends AbstractRootUpdateQuery[T, R](table, st, rowFunc) {
 
   def lowPriority: Query[T, R, Ungroupped, Unordered, Unlimited, Unchainned, AssignUnchainned] = {
     new Query(table, st.lowPriority, rowFunc)
@@ -70,14 +87,7 @@ private[morpheus] abstract class AbstractRootUpdateQuery[T <: Table[T, _], R](va
   def ignore: Query[T, R, Ungroupped, Unordered, Unlimited, Unchainned, AssignUnchainned] = {
     new Query(table, st.ignore, rowFunc)
   }
-
-  private[morpheus] def all: Query[T, R, Ungroupped, Unordered, Unlimited, Unchainned, AssignUnchainned] = {
-    new Query(table, st.all, rowFunc)
-  }
 }
-
-private[morpheus] class MySQLRootUpdateQuery[T <: Table[T, _], R](table: T, st: UpdateSyntaxBlock[T, _],
-                                                                  rowFunc: Row => R) extends AbstractRootUpdateQuery[T, R](table, st, rowFunc)
 
 /**
  * This bit of magic allows all extending sub-classes to implement the "set" and "and" SQL clauses with all the necessary operators,

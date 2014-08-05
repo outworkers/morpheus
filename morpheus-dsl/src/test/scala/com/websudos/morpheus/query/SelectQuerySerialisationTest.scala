@@ -285,6 +285,9 @@ class SelectQuerySerialisationTest extends FlatSpec with Matchers {
     BasicTable.select.distinctRow.where(_.name eqs "test").queryString shouldEqual "SELECT DISTINCTROW * FROM BasicTable WHERE name = 'test'"
   }
 
+
+  BasicTable.select(_.name)
+
   it should "serialise a partial SELECT DISTINCTROW query with a single column in the partial select" in {
     BasicTable.select(_.name).distinctRow.queryString shouldEqual "SELECT DISTINCTROW name FROM BasicTable"
   }

@@ -46,29 +46,40 @@ trait BaseSelectQuery[T <: Table[T, _], R] extends SQLResultsQuery[T, R] {
 
 }
 
-case class SelectSyntaxBlock[T <: Table[T, _], R](query: String, tableName: String, fromRow: Row => R, columns: List[String] = List("*")) {
+private[morpheus] abstract class AbstractSelectSyntaxBlock(
+  query: String, tableName: String,
+  columns: List[String] = List("*")) extends AbstractSyntaxBlock {
 
-  private[this] val qb = SQLBuiltQuery(query)
+  protected[this] val qb = SQLBuiltQuery(query)
 
   def `*`: SQLBuiltQuery = {
     qb.pad.append(columns.mkString(" "))
-      .pad.append(DefaultSQLOperators.from)
+      .pad.append(syntax.from)
       .pad.append(tableName)
   }
 
   def all: SQLBuiltQuery = this.`*`
 
   def distinct: SQLBuiltQuery = {
-    qb.pad.append(DefaultSQLOperators.distinct)
+    qb.pad.append(syntax.distinct)
       .pad.append(columns.mkString(", "))
-      .pad.append(DefaultSQLOperators.from)
+      .pad.append(syntax.from)
       .pad.append(tableName)
   }
 
+
+}
+
+private[morpheus] class MySQLSelectSyntaxBlock(
+  query: String, tableName: String,
+  columns: List[String] = List("*")) extends AbstractSelectSyntaxBlock(query, tableName, columns) {
+
+  val syntax = MySQLSyntax
+
   def distinctRow: SQLBuiltQuery = {
-    qb.pad.append(DefaultSQLOperators.distinctRow)
+    qb.pad.append(syntax.distinctRow)
       .pad.append(columns.mkString(", "))
-      .pad.append(DefaultSQLOperators.from)
+      .pad.append(syntax.from)
       .pad.append(tableName)
   }
 }
@@ -87,7 +98,7 @@ case class SelectSyntaxBlock[T <: Table[T, _], R](query: String, tableName: Stri
  * @tparam T The type of the owning table.
  * @tparam R The type of the record.
  */
-private[morpheus] abstract class AbstractRootSelectQuery[T <: Table[T, _], R](val table: T, val st: SelectSyntaxBlock[T, _], val rowFunc: Row => R) {
+private[morpheus] abstract class AbstractRootSelectQuery[T <: Table[T, _], R](val table: T, val st: AbstractSelectSyntaxBlock, val rowFunc: Row => R) {
 
   def fromRow(r: Row): R = rowFunc(r)
 
@@ -95,17 +106,19 @@ private[morpheus] abstract class AbstractRootSelectQuery[T <: Table[T, _], R](va
     new Query(table, st.distinct, rowFunc)
   }
 
-  def distinctRow: Query[T, R, Ungroupped, Unordered, Unlimited, Unchainned, AssignUnchainned] = {
-    new Query(table, st.distinctRow, rowFunc)
-  }
-
   def all: Query[T, R, Ungroupped, Unordered, Unlimited, Unchainned, AssignUnchainned] = {
     new Query(table, st.*, rowFunc)
   }
 }
 
-private[morpheus] class MySQLRootSelectQuery[T <: Table[T, _], R](table: T, st: SelectSyntaxBlock[T, _], rowFunc: Row => R)
-  extends AbstractRootSelectQuery(table, st, rowFunc)
+private[morpheus] class MySQLRootSelectQuery[T <: Table[T, _], R](table: T, st: MySQLSelectSyntaxBlock, rowFunc: Row => R)
+  extends AbstractRootSelectQuery[T, R](table, st, rowFunc) {
+
+  def distinctRow: Query[T, R, Ungroupped, Unordered, Unlimited, Unchainned, AssignUnchainned] = {
+    new Query(table, st.distinctRow, rowFunc)
+  }
+
+}
 
 
 /**

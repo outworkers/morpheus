@@ -3,33 +3,46 @@ package com.websudos.morpheus.query
 import com.websudos.morpheus.dsl.Table
 import com.twitter.finagle.exp.mysql.Row
 
-case class DeleteSyntaxBlock[T <: Table[T, _], R](query: String, tableName: String, fromRow: Row => R, columns: List[String] = List("*")) {
+sealed abstract class AbstractDeleteSyntaxBlock[T <: Table[T, _], R](query: String, tableName: String, fromRow: Row => R,
+                                                                     columns: List[String] = List("*")) extends AbstractSyntaxBlock {
 
-  private[this] val qb = SQLBuiltQuery(query)
+  protected[this] val qb: SQLBuiltQuery = SQLBuiltQuery(query)
+
+  def syntax: AbstractSQLSyntax
 
   def all: SQLBuiltQuery = {
-    qb.pad.append(DefaultSQLOperators.from)
+    qb.pad.append(DefaultSQLSyntax.from)
       .forcePad.append(tableName)
   }
+}
+
+
+case class MySQLDeleteSyntaxBlock[T <: Table[T, _], R](query: String, tableName: String, fromRow: Row => R,
+                                                       columns: List[String] = List("*")) extends AbstractDeleteSyntaxBlock[T, R](query, tableName, fromRow,
+  columns) {
+
+  val syntax = MySQLSyntax
 
   def lowPriority: SQLBuiltQuery = {
-    qb.pad.append(DefaultSQLOperators.lowPriority)
-      .forcePad.append(DefaultSQLOperators.from)
+    qb.pad.append(DefaultSQLSyntax.lowPriority)
+      .forcePad.append(DefaultSQLSyntax.from)
       .forcePad.append(tableName)
   }
 
   def ignore: SQLBuiltQuery = {
-    qb.pad.append(DefaultSQLOperators.ignore)
-      .forcePad.append(DefaultSQLOperators.from)
+    qb.pad.append(DefaultSQLSyntax.ignore)
+      .forcePad.append(DefaultSQLSyntax.from)
       .forcePad.append(tableName)
   }
 
   def quick: SQLBuiltQuery = {
-    qb.pad.append(DefaultSQLOperators.quick)
-      .forcePad.append(DefaultSQLOperators.from)
+    qb.pad.append(DefaultSQLSyntax.quick)
+      .forcePad.append(DefaultSQLSyntax.from)
       .forcePad.append(tableName)
   }
 }
+
+
 
 /**
  * This is the implementation of a root UPDATE query, a wrapper around an abstract syntax block.
@@ -43,9 +56,18 @@ case class DeleteSyntaxBlock[T <: Table[T, _], R](query: String, tableName: Stri
  * @tparam T The type of the owning table.
  * @tparam R The type of the record.
  */
-private[morpheus] abstract class AbstractRootDeleteQuery[T <: Table[T, _], R](val table: T, val st: DeleteSyntaxBlock[T, _], val rowFunc: Row => R) {
+private[morpheus] abstract class AbstractRootDeleteQuery[T <: Table[T, _], R](val table: T, val st: AbstractDeleteSyntaxBlock[T, _], val rowFunc: Row => R) {
 
   def fromRow(r: Row): R = rowFunc(r)
+
+  private[morpheus] def all: Query[T, R, Ungroupped, Unordered, Unlimited, Unchainned, AssignUnchainned] = {
+    new Query(table, st.all, rowFunc)
+  }
+
+}
+
+private[morpheus] class MySQLRootDeleteQuery[T <: Table[T, _], R](table: T, st: MySQLDeleteSyntaxBlock[T, _], rowFunc: Row => R)  extends AbstractRootDeleteQuery(table, st,
+  rowFunc) {
 
   def lowPriority: Query[T, R, Ungroupped, Unordered, Unlimited, Unchainned, AssignUnchainned] = {
     new Query(table, st.lowPriority, rowFunc)
@@ -55,12 +77,5 @@ private[morpheus] abstract class AbstractRootDeleteQuery[T <: Table[T, _], R](va
     new Query(table, st.ignore, rowFunc)
   }
 
-  private[morpheus] def all: Query[T, R, Ungroupped, Unordered, Unlimited, Unchainned, AssignUnchainned] = {
-    new Query(table, st.all, rowFunc)
-  }
-}
-
-private[morpheus] class MySQLRootDeleteQuery[T <: Table[T, _], R](table: T, st: DeleteSyntaxBlock[T, _], rowFunc: Row => R)  extends AbstractRootDeleteQuery(table, st,
-  rowFunc){
 
 }

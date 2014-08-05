@@ -54,12 +54,48 @@ object MySQLOperatorSet extends SQLOperatorSet {
   val <=> = "<=>"
 }
 
+abstract class AbstractSQLSyntax {
+  val select = "SELECT"
+  val distinct = "DISTINCT"
+  val lowPriority = "LOW_PRIORITY"
+  val ignore = "IGNORE"
+  val quick = "QUICK"
+
+  val where = "WHERE"
+  val having = "HAVING"
+  val update = "UPDATE"
+  val delete = "DELETE"
+  val orderBy = "ORDER BY"
+  val groupBy = "GROUP BY"
+  val limit = "LIMIT"
+  val and = "AND"
+  val or = "OR"
+  val set = "SET"
+  val from = "FROM"
+  val eqs = "="
+  val `(` = "("
+  val comma = ","
+  val `)` = ")"
+  val asc = "ASC"
+  val desc = "DESC"
+}
+
+object DefaultSQLSyntax extends AbstractSQLSyntax
+
+object MySQLSyntax extends AbstractSQLSyntax {
+  val distinctRow = "DISTINCTROW"
+  val highPriority = "HIGH_PRIORITY"
+}
+
+
+
+
 /**
  * This is used to represent a syntax block where multiple operations are possible at the same point in the code.
  * For instance, this is used to create a select block, where up to 10 operators can follow a select statement.
  */
-sealed trait AbstractSyntaxBlock {
-
+private[morpheus] trait AbstractSyntaxBlock {
+  def syntax: AbstractSQLSyntax
 }
 
 /**
@@ -73,6 +109,7 @@ sealed trait AbstractSyntaxBlock {
 sealed trait AbstractQueryBuilder {
 
   def operators: SQLOperatorSet
+  def syntax: AbstractSQLSyntax
 
   def eqs(name: String, value: String): SQLBuiltQuery = {
     SQLBuiltQuery(s"$name ${operators.eq} $value")
@@ -124,72 +161,72 @@ sealed trait AbstractQueryBuilder {
   def in(name: String, values: List[String]): SQLBuiltQuery = {
     SQLBuiltQuery(name)
       .pad.append(operators.in)
-      .forcePad.append(DefaultSQLOperators.`(`)
+      .forcePad.append(syntax.`(`)
       .append(values.mkString(", "))
-      .append(DefaultSQLOperators.`)`)
+      .append(syntax.`)`)
   }
 
   def notIn(name: String, values: List[String]): SQLBuiltQuery = {
     SQLBuiltQuery(name)
       .pad.append(operators.notIn)
-      .forcePad.append(DefaultSQLOperators.`(`)
+      .forcePad.append(syntax.`(`)
       .append(values.mkString(", "))
-      .append(DefaultSQLOperators.`)`)
+      .append(syntax.`)`)
   }
 
 
   def select(tableName: String): SQLBuiltQuery = {
-    SQLBuiltQuery(DefaultSQLOperators.select)
+    SQLBuiltQuery(syntax.select)
       .forcePad.append("*").forcePad
-      .append(DefaultSQLOperators.from)
+      .append(syntax.from)
       .forcePad.append(tableName)
   }
 
   def select(tableName: String, names: String*): SQLBuiltQuery = {
 
-    SQLBuiltQuery(DefaultSQLOperators.select)
+    SQLBuiltQuery(syntax.select)
       .pad.append(names.mkString(" "))
-      .pad.append(DefaultSQLOperators.from)
+      .pad.append(syntax.from)
       .pad.append(tableName)
   }
 
   def where(qb: SQLBuiltQuery, condition: SQLBuiltQuery): SQLBuiltQuery = {
-    qb.pad.append(DefaultSQLOperators.where).forcePad.append(condition)
+    qb.pad.append(syntax.where).forcePad.append(condition)
   }
 
   def orderBy(qb: SQLBuiltQuery, conditions: Seq[SQLBuiltQuery]): SQLBuiltQuery = {
     qb.pad
-      .append(DefaultSQLOperators.orderBy)
+      .append(syntax.orderBy)
       .forcePad.append(conditions.map(_.queryString).mkString(", "))
   }
 
   def groupBy(qb: SQLBuiltQuery, columns: Seq[String]): SQLBuiltQuery = {
     qb.pad
-      .append(DefaultSQLOperators.groupBy)
+      .append(syntax.groupBy)
       .forcePad.append(columns.mkString(", "))
   }
 
   def having(qb: SQLBuiltQuery, condition: SQLBuiltQuery): SQLBuiltQuery = {
-    qb.pad.append(DefaultSQLOperators.having).pad.append(condition)
+    qb.pad.append(syntax.having).pad.append(condition)
   }
 
   def limit(qb: SQLBuiltQuery, value: String): SQLBuiltQuery = {
-    qb.pad.append(DefaultSQLOperators.limit)
+    qb.pad.append(syntax.limit)
       .forcePad.append(value)
   }
 
   def and(qb: SQLBuiltQuery, condition: SQLBuiltQuery): SQLBuiltQuery = {
     qb.pad
-      .append(DefaultSQLOperators.and)
+      .append(syntax.and)
       .forcePad.append(condition)
   }
 
   def or(qb: SQLBuiltQuery, condition: SQLBuiltQuery): SQLBuiltQuery = {
-    qb.pad.append(DefaultSQLOperators.or).forcePad.append(condition)
+    qb.pad.append(syntax.or).forcePad.append(condition)
   }
 
   def update(tableName: String): SQLBuiltQuery = {
-    SQLBuiltQuery(DefaultSQLOperators.update).forcePad
+    SQLBuiltQuery(syntax.update).forcePad
   }
 
   def setTo(name: String, value: String): SQLBuiltQuery = {
@@ -199,28 +236,28 @@ sealed trait AbstractQueryBuilder {
   }
 
   def set(qb: SQLBuiltQuery, condition: SQLBuiltQuery): SQLBuiltQuery = {
-    qb.pad.append(DefaultSQLOperators.set)
+    qb.pad.append(syntax.set)
       .forcePad.append(condition)
   }
 
   def andSet(qb: SQLBuiltQuery, condition: SQLBuiltQuery): SQLBuiltQuery = {
-    qb.append(DefaultSQLOperators.comma)
+    qb.append(syntax.comma)
       .forcePad.append(condition)
   }
 
   def asc(name: String): SQLBuiltQuery = {
-    SQLBuiltQuery(name).forcePad.append(DefaultSQLOperators.asc)
+    SQLBuiltQuery(name).forcePad.append(syntax.asc)
   }
 
   def desc(name: String): SQLBuiltQuery = {
-    SQLBuiltQuery(name).forcePad.append(DefaultSQLOperators.desc)
+    SQLBuiltQuery(name).forcePad.append(syntax.desc)
   }
-
 
 }
 
 
 object MySQLQueryBuilder extends AbstractQueryBuilder {
   val operators = MySQLOperatorSet
+  val syntax = MySQLSyntax
 }
 

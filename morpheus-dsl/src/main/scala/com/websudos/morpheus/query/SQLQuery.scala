@@ -60,32 +60,6 @@ case class SQLBuiltQuery(queryString: String) {
   def forcePad: SQLBuiltQuery = SQLBuiltQuery(queryString + " ")
 }
 
-object DefaultSQLOperators {
-  val select = "SELECT"
-  val distinct = "DISTINCT"
-  val lowPriority = "LOW_PRIORITY"
-  val ignore = "IGNORE"
-  val quick = "QUICK"
-  val distinctRow = "DISTINCTROW"
-  val where = "WHERE"
-  val having = "HAVING"
-  val update = "UPDATE"
-  val delete = "DELETE"
-  val orderBy = "ORDER BY"
-  val groupBy = "GROUP BY"
-  val limit = "LIMIT"
-  val and = "AND"
-  val or = "OR"
-  val set = "SET"
-  val from = "FROM"
-  val setTo = "setTo"
-  val eqs = "="
-  val `(` = "("
-  val comma = ","
-  val `)` = ")"
-  val asc = "ASC"
-  val desc = "DESC"
-}
 
 trait SQLQuery[T <: Table[T, _], R] extends ResultSetOperations {
   protected[morpheus] val query: SQLBuiltQuery

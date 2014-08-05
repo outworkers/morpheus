@@ -19,26 +19,35 @@
 package com.websudos.morpheus.mysql
 
 import com.twitter.finagle.exp.mysql.Row
-import com.websudos.morpheus.dsl.Table
+import com.websudos.morpheus.dsl.{SelectTable, Table}
 import com.websudos.morpheus.query._
 
-abstract class MySQLTable[Owner <: MySQLTable[Owner, Record], Record] extends Table[Owner, Record] {
+abstract class MySQLTable[Owner <: MySQLTable[Owner, Record], Record] extends Table[Owner, Record] with SelectTable[Owner, Record,
+  MySQLRootSelectQuery, MySQLSelectSyntaxBlock] {
+
   val queryBuilder = MySQLQueryBuilder
 
-  protected[this] def createRootSelect[A <: Table[A, _], B](table: A, block: SelectSyntaxBlock[A, B], rowFunc: Row => B): MySQLRootSelectQuery[A, B] = {
-    new MySQLRootSelectQuery[A, B](table, block, rowFunc)
+  val syntax = MySQLSyntax
 
+  protected[this] def createRootSelect[A <: Table[A, _], B](table: A, block: MySQLSelectSyntaxBlock, rowFunc: Row => B): MySQLRootSelectQuery[A,
+    B] = {
+    new MySQLRootSelectQuery[A, B](table, block, rowFunc)
+  }
+
+
+  protected[this] def createSelectSyntaxBlock(query: String, tableName: String, cols: List[String] = List("*")): MySQLSelectSyntaxBlock = {
+    new MySQLSelectSyntaxBlock(query, tableName, cols)
   }
 
   def update: MySQLRootUpdateQuery[Owner, Record] = new MySQLRootUpdateQuery(
     this.asInstanceOf[Owner],
-    UpdateSyntaxBlock(DefaultSQLOperators.update, tableName, fromRow),
+    MySQLUpdateSyntaxBlock(syntax.update, tableName, fromRow),
     fromRow
   )
 
   def delete: MySQLRootDeleteQuery[Owner, Record] = new MySQLRootDeleteQuery(
     this.asInstanceOf[Owner],
-    DeleteSyntaxBlock(DefaultSQLOperators.delete, tableName, fromRow),
+    MySQLDeleteSyntaxBlock(syntax.delete, tableName, fromRow),
     fromRow
   )
 

@@ -20,7 +20,7 @@ package com.websudos.morpheus.dsl
 
 import com.twitter.finagle.exp.mysql.Row
 import com.websudos.morpheus.column.SelectColumn
-import com.websudos.morpheus.query.{SelectSyntaxBlock, DefaultSQLOperators, AbstractRootSelectQuery => RootSelectQuery }
+import com.websudos.morpheus.query.{AbstractRootSelectQuery, AbstractSelectSyntaxBlock}
 
 
 /**
@@ -30,7 +30,12 @@ import com.websudos.morpheus.query.{SelectSyntaxBlock, DefaultSQLOperators, Abst
  * @tparam Owner The table owning the record.
  * @tparam Record The record type.
  */
-private[morpheus] trait SelectTable[Owner <: Table[Owner, Record], Record] {
+private[morpheus] trait SelectTable[
+  Owner <: Table[Owner, Record],
+  Record,
+  RootSelectQuery[A <: Table[A, _], B] <: AbstractRootSelectQuery[A, B],
+  Block <: AbstractSelectSyntaxBlock
+] {
   self: Table[Owner, Record] =>
 
   /**
@@ -46,7 +51,10 @@ private[morpheus] trait SelectTable[Owner <: Table[Owner, Record], Record] {
    * @tparam B The type of the record.
    * @return A root select query implementation.
    */
-  protected[this] def createRootSelect[A <: Table[A, _], B](table: A, block: SelectSyntaxBlock[A, B], rowFunc: Row => B): RootSelectQuery[A, B]
+  protected[this] def createRootSelect[A <: Table[A, _], B](table: A, block: Block, rowFunc: Row => B): RootSelectQuery[A, B]
+
+  protected[this] def createSelectSyntaxBlock(query: String, tableName: String, cols: List[String] = List("*")): Block
+
 
   /**
    * This is the SELECT * query, where the user won't specify any partial select.
@@ -55,7 +63,7 @@ private[morpheus] trait SelectTable[Owner <: Table[Owner, Record], Record] {
   def select: RootSelectQuery[Owner, Record] = {
     createRootSelect[Owner, Record](
       this.asInstanceOf[Owner],
-      SelectSyntaxBlock[Owner, Record](DefaultSQLOperators.select, tableName, fromRow),
+      createSelectSyntaxBlock(syntax.select, tableName),
       fromRow
     )
   }
@@ -72,7 +80,7 @@ private[morpheus] trait SelectTable[Owner <: Table[Owner, Record], Record] {
 
     createRootSelect[Owner, T1](
       this.asInstanceOf[Owner],
-      SelectSyntaxBlock[Owner, T1](DefaultSQLOperators.select, tableName, rowFunc, List(c1.col.name)),
+      createSelectSyntaxBlock(syntax.select, tableName, List(c1.col.name)),
       rowFunc
     )
   }
@@ -90,7 +98,7 @@ private[morpheus] trait SelectTable[Owner <: Table[Owner, Record], Record] {
 
     createRootSelect[Owner, (T1, T2)](
       this.asInstanceOf[Owner],
-      SelectSyntaxBlock[Owner, (T1, T2)](DefaultSQLOperators.select, tableName, rowFunc, List(c1.col.name, c2.col.name)),
+      createSelectSyntaxBlock(syntax.select, tableName, List(c1.col.name, c2.col.name)),
       rowFunc
     )
   }
@@ -110,7 +118,7 @@ private[morpheus] trait SelectTable[Owner <: Table[Owner, Record], Record] {
 
     createRootSelect[Owner, (T1, T2, T3)](
       this.asInstanceOf[Owner],
-      SelectSyntaxBlock[Owner, (T1, T2, T3)](DefaultSQLOperators.select, tableName, rowFunc, List(c1.col.name, c2.col.name, c3.col.name)),
+      createSelectSyntaxBlock(syntax.select, tableName, List(c1.col.name, c2.col.name, c3.col.name)),
       rowFunc
     )
   }
@@ -133,7 +141,7 @@ private[morpheus] trait SelectTable[Owner <: Table[Owner, Record], Record] {
 
     createRootSelect[Owner, (T1, T2, T3, T4)](
       this.asInstanceOf[Owner],
-      SelectSyntaxBlock[Owner, (T1, T2, T3, T4)](DefaultSQLOperators.select, tableName, rowFunc, List(c1.col.name, c2.col.name, c3.col.name, c4.col.name)),
+      createSelectSyntaxBlock(syntax.select, tableName, List(c1.col.name, c2.col.name, c3.col.name, c4.col.name)),
       rowFunc
     )
   }
@@ -160,9 +168,9 @@ private[morpheus] trait SelectTable[Owner <: Table[Owner, Record], Record] {
 
     createRootSelect[Owner, (T1, T2, T3, T4, T5)](
       this.asInstanceOf[Owner],
-      SelectSyntaxBlock[Owner, (T1, T2, T3, T4, T5)](
-        DefaultSQLOperators.select,
-        tableName, rowFunc,
+      createSelectSyntaxBlock(
+        syntax.select,
+        tableName,
         List(c1.col.name, c2.col.name, c3.col.name, c4.col.name, c5.col.name)
       ),
       rowFunc

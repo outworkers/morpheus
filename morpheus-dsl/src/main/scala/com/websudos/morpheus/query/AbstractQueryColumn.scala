@@ -54,14 +54,14 @@ case class QueryCondition(override val clause: SQLBuiltQuery, count: Int = 0) ex
   def or(condition: QueryCondition): QueryCondition = {
     if (count == 0) {
       QueryCondition(MySQLQueryBuilder.or(
-        clause.prepend(DefaultSQLOperators.`(`),
-        condition.clause.append(DefaultSQLOperators.`)`)),
+        clause.prepend(DefaultSQLSyntax.`(`),
+        condition.clause.append(DefaultSQLSyntax.`)`)),
         count + 1
       )
     } else {
       QueryCondition(MySQLQueryBuilder.or(
         SQLBuiltQuery(clause.queryString.dropRight(1)),
-        condition.clause.append(DefaultSQLOperators.`)`)),
+        condition.clause.append(DefaultSQLSyntax.`)`)),
         count + 1
       )
     }
