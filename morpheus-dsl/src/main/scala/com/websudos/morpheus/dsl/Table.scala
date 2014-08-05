@@ -88,17 +88,9 @@ abstract class Table[Owner <: Table[Owner, Record], Record] extends SelectTable[
 
   def tableName: String = _name
 
-  def update: RootUpdateQuery[Owner, Record] = new RootUpdateQuery(
-    this.asInstanceOf[Owner],
-    UpdateSyntaxBlock(DefaultSQLOperators.update, tableName, fromRow),
-    fromRow
-  )
+  def update: AbstractRootUpdateQuery[Owner, Record]
 
-  def delete: RootDeleteQuery[Owner, Record] = new RootDeleteQuery(
-    this.asInstanceOf[Owner],
-    DeleteSyntaxBlock(DefaultSQLOperators.delete, tableName, fromRow),
-    fromRow
-  )
+  def delete: AbstractRootDeleteQuery[Owner, Record]
 
   def columns: List[AbstractColumn[_]] = _columns.toList
 

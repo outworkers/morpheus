@@ -43,7 +43,7 @@ case class DeleteSyntaxBlock[T <: Table[T, _], R](query: String, tableName: Stri
  * @tparam T The type of the owning table.
  * @tparam R The type of the record.
  */
-private[morpheus] class RootDeleteQuery[T <: Table[T, _], R](val table: T, val st: DeleteSyntaxBlock[T, _], val rowFunc: Row => R) {
+private[morpheus] abstract class AbstractRootDeleteQuery[T <: Table[T, _], R](val table: T, val st: DeleteSyntaxBlock[T, _], val rowFunc: Row => R) {
 
   def fromRow(r: Row): R = rowFunc(r)
 
@@ -58,4 +58,9 @@ private[morpheus] class RootDeleteQuery[T <: Table[T, _], R](val table: T, val s
   private[morpheus] def all: Query[T, R, Ungroupped, Unordered, Unlimited, Unchainned, AssignUnchainned] = {
     new Query(table, st.all, rowFunc)
   }
+}
+
+private[morpheus] class MySQLRootDeleteQuery[T <: Table[T, _], R](table: T, st: DeleteSyntaxBlock[T, _], rowFunc: Row => R)  extends AbstractRootDeleteQuery(table, st,
+  rowFunc){
+
 }

@@ -36,6 +36,7 @@ trait SQLOperatorSet {
   def notLike: String
   def in: String
   def notIn: String
+  def `<=>`: String
 }
 
 object MySQLOperatorSet extends SQLOperatorSet {
@@ -50,6 +51,7 @@ object MySQLOperatorSet extends SQLOperatorSet {
   val notLike = "NOT LIKE"
   val in = "IN"
   val notIn = "NOT IN"
+  val <=> = "<=>"
 }
 
 /**
@@ -96,8 +98,15 @@ sealed trait AbstractQueryBuilder {
     SQLBuiltQuery(s"$name ${operators.`!=`} $value")
   }
 
+
   def <>(name: String, value: String): SQLBuiltQuery = {
     SQLBuiltQuery(s"$name ${operators.`<>`} $value")
+  }
+
+  def <=>(name: String, value: String): SQLBuiltQuery = {
+    SQLBuiltQuery(name)
+      .pad.append(operators.`<=>`)
+      .forcePad.append(value)
   }
 
   def like(name: String, value: String): SQLBuiltQuery = {

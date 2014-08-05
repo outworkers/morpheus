@@ -59,7 +59,7 @@ sealed abstract class AssignUnchainned extends AssignBind
  * @tparam T The type of the owning table.
  * @tparam R The type of the record.
  */
-private[morpheus] class RootUpdateQuery[T <: Table[T, _], R](val table: T, val st: UpdateSyntaxBlock[T, _], val rowFunc: Row => R) {
+private[morpheus] abstract class AbstractRootUpdateQuery[T <: Table[T, _], R](val table: T, val st: UpdateSyntaxBlock[T, _], val rowFunc: Row => R) {
 
   def fromRow(r: Row): R = rowFunc(r)
 
@@ -75,6 +75,9 @@ private[morpheus] class RootUpdateQuery[T <: Table[T, _], R](val table: T, val s
     new Query(table, st.all, rowFunc)
   }
 }
+
+private[morpheus] class MySQLRootUpdateQuery[T <: Table[T, _], R](table: T, st: UpdateSyntaxBlock[T, _],
+                                                                  rowFunc: Row => R) extends AbstractRootUpdateQuery[T, R](table, st, rowFunc)
 
 /**
  * This bit of magic allows all extending sub-classes to implement the "set" and "and" SQL clauses with all the necessary operators,

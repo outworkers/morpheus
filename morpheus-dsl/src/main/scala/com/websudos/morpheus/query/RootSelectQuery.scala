@@ -18,6 +18,7 @@
 
 package com.websudos.morpheus.query
 
+import scala.annotation.implicitNotFound
 import scala.concurrent.{ Future => ScalaFuture}
 import scala.concurrent.ExecutionContext.Implicits.global
 import com.twitter.finagle.exp.mysql.{Client, Row}
@@ -44,8 +45,6 @@ trait BaseSelectQuery[T <: Table[T, _], R] extends SQLResultsQuery[T, R] {
   }
 
 }
-
-
 
 case class SelectSyntaxBlock[T <: Table[T, _], R](query: String, tableName: String, fromRow: Row => R, columns: List[String] = List("*")) {
 
@@ -74,6 +73,7 @@ case class SelectSyntaxBlock[T <: Table[T, _], R](query: String, tableName: Stri
   }
 }
 
+
 /**
  * This is the implementation of a root select query, a wrapper around an abstract syntax block.
  * The basic select of select methods can be seen in {@link com.websudos.morpheus.dsl.SelectTable}
@@ -87,7 +87,7 @@ case class SelectSyntaxBlock[T <: Table[T, _], R](query: String, tableName: Stri
  * @tparam T The type of the owning table.
  * @tparam R The type of the record.
  */
-private[morpheus] class RootSelectQuery[T <: Table[T, _], R](val table: T, val st: SelectSyntaxBlock[T, _], val rowFunc: Row => R) {
+private[morpheus] abstract class AbstractRootSelectQuery[T <: Table[T, _], R](val table: T, val st: SelectSyntaxBlock[T, _], val rowFunc: Row => R) {
 
   def fromRow(r: Row): R = rowFunc(r)
 
@@ -102,4 +102,40 @@ private[morpheus] class RootSelectQuery[T <: Table[T, _], R](val table: T, val s
   def all: Query[T, R, Ungroupped, Unordered, Unlimited, Unchainned, AssignUnchainned] = {
     new Query(table, st.*, rowFunc)
   }
+}
+
+private[morpheus] class MySQLRootSelectQuery[T <: Table[T, _], R](table: T, st: SelectSyntaxBlock[T, _], rowFunc: Row => R)
+  extends AbstractRootSelectQuery(table, st, rowFunc)
+
+
+/**
+ * This bit of magic allows all extending sub-classes to implement the "set" and "and" SQL clauses with all the necessary operators,
+ * in a type safe way. By providing the third type argument and a custom way to subclass with the predetermined set of arguments,
+ * all DSL representations of an UPDATE query can use the implementation without violating DRY.
+ *
+ * @tparam T The type of the table owning the record.
+ * @tparam R The type of the record held in the table.
+ */
+class SelectQuery[
+  T <: Table[T, _],
+  R,
+  Group <: GroupBind,
+  Order <: OrderBind,
+  Limit <: LimitBind,
+  Chain <: ChainBind,
+  AssignChain <: AssignBind
+](val query: Query[T, R, Group, Order, Limit, Chain, AssignChain]) {
+
+  @implicitNotFound("You can't use 2 SET parts on a single UPDATE query")
+  def having(condition: T => QueryAssignment)(implicit ev: AssignChain =:= AssignUnchainned): SelectQuery[T, R, Group, Order, Limit, Chain, AssignChainned] = {
+    new SelectQuery[T, R, Group, Order, Limit, Chain, AssignChainned](
+      new Query[T, R, Group, Order, Limit, Chain, AssignChainned](
+        query.table,
+        query.table.queryBuilder.having(query.query, condition(query.table).clause),
+        query.rowFunc
+      )
+    )
+  }
+
+
 }

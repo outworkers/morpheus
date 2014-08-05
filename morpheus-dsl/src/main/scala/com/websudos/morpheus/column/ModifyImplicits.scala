@@ -30,7 +30,8 @@ private[morpheus] trait ModifyImplicits {
    * @tparam R The record type.
    * @return An executable SelectQuery.
    */
-  implicit def rootUpdateQueryToSelectQuery[T <: Table[T, _], R](root: RootUpdateQuery[T, R]): Query[T, R, Ungroupped, Unordered, Unlimited, Unchainned, AssignUnchainned] = {
+  implicit def rootUpdateQueryToSelectQuery[T <: Table[T, _], R](root: AbstractRootUpdateQuery[T, R]): Query[T, R, Ungroupped, Unordered, Unlimited,
+    Unchainned, AssignUnchainned] = {
     new Query(
       root.table,
       root.st.all,
@@ -38,7 +39,8 @@ private[morpheus] trait ModifyImplicits {
     )
   }
 
-  implicit def rootUpdateQueryToAssignQuery[T <: Table[T, _], R](root: RootUpdateQuery[T, R]): AssignmentsQuery[T, R, Ungroupped, Unordered, Unlimited, Unchainned, AssignUnchainned] = {
+  implicit def rootUpdateQueryToAssignQuery[T <: Table[T, _], R](root: AbstractRootUpdateQuery[T, R]): AssignmentsQuery[T, R, Ungroupped, Unordered, Unlimited,
+    Unchainned, AssignUnchainned] = {
     new AssignmentsQuery(
       new Query(
         root.table,
@@ -64,7 +66,8 @@ private[morpheus] trait ModifyImplicits {
    * @tparam R The record type.
    * @return An executable SelectQuery.
    */
-  implicit def rootDeleteQueryToDeleteQuery[T <: Table[T, _], R](root: RootDeleteQuery[T, R]): Query[T, R, Ungroupped, Unordered, Unlimited, Unchainned, AssignUnchainned] = {
+  implicit def rootDeleteQueryToDeleteQuery[T <: Table[T, _], R](root: AbstractRootDeleteQuery[T, R]): Query[T, R, Ungroupped, Unordered, Unlimited, Unchainned,
+    AssignUnchainned] = {
     new Query(
       root.table,
       root.st.all,
@@ -87,7 +90,8 @@ private[morpheus] trait ModifyImplicits {
    * @tparam R The record type.
    * @return An executable SelectQuery.
    */
-  implicit def rootSelectQueryToSelectQuery[T <: Table[T, _], R](root: RootSelectQuery[T, R]): Query[T, R, Ungroupped, Unordered, Unlimited, Unchainned, AssignUnchainned] = {
+  implicit def rootSelectQueryToSelectQuery[T <: Table[T, _], R](root: AbstractRootSelectQuery[T, R]): Query[T, R, Ungroupped, Unordered, Unlimited,
+    Unchainned, AssignUnchainned] = {
     new Query(
       root.table,
       root.st.*,
@@ -117,4 +121,26 @@ private[morpheus] trait ModifyImplicits {
     C <: ChainBind,
     AC <: AssignBind
   ](assignment: AssignmentsQuery[T, R, G, O, L, C, AC]): Query[T, R, G, O, L, C, AC] = assignment.query
+
+  implicit def queryToSelectQuery[
+    T <: Table[T, _],
+    R,
+    G <: GroupBind,
+    O <: OrderBind,
+    L <: LimitBind,
+    C <: ChainBind,
+    AC <: AssignBind
+  ](query: Query[T, R, G, O, L, C, AC]): SelectQuery[T, R, G, O, L, C, AC] = {
+    new SelectQuery(query)
+  }
+
+  implicit def selectQuerytToQuery[
+    T <: Table[T, _],
+    R,
+    G <: GroupBind,
+    O <: OrderBind,
+    L <: LimitBind,
+    C <: ChainBind,
+    AC <: AssignBind
+  ](assignment: SelectQuery[T, R, G, O, L, C, AC]): Query[T, R, G, O, L, C, AC] = assignment.query
 }
