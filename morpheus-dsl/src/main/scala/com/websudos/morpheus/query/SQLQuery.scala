@@ -18,13 +18,13 @@
 
 package com.websudos.morpheus.query
 
+import scala.annotation.implicitNotFound
 import scala.concurrent.{Future => ScalaFuture}
 
 import com.twitter.finagle.exp.mysql.{Client, Result, Row}
 import com.twitter.util.Future
+import com.websudos.morpheus.column.SelectColumn
 import com.websudos.morpheus.dsl.{ResultSetOperations, Table}
-import scala.annotation.implicitNotFound
-import com.websudos.morpheus.column.{SelectColumn, AbstractColumn}
 
 case class SQLBuiltQuery(queryString: String) {
   def append(st: String): SQLBuiltQuery = SQLBuiltQuery(queryString + st)
@@ -77,7 +77,6 @@ object DefaultSQLOperators {
   val and = "AND"
   val or = "OR"
   val set = "SET"
-  val in = "IN"
   val from = "FROM"
   val setTo = "setTo"
   val eqs = "="
@@ -221,4 +220,11 @@ class Query[
     new Query(table, table.queryBuilder.and(query, condition(table).clause), rowFunc)
   }
 
+}
+
+object Query {
+  def apply[T <: Table[T, _], R](table: T, query: SQLBuiltQuery, rowFunc: Row => R): Query[T, R, Ungroupped, Unordered, Unlimited, Unchainned,
+    AssignUnchainned] = {
+    new Query(table, query, rowFunc)
+  }
 }

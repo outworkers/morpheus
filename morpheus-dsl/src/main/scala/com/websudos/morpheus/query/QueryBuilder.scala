@@ -32,6 +32,10 @@ trait SQLOperatorSet {
   def gte: String
   def `!=`: String
   def `<>`: String
+  def like: String
+  def notLike: String
+  def in: String
+  def notIn: String
 }
 
 object MySQLOperatorSet extends SQLOperatorSet {
@@ -42,6 +46,10 @@ object MySQLOperatorSet extends SQLOperatorSet {
   val gte = ">="
   val != = "!="
   val <> = "<>"
+  val like = "LIKE"
+  val notLike = "NOT LIKE"
+  val in = "IN"
+  val notIn = "NOT IN"
 }
 
 /**
@@ -92,6 +100,35 @@ sealed trait AbstractQueryBuilder {
     SQLBuiltQuery(s"$name ${operators.`<>`} $value")
   }
 
+  def like(name: String, value: String): SQLBuiltQuery = {
+    SQLBuiltQuery(name)
+      .pad.append(operators.like)
+      .forcePad.append(value)
+  }
+
+  def notLike(name: String, value: String): SQLBuiltQuery = {
+    SQLBuiltQuery(name)
+      .pad.append(operators.notLike)
+      .forcePad.append(value)
+  }
+
+  def in(name: String, values: List[String]): SQLBuiltQuery = {
+    SQLBuiltQuery(name)
+      .pad.append(operators.in)
+      .forcePad.append(DefaultSQLOperators.`(`)
+      .append(values.mkString(", "))
+      .append(DefaultSQLOperators.`)`)
+  }
+
+  def notIn(name: String, values: List[String]): SQLBuiltQuery = {
+    SQLBuiltQuery(name)
+      .pad.append(operators.notIn)
+      .forcePad.append(DefaultSQLOperators.`(`)
+      .append(values.mkString(", "))
+      .append(DefaultSQLOperators.`)`)
+  }
+
+
   def select(tableName: String): SQLBuiltQuery = {
     SQLBuiltQuery(DefaultSQLOperators.select)
       .forcePad.append("*").forcePad
@@ -140,14 +177,6 @@ sealed trait AbstractQueryBuilder {
 
   def or(qb: SQLBuiltQuery, condition: SQLBuiltQuery): SQLBuiltQuery = {
     qb.pad.append(DefaultSQLOperators.or).forcePad.append(condition)
-  }
-
-  def in(name: String, values: List[String]): SQLBuiltQuery = {
-    SQLBuiltQuery(name)
-      .pad.append(DefaultSQLOperators.in)
-      .forcePad.append(DefaultSQLOperators.`(`)
-      .append(values.mkString(", "))
-      .append(DefaultSQLOperators.`)`)
   }
 
   def update(tableName: String): SQLBuiltQuery = {
