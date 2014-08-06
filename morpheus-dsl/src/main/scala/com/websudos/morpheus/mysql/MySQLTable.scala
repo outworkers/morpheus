@@ -33,14 +33,13 @@ abstract class MySQLTable[Owner <: MySQLTable[Owner, Record], Record] extends Ta
     new MySQLRootSelectQuery[A, B](table, block, rowFunc)
   }
 
-
   protected[this] def createSelectSyntaxBlock(query: String, tableName: String, cols: List[String] = List("*")): MySQLSelectSyntaxBlock = {
     new MySQLSelectSyntaxBlock(query, tableName, cols)
   }
 
   def update: MySQLRootUpdateQuery[Owner, Record] = new MySQLRootUpdateQuery(
     this.asInstanceOf[Owner],
-    MySQLUpdateSyntaxBlock(syntax.update, tableName, fromRow),
+    MySQLUpdateSyntaxBlock(syntax.update, tableName),
     fromRow
   )
 

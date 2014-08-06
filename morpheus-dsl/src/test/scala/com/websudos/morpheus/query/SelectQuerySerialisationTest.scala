@@ -446,6 +446,7 @@ class SelectQuerySerialisationTest extends FlatSpec with Matchers {
       .and(t => { (t.count <= 100) or (t.name eqs "test")}).queryString shouldEqual "SELECT SQL_SMALL_RESULT name, " +
       "count FROM BasicTable WHERE count >= 10 AND (count <= 100 OR name = 'test')"
   }
+  //
 
   it should "serialise a simple SELECT SQL_BIG_RESULT query" in {
     BasicTable.select.sqlBigResult.queryString shouldEqual "SELECT SQL_BIG_RESULT * FROM BasicTable"
@@ -485,6 +486,47 @@ class SelectQuerySerialisationTest extends FlatSpec with Matchers {
       .sqlBigResult
       .where(_.count >= 10)
       .and(t => { (t.count <= 100) or (t.name eqs "test")}).queryString shouldEqual "SELECT SQL_BIG_RESULT name, " +
+      "count FROM BasicTable WHERE count >= 10 AND (count <= 100 OR name = 'test')"
+  }
+
+  it should "serialise a simple SELECT SQL_BUFFER_RESULT query" in {
+    BasicTable.select.sqlBufferResult.queryString shouldEqual "SELECT SQL_BUFFER_RESULT * FROM BasicTable"
+  }
+
+  it should "serialise a simple SELECT SQL_BUFFER_RESULT query with an WHERE clause" in {
+    BasicTable.select.sqlBufferResult.where(_.name eqs "test").queryString shouldEqual "SELECT SQL_BUFFER_RESULT * FROM BasicTable WHERE name = 'test'"
+  }
+
+  it should "serialise a partial SELECT SQL_BUFFER_RESULT query with a single column in the partial select" in {
+    BasicTable.select(_.name).sqlBufferResult.queryString shouldEqual "SELECT SQL_BUFFER_RESULT name FROM BasicTable"
+  }
+
+  it should "serialise a partial SELECT SQL_BUFFER_RESULT query with a single column in the partial select and a single WHERE clause" in {
+    BasicTable.select(_.name).sqlBufferResult.where(_.count >= 5).queryString shouldEqual "SELECT SQL_BUFFER_RESULT name FROM BasicTable WHERE count >= 5"
+  }
+
+  it should "serialise a partial SELECT SQL_BUFFER_RESULT query with multiple columns in a partial select" in {
+    BasicTable.select(_.name, _.count).sqlBufferResult.queryString shouldEqual "SELECT SQL_BUFFER_RESULT name, count FROM BasicTable"
+  }
+
+  it should "serialise a partial SELECT SQL_BUFFER_RESULT query with multiple columns in a partial select and a simple where clause" in {
+    BasicTable.select(_.name, _.count).sqlBufferResult.where(_.count <= 10).queryString shouldEqual "SELECT SQL_BUFFER_RESULT name, count FROM BasicTable WHERE count <= 10"
+  }
+
+  it should "serialise a partial SELECT SQL_BUFFER_RESULT query with multiple columns in a partial select and an where-and clause" in {
+    BasicTable
+      .select(_.name, _.count)
+      .sqlBufferResult
+      .where(_.count >= 10)
+      .and(_.count <= 100).queryString shouldEqual "SELECT SQL_BUFFER_RESULT name, count FROM BasicTable WHERE count >= 10 AND count <= 100"
+  }
+
+  it should "serialise a partial SELECT SQL_BUFFER_RESULT query with multiple columns in a partial select and an where-and-or clause" in {
+    BasicTable
+      .select(_.name, _.count)
+      .sqlBufferResult
+      .where(_.count >= 10)
+      .and(t => { (t.count <= 100) or (t.name eqs "test")}).queryString shouldEqual "SELECT SQL_BUFFER_RESULT name, " +
       "count FROM BasicTable WHERE count >= 10 AND (count <= 100 OR name = 'test')"
   }
 

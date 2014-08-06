@@ -24,8 +24,7 @@ import com.twitter.finagle.exp.mysql.Row
 import com.websudos.morpheus.dsl.Table
 
 
-private[morpheus] abstract class AbstractUpdateSyntaxBlock[T <: Table[T, _], R](query: String, tableName: String, fromRow: Row => R,
-                                                                       columns: List[String] = List("*")) extends AbstractSyntaxBlock {
+private[morpheus] abstract class AbstractUpdateSyntaxBlock(query: String, tableName: String) extends AbstractSyntaxBlock {
 
   protected[this] val qb = SQLBuiltQuery(query)
 
@@ -47,7 +46,7 @@ private[morpheus] abstract class AbstractUpdateSyntaxBlock[T <: Table[T, _], R](
  * @tparam T The type of the owning table.
  * @tparam R The type of the record.
  */
-private[morpheus] abstract class AbstractRootUpdateQuery[T <: Table[T, _], R](val table: T, val st: AbstractUpdateSyntaxBlock[T, _], val rowFunc: Row => R) {
+private[morpheus] abstract class AbstractRootUpdateQuery[T <: Table[T, _], R](val table: T, val st: AbstractUpdateSyntaxBlock, val rowFunc: Row => R) {
 
   def fromRow(r: Row): R = rowFunc(r)
 

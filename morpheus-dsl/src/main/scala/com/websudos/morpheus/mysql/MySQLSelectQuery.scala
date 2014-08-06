@@ -22,6 +22,77 @@ import com.twitter.finagle.exp.mysql.Row
 import com.websudos.morpheus.dsl.Table
 import com.websudos.morpheus.query._
 
+
+private[morpheus] class MySQLSelectSyntaxBlock(
+                                                query: String, tableName: String,
+                                                columns: List[String] = List("*")) extends AbstractSelectSyntaxBlock(query, tableName, columns) {
+
+  val syntax = MySQLSyntax
+
+  def distinctRow: SQLBuiltQuery = {
+    qb.pad.append(syntax.distinctRow)
+      .pad.append(columns.mkString(", "))
+      .pad.append(syntax.from)
+      .pad.append(tableName)
+  }
+
+  def highPriority: SQLBuiltQuery = {
+    qb.pad.append(syntax.highPriority)
+      .pad.append(columns.mkString(", "))
+      .pad.append(syntax.from)
+      .pad.append(tableName)
+  }
+
+  def straightJoin: SQLBuiltQuery = {
+    qb.pad.append(syntax.straightJoin)
+      .pad.append(columns.mkString(", "))
+      .pad.append(syntax.from)
+      .pad.append(tableName)
+  }
+  def sqlSmallResult: SQLBuiltQuery = {
+    qb.pad.append(syntax.sqlSmallResult)
+      .pad.append(columns.mkString(", "))
+      .pad.append(syntax.from)
+      .pad.append(tableName)
+  }
+
+  def sqlBigResult: SQLBuiltQuery = {
+    qb.pad.append(syntax.sqlBigResult)
+      .pad.append(columns.mkString(", "))
+      .pad.append(syntax.from)
+      .pad.append(tableName)
+  }
+
+  def sqlBufferResult: SQLBuiltQuery = {
+    qb.pad.append(syntax.sqlBufferResult)
+      .pad.append(columns.mkString(", "))
+      .pad.append(syntax.from)
+      .pad.append(tableName)
+  }
+
+  def sqlCache: SQLBuiltQuery = {
+    qb.pad.append(syntax.sqlCache)
+      .pad.append(columns.mkString(", "))
+      .pad.append(syntax.from)
+      .pad.append(tableName)
+  }
+
+  def sqlNoCache: SQLBuiltQuery = {
+    qb.pad.append(syntax.sqlNoCache)
+      .pad.append(columns.mkString(", "))
+      .pad.append(syntax.from)
+      .pad.append(tableName)
+  }
+
+  def sqlCalcFoundRows: SQLBuiltQuery = {
+    qb.pad.append(syntax.sqlCalcFoundRows)
+      .pad.append(columns.mkString(", "))
+      .pad.append(syntax.from)
+      .pad.append(tableName)
+  }
+}
+
+
 private[morpheus] class MySQLRootSelectQuery[T <: Table[T, _], R](table: T, st: MySQLSelectSyntaxBlock, rowFunc: Row => R)
   extends AbstractRootSelectQuery[T, R](table, st, rowFunc) {
 

@@ -22,8 +22,24 @@ import com.twitter.finagle.exp.mysql.Row
 import com.websudos.morpheus.dsl.Table
 import com.websudos.morpheus.query._
 
-private[morpheus] class MySQLRootDeleteQuery[T <: Table[T, _], R](table: T, st: MySQLDeleteSyntaxBlock, rowFunc: Row => R)  extends AbstractRootDeleteQuery(table, st,
-  rowFunc) {
+
+case class MySQLUpdateSyntaxBlock(query: String, tableName: String) extends AbstractUpdateSyntaxBlock(query, tableName) {
+  val syntax = MySQLSyntax
+
+  def lowPriority: SQLBuiltQuery = {
+    qb.pad.append(syntax.lowPriority)
+      .pad.append(tableName)
+  }
+
+  def ignore: SQLBuiltQuery = {
+    qb.pad.append(syntax.ignore)
+      .pad.append(tableName)
+  }
+}
+
+
+private[morpheus] class MySQLRootUpdateQuery[T <: Table[T, _], R](table: T, st: MySQLUpdateSyntaxBlock,
+                                                                  rowFunc: Row => R) extends AbstractRootUpdateQuery[T, R](table, st, rowFunc) {
 
   def lowPriority: Query[T, R, Ungroupped, Unordered, Unlimited, Unchainned, AssignUnchainned] = {
     new Query(table, st.lowPriority, rowFunc)
@@ -32,6 +48,4 @@ private[morpheus] class MySQLRootDeleteQuery[T <: Table[T, _], R](table: T, st: 
   def ignore: Query[T, R, Ungroupped, Unordered, Unlimited, Unchainned, AssignUnchainned] = {
     new Query(table, st.ignore, rowFunc)
   }
-
-
 }
