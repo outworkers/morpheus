@@ -124,6 +124,7 @@ trait ChainBind
 trait OrderBind
 trait LimitBind
 
+
 abstract class Groupped extends GroupBind
 abstract class Ungroupped extends GroupBind
 abstract class Chainned extends ChainBind

@@ -16,20 +16,8 @@
  *
  */
 
-package com.websudos.morpheus.mysql
+package com.websudos.morpheus.keys
 
-import com.websudos.morpheus.query.AbstractSQLSyntax
+trait Key {
 
-object MySQLSyntax extends AbstractSQLSyntax {
-  val distinctRow = "DISTINCTROW"
-  val lowPriority = "HIGH_PRIORITY"
-  val highPriority = "HIGH_PRIORITY"
-  val delayed = "DELAYED"
-  val straightJoin = "STRAIGHT_JOIN"
-  val sqlSmallResult = "SQL_SMALL_RESULT"
-  val sqlBigResult = "SQL_BIG_RESULT"
-  val sqlBufferResult = "SQL_BUFFER_RESULT"
-  val sqlCache = "SQL_CACHE"
-  val sqlNoCache = "SQL_NO_CACHE"
-  val sqlCalcFoundRows = "SQL_CALC_FOUND_ROWS"
 }

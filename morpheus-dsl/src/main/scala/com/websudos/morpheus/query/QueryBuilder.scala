@@ -40,9 +40,9 @@ trait SQLOperatorSet {
 }
 
 abstract class AbstractSQLSyntax {
+  val into = "INTO"
   val select = "SELECT"
   val distinct = "DISTINCT"
-  val lowPriority = "LOW_PRIORITY"
   val ignore = "IGNORE"
   val quick = "QUICK"
 

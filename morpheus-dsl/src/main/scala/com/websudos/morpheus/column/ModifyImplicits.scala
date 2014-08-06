@@ -143,4 +143,26 @@ private[morpheus] trait ModifyImplicits extends LowPriorityImplicits {
     C <: ChainBind,
     AC <: AssignBind
   ](assignment: SelectQuery[T, R, G, O, L, C, AC]): Query[T, R, G, O, L, C, AC] = assignment.query
+
+  implicit def queryInsertQuery[
+  T <: Table[T, _],
+  R,
+  G <: GroupBind,
+  O <: OrderBind,
+  L <: LimitBind,
+  C <: ChainBind,
+  AC <: AssignBind
+  ](query: Query[T, R, G, O, L, C, AC]): InsertQuery[T, R, G, O, L, C, AC] = {
+    new InsertQuery(query)
+  }
+
+  implicit def insertQuerytToQuery[
+    T <: Table[T, _],
+    R,
+    G <: GroupBind,
+    O <: OrderBind,
+    L <: LimitBind,
+    C <: ChainBind,
+    AC <: AssignBind
+  ](assignment: InsertQuery[T, R, G, O, L, C, AC]): Query[T, R, G, O, L, C, AC] = assignment.toQuery
 }

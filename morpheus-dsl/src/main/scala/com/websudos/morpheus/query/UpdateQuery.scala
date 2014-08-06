@@ -32,15 +32,7 @@ private[morpheus] abstract class AbstractUpdateSyntaxBlock[T <: Table[T, _], R](
   def all: SQLBuiltQuery = {
     qb.pad.append(tableName)
   }
-
 }
-
-
-
-
-sealed trait AssignBind
-sealed abstract class AssignChainned extends AssignBind
-sealed abstract class AssignUnchainned extends AssignBind
 
 
 /**
@@ -65,6 +57,9 @@ private[morpheus] abstract class AbstractRootUpdateQuery[T <: Table[T, _], R](va
   }
 }
 
+trait AssignBind
+sealed abstract class AssignChainned extends AssignBind
+sealed abstract class AssignUnchainned extends AssignBind
 
 
 /**
