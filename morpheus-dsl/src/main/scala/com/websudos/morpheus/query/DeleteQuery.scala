@@ -3,7 +3,7 @@ package com.websudos.morpheus.query
 import com.twitter.finagle.exp.mysql.Row
 import com.websudos.morpheus.dsl.Table
 
-private[morpheus]abstract class AbstractDeleteSyntaxBlock(query: String, tableName: String, columns: List[String] = List("*")) extends AbstractSyntaxBlock {
+private[morpheus]abstract class AbstractDeleteSyntaxBlock(query: String, tableName: String) extends AbstractSyntaxBlock {
 
   protected[this] val qb: SQLBuiltQuery = SQLBuiltQuery(query)
 

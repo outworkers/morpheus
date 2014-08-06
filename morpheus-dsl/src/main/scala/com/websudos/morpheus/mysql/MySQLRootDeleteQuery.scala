@@ -22,7 +22,7 @@ import com.twitter.finagle.exp.mysql.Row
 import com.websudos.morpheus.dsl.Table
 import com.websudos.morpheus.query._
 
-private[morpheus] class MySQLRootDeleteQuery[T <: Table[T, _], R](table: T, st: MySQLDeleteSyntaxBlock[T, _], rowFunc: Row => R)  extends AbstractRootDeleteQuery(table, st,
+private[morpheus] class MySQLRootDeleteQuery[T <: Table[T, _], R](table: T, st: MySQLDeleteSyntaxBlock, rowFunc: Row => R)  extends AbstractRootDeleteQuery(table, st,
   rowFunc) {
 
   def lowPriority: Query[T, R, Ungroupped, Unordered, Unlimited, Unchainned, AssignUnchainned] = {

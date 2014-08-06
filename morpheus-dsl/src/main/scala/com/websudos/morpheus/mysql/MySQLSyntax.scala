@@ -22,7 +22,7 @@ import com.websudos.morpheus.query.AbstractSQLSyntax
 
 object MySQLSyntax extends AbstractSQLSyntax {
   val distinctRow = "DISTINCTROW"
-  val lowPriority = "HIGH_PRIORITY"
+  val lowPriority = "LOW_PRIORITY"
   val highPriority = "HIGH_PRIORITY"
   val delayed = "DELAYED"
   val straightJoin = "STRAIGHT_JOIN"

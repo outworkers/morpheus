@@ -18,29 +18,26 @@
 
 package com.websudos.morpheus.mysql
 
-import com.websudos.morpheus.dsl.Table
 import com.websudos.morpheus.query.{AbstractDeleteSyntaxBlock, DefaultSQLSyntax, SQLBuiltQuery}
 
-case class MySQLDeleteSyntaxBlock[T <: Table[T, _], R](query: String, tableName: String,
-                                                       columns: List[String] = List("*")) extends AbstractDeleteSyntaxBlock(query, tableName,
-  columns) {
+case class MySQLDeleteSyntaxBlock(query: String, tableName: String) extends AbstractDeleteSyntaxBlock(query, tableName) {
 
   val syntax = MySQLSyntax
 
   def lowPriority: SQLBuiltQuery = {
-    qb.pad.append(DefaultSQLSyntax.lowPriority)
+    qb.pad.append(syntax.lowPriority)
       .forcePad.append(DefaultSQLSyntax.from)
       .forcePad.append(tableName)
   }
 
   def ignore: SQLBuiltQuery = {
-    qb.pad.append(DefaultSQLSyntax.ignore)
+    qb.pad.append(syntax.ignore)
       .forcePad.append(DefaultSQLSyntax.from)
       .forcePad.append(tableName)
   }
 
   def quick: SQLBuiltQuery = {
-    qb.pad.append(DefaultSQLSyntax.quick)
+    qb.pad.append(syntax.quick)
       .forcePad.append(DefaultSQLSyntax.from)
       .forcePad.append(tableName)
   }
