@@ -39,7 +39,7 @@ private[morpheus] trait AbstractColumn[@specialized(Int, Double, Float, Long, Bo
 }
 
 @implicitNotFound(msg = "Type ${RR} must be a MySQL primitive")
-class PrimitiveColumn[T <: Table[T, R], R, @specialized(Int, Double, Float, Long) RR: SQLPrimitive](t: Table[T, R])
+private[morpheus] class PrimitiveColumn[T <: Table[T, R], R, @specialized(Int, Double, Float, Long) RR : SQLPrimitive](t: Table[T, R])
   extends Column[T, R, RR](t) {
 
   def sqlType: String = SQLPrimitives[RR].sqlType
@@ -53,7 +53,7 @@ private[morpheus] abstract class SelectColumn[T](val col: AbstractColumn[_]) {
   def apply(r: Row): T
 }
 
-abstract class Column[Owner <: Table[Owner, Record], Record, T](val table: Table[Owner, Record]) extends AbstractColumn[T] {
+private[morpheus] abstract class Column[Owner <: Table[Owner, Record], Record, T](val table: Table[Owner, Record]) extends AbstractColumn[T] {
 
   def optional(r: Row): Option[T]
 
@@ -63,7 +63,5 @@ abstract class Column[Owner <: Table[Owner, Record], Record, T](val table: Table
 
 private[morpheus] abstract class AbstractModifyColumn[RR](col: AbstractColumn[RR]) {
 
-  def toQueryString(v: RR): String = col.toQueryString(v)
-
-  def setTo(value: RR): QueryAssignment = QueryAssignment(col.table.queryBuilder.setTo(col.name, toQueryString(value)))
+  def setTo(value: RR): QueryAssignment = QueryAssignment(col.table.queryBuilder.setTo(col.name, col.toQueryString(value)))
 }

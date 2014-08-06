@@ -18,6 +18,8 @@
 
 package com.websudos.morpheus.query
 
-class InsertQuerySerialisationTest {
+import org.scalatest.{ FlatSpec, Matchers }
+
+class InsertQuerySerialisationTest extends FlatSpec with Matchers {
 
 }
