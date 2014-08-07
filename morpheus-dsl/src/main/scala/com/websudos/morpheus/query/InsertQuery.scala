@@ -128,7 +128,8 @@ class InsertQuery[
    * @tparam RR The SQL primitive or rather it's Scala correspondent to use at this time.
    * @return A new InsertQuery, where the list of statements in the Insert has been chained and updated for serialisation.
    */
-  @implicitNotFound(msg = "To use the value method this query needs to be an insert query and the query needs to be unterminated.")
+  @implicitNotFound(msg = "To use the value method this query needs to be an insert query and the query needs to be unterminated. You probably have more " +
+    "value calls than columns in your table, which would result in an invalid MySQL query.")
   def value[RR](insertion: T => AbstractColumn[RR], obj: RR)(
     implicit primitive: SQLPrimitive[RR],
     ev: Type =:= InsertType,
