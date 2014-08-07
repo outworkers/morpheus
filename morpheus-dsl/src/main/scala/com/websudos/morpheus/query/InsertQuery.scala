@@ -134,16 +134,28 @@ class InsertQuery[
     implicit primitive: SQLPrimitive[RR],
     ev: Type =:= InsertType,
     ev1: Status =:= Unterminated
-    ): InsertQuery[T, R, Type, Group, Order, Limit, Chain, AssignChain, _ <: StatusBind] = {
+    ): InsertQuery[T, R, Type, Group, Order, Limit, Chain, AssignChain, Unterminated] = {
 
     // If the number of statements in the accumulator is equal to the number of columns in the table means no more "value" assignments are possible.
-    if (statements.size == query.table.columns.size) {
-      new InsertQuery[T, R, Type, Group, Order, Limit, Chain, AssignChain, Terminated](query, Tuple2(insertion(query.table).name,
-        primitive.toSQL(obj)) :: statements)
-    } else {
-      new InsertQuery[T, R, Type, Group, Order, Limit, Chain, AssignChain, Unterminated](query, Tuple2(insertion(query.table).name,
-        primitive.toSQL(obj)) :: statements)
-    }
+    /*if (statements.size > query.table.columns.size) {
+      new InsertQuery[T, R, Type, Group, Order, Limit, Chain, AssignChain, Terminated](
+        new Query[T, R, Type, Group, Order, Limit, Chain, AssignChain, Terminated](
+          query.table,
+          query.query,
+          query.fromRow
+        ), Tuple2(insertion(query.table).name,
+        primitive.toSQL(obj)) :: statements
+      )
+    } else {*/
+    new InsertQuery[T, R, Type, Group, Order, Limit, Chain, AssignChain, Unterminated](
+      new Query[T, R, Type, Group, Order, Limit, Chain, AssignChain, Unterminated](
+        query.table,
+        query.query,
+        query.fromRow
+      ), Tuple2(insertion(query.table).name,
+        primitive.toSQL(obj)) :: statements
+    )
+    //}
 
 
   }

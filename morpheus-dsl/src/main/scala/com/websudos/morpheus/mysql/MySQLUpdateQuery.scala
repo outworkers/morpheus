@@ -41,11 +41,13 @@ case class MySQLUpdateSyntaxBlock(query: String, tableName: String) extends Abst
 private[morpheus] class MySQLRootUpdateQuery[T <: Table[T, _], R](table: T, st: MySQLUpdateSyntaxBlock,
                                                                   rowFunc: Row => R) extends AbstractRootUpdateQuery[T, R](table, st, rowFunc) {
 
-  def lowPriority: Query[T, R, Ungroupped, Unordered, Unlimited, Unchainned, AssignUnchainned] = {
+  type BaseUpdateQuery = Query[T, R, UpdateType, Ungroupped, Unordered, Unlimited, Unchainned, AssignUnchainned, Unterminated]
+
+  def lowPriority: BaseUpdateQuery = {
     new Query(table, st.lowPriority, rowFunc)
   }
 
-  def ignore: Query[T, R, Ungroupped, Unordered, Unlimited, Unchainned, AssignUnchainned] = {
+  def ignore: BaseUpdateQuery = {
     new Query(table, st.ignore, rowFunc)
   }
 }

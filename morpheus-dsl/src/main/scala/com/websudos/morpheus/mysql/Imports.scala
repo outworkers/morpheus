@@ -27,9 +27,8 @@ object Imports extends DefaultImportsDefinition with MySQLPrimitives {
 
   override implicit def columnToQueryColumn[T : SQLPrimitive](col: AbstractColumn[T]): MySQLQueryColumn[T] = new MySQLQueryColumn[T](col)
 
-
-  implicit def rootSelectQueryToQuery[T <: Table[T, _], R](root: MySQLRootSelectQuery[T, R]): Query[T, R, Ungroupped, Unordered, Unlimited,
-    Unchainned, AssignUnchainned] = {
+  implicit def rootSelectQueryToQuery[T <: Table[T, _], R](root: MySQLRootSelectQuery[T, R]): Query[T, R, SelectType, Ungroupped, Unordered, Unlimited,
+    Unchainned, AssignUnchainned, Unterminated] = {
     new Query(
       root.table,
       root.st.*,

@@ -49,7 +49,21 @@ class InsertQuerySerialisationTest extends FlatSpec with Matchers {
     BasicTable.insert.delayed.queryString shouldEqual "INSERT DELAYED INTO BasicTable"
   }
 
-  it should "serialise an INSERT query with values defined" in {
+  it should "count statements correctly" in {
+    BasicTable.insert
+      .value(_.count, 5L)
+      .statements.size shouldEqual 1
+
+    BasicTable.columns.size shouldEqual 2
+  }
+
+  it should "serialise an INSERT query with a single value defined" in {
+    BasicTable.insert
+      .value(_.count, 5L)
+      .queryString shouldEqual "INSERT INTO BasicTable (count) VALUES (5)"
+  }
+
+  it should "serialise an INSERT query with multiple values defined" in {
     BasicTable.insert
       .value(_.count, 5L)
       .value(_.name, "test")

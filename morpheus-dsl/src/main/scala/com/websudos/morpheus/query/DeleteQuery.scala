@@ -31,7 +31,9 @@ private[morpheus] abstract class AbstractRootDeleteQuery[T <: Table[T, _], R](va
 
   def fromRow(r: Row): R = rowFunc(r)
 
-  private[morpheus] def all: Query[T, R, Ungroupped, Unordered, Unlimited, Unchainned, AssignUnchainned] = {
+  type BaseDeleteQuery = Query[T, R, DeleteType, Ungroupped, Unordered, Unlimited, Unchainned, AssignUnchainned, Unterminated]
+
+  private[morpheus] def all: BaseDeleteQuery = {
     new Query(table, st.all, rowFunc)
   }
 

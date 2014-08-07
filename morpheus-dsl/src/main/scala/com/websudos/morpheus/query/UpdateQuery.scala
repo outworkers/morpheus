@@ -51,7 +51,7 @@ private[morpheus] abstract class AbstractRootUpdateQuery[T <: Table[T, _], R](va
   def fromRow(r: Row): R = rowFunc(r)
 
 
-  private[morpheus] def all: Query[T, R, Ungroupped, Unordered, Unlimited, Unchainned, AssignUnchainned] = {
+  private[morpheus] def all: Query[T, R, UpdateType, Ungroupped, Unordered, Unlimited, Unchainned, AssignUnchainned, Unterminated] = {
     new Query(table, st.all, rowFunc)
   }
 }
@@ -96,13 +96,22 @@ class AssignmentsQuery[
   }
 
   @implicitNotFound("""You need to use the "set" method before using the "and"""")
-  def and(condition: T => QueryAssignment, signChange: Int = 0)(implicit ev: AssignChain =:= AssignChainned): AssignmentsQuery[T, R, Group, Order, Limit, Chain, AssignChainned] = {
+  def and(condition: T => QueryAssignment, signChange: Int = 0)(implicit ev: AssignChain =:= AssignChainned): AssignmentsQuery[T, R, Type, Group, Order, Limit,
+    Chain, AssignChainned, Status] = {
     new AssignmentsQuery[T, R, Type, Group, Order, Limit, Chain, AssignChainned, Status](
       new Query[T, R, Type, Group, Order, Limit, Chain, AssignChainned, Status](
         query.table,
         query.table.queryBuilder.andSet(query.query, condition(query.table).clause),
         query.rowFunc
       )
+    )
+  }
+
+  private[morpheus] def terminate: Query[T, R, UpdateType, Group, Order, Limit, Chain, AssignChainned, Terminated] = {
+    new Query(
+      query.table,
+      query.query,
+      query.rowFunc
     )
   }
 

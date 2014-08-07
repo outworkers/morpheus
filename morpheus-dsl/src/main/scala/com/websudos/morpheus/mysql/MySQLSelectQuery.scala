@@ -96,39 +96,41 @@ private[morpheus] class MySQLSelectSyntaxBlock(
 private[morpheus] class MySQLRootSelectQuery[T <: Table[T, _], R](table: T, st: MySQLSelectSyntaxBlock, rowFunc: Row => R)
   extends AbstractRootSelectQuery[T, R](table, st, rowFunc) {
 
-  def distinctRow: Query[T, R, Ungroupped, Unordered, Unlimited, Unchainned, AssignUnchainned] = {
+  type BaseSelectQuery = Query[T, R, SelectType, Ungroupped, Unordered, Unlimited, Unchainned, AssignUnchainned, Unterminated]
+
+  def distinctRow: BaseSelectQuery = {
     new Query(table, st.distinctRow, rowFunc)
   }
 
-  def highPriority: Query[T, R, Ungroupped, Unordered, Unlimited, Unchainned, AssignUnchainned] = {
+  def highPriority: BaseSelectQuery = {
     new Query(table, st.highPriority, rowFunc)
   }
 
-  def straightJoin: Query[T, R, Ungroupped, Unordered, Unlimited, Unchainned, AssignUnchainned] = {
+  def straightJoin: BaseSelectQuery = {
     new Query(table, st.straightJoin, rowFunc)
   }
 
-  def sqlSmallResult: Query[T, R, Ungroupped, Unordered, Unlimited, Unchainned, AssignUnchainned] = {
+  def sqlSmallResult: BaseSelectQuery = {
     new Query(table, st.sqlSmallResult, rowFunc)
   }
 
-  def sqlBigResult: Query[T, R, Ungroupped, Unordered, Unlimited, Unchainned, AssignUnchainned] = {
+  def sqlBigResult: BaseSelectQuery = {
     new Query(table, st.sqlBigResult, rowFunc)
   }
 
-  def sqlBufferResult: Query[T, R, Ungroupped, Unordered, Unlimited, Unchainned, AssignUnchainned] = {
+  def sqlBufferResult: BaseSelectQuery = {
     new Query(table, st.sqlBufferResult, rowFunc)
   }
 
-  def sqlCache: Query[T, R, Ungroupped, Unordered, Unlimited, Unchainned, AssignUnchainned] = {
+  def sqlCache: BaseSelectQuery = {
     new Query(table, st.sqlCache, rowFunc)
   }
 
-  def sqlNoCache: Query[T, R, Ungroupped, Unordered, Unlimited, Unchainned, AssignUnchainned] = {
+  def sqlNoCache: BaseSelectQuery = {
     new Query(table, st.sqlNoCache, rowFunc)
   }
 
-  def sqlCalcFoundRows: Query[T, R, Ungroupped, Unordered, Unlimited, Unchainned, AssignUnchainned] = {
+  def sqlCalcFoundRows: BaseSelectQuery = {
     new Query(table, st.sqlCalcFoundRows, rowFunc)
   }
 }

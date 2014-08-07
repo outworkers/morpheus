@@ -88,11 +88,11 @@ private[morpheus] abstract class AbstractRootSelectQuery[T <: Table[T, _], R](va
 
   def fromRow(r: Row): R = rowFunc(r)
 
-  def distinct: Query[T, R, Ungroupped, Unordered, Unlimited, Unchainned, AssignUnchainned] = {
+  def distinct: Query[T, R, SelectType, Ungroupped, Unordered, Unlimited, Unchainned, AssignUnchainned, Unterminated] = {
     new Query(table, st.distinct, rowFunc)
   }
 
-  def all: Query[T, R, Ungroupped, Unordered, Unlimited, Unchainned, AssignUnchainned] = {
+  def all: Query[T, R, SelectType, Ungroupped, Unordered, Unlimited, Unchainned, AssignUnchainned, Unterminated] = {
     new Query(table, st.*, rowFunc)
   }
 }
@@ -111,21 +111,34 @@ private[morpheus] abstract class AbstractRootSelectQuery[T <: Table[T, _], R](va
 class SelectQuery[
   T <: Table[T, _],
   R,
+  Type <: QueryType,
   Group <: GroupBind,
   Order <: OrderBind,
   Limit <: LimitBind,
   Chain <: ChainBind,
-  AssignChain <: AssignBind
-](val query: Query[T, R, Group, Order, Limit, Chain, AssignChain]) {
+  AssignChain <: AssignBind,
+  Status <: StatusBind
+](val query: Query[T, R, Type, Group, Order, Limit, Chain, AssignChain, Status]) {
 
   @implicitNotFound("You can't use 2 SET parts on a single UPDATE query")
-  def having(condition: T => QueryAssignment)(implicit ev: AssignChain =:= AssignUnchainned): SelectQuery[T, R, Group, Order, Limit, Chain, AssignChainned] = {
-    new SelectQuery[T, R, Group, Order, Limit, Chain, AssignChainned](
-      new Query[T, R, Group, Order, Limit, Chain, AssignChainned](
+  def having(condition: T => QueryAssignment)(implicit tp: Type =:= SelectType, ev: AssignChain =:= AssignUnchainned): SelectQuery[T, R, Type, Group, Order,
+    Limit,
+    Chain,
+    AssignChainned, Status] = {
+    new SelectQuery[T, R, Type, Group, Order, Limit, Chain, AssignChainned, Status](
+      new Query(
         query.table,
         query.table.queryBuilder.having(query.query, condition(query.table).clause),
         query.rowFunc
       )
+    )
+  }
+
+  private[morpheus] def terminate: Query[T, R, SelectType, Group, Order, Limit, Chain, AssignChain, Terminated] = {
+    new Query(
+      query.table,
+      query.query,
+      query.fromRow
     )
   }
 
