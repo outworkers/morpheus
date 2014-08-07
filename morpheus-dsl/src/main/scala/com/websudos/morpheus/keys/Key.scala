@@ -18,6 +18,8 @@
 
 package com.websudos.morpheus.keys
 
-trait Key {
+import com.websudos.morpheus.column.AbstractColumn
 
+trait Key[T <: Key[T]] {
+  self: AbstractColumn[T] =>
 }

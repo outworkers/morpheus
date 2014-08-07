@@ -99,6 +99,47 @@ private[morpheus] trait ModifyImplicits extends LowPriorityImplicits {
     )
   }
 
+  /**
+   * This defines an implicit conversion from a RootInsertQuery to an InsertQuery, making the INSERT syntax block invisible to the end user.
+   * This is used to automatically "exit" the INSERT syntax block with the default "INSERT INTO" option, while picking no other SQL options such as IGNORE or
+   * LOW_PRIORITY.
+   *
+   * This is making the following queries equivalent:
+   * - Table.insert.into.queryString = "INSERT INTO table"
+   * - Table.insert = "INSERT INTO table"
+   * @param root The RootSelectQuery to convert.
+   * @tparam T The table owning the record.
+   * @tparam R The record type.
+   * @return An executable SelectQuery.
+   */
+  implicit def rootInsertQueryToQuery[T <: Table[T, _], R](root: AbstractRootInsertQuery[T, R]): Query[T, R, Ungroupped, Unordered, Unlimited,
+    Unchainned, AssignUnchainned] = {
+    new Query(
+      root.table,
+      root.st.into,
+      root.rowFunc
+    )
+  }
+
+  /**
+   * This defines an implicit conversion from a RootInsertQuery to an InsertQuery, making the INSERT syntax block invisible to the end user.
+   * This allows chaining a "value" method call directly after "Table.insert".
+   *
+   * @param root The RootSelectQuery to convert.
+   * @tparam T The table owning the record.
+   * @tparam R The record type.
+   * @return An executable SelectQuery.
+   */
+  implicit def rootInsertQueryToInsertQuery[T <: Table[T, _], R](root: AbstractRootInsertQuery[T, R]): InsertQuery[T, R, Ungroupped, Unordered, Unlimited,
+    Unchainned, AssignUnchainned] = {
+    new InsertQuery(
+      new Query(
+        root.table,
+        root.st.into,
+        root.rowFunc
+      )
+    )
+  }
 
   implicit def queryToAssignmentsQuery[
     T <: Table[T, _],

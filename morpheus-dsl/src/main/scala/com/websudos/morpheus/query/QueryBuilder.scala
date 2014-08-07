@@ -41,10 +41,13 @@ trait SQLOperatorSet {
 
 abstract class AbstractSQLSyntax {
   val into = "INTO"
+  val values = "VALUES"
   val select = "SELECT"
   val distinct = "DISTINCT"
   val ignore = "IGNORE"
   val quick = "QUICK"
+
+  val insert = "INSERT"
 
   val where = "WHERE"
   val having = "HAVING"
@@ -228,6 +231,16 @@ private[morpheus] trait AbstractQueryBuilder {
 
   def desc(name: String): SQLBuiltQuery = {
     SQLBuiltQuery(name).forcePad.append(syntax.desc)
+  }
+
+  def insert(qb: SQLBuiltQuery, columns: List[String], values: List[String]): SQLBuiltQuery = {
+    qb.pad.append(syntax.`(`)
+      .append(columns.mkString(", "))
+      .append(syntax.`)`)
+      .forcePad.append(syntax.values)
+      .forcePad.append(syntax.`(`)
+      .append(values.mkString(", "))
+      .append(syntax.`)`)
   }
 }
 

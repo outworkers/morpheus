@@ -33,28 +33,6 @@ case class SQLBuiltQuery(queryString: String) {
   def prepend(st: String): SQLBuiltQuery = SQLBuiltQuery(st + queryString)
   def prepend(st: SQLBuiltQuery): SQLBuiltQuery = prepend(st.queryString)
 
-  def prependIfAbsent(st: String): SQLBuiltQuery = if (queryString.startsWith(st)) {
-    this
-  } else {
-    prepend(st)
-  }
-
-  def prependIfAbsent(st: SQLBuiltQuery): SQLBuiltQuery = prependIfAbsent(st.queryString)
-
-  def appendIfAbsent(st: String): SQLBuiltQuery = if (queryString.endsWith(st)) {
-    this
-  } else {
-    append(st)
-  }
-
-  def appendIfAbsent(st: SQLBuiltQuery): SQLBuiltQuery = appendIfAbsent(st.queryString)
-
-  def removeIfLast(st: SQLBuiltQuery): SQLBuiltQuery = if (queryString.endsWith(st.queryString)) {
-    SQLBuiltQuery(queryString.dropRight(st.queryString.length))
-  } else  {
-    this
-  }
-
   def spaced: Boolean = queryString.endsWith(" ")
   def pad: SQLBuiltQuery = if (spaced) this else SQLBuiltQuery(queryString + " ")
   def forcePad: SQLBuiltQuery = SQLBuiltQuery(queryString + " ")

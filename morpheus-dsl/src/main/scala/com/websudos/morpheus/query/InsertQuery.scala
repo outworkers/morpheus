@@ -2,7 +2,7 @@ package com.websudos.morpheus.query
 
 import com.twitter.finagle.exp.mysql.Row
 import com.websudos.morpheus.SQLPrimitive
-import com.websudos.morpheus.column.SelectColumn
+import com.websudos.morpheus.column.AbstractColumn
 import com.websudos.morpheus.dsl.Table
 import com.websudos.morpheus.mysql.MySQLSyntax
 
@@ -101,12 +101,17 @@ class InsertQuery[
   ](val query: Query[T, R, Group, Order, Limit, Chain, AssignChain], val statements: List[(String, String)] = Nil) {
 
 
-  def value[RR : SQLPrimitive](condition: T => SelectColumn[RR], obj: RR): InsertQuery[T, R, Group, Order, Limit, Chain, AssignChain] = {
-    new InsertQuery(query, Tuple2(condition(query.table).col.name, implicitly[SQLPrimitive[RR]].toSQL(obj)) :: statements)
+  def value[RR : SQLPrimitive](condition: T => AbstractColumn[RR], obj: RR): InsertQuery[T, R, Group, Order, Limit, Chain, AssignChain] = {
+    new InsertQuery(query, Tuple2(condition(query.table).name, implicitly[SQLPrimitive[RR]].toSQL(obj)) :: statements)
   }
 
   private[morpheus] def toQuery: Query[T, R, Group, Order, Limit, Chain, AssignChain] = {
-    new Query(query.table, query.query, query.fromRow)
+
+
+    val columns = statements.reverse.map(_._1)
+    val values = statements.reverse.map(_._2)
+
+    new Query(query.table, query.table.queryBuilder.insert(query.query, columns, values), query.fromRow)
   }
 
 

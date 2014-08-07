@@ -95,6 +95,8 @@ abstract class Table[Owner <: Table[Owner, Record], Record] {
 
   def delete: AbstractRootDeleteQuery[Owner, Record]
 
+  def insert: AbstractRootInsertQuery[Owner, Record]
+
   def columns: List[AbstractColumn[_]] = _columns.toList
 
   Lock.synchronized {
