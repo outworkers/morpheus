@@ -48,11 +48,11 @@ case class MySQLDeleteSyntaxBlock(query: String, tableName: String) extends Abst
 private[morpheus] class MySQLRootDeleteQuery[T <: Table[T, _], R](table: T, st: MySQLDeleteSyntaxBlock, rowFunc: Row => R)  extends AbstractRootDeleteQuery(table, st,
   rowFunc) {
 
-  def lowPriority: Query[T, R, DeleteType, Ungroupped, Unordered, Unlimited, Unchainned, AssignUnchainned, Unterminated] = {
+  def lowPriority: BaseDeleteQuery = {
     new Query(table, st.lowPriority, rowFunc)
   }
 
-  def ignore: Query[T, R, DeleteType, Ungroupped, Unordered, Unlimited, Unchainned, AssignUnchainned, Unterminated] = {
+  def ignore: BaseDeleteQuery = {
     new Query(table, st.ignore, rowFunc)
   }
 

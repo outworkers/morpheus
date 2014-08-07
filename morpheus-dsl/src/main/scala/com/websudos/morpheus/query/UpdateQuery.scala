@@ -50,8 +50,9 @@ private[morpheus] abstract class AbstractRootUpdateQuery[T <: Table[T, _], R](va
 
   def fromRow(r: Row): R = rowFunc(r)
 
+  protected[this] type BaseUpdateQuery = Query[T, R, UpdateType, Ungroupped, Unordered, Unlimited, Unchainned, AssignUnchainned, Unterminated]
 
-  private[morpheus] def all: Query[T, R, UpdateType, Ungroupped, Unordered, Unlimited, Unchainned, AssignUnchainned, Unterminated] = {
+  private[morpheus] def all: BaseUpdateQuery = {
     new Query(table, st.all, rowFunc)
   }
 }
