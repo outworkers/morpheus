@@ -97,20 +97,35 @@ trait SQLResultsQuery[T <: Table[T, _], R] extends SQLQuery[T, R] {
   def get()(implicit client: Client): Future[Option[R]]
 }
 
-trait GroupBind
-trait ChainBind
-trait OrderBind
-trait LimitBind
+private[morpheus] trait GroupBind
+private[morpheus] abstract class Groupped extends GroupBind
+private[morpheus] abstract class Ungroupped extends GroupBind
+
+private[morpheus] trait ChainBind
+private[morpheus] abstract class Chainned extends ChainBind
+private[morpheus] abstract class Unchainned extends ChainBind
+
+private[morpheus] trait OrderBind
+private[morpheus] abstract class Ordered extends OrderBind
+private[morpheus] abstract class Unordered extends OrderBind
+
+private[morpheus] trait LimitBind
+private[morpheus] abstract class Limited extends LimitBind
+private[morpheus] abstract class Unlimited extends LimitBind
+
+private[morpheus] trait StatusBind
+private[morpheus] abstract class Terminated extends StatusBind
+private[morpheus] abstract class Unterminated extends StatusBind
 
 
-abstract class Groupped extends GroupBind
-abstract class Ungroupped extends GroupBind
-abstract class Chainned extends ChainBind
-abstract class Unchainned extends ChainBind
-abstract class Ordered extends OrderBind
-abstract class Unordered extends OrderBind
-abstract class Limited extends LimitBind
-abstract class Unlimited extends LimitBind
+private[morpheus] trait QueryType
+private[morpheus] abstract class InsertType extends QueryType
+private[morpheus] abstract class UpdateType extends QueryType
+private[morpheus] abstract class DeleteType extends QueryType
+private[morpheus] abstract class CreateType extends QueryType
+private[morpheus] abstract class SelectType extends QueryType
+
+
 
 /**
  * This bit of magic allows all extending sub-classes to implement the "where" and "and" SQL clauses with all the necessary operators,
@@ -131,27 +146,29 @@ abstract class Unlimited extends LimitBind
 class Query[
   T <: Table[T, _],
   R,
+  Type <: QueryType,
   Group <: GroupBind,
   Ord <: OrderBind,
   Lim <: LimitBind,
   Chain <: ChainBind,
-  AC <: AssignBind
+  AC <: AssignBind,
+  Status <: StatusBind
 ](val table: T, val query: SQLBuiltQuery, val rowFunc: Row => R) extends SQLQuery[T, R] {
 
   def fromRow(row: Row): R = rowFunc(row)
 
   @implicitNotFound("You cannot use two where clauses on a single query")
-  def where(condition: T => QueryCondition)(implicit ev: Chain =:= Unchainned): Query[T, R, Group, Ord, Lim, Chainned, AC] = {
+  def where(condition: T => QueryCondition)(implicit ev: Chain =:= Unchainned): Query[T, R, Type, Group, Ord, Lim, Chainned, AC, Status] = {
     new Query(table, table.queryBuilder.where(query, condition(table).clause), rowFunc)
   }
 
   @implicitNotFound("You cannot set two limits on the same query")
-  def limit(value: Int)(implicit ev: Lim =:= Unlimited): Query[T, R, Group, Ord, Limited, Chain, AC] = {
+  def limit(value: Int)(implicit ev: Lim =:= Unlimited): Query[T, R, Type, Group, Ord, Limited, Chain, AC, Status] = {
     new Query(table, table.queryBuilder.limit(query, value.toString), rowFunc)
   }
 
   @implicitNotFound("You cannot ORDER a query more than once")
-  def orderBy(conditions: (T => QueryOrder)*)(implicit ev: Ord =:= Unordered): Query[T, R, Group, Ordered, Lim, Chain, AC] = {
+  def orderBy(conditions: (T => QueryOrder)*)(implicit ev: Ord =:= Unordered): Query[T, R, Type, Group, Ordered, Lim, Chain, AC, Status] = {
     val applied = conditions map {
       fn => fn(table).clause
     }
@@ -159,7 +176,9 @@ class Query[
   }
 
   @implicitNotFound("You cannot GROUP a query more than once or GROUP after you ORDER a query")
-  def groupBy(columns: (T => SelectColumn[_])*)(implicit ev: Group =:= Ungroupped, ev2: Ord =:= Unordered): Query[T, R, Groupped, Ord, Lim, Chain, AC] = {
+  def groupBy(columns: (T => SelectColumn[_])*)(implicit ev1: Group =:= Ungroupped, ev2: Ord =:= Unordered): Query[T, R, Type, Groupped, Ord, Lim, Chain, AC,
+    Status
+    ] = {
     val applied = columns map {
       fn => {
         fn(table).col.name
@@ -169,15 +188,16 @@ class Query[
   }
 
   @implicitNotFound("You need to use the where method first")
-  def and(condition: T => QueryCondition)(implicit ev: Chain =:= Chainned): Query[T, R, Group, Ord, Lim, Chainned, AC]  = {
+  def and(condition: T => QueryCondition)(implicit ev: Chain =:= Chainned): Query[T, R, Type, Group, Ord, Lim, Chainned, AC, Status]  = {
     new Query(table, table.queryBuilder.and(query, condition(table).clause), rowFunc)
   }
 
 }
 
 object Query {
-  def apply[T <: Table[T, _], R](table: T, query: SQLBuiltQuery, rowFunc: Row => R): Query[T, R, Ungroupped, Unordered, Unlimited, Unchainned,
-    AssignUnchainned] = {
+  def apply[T <: Table[T, _], R, QType <: QueryType](table: T, query: SQLBuiltQuery, rowFunc: Row => R): Query[T, R, QType, Ungroupped, Unordered, Unlimited,
+    Unchainned,
+    AssignUnchainned, Unterminated] = {
     new Query(table, query, rowFunc)
   }
 }

@@ -1,5 +1,7 @@
 package com.websudos.morpheus.query
 
+import scala.annotation.implicitNotFound
+
 import com.twitter.finagle.exp.mysql.Row
 import com.websudos.morpheus.SQLPrimitive
 import com.websudos.morpheus.column.AbstractColumn
@@ -63,7 +65,7 @@ private[morpheus] abstract class AbstractRootInsertQuery[T <: Table[T, _], R](va
 
   def fromRow(r: Row): R = rowFunc(r)
 
-  private[morpheus] def into: Query[T, R, Ungroupped, Unordered, Unlimited, Unchainned, AssignUnchainned] = {
+  private[morpheus] def into: Query[T, R, InsertType, Ungroupped, Unordered, Unlimited, Unchainned, AssignUnchainned, Unterminated] = {
     new Query(table, st.into, rowFunc)
   }
 }
@@ -71,19 +73,19 @@ private[morpheus] abstract class AbstractRootInsertQuery[T <: Table[T, _], R](va
 private[morpheus] class MySQLRootInsertQuery[T <: Table[T, _], R](table: T, st: MySQLInsertSyntaxBlock, rowFunc: Row => R) extends AbstractRootInsertQuery[T,
   R](table, st, rowFunc) {
 
-  def delayed: Query[T, R, Ungroupped, Unordered, Unlimited, Unchainned, AssignUnchainned] = {
+  def delayed: Query[T, R, InsertType, Ungroupped, Unordered, Unlimited, Unchainned, AssignUnchainned, Unterminated] = {
     new Query(table, st.delayed, rowFunc)
   }
 
-  def lowPriority: Query[T, R, Ungroupped, Unordered, Unlimited, Unchainned, AssignUnchainned] = {
+  def lowPriority: Query[T, R, InsertType, Ungroupped, Unordered, Unlimited, Unchainned, AssignUnchainned, Unterminated] = {
     new Query(table, st.lowPriority, rowFunc)
   }
 
-  def highPriority: Query[T, R, Ungroupped, Unordered, Unlimited, Unchainned, AssignUnchainned] = {
+  def highPriority: Query[T, R, InsertType, Ungroupped, Unordered, Unlimited, Unchainned, AssignUnchainned, Unterminated] = {
     new Query(table, st.highPriority, rowFunc)
   }
 
-  def ignore: Query[T, R, Ungroupped, Unordered, Unlimited, Unchainned, AssignUnchainned] = {
+  def ignore: Query[T, R, InsertType, Ungroupped, Unordered, Unlimited, Unchainned, AssignUnchainned, Unterminated] = {
     new Query(table, st.ignore, rowFunc)
   }
 
@@ -93,20 +95,54 @@ private[morpheus] class MySQLRootInsertQuery[T <: Table[T, _], R](table: T, st: 
 class InsertQuery[
   T <: Table[T, _],
   R,
+  Type <: QueryType,
   Group <: GroupBind,
   Order <: OrderBind,
   Limit <: LimitBind,
   Chain <: ChainBind,
-  AssignChain <: AssignBind
-  ](val query: Query[T, R, Group, Order, Limit, Chain, AssignChain], val statements: List[(String, String)] = Nil) {
+  AssignChain <: AssignBind,
+  Status <: StatusBind
+  ](val query: Query[T, R, Type, Group, Order, Limit, Chain, AssignChain, Status], val statements: List[(String, String)] = Nil) {
 
 
-  def value[RR : SQLPrimitive](condition: T => AbstractColumn[RR], obj: RR): InsertQuery[T, R, Group, Order, Limit, Chain, AssignChain] = {
-    new InsertQuery(query, Tuple2(condition(query.table).name, implicitly[SQLPrimitive[RR]].toSQL(obj)) :: statements)
+  /**
+   * At this point you may be reading and thinking "WTF", but fear not, it all makes sense. Every call to a "value method" will generate a new Insert Query,
+   * but the list of statements in the new query will include a new (String, String) pair, where the first part is the column name and the second one is the
+   * serialised value. This is a very simple accumulator that will eventually allow calling the "insert" method on a queryBuilder to produce the final
+   * serialisation result, a hopefully valid MySQL insert query.
+   *
+   * @param insertion The insert condition is a pair of a column with the value to use for it. It looks like this: value(_.someColumn, someValue),
+   *                  where the assignment is of course type safe.
+   * @param obj The object is the value to use for the column.
+   * @param primitive The primitive is the SQL primitive that converts the object into an SQL Primitive. Since the user cannot deal with types that are not
+   *                  "marked" as SQL primitives for the particular database in use, we use a simple context bound to enforce this constraint.
+   * @param ev The first evidence parameter is a restriction upon the Type phantom type and it tests if the Query is an Insert query. This prevents the user
+   *           from jumping around with the implicit conversion mechanism and converting an Update query to an implicit and so on. It also allows us to
+   *           guarantee the MySQL syntax is followed with respect to what methods are available on certain types of queries, all with a single Query class.
+   * @param ev1 The second evidence parameter is a restriction upon the status of a Query. Certain "exit" points mark the serialisation as Terminated with
+   *            respect to the SQL syntax in use. It's a way of saying: there are no further options possible according to the DB you are using.
+   * @tparam RR The SQL primitive or rather it's Scala correspondent to use at this time.
+   * @return A new InsertQuery, where the list of statements in the Insert has been chained and updated for serialisation.
+   */
+  @implicitNotFound(msg = "To use the value method this query needs to be an insert query and the query needs to be unterminated.")
+  def value[RR](insertion: T => AbstractColumn[RR], obj: RR)(
+    implicit primitive: SQLPrimitive[RR],
+    ev: Type =:= InsertType,
+    ev1: Status =:= Unterminated
+    ): InsertQuery[T, R, Type, Group, Order, Limit, Chain, AssignChain, Status] = {
+    new InsertQuery(query, Tuple2(insertion(query.table).name, primitive.toSQL(obj)) :: statements)
   }
 
-  private[morpheus] def toQuery: Query[T, R, Group, Order, Limit, Chain, AssignChain] = {
-
+  /**
+   * This is the final end point of an insert query, where through an implicit conversion in ModifyImplicts, the query is converted back to a normal Query
+   * for execution or serialisation. Before any of that however, this method will carefully Terminate the query so that no further implicit conversions are
+   * possible.
+   *
+   * E.g the user cannot go back and re-add value methods or any more things after the query is complete with respect to the MySQL syntax. Talk about making
+   * illegal programming states unrepresentable.
+   * @return A terminat Query, ready for execution.
+   */
+  private[morpheus] def toQuery: Query[T, R, Type, Group, Order, Limit, Chain, AssignChain, Terminated] = {
 
     val columns = statements.reverse.map(_._1)
     val values = statements.reverse.map(_._2)

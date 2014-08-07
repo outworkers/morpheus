@@ -72,17 +72,22 @@ sealed abstract class AssignUnchainned extends AssignBind
 class AssignmentsQuery[
   T <: Table[T, _],
   R,
+  Type <: QueryType,
   Group <: GroupBind,
   Order <: OrderBind,
   Limit <: LimitBind,
   Chain <: ChainBind,
-  AssignChain <: AssignBind
-](val query: Query[T, R, Group, Order, Limit, Chain, AssignChain]) {
+  AssignChain <: AssignBind,
+  Status <: StatusBind
+](val query: Query[T, R, Type, Group, Order, Limit, Chain, AssignChain, Status]) {
 
   @implicitNotFound("You can't use 2 SET parts on a single UPDATE query")
-  def set(condition: T => QueryAssignment)(implicit ev: AssignChain =:= AssignUnchainned): AssignmentsQuery[T, R, Group, Order, Limit, Chain, AssignChainned] = {
-    new AssignmentsQuery[T, R, Group, Order, Limit, Chain, AssignChainned](
-      new Query[T, R, Group, Order, Limit, Chain, AssignChainned](
+  def set(condition: T => QueryAssignment)(implicit ev: AssignChain =:= AssignUnchainned, ev1: Status =:= Unterminated): AssignmentsQuery[T, R, Type, Group, Order,
+    Limit,
+    Chain,
+    AssignChainned, Status] = {
+    new AssignmentsQuery[T, R, Type, Group, Order, Limit, Chain, AssignChainned, Status](
+      new Query[T, R, Type, Group, Order, Limit, Chain, AssignChainned, Status](
         query.table,
         query.table.queryBuilder.set(query.query, condition(query.table).clause),
         query.rowFunc
@@ -92,8 +97,8 @@ class AssignmentsQuery[
 
   @implicitNotFound("""You need to use the "set" method before using the "and"""")
   def and(condition: T => QueryAssignment, signChange: Int = 0)(implicit ev: AssignChain =:= AssignChainned): AssignmentsQuery[T, R, Group, Order, Limit, Chain, AssignChainned] = {
-    new AssignmentsQuery[T, R, Group, Order, Limit, Chain, AssignChainned](
-      new Query[T, R, Group, Order, Limit, Chain, AssignChainned](
+    new AssignmentsQuery[T, R, Type, Group, Order, Limit, Chain, AssignChainned, Status](
+      new Query[T, R, Type, Group, Order, Limit, Chain, AssignChainned, Status](
         query.table,
         query.table.queryBuilder.andSet(query.query, condition(query.table).clause),
         query.rowFunc
