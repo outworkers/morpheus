@@ -21,6 +21,8 @@ package com.websudos.morpheus.query
 import org.scalatest.prop.GeneratorDrivenPropertyChecks
 import org.scalatest.{FlatSpec, Matchers}
 
+import com.websudos.morpheus.mysql.MySQLQueryBuilder
+
 
 class MySQLQueryBuilderTest extends FlatSpec with Matchers with GeneratorDrivenPropertyChecks {
 
@@ -87,6 +89,15 @@ class MySQLQueryBuilderTest extends FlatSpec with Matchers with GeneratorDrivenP
     }
   }
 
+  it should "serialise a simple <=> condition" in {
+    forAll(minSuccessful(300)) { (name: String, value: String) =>
+      whenever (name.length > 0 && value.length > 0) {
+        val query = MySQLQueryBuilder.<=>(name, value).queryString
+        query shouldEqual s"$name <=> $value"
+      }
+    }
+  }
+
   it should "serialise a simple select * query" in {
     forAll(minSuccessful(300)) { (name: String) =>
       whenever (name.length > 0) {
@@ -123,11 +134,21 @@ class MySQLQueryBuilderTest extends FlatSpec with Matchers with GeneratorDrivenP
     }
   }
 
-  it should "serialise an $in operator query" in {
+  it should "serialise an IN operator query" in {
     forAll(minSuccessful(300)) { (name: String, column1: String, column2: String, column3: String) => {
       whenever(name.length > 0 && column1.length > 0 && column2.length > 0 && column3.length > 0) {
         val query = MySQLQueryBuilder.in(name, List(column1, column2, column3)).queryString
         query shouldEqual s"$name IN ($column1, $column2, $column3)"
+      }
+    }
+    }
+  }
+
+  it should "serialise an NOT IN operator query" in {
+    forAll(minSuccessful(300)) { (name: String, column1: String, column2: String, column3: String) => {
+      whenever(name.length > 0 && column1.length > 0 && column2.length > 0 && column3.length > 0) {
+        val query = MySQLQueryBuilder.notIn(name, List(column1, column2, column3)).queryString
+        query shouldEqual s"$name NOT IN ($column1, $column2, $column3)"
       }
     }
     }
@@ -166,6 +187,24 @@ class MySQLQueryBuilderTest extends FlatSpec with Matchers with GeneratorDrivenP
       whenever (name.length > 0) {
         val query = MySQLQueryBuilder.set(SQLBuiltQuery(part), SQLBuiltQuery(name)).queryString
         query shouldEqual s"$part SET $name"
+      }
+    }
+  }
+
+  it should "serialise a LIKE operator query" in {
+    forAll(minSuccessful(300)) { (part: String, name: String) =>
+      whenever (name.length > 0) {
+        val query = MySQLQueryBuilder.like(part, name).queryString
+        query shouldEqual s"$part LIKE $name"
+      }
+    }
+  }
+
+  it should "serialise a NOT LIKE operator query" in {
+    forAll(minSuccessful(300)) { (part: String, name: String) =>
+      whenever (name.length > 0) {
+        val query = MySQLQueryBuilder.notLike(part, name).queryString
+        query shouldEqual s"$part NOT LIKE $name"
       }
     }
   }

@@ -5,7 +5,7 @@ import com.websudos.morpheus.dsl.Table
 import com.websudos.morpheus.query._
 import com.websudos.morpheus.SQLPrimitive
 
-private[morpheus] trait ModifyImplicits {
+private[morpheus] trait ModifyImplicits extends LowPriorityImplicits {
 
   implicit class SelectColumnRequired[Owner <: Table[Owner, Record], Record, T](col: Column[Owner, Record, T]) extends SelectColumn[T](col) {
     def apply(r: Row): T = col.apply(r)
@@ -30,7 +30,8 @@ private[morpheus] trait ModifyImplicits {
    * @tparam R The record type.
    * @return An executable SelectQuery.
    */
-  implicit def rootUpdateQueryToSelectQuery[T <: Table[T, _], R](root: RootUpdateQuery[T, R]): Query[T, R, Ungroupped, Unordered, Unlimited, Unchainned, AssignUnchainned] = {
+  implicit def rootUpdateQueryToUpdateQuery[T <: Table[T, _], R](root: AbstractRootUpdateQuery[T, R]): Query[T, R, UpdateType, Ungroupped, Unordered, Unlimited,
+    Unchainned, AssignUnchainned, Unterminated] = {
     new Query(
       root.table,
       root.st.all,
@@ -38,7 +39,10 @@ private[morpheus] trait ModifyImplicits {
     )
   }
 
-  implicit def rootUpdateQueryToAssignQuery[T <: Table[T, _], R](root: RootUpdateQuery[T, R]): AssignmentsQuery[T, R, Ungroupped, Unordered, Unlimited, Unchainned, AssignUnchainned] = {
+  implicit def rootUpdateQueryToAssignQuery[T <: Table[T, _], R](root: AbstractRootUpdateQuery[T, R]): AssignmentsQuery[T, R, UpdateType, Ungroupped,
+    Unordered,
+    Unlimited,
+    Unchainned, AssignUnchainned, Unterminated] = {
     new AssignmentsQuery(
       new Query(
         root.table,
@@ -64,7 +68,17 @@ private[morpheus] trait ModifyImplicits {
    * @tparam R The record type.
    * @return An executable SelectQuery.
    */
-  implicit def rootDeleteQueryToDeleteQuery[T <: Table[T, _], R](root: RootDeleteQuery[T, R]): Query[T, R, Ungroupped, Unordered, Unlimited, Unchainned, AssignUnchainned] = {
+  implicit def rootDeleteQueryToDeleteQuery[T <: Table[T, _], R](root: AbstractRootDeleteQuery[T, R]): Query[
+    T,
+    R,
+    DeleteType,
+    Ungroupped,
+    Unordered,
+    Unlimited,
+    Unchainned,
+    AssignUnchainned,
+    Unterminated
+    ] = {
     new Query(
       root.table,
       root.st.all,
@@ -87,7 +101,8 @@ private[morpheus] trait ModifyImplicits {
    * @tparam R The record type.
    * @return An executable SelectQuery.
    */
-  implicit def rootSelectQueryToSelectQuery[T <: Table[T, _], R](root: RootSelectQuery[T, R]): Query[T, R, Ungroupped, Unordered, Unlimited, Unchainned, AssignUnchainned] = {
+  implicit def rootSelectQueryToSelectQuery[T <: Table[T, _], R](root: AbstractRootSelectQuery[T, R]): Query[T, R, SelectType, Ungroupped, Unordered, Unlimited,
+    Unchainned, AssignUnchainned, Unterminated] = {
     new Query(
       root.table,
       root.st.*,
@@ -95,26 +110,123 @@ private[morpheus] trait ModifyImplicits {
     )
   }
 
+  /**
+   * This defines an implicit conversion from a RootInsertQuery to an InsertQuery, making the INSERT syntax block invisible to the end user.
+   * This is used to automatically "exit" the INSERT syntax block with the default "INSERT INTO" option, while picking no other SQL options such as IGNORE or
+   * LOW_PRIORITY.
+   *
+   * This is making the following queries equivalent:
+   * - Table.insert.into.queryString = "INSERT INTO table"
+   * - Table.insert = "INSERT INTO table"
+   * @param root The RootSelectQuery to convert.
+   * @tparam T The table owning the record.
+   * @tparam R The record type.
+   * @return An executable SelectQuery.
+   */
+  implicit def rootInsertQueryToQuery[T <: Table[T, _], R](root: AbstractRootInsertQuery[T, R]): Query[T, R, InsertType, Ungroupped, Unordered, Unlimited,
+    Unchainned, AssignUnchainned, Unterminated] = {
+    new Query(
+      root.table,
+      root.st.into,
+      root.rowFunc
+    )
+  }
+
+  /**
+   * This defines an implicit conversion from a RootInsertQuery to an InsertQuery, making the INSERT syntax block invisible to the end user.
+   * This allows chaining a "value" method call directly after "Table.insert".
+   *
+   * @param root The RootSelectQuery to convert.
+   * @tparam T The table owning the record.
+   * @tparam R The record type.
+   * @return An executable SelectQuery.
+   */
+  implicit def rootInsertQueryToInsertQuery[T <: Table[T, _], R](root: AbstractRootInsertQuery[T, R]): InsertQuery[T, R, InsertType, Ungroupped, Unordered,
+    Unlimited, Unchainned, AssignUnchainned, Unterminated] = {
+    new InsertQuery(
+      new Query(
+        root.table,
+        root.st.into,
+        root.rowFunc
+      )
+    )
+  }
 
   implicit def queryToAssignmentsQuery[
     T <: Table[T, _],
     R,
+    Type <: QueryType,
     G <: GroupBind,
     O <: OrderBind,
     L <: LimitBind,
     C <: ChainBind,
-    AC <: AssignBind
-  ](query: Query[T, R, G, O, L, C, AC]): AssignmentsQuery[T, R, G, O, L, C, AC] = {
+    AC <: AssignBind,
+    Status <: StatusBind
+  ](query: Query[T, R, Type, G, O, L, C, AC, Status]): AssignmentsQuery[T, R, Type, G, O, L, C, AC, Status] = {
     new AssignmentsQuery(query)
   }
 
   implicit def assignmentToQuery[
     T <: Table[T, _],
     R,
+    Type <: QueryType,
     G <: GroupBind,
     O <: OrderBind,
     L <: LimitBind,
     C <: ChainBind,
-    AC <: AssignBind
-  ](assignment: AssignmentsQuery[T, R, G, O, L, C, AC]): Query[T, R, G, O, L, C, AC] = assignment.query
+    AC <: AssignBind,
+    Status <: StatusBind
+  ](assignment: AssignmentsQuery[T, R, Type, G, O, L, C, AC, Status]): Query[T, R, UpdateType, G, O, L, C, AssignChainned, Terminated] = assignment.terminate
+
+  implicit def queryToSelectQuery[
+    T <: Table[T, _],
+    R,
+    Type <: QueryType,
+    G <: GroupBind,
+    O <: OrderBind,
+    L <: LimitBind,
+    C <: ChainBind,
+    AC <: AssignBind,
+    Status <: StatusBind
+  ](query: Query[T, R, Type, G, O, L, C, AC, Status]): SelectQuery[T, R, Type, G, O, L, C, AC, Status] = {
+    new SelectQuery(query)
+  }
+
+  implicit def selectQueryToQuery[
+    T <: Table[T, _],
+    R,
+    Type <: QueryType,
+    G <: GroupBind,
+    O <: OrderBind,
+    L <: LimitBind,
+    C <: ChainBind,
+    AC <: AssignBind,
+    Status <: StatusBind
+  ](assignment: SelectQuery[T, R, Type, G, O, L, C, AC, Status]): Query[T, R, SelectType, G, O, L, C, AC, Terminated] = assignment.terminate
+
+  implicit def queryInsertQuery[
+  T <: Table[T, _],
+  R,
+  Type <: QueryType,
+  G <: GroupBind,
+  O <: OrderBind,
+  L <: LimitBind,
+  C <: ChainBind,
+  AC <: AssignBind,
+  Status <: StatusBind
+  ](query: Query[T, R, Type, G, O, L, C, AC, Status]): InsertQuery[T, R, Type, G, O, L, C, AC, Status] = {
+    new InsertQuery(query)
+  }
+
+  implicit def insertQueryToQuery[
+    T <: Table[T, _],
+    R,
+    Type <: QueryType,
+    G <: GroupBind,
+    O <: OrderBind,
+    L <: LimitBind,
+    C <: ChainBind,
+    AC <: AssignBind,
+    Status <: StatusBind
+  ](assignment: InsertQuery[T, R, Type, G, O, L, C, AC, Status]): Query[T, R, Type, G, O, L, C, AC, Terminated] = assignment.toQuery
 }

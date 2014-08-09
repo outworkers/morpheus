@@ -19,6 +19,8 @@
 package com.websudos.morpheus
 
 
+import java.util.Date
+
 import com.twitter.finagle.exp.mysql._
 
 case class InvalidTypeDefinitionException(msg: String = "Invalid SQL type declared for column") extends RuntimeException(msg)
@@ -64,6 +66,17 @@ trait SQLPrimitives {
     def toSQL(value: Int): String = value.toString
   }
 
+  implicit object DateIsSQLPrimitive extends SQLPrimitive[Date] {
+    val sqlType = "date"
+
+    def fromRow(row: Row, name: String): Option[Date] = row(name) map {
+      case DateValue(date) => date
+      case _ => throw InvalidTypeDefinitionException()
+    }
+
+    def toSQL(value: Date): String = value.toString
+  }
+
   /*
   implicit object BooleanIsSQLPrimitive extends SQLPrimitive[Boolean] {
     val sqlType = "boolean"
@@ -96,6 +109,6 @@ trait SQLPrimitives {
   }
 }
 
-trait MySQLPrimitives extends SQLPrimitives {}
+
 
 object SQLPrimitives extends SQLPrimitives

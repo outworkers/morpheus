@@ -20,7 +20,7 @@ package com.websudos.morpheus.dsl
 
 import com.twitter.finagle.exp.mysql.Row
 import com.websudos.morpheus.column.SelectColumn
-import com.websudos.morpheus.query.{SelectSyntaxBlock, DefaultSQLOperators, RootSelectQuery}
+import com.websudos.morpheus.query.{AbstractRootSelectQuery, AbstractSelectSyntaxBlock}
 
 
 /**
@@ -30,17 +30,40 @@ import com.websudos.morpheus.query.{SelectSyntaxBlock, DefaultSQLOperators, Root
  * @tparam Owner The table owning the record.
  * @tparam Record The record type.
  */
-private[morpheus] trait SelectTable[Owner <: Table[Owner, Record], Record] {
+private[morpheus] trait SelectTable[
+  Owner <: Table[Owner, Record],
+  Record,
+  RootSelectQuery[A <: Table[A, _], B] <: AbstractRootSelectQuery[A, B],
+  Block <: AbstractSelectSyntaxBlock
+] {
   self: Table[Owner, Record] =>
+
+  /**
+   * This allows a table implementation targeting a specific database to specify it's own root select query.
+   * It's used to allow variations in SELECT syntax operators and quantifiers.
+   *
+   * For instance, MySQL has DISTINCT ROW as a valid SELECT quantifier whereas Postgres doesn't.
+   * This is part of the mechanism allowing for the invisible swap of features through a single import.
+   * @param table The table object used.
+   * @param block The select syntax block to use.
+   * @param rowFunc The function mapping a record to a type safe user defined output.
+   * @tparam A The type of the owner table.
+   * @tparam B The type of the record.
+   * @return A root select query implementation.
+   */
+  protected[this] def createRootSelect[A <: Table[A, _], B](table: A, block: Block, rowFunc: Row => B): RootSelectQuery[A, B]
+
+  protected[this] def createSelectSyntaxBlock(query: String, tableName: String, cols: List[String] = List("*")): Block
+
 
   /**
    * This is the SELECT * query, where the user won't specify any partial select.
    * @return An instance of a RootSelectQuery.
    */
   def select: RootSelectQuery[Owner, Record] = {
-    new RootSelectQuery[Owner, Record](
+    createRootSelect[Owner, Record](
       this.asInstanceOf[Owner],
-      SelectSyntaxBlock[Owner, Record](DefaultSQLOperators.select, tableName, fromRow),
+      createSelectSyntaxBlock(syntax.select, tableName),
       fromRow
     )
   }
@@ -55,9 +78,9 @@ private[morpheus] trait SelectTable[Owner <: Table[Owner, Record], Record] {
     val c1: SelectColumn[T1] = f1(t)
     def rowFunc(row: Row): T1 = c1(row)
 
-    new RootSelectQuery[Owner, T1](
+    createRootSelect[Owner, T1](
       this.asInstanceOf[Owner],
-      SelectSyntaxBlock[Owner, T1](DefaultSQLOperators.select, tableName, rowFunc, List(c1.col.name)),
+      createSelectSyntaxBlock(syntax.select, tableName, List(c1.col.name)),
       rowFunc
     )
   }
@@ -73,9 +96,9 @@ private[morpheus] trait SelectTable[Owner <: Table[Owner, Record], Record] {
     val c2: SelectColumn[T2] = f2(t)
     def rowFunc(row: Row): (T1, T2) = Tuple2(c1(row), c2(row))
 
-    new RootSelectQuery[Owner, (T1, T2)](
+    createRootSelect[Owner, (T1, T2)](
       this.asInstanceOf[Owner],
-      SelectSyntaxBlock[Owner, (T1, T2)](DefaultSQLOperators.select, tableName, rowFunc, List(c1.col.name, c2.col.name)),
+      createSelectSyntaxBlock(syntax.select, tableName, List(c1.col.name, c2.col.name)),
       rowFunc
     )
   }
@@ -93,9 +116,9 @@ private[morpheus] trait SelectTable[Owner <: Table[Owner, Record], Record] {
 
     def rowFunc(row: Row): (T1, T2, T3) = Tuple3(c1(row), c2(row), c3(row) )
 
-    new RootSelectQuery[Owner, (T1, T2, T3)](
+    createRootSelect[Owner, (T1, T2, T3)](
       this.asInstanceOf[Owner],
-      SelectSyntaxBlock[Owner, (T1, T2, T3)](DefaultSQLOperators.select, tableName, rowFunc, List(c1.col.name, c2.col.name, c3.col.name)),
+      createSelectSyntaxBlock(syntax.select, tableName, List(c1.col.name, c2.col.name, c3.col.name)),
       rowFunc
     )
   }
@@ -116,9 +139,9 @@ private[morpheus] trait SelectTable[Owner <: Table[Owner, Record], Record] {
 
     def rowFunc(row: Row): (T1, T2, T3, T4) = Tuple4(c1(row), c2(row), c3(row), c4(row))
 
-    new RootSelectQuery[Owner, (T1, T2, T3, T4)](
+    createRootSelect[Owner, (T1, T2, T3, T4)](
       this.asInstanceOf[Owner],
-      SelectSyntaxBlock[Owner, (T1, T2, T3, T4)](DefaultSQLOperators.select, tableName, rowFunc, List(c1.col.name, c2.col.name, c3.col.name, c4.col.name)),
+      createSelectSyntaxBlock(syntax.select, tableName, List(c1.col.name, c2.col.name, c3.col.name, c4.col.name)),
       rowFunc
     )
   }
@@ -143,11 +166,11 @@ private[morpheus] trait SelectTable[Owner <: Table[Owner, Record], Record] {
 
     def rowFunc(row: Row): (T1, T2, T3, T4, T5) = Tuple5(c1(row), c2(row), c3(row), c4(row), c5(row))
 
-    new RootSelectQuery[Owner, (T1, T2, T3, T4, T5)](
+    createRootSelect[Owner, (T1, T2, T3, T4, T5)](
       this.asInstanceOf[Owner],
-      SelectSyntaxBlock[Owner, (T1, T2, T3, T4, T5)](
-        DefaultSQLOperators.select,
-        tableName, rowFunc,
+      createSelectSyntaxBlock(
+        syntax.select,
+        tableName,
         List(c1.col.name, c2.col.name, c3.col.name, c4.col.name, c5.col.name)
       ),
       rowFunc

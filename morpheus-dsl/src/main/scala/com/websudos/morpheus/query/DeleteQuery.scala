@@ -1,32 +1,16 @@
 package com.websudos.morpheus.query
 
-import com.websudos.morpheus.dsl.Table
 import com.twitter.finagle.exp.mysql.Row
+import com.websudos.morpheus.dsl.Table
 
-case class DeleteSyntaxBlock[T <: Table[T, _], R](query: String, tableName: String, fromRow: Row => R, columns: List[String] = List("*")) {
+private[morpheus]abstract class AbstractDeleteSyntaxBlock(query: String, tableName: String) extends AbstractSyntaxBlock {
 
-  private[this] val qb = SQLBuiltQuery(query)
+  protected[this] val qb: SQLBuiltQuery = SQLBuiltQuery(query)
+
+  def syntax: AbstractSQLSyntax
 
   def all: SQLBuiltQuery = {
-    qb.pad.append(DefaultSQLOperators.from)
-      .forcePad.append(tableName)
-  }
-
-  def lowPriority: SQLBuiltQuery = {
-    qb.pad.append(DefaultSQLOperators.lowPriority)
-      .forcePad.append(DefaultSQLOperators.from)
-      .forcePad.append(tableName)
-  }
-
-  def ignore: SQLBuiltQuery = {
-    qb.pad.append(DefaultSQLOperators.ignore)
-      .forcePad.append(DefaultSQLOperators.from)
-      .forcePad.append(tableName)
-  }
-
-  def quick: SQLBuiltQuery = {
-    qb.pad.append(DefaultSQLOperators.quick)
-      .forcePad.append(DefaultSQLOperators.from)
+    qb.pad.append(DefaultSQLSyntax.from)
       .forcePad.append(tableName)
   }
 }
@@ -43,19 +27,16 @@ case class DeleteSyntaxBlock[T <: Table[T, _], R](query: String, tableName: Stri
  * @tparam T The type of the owning table.
  * @tparam R The type of the record.
  */
-private[morpheus] class RootDeleteQuery[T <: Table[T, _], R](val table: T, val st: DeleteSyntaxBlock[T, _], val rowFunc: Row => R) {
+private[morpheus] abstract class AbstractRootDeleteQuery[T <: Table[T, _], R](val table: T, val st: AbstractDeleteSyntaxBlock, val rowFunc: Row => R) {
 
   def fromRow(r: Row): R = rowFunc(r)
 
-  def lowPriority: Query[T, R, Ungroupped, Unordered, Unlimited, Unchainned, AssignUnchainned] = {
-    new Query(table, st.lowPriority, rowFunc)
-  }
+  protected[this] type BaseDeleteQuery = Query[T, R, DeleteType, Ungroupped, Unordered, Unlimited, Unchainned, AssignUnchainned, Unterminated]
 
-  def ignore: Query[T, R, Ungroupped, Unordered, Unlimited, Unchainned, AssignUnchainned] = {
-    new Query(table, st.ignore, rowFunc)
-  }
-
-  private[morpheus] def all: Query[T, R, Ungroupped, Unordered, Unlimited, Unchainned, AssignUnchainned] = {
+  private[morpheus] def all: BaseDeleteQuery = {
     new Query(table, st.all, rowFunc)
   }
+
 }
+
+

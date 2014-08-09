@@ -18,6 +18,7 @@
 
 package com.websudos.morpheus.query
 
+import scala.annotation.implicitNotFound
 import scala.concurrent.{ Future => ScalaFuture}
 import scala.concurrent.ExecutionContext.Implicits.global
 import com.twitter.finagle.exp.mysql.{Client, Row}
@@ -45,34 +46,30 @@ trait BaseSelectQuery[T <: Table[T, _], R] extends SQLResultsQuery[T, R] {
 
 }
 
+private[morpheus] abstract class AbstractSelectSyntaxBlock(
+  query: String, tableName: String,
+  columns: List[String] = List("*")) extends AbstractSyntaxBlock {
 
-
-case class SelectSyntaxBlock[T <: Table[T, _], R](query: String, tableName: String, fromRow: Row => R, columns: List[String] = List("*")) {
-
-  private[this] val qb = SQLBuiltQuery(query)
+  protected[this] val qb = SQLBuiltQuery(query)
 
   def `*`: SQLBuiltQuery = {
     qb.pad.append(columns.mkString(" "))
-      .pad.append(DefaultSQLOperators.from)
+      .pad.append(syntax.from)
       .pad.append(tableName)
   }
 
   def all: SQLBuiltQuery = this.`*`
 
   def distinct: SQLBuiltQuery = {
-    qb.pad.append(DefaultSQLOperators.distinct)
+    qb.pad.append(syntax.distinct)
       .pad.append(columns.mkString(", "))
-      .pad.append(DefaultSQLOperators.from)
-      .pad.append(tableName)
-  }
-
-  def distinctRow: SQLBuiltQuery = {
-    qb.pad.append(DefaultSQLOperators.distinctRow)
-      .pad.append(columns.mkString(", "))
-      .pad.append(DefaultSQLOperators.from)
+      .pad.append(syntax.from)
       .pad.append(tableName)
   }
 }
+
+
+
 
 /**
  * This is the implementation of a root select query, a wrapper around an abstract syntax block.
@@ -87,19 +84,63 @@ case class SelectSyntaxBlock[T <: Table[T, _], R](query: String, tableName: Stri
  * @tparam T The type of the owning table.
  * @tparam R The type of the record.
  */
-private[morpheus] class RootSelectQuery[T <: Table[T, _], R](val table: T, val st: SelectSyntaxBlock[T, _], val rowFunc: Row => R) {
+private[morpheus] abstract class AbstractRootSelectQuery[T <: Table[T, _], R](val table: T, val st: AbstractSelectSyntaxBlock, val rowFunc: Row => R) {
 
   def fromRow(r: Row): R = rowFunc(r)
 
-  def distinct: Query[T, R, Ungroupped, Unordered, Unlimited, Unchainned, AssignUnchainned] = {
+  def distinct: Query[T, R, SelectType, Ungroupped, Unordered, Unlimited, Unchainned, AssignUnchainned, Unterminated] = {
     new Query(table, st.distinct, rowFunc)
   }
 
-  def distinctRow: Query[T, R, Ungroupped, Unordered, Unlimited, Unchainned, AssignUnchainned] = {
-    new Query(table, st.distinctRow, rowFunc)
-  }
-
-  def all: Query[T, R, Ungroupped, Unordered, Unlimited, Unchainned, AssignUnchainned] = {
+  def all: Query[T, R, SelectType, Ungroupped, Unordered, Unlimited, Unchainned, AssignUnchainned, Unterminated] = {
     new Query(table, st.*, rowFunc)
   }
+}
+
+
+
+
+/**
+ * This bit of magic allows all extending sub-classes to implement the "set" and "and" SQL clauses with all the necessary operators,
+ * in a type safe way. By providing the third type argument and a custom way to subclass with the predetermined set of arguments,
+ * all DSL representations of an UPDATE query can use the implementation without violating DRY.
+ *
+ * @tparam T The type of the table owning the record.
+ * @tparam R The type of the record held in the table.
+ */
+class SelectQuery[
+  T <: Table[T, _],
+  R,
+  Type <: QueryType,
+  Group <: GroupBind,
+  Order <: OrderBind,
+  Limit <: LimitBind,
+  Chain <: ChainBind,
+  AssignChain <: AssignBind,
+  Status <: StatusBind
+](val query: Query[T, R, Type, Group, Order, Limit, Chain, AssignChain, Status]) {
+
+  @implicitNotFound("You can't use 2 SET parts on a single UPDATE query")
+  def having(condition: T => QueryAssignment)(implicit tp: Type =:= SelectType, ev: AssignChain =:= AssignUnchainned): SelectQuery[T, R, Type, Group, Order,
+    Limit,
+    Chain,
+    AssignChainned, Status] = {
+    new SelectQuery[T, R, Type, Group, Order, Limit, Chain, AssignChainned, Status](
+      new Query(
+        query.table,
+        query.table.queryBuilder.having(query.query, condition(query.table).clause),
+        query.rowFunc
+      )
+    )
+  }
+
+  private[morpheus] def terminate: Query[T, R, SelectType, Group, Order, Limit, Chain, AssignChain, Terminated] = {
+    new Query(
+      query.table,
+      query.query,
+      query.fromRow
+    )
+  }
+
+
 }

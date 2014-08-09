@@ -18,33 +18,20 @@
 
 package com.websudos.morpheus.query
 
-import com.twitter.finagle.exp.mysql.Row
-import com.websudos.morpheus.dsl.Table
 import scala.annotation.implicitNotFound
 
+import com.twitter.finagle.exp.mysql.Row
+import com.websudos.morpheus.dsl.Table
 
-case class UpdateSyntaxBlock[T <: Table[T, _], R](query: String, tableName: String, fromRow: Row => R, columns: List[String] = List("*")) {
 
-  private[this] val qb = SQLBuiltQuery(query)
+private[morpheus] abstract class AbstractUpdateSyntaxBlock(query: String, tableName: String) extends AbstractSyntaxBlock {
+
+  protected[this] val qb = SQLBuiltQuery(query)
 
   def all: SQLBuiltQuery = {
     qb.pad.append(tableName)
   }
-
-  def lowPriority: SQLBuiltQuery = {
-    qb.pad.append(DefaultSQLOperators.lowPriority)
-      .pad.append(tableName)
-  }
-
-  def ignore: SQLBuiltQuery = {
-    qb.pad.append(DefaultSQLOperators.ignore)
-      .pad.append(tableName)
-  }
 }
-
-sealed trait AssignBind
-sealed abstract class AssignChainned extends AssignBind
-sealed abstract class AssignUnchainned extends AssignBind
 
 
 /**
@@ -59,22 +46,21 @@ sealed abstract class AssignUnchainned extends AssignBind
  * @tparam T The type of the owning table.
  * @tparam R The type of the record.
  */
-private[morpheus] class RootUpdateQuery[T <: Table[T, _], R](val table: T, val st: UpdateSyntaxBlock[T, _], val rowFunc: Row => R) {
+private[morpheus] abstract class AbstractRootUpdateQuery[T <: Table[T, _], R](val table: T, val st: AbstractUpdateSyntaxBlock, val rowFunc: Row => R) {
 
   def fromRow(r: Row): R = rowFunc(r)
 
-  def lowPriority: Query[T, R, Ungroupped, Unordered, Unlimited, Unchainned, AssignUnchainned] = {
-    new Query(table, st.lowPriority, rowFunc)
-  }
+  protected[this] type BaseUpdateQuery = Query[T, R, UpdateType, Ungroupped, Unordered, Unlimited, Unchainned, AssignUnchainned, Unterminated]
 
-  def ignore: Query[T, R, Ungroupped, Unordered, Unlimited, Unchainned, AssignUnchainned] = {
-    new Query(table, st.ignore, rowFunc)
-  }
-
-  private[morpheus] def all: Query[T, R, Ungroupped, Unordered, Unlimited, Unchainned, AssignUnchainned] = {
+  private[morpheus] def all: BaseUpdateQuery = {
     new Query(table, st.all, rowFunc)
   }
 }
+
+trait AssignBind
+sealed abstract class AssignChainned extends AssignBind
+sealed abstract class AssignUnchainned extends AssignBind
+
 
 /**
  * This bit of magic allows all extending sub-classes to implement the "set" and "and" SQL clauses with all the necessary operators,
@@ -87,17 +73,22 @@ private[morpheus] class RootUpdateQuery[T <: Table[T, _], R](val table: T, val s
 class AssignmentsQuery[
   T <: Table[T, _],
   R,
+  Type <: QueryType,
   Group <: GroupBind,
   Order <: OrderBind,
   Limit <: LimitBind,
   Chain <: ChainBind,
-  AssignChain <: AssignBind
-](val query: Query[T, R, Group, Order, Limit, Chain, AssignChain]) {
+  AssignChain <: AssignBind,
+  Status <: StatusBind
+](val query: Query[T, R, Type, Group, Order, Limit, Chain, AssignChain, Status]) {
 
   @implicitNotFound("You can't use 2 SET parts on a single UPDATE query")
-  def set(condition: T => QueryAssignment)(implicit ev: AssignChain =:= AssignUnchainned): AssignmentsQuery[T, R, Group, Order, Limit, Chain, AssignChainned] = {
-    new AssignmentsQuery[T, R, Group, Order, Limit, Chain, AssignChainned](
-      new Query[T, R, Group, Order, Limit, Chain, AssignChainned](
+  def set(condition: T => QueryAssignment)(implicit ev: AssignChain =:= AssignUnchainned, ev1: Status =:= Unterminated): AssignmentsQuery[T, R, Type, Group, Order,
+    Limit,
+    Chain,
+    AssignChainned, Status] = {
+    new AssignmentsQuery[T, R, Type, Group, Order, Limit, Chain, AssignChainned, Status](
+      new Query[T, R, Type, Group, Order, Limit, Chain, AssignChainned, Status](
         query.table,
         query.table.queryBuilder.set(query.query, condition(query.table).clause),
         query.rowFunc
@@ -106,13 +97,22 @@ class AssignmentsQuery[
   }
 
   @implicitNotFound("""You need to use the "set" method before using the "and"""")
-  def and(condition: T => QueryAssignment, signChange: Int = 0)(implicit ev: AssignChain =:= AssignChainned): AssignmentsQuery[T, R, Group, Order, Limit, Chain, AssignChainned] = {
-    new AssignmentsQuery[T, R, Group, Order, Limit, Chain, AssignChainned](
-      new Query[T, R, Group, Order, Limit, Chain, AssignChainned](
+  def and(condition: T => QueryAssignment, signChange: Int = 0)(implicit ev: AssignChain =:= AssignChainned): AssignmentsQuery[T, R, Type, Group, Order, Limit,
+    Chain, AssignChainned, Status] = {
+    new AssignmentsQuery[T, R, Type, Group, Order, Limit, Chain, AssignChainned, Status](
+      new Query[T, R, Type, Group, Order, Limit, Chain, AssignChainned, Status](
         query.table,
         query.table.queryBuilder.andSet(query.query, condition(query.table).clause),
         query.rowFunc
       )
+    )
+  }
+
+  private[morpheus] def terminate: Query[T, R, UpdateType, Group, Order, Limit, Chain, AssignChainned, Terminated] = {
+    new Query(
+      query.table,
+      query.query,
+      query.rowFunc
     )
   }
 

@@ -5,7 +5,7 @@ import com.websudos.morpheus.dsl.BasicTable
 import com.websudos.morpheus.mysql.Imports._
 
 
-class DeleteQueryTest extends FlatSpec with Matchers {
+class DeleteQuerySerialisationTest extends FlatSpec with Matchers {
   it should "serialise a simple DELETE query" in {
     BasicTable.delete.queryString shouldEqual "DELETE FROM BasicTable"
   }
