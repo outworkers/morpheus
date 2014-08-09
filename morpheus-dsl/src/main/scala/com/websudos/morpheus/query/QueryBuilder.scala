@@ -47,7 +47,10 @@ abstract class AbstractSQLSyntax {
   val ignore = "IGNORE"
   val quick = "QUICK"
 
+  val create = "CREATE"
+
   val insert = "INSERT"
+  val ifNotExists = "IF NOT EXISTS"
 
   val where = "WHERE"
   val having = "HAVING"
@@ -60,6 +63,7 @@ abstract class AbstractSQLSyntax {
   val or = "OR"
   val set = "SET"
   val from = "FROM"
+  val table = "TABLE"
   val eqs = "="
   val `(` = "("
   val comma = ","

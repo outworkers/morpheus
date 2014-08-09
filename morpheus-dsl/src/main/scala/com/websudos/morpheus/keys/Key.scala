@@ -19,7 +19,28 @@
 package com.websudos.morpheus.keys
 
 import com.websudos.morpheus.column.AbstractColumn
+import com.websudos.morpheus.query.SQLBuiltQuery
 
-trait Key[T <: Key[T]] {
-  self: AbstractColumn[T] =>
+private[phantom] trait Key[ValueType, KeyType <: Key[ValueType, KeyType]] {
+  self: AbstractColumn[ValueType] =>
+
+  protected[this] def qb: SQLBuiltQuery
+  def keyToQueryString: String
 }
+
+trait PrimaryKey[ValueType] extends Key[ValueType, PrimaryKey[ValueType]] {
+  self: AbstractColumn[ValueType] =>
+
+
+
+}
+
+trait ForeignKey[ValueType] extends Key[ValueType, PrimaryKey[ValueType]] {
+  self: AbstractColumn[ValueType] =>
+}
+
+
+trait UniqueKey[ValueType] extends Key[ValueType, PrimaryKey[ValueType]] {
+  self: AbstractColumn[ValueType] =>
+}
+
