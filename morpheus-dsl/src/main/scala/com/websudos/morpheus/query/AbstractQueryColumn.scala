@@ -20,6 +20,7 @@ package com.websudos.morpheus.query
 
 import com.websudos.morpheus.SQLPrimitive
 import com.websudos.morpheus.column.AbstractColumn
+import com.websudos.morpheus.mysql.MySQLQueryBuilder
 
 
 private[morpheus] abstract class BaseQueryCondition(val clause: SQLBuiltQuery)
@@ -54,14 +55,14 @@ case class QueryCondition(override val clause: SQLBuiltQuery, count: Int = 0) ex
   def or(condition: QueryCondition): QueryCondition = {
     if (count == 0) {
       QueryCondition(MySQLQueryBuilder.or(
-        clause.prepend(DefaultSQLOperators.`(`),
-        condition.clause.append(DefaultSQLOperators.`)`)),
+        clause.prepend(DefaultSQLSyntax.`(`),
+        condition.clause.append(DefaultSQLSyntax.`)`)),
         count + 1
       )
     } else {
       QueryCondition(MySQLQueryBuilder.or(
         SQLBuiltQuery(clause.queryString.dropRight(1)),
-        condition.clause.append(DefaultSQLOperators.`)`)),
+        condition.clause.append(DefaultSQLSyntax.`)`)),
         count + 1
       )
     }
@@ -76,7 +77,7 @@ case class QueryCondition(override val clause: SQLBuiltQuery, count: Int = 0) ex
  * @param col The column to cast to an IndexedColumn.
  * @tparam T The type of the value the column holds.
  */
-sealed abstract class AbstractQueryColumn[T: SQLPrimitive](col: AbstractColumn[T]) {
+private[morpheus] abstract class AbstractQueryColumn[T: SQLPrimitive](col: AbstractColumn[T]) {
 
   /**
    * The equals operator. Will return a match if the value equals the database value.
@@ -119,16 +120,29 @@ sealed abstract class AbstractQueryColumn[T: SQLPrimitive](col: AbstractColumn[T
     QueryCondition(col.table.queryBuilder.!=(col.name, col.toQueryString(value)))
   }
 
+  def like(value: T): QueryCondition = {
+    QueryCondition(col.table.queryBuilder.like(col.name, col.toQueryString(value)))
+  }
+
+  def notLike(value: T): QueryCondition = {
+    QueryCondition(col.table.queryBuilder.notLike(col.name, col.toQueryString(value)))
+  }
+
   def in(values: List[T]) : QueryCondition = {
     val primitive = implicitly[SQLPrimitive[T]]
     QueryCondition(col.table.queryBuilder.in(col.name, values.map(primitive.toSQL)))
   }
 
-
+  def notIn(values: List[T]) : QueryCondition = {
+    val primitive = implicitly[SQLPrimitive[T]]
+    QueryCondition(col.table.queryBuilder.notIn(col.name, values.map(primitive.toSQL)))
+  }
 }
 
 
-class QueryColumn[T: SQLPrimitive](col: AbstractColumn[T]) extends AbstractQueryColumn[T](col)
+
+
+
 
 case class QueryOrder(clause: SQLBuiltQuery)
 

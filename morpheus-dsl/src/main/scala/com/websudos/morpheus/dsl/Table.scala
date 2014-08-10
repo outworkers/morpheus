@@ -42,9 +42,12 @@ import com.websudos.morpheus.query._
  * @tparam Record The user defined Scala class, usually a case class, holding a type safe data model definition. This allows for type safe querying of
  *                records, as all select all queries will return an instance of Record.
  */
-abstract class Table[Owner <: Table[Owner, Record], Record] extends SelectTable[Owner, Record] {
+abstract class Table[Owner <: Table[Owner, Record], Record] {
 
   val queryBuilder: AbstractQueryBuilder
+
+  protected[this] def syntax: AbstractSQLSyntax
+
 
   /**
    * This is a Synchronized mutable buffer allowing us to store references to the objects a user writes inside a table definition to represent columns.
@@ -88,17 +91,11 @@ abstract class Table[Owner <: Table[Owner, Record], Record] extends SelectTable[
 
   def tableName: String = _name
 
-  def update: RootUpdateQuery[Owner, Record] = new RootUpdateQuery(
-    this.asInstanceOf[Owner],
-    UpdateSyntaxBlock(DefaultSQLOperators.update, tableName, fromRow),
-    fromRow
-  )
+  def update: AbstractRootUpdateQuery[Owner, Record]
 
-  def delete: RootDeleteQuery[Owner, Record] = new RootDeleteQuery(
-    this.asInstanceOf[Owner],
-    DeleteSyntaxBlock(DefaultSQLOperators.delete, tableName, fromRow),
-    fromRow
-  )
+  def delete: AbstractRootDeleteQuery[Owner, Record]
+
+  def insert: AbstractRootInsertQuery[Owner, Record]
 
   def columns: List[AbstractColumn[_]] = _columns.toList
 

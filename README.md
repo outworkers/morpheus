@@ -12,7 +12,7 @@ currently hitting that bar for Cassandra and MongoDB. But why stop there?
 Using morpheus
 ==============
 
-The current version is: ```val moprheusVersion = 0.1.0```.
+The current version is: ```val morpheusVersion = 0.1.0```.
 Morpheus is published to the Websudos Maven repository at ```http://maven.websudos.co.uk/ext-release-local``` and it's actively and avidly developed. It is 
 not yet production ready.
 

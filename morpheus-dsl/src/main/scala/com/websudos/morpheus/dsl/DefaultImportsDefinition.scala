@@ -19,7 +19,7 @@
 package com.websudos.morpheus.dsl
 
 import com.websudos.morpheus.column.{ AbstractColumn, ModifyImplicits }
-import com.websudos.morpheus.query.QueryColumn
+import com.websudos.morpheus.query.AbstractQueryColumn
 
 /**
  * As the implementation of SQL builders may differ depending on the type of SQL database in use, we will provide a series of specific imports for each
@@ -48,7 +48,7 @@ trait DefaultImportsDefinition extends ModifyImplicits {
   type Result = com.twitter.finagle.exp.mysql.Result
   type Row = com.twitter.finagle.exp.mysql.Row
 
-  implicit def columnToQueryColumn[T: SQLPrimitive](col: AbstractColumn[T]): QueryColumn[T]
+  implicit def columnToQueryColumn[T: SQLPrimitive](col: AbstractColumn[T]): AbstractQueryColumn[T]
 
 }
 
