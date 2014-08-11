@@ -39,7 +39,14 @@ trait SQLOperatorSet {
   def `<=>`: String
 }
 
-abstract class AbstractSQLSyntax {
+abstract class AbstractSQLKeys {
+  val primaryKey = "PRIMARY KEY"
+  val foreignKey = "FOREIGN KEY"
+  val uniqueKey = "UNIQUE KEY"
+  val index = "INDEX"
+}
+
+abstract class AbstractSQLSyntax extends AbstractSQLKeys {
   val into = "INTO"
   val values = "VALUES"
   val select = "SELECT"
@@ -70,6 +77,7 @@ abstract class AbstractSQLSyntax {
   val `)` = ")"
   val asc = "ASC"
   val desc = "DESC"
+
 }
 
 object DefaultSQLSyntax extends AbstractSQLSyntax
