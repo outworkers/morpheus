@@ -24,13 +24,17 @@ import com.websudos.morpheus.query.{DefaultSQLSyntax, SQLBuiltQuery}
 private[morpheus] trait Key[ValueType, KeyType <: Key[ValueType, KeyType]] {
   self: AbstractColumn[ValueType] =>
 
-  override def qb: SQLBuiltQuery = SQLBuiltQuery(keyToQueryString).forcePad.append(notNull match {
-    case true => DefaultSQLSyntax.notNull
-    case false => ""
-  }).pad.append(autoIncrement match {
-    case true => DefaultSQLSyntax.autoIncrement
-    case false => ""
-  })
+  override def qb: SQLBuiltQuery = {
+    SQLBuiltQuery(name).pad.append(sqlType)
+      .forcePad.append(keyToQueryString)
+      .pad.append(notNull match {
+      case true => DefaultSQLSyntax.notNull
+      case false => ""
+    }).pad.append(autoIncrement match {
+      case true => DefaultSQLSyntax.autoIncrement
+      case false => ""
+    }).trim
+  }
 
 
   protected[this] def keyToQueryString: String
@@ -52,10 +56,10 @@ trait UniqueKey[ValueType] extends Key[ValueType, UniqueKey[ValueType]] {
 
 }
 
-trait NonNull {
+trait NotNull {
   self: Key[_, _] with AbstractColumn[_] =>
 
-  protected[this] override val notNull = false
+  protected[this] override val notNull = true
 }
 
 trait Autoincrement {

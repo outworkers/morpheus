@@ -45,8 +45,8 @@ abstract class AbstractSQLKeys {
   val foreignKey = "FOREIGN KEY"
   val uniqueKey = "UNIQUE KEY"
   val index = "INDEX"
-  val notNull = "NOT_NULL"
-  val autoIncrement = "auto_increment"
+  val notNull = "NOT NULL"
+  val autoIncrement = "AUTO_INCREMENT"
 
   val cascade = "CASCADE"
   val restrict = "RESTRICT"

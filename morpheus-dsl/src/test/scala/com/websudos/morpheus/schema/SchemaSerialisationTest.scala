@@ -28,4 +28,17 @@ class SchemaSerialisationTest extends FlatSpec with Matchers {
     SimplePrimaryKeyTable.id.qb.queryString shouldEqual "id INT PRIMARY KEY"
   }
 
+  it should "serialise a PrimaryKey NotNull definition to an SQL query" in {
+    SimplePrimaryKeyTable.notNullId.qb.queryString shouldEqual "notNullId INT PRIMARY KEY NOT NULL"
+  }
+
+  it should "serialise a PrimaryKey Autoincrement definition to an SQL query" in {
+    SimplePrimaryKeyTable.autoincrementedId.qb.queryString shouldEqual "autoincrementedId INT PRIMARY KEY AUTO_INCREMENT"
+  }
+
+  it should "serialise a PrimaryKey NotNull AutoIncrement definition to an SQL query" in {
+    SimplePrimaryKeyTable.indexId.qb.queryString shouldEqual "indexId INT PRIMARY KEY NOT NULL AUTO_INCREMENT"
+  }
+
+
 }

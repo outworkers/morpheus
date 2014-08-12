@@ -43,7 +43,7 @@ trait SQLPrimitives {
   def apply[RR: SQLPrimitive]: SQLPrimitive[RR] = implicitly[SQLPrimitive[RR]]
 
   implicit object IntIsSQLPrimitive extends SQLPrimitive[Int] {
-    val sqlType = "int"
+    val sqlType = "INT"
 
     def fromRow(row: Row, name: String): Option[Int] = row(name) map {
       case IntValue(num) => num
@@ -55,7 +55,7 @@ trait SQLPrimitives {
   }
 
   implicit object FloatIsSQLPrimitive extends SQLPrimitive[Float] {
-    override def sqlType: String = "float"
+    override def sqlType: String = "FLOAT"
 
     override def fromRow(row: Row, name: String): Option[Float] = row(name) map {
       case FloatValue(num) => num
@@ -67,7 +67,7 @@ trait SQLPrimitives {
   }
 
   implicit object DoubleIsSQLPrimitive extends SQLPrimitive[Double] {
-    override def sqlType: String = "double"
+    override def sqlType: String = "DOUBLE"
 
     override def fromRow(row: Row, name: String): Option[Double] = row(name) map {
       case DoubleValue(num) => num
@@ -80,7 +80,7 @@ trait SQLPrimitives {
 
   implicit object LongIsSQLPrimitive extends SQLPrimitive[Long] {
 
-    val sqlType = "long"
+    val sqlType = "LONG"
 
     def fromRow(row: Row, name: String): Option[Long] = row(name) map {
       case LongValue(num) => num
@@ -94,7 +94,7 @@ trait SQLPrimitives {
 
 
   implicit object DateIsSQLPrimitive extends SQLPrimitive[Date] {
-    override val sqlType = "date"
+    override val sqlType = "DATE"
 
     def fromRow(row: Row, name: String): Option[Date] = row(name) map {
       case DateValue(date) => date
@@ -118,7 +118,7 @@ trait SQLPrimitives {
   }*/
 
   implicit object DateTimeIsSQLPrimitive extends SQLPrimitive[DateTime] {
-    override val sqlType: String = "date"
+    override val sqlType: String = "DATE"
 
     override def fromRow(row: Row, name: String): Option[DateTime] = row(name) map {
       case DateValue(date) => new DateTime(date)
@@ -130,7 +130,7 @@ trait SQLPrimitives {
 
   implicit object StringIsSQLPrimitive extends SQLPrimitive[String] {
 
-    override val sqlType = "string"
+    override val sqlType = "STRING"
 
     def fromRow(row: Row, name: String) = row(name) match {
       case Some(value) => value match {

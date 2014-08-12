@@ -57,7 +57,7 @@ trait DefaultImportsDefinition extends ModifyImplicits {
   type ForeignKey[Owner <: Table[Owner, Record], Record] = com.websudos.morpheus.column.ForeignKey[Owner, Record]
   type PrimaryKey[ValueType] = com.websudos.morpheus.keys.PrimaryKey[ValueType]
   type UniqueKey[ValueType] = com.websudos.morpheus.keys.UniqueKey[ValueType]
-  type NotNull = com.websudos.morpheus.keys.NonNull
+  type NotNull = com.websudos.morpheus.keys.NotNull
   type Autoincrement = com.websudos.morpheus.keys.Autoincrement
 
 
