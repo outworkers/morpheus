@@ -52,6 +52,9 @@ sealed class SimplePrimaryKeyTable extends MySQLTable[SimplePrimaryKeyTable, Sim
 
   object indexId extends IntColumn(this) with PrimaryKey[Int] with NotNull with Autoincrement
 
+  object foreignKey extends ForeignKey[SimplePrimaryKeyTable, SimplePrimaryRecord, IndexTable](this)(IndexTable.id, IndexTable.value)
+
+
   /**
    * The most notable and honorable of functions in this file, this is what allows our DSL to provide type-safety.
    * It works by requiring a user to define a type-safe mapping between a buffered Result and the above refined Record.

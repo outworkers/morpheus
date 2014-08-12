@@ -41,4 +41,11 @@ class SchemaSerialisationTest extends FlatSpec with Matchers {
   }
 
 
+  it should "serialise a simple ForeignKey definition to an SQL query without any constraints defined by default" in {
+    SimplePrimaryKeyTable.foreignKey.qb.queryString shouldEqual "FOREIGN KEY (IndexTable_id, IndexTable_value) REFERENCES IndexTable(id, value)"
+  }
+
+
+
+
 }

@@ -18,7 +18,7 @@
 
 package com.websudos.morpheus.dsl
 
-import com.websudos.morpheus.column.{ AbstractColumn, ModifyImplicits }
+import com.websudos.morpheus.column.{AbstractColumn, ModifyImplicits}
 import com.websudos.morpheus.query.AbstractQueryColumn
 
 /**
@@ -54,7 +54,7 @@ trait DefaultImportsDefinition extends ModifyImplicits {
   type Result = com.twitter.finagle.exp.mysql.Result
   type Row = com.twitter.finagle.exp.mysql.Row
 
-  type ForeignKey[Owner <: Table[Owner, Record], Record] = com.websudos.morpheus.column.ForeignKey[Owner, Record]
+  type ForeignKey[Owner <: Table[Owner, Record], Record, T1 <: Table[T1, _]] = com.websudos.morpheus.column.ForeignKey[Owner, Record, T1]
   type PrimaryKey[ValueType] = com.websudos.morpheus.keys.PrimaryKey[ValueType]
   type UniqueKey[ValueType] = com.websudos.morpheus.keys.UniqueKey[ValueType]
   type NotNull = com.websudos.morpheus.keys.NotNull
