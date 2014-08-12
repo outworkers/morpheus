@@ -40,6 +40,8 @@ trait DefaultImportsDefinition extends ModifyImplicits {
 
   type SQLPrimitive[T] = com.websudos.morpheus.SQLPrimitive[T]
   type Table[Owner <: Table[Owner, Record], Record] = com.websudos.morpheus.dsl.Table[Owner, Record]
+
+  type Index[Owner <: Table[Owner, Record], Record] = com.websudos.morpheus.column.Index[Owner, Record]
   type PrimitiveColumn[Owner <: Table[Owner, Record], Record, ValueType] = com.websudos.morpheus.column.PrimitiveColumn[Owner, Record, ValueType]
 
   type StringColumn[Owner <: Table[Owner, Record], Record] = com.websudos.morpheus.column.PrimitiveColumn[Owner, Record, String]

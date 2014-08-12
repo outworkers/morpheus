@@ -21,7 +21,7 @@ package com.websudos.morpheus.keys
 import com.websudos.morpheus.column.AbstractColumn
 import com.websudos.morpheus.query.{DefaultSQLSyntax, SQLBuiltQuery}
 
-private[phantom] trait Key[ValueType, KeyType <: Key[ValueType, KeyType]] {
+private[morpheus] trait Key[ValueType, KeyType <: Key[ValueType, KeyType]] {
   self: AbstractColumn[ValueType] =>
 
   protected[this] def qb: SQLBuiltQuery
@@ -32,7 +32,6 @@ trait PrimaryKey[ValueType] extends Key[ValueType, PrimaryKey[ValueType]] {
   self: AbstractColumn[ValueType] =>
 
   protected[this] def qb: SQLBuiltQuery = SQLBuiltQuery(DefaultSQLSyntax.primaryKey)
-
 }
 
 trait ForeignKey[ValueType] extends Key[ValueType, PrimaryKey[ValueType]] {
@@ -48,6 +47,6 @@ trait UniqueKey[ValueType] extends Key[ValueType, PrimaryKey[ValueType]] {
   protected[this] def qb: SQLBuiltQuery = SQLBuiltQuery(DefaultSQLSyntax.uniqueKey)
 }
 
-abstract class Index(column: AbstractColumn[_]*) extends Key[_, Index] {
-  protected[this] def qb: SQLBuiltQuery = SQLBuiltQuery(DefaultSQLSyntax.index)
+trait NonNull {
+  self: Key =>
 }

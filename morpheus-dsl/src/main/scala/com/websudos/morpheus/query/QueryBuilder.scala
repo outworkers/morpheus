@@ -40,10 +40,13 @@ trait SQLOperatorSet {
 }
 
 abstract class AbstractSQLKeys {
+
   val primaryKey = "PRIMARY KEY"
   val foreignKey = "FOREIGN KEY"
   val uniqueKey = "UNIQUE KEY"
   val index = "INDEX"
+  val nonNull = "NOT_NULL"
+  val autoIncrement = "auto_increment"
 }
 
 abstract class AbstractSQLSyntax extends AbstractSQLKeys {

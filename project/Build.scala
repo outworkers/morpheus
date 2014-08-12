@@ -129,7 +129,7 @@ object morpheus extends Build {
       Tags.limit(Tags.ForkedTestGroup, 4)
     ),
     libraryDependencies ++= Seq(
-      "com.chuusai"                  %% "shapeless"                         % "2.0.0",
+      "com.chuusai"                  %  "shapeless"                         % "2.0.0",
       "com.twitter"                  %% "finagle-mysql"                     % finagleVersion,
       "org.scala-lang"               %  "scala-reflect"                     % "2.10.4",
       "com.twitter"                  %% "util-core"                         % finagleVersion,
