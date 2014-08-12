@@ -24,29 +24,42 @@ import com.websudos.morpheus.query.{DefaultSQLSyntax, SQLBuiltQuery}
 private[morpheus] trait Key[ValueType, KeyType <: Key[ValueType, KeyType]] {
   self: AbstractColumn[ValueType] =>
 
-  protected[this] def qb: SQLBuiltQuery
-  def keyToQueryString: String
+  override def qb: SQLBuiltQuery = SQLBuiltQuery(keyToQueryString).forcePad.append(notNull match {
+    case true => DefaultSQLSyntax.notNull
+    case false => ""
+  }).pad.append(autoIncrement match {
+    case true => DefaultSQLSyntax.autoIncrement
+    case false => ""
+  })
+
+
+  protected[this] def keyToQueryString: String
+
+  protected[this] val notNull = false
+  protected[this] val autoIncrement = false
 }
 
 trait PrimaryKey[ValueType] extends Key[ValueType, PrimaryKey[ValueType]] {
   self: AbstractColumn[ValueType] =>
 
-  protected[this] def qb: SQLBuiltQuery = SQLBuiltQuery(DefaultSQLSyntax.primaryKey)
+  protected[this] def keyToQueryString = DefaultSQLSyntax.primaryKey
 }
 
-trait ForeignKey[ValueType] extends Key[ValueType, PrimaryKey[ValueType]] {
+trait UniqueKey[ValueType] extends Key[ValueType, UniqueKey[ValueType]] {
   self: AbstractColumn[ValueType] =>
 
-  protected[this] def qb: SQLBuiltQuery = SQLBuiltQuery(DefaultSQLSyntax.foreignKey)
-}
+  protected[this] def keyToQueryString = DefaultSQLSyntax.uniqueKey
 
-
-trait UniqueKey[ValueType] extends Key[ValueType, PrimaryKey[ValueType]] {
-  self: AbstractColumn[ValueType] =>
-
-  protected[this] def qb: SQLBuiltQuery = SQLBuiltQuery(DefaultSQLSyntax.uniqueKey)
 }
 
 trait NonNull {
-  self: Key =>
+  self: Key[_, _] with AbstractColumn[_] =>
+
+  protected[this] override val notNull = false
+}
+
+trait Autoincrement {
+  self: Key[Int, _] with AbstractColumn[Int] =>
+
+  override protected[this] val autoIncrement = true
 }

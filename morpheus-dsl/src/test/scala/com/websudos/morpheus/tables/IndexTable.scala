@@ -20,21 +20,43 @@ package com.websudos.morpheus.tables
 
 import com.websudos.morpheus.mysql.Imports._
 
-case class IndexedRecord(name: String, value: Long)
+case class IndexedRecord(id: Int, value: Long)
 
-class IndexTable extends MySQLTable[IndexTable, IndexedRecord] {
+sealed class IndexTable extends MySQLTable[IndexTable, IndexedRecord] {
 
-  object name extends StringColumn(this)
+  object id extends SmallIntColumn(this) with PrimaryKey[Int] with NotNull with Autoincrement
 
   object value extends LongColumn(this)
 
-  object index extends Index(name, value)
+  object index extends Index(id, value)
 
   def fromRow(row: Row): IndexedRecord = {
     IndexedRecord(
-      name(row),
+      id(row),
       value(row)
     )
   }
-
 }
+
+object IndexTable extends IndexTable
+
+case class SimplePrimaryRecord(id: Int)
+
+sealed class SimplePrimaryKeyTable extends MySQLTable[SimplePrimaryKeyTable, SimplePrimaryRecord] {
+
+  object id extends IntColumn(this) with PrimaryKey[Int]
+
+  /**
+   * The most notable and honorable of functions in this file, this is what allows our DSL to provide type-safety.
+   * It works by requiring a user to define a type-safe mapping between a buffered Result and the above refined Record.
+   *
+   * Objects delimiting pre-defined columns also have a pre-defined "apply" method, allowing the user to simply autofill the type-safe mapping by using
+   * pre-existing definitions.
+   *
+   * @param row The row incoming as a result from a MySQL query.
+   * @return A Record instance.
+   */
+  override def fromRow(row: Row): SimplePrimaryRecord = SimplePrimaryRecord(id(row))
+}
+
+object SimplePrimaryKeyTable extends SimplePrimaryKeyTable

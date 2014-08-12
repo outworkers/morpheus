@@ -45,8 +45,13 @@ abstract class AbstractSQLKeys {
   val foreignKey = "FOREIGN KEY"
   val uniqueKey = "UNIQUE KEY"
   val index = "INDEX"
-  val nonNull = "NOT_NULL"
+  val notNull = "NOT_NULL"
   val autoIncrement = "auto_increment"
+
+  val cascade = "CASCADE"
+  val restrict = "RESTRICT"
+  val setNull = "SET NULL"
+  val noAction = "NO ACTION"
 }
 
 abstract class AbstractSQLSyntax extends AbstractSQLKeys {
@@ -80,8 +85,20 @@ abstract class AbstractSQLSyntax extends AbstractSQLKeys {
   val `)` = ")"
   val asc = "ASC"
   val desc = "DESC"
+  val references = "REFERENCES"
+  val onDelete = "ON DELETE"
+  val onUpdate = "ON UPDATE"
 
 }
+
+abstract class AbstractSQLDataTypes {
+  val tinyInt = "TINYINT"
+  val smallInt = "SMALLINT"
+  val mediumInt = "MEDIUMINT"
+  val bigInt = "BIGINT"
+}
+
+object DefaultSQLDataTypes extends AbstractSQLDataTypes
 
 object DefaultSQLSyntax extends AbstractSQLSyntax
 
@@ -130,7 +147,6 @@ private[morpheus] trait AbstractQueryBuilder {
   def !=(name: String, value: String): SQLBuiltQuery = {
     SQLBuiltQuery(s"$name ${operators.`!=`} $value")
   }
-
 
   def <>(name: String, value: String): SQLBuiltQuery = {
     SQLBuiltQuery(s"$name ${operators.`<>`} $value")

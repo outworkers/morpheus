@@ -129,14 +129,15 @@ object morpheus extends Build {
       Tags.limit(Tags.ForkedTestGroup, 4)
     ),
     libraryDependencies ++= Seq(
-      "com.chuusai"                  %  "shapeless"                         % "2.0.0",
+      "com.chuusai"                  % "shapeless_2.10.4"                   % "2.0.0",
+      "org.scalaz"                   %% "scalaz-core"                       % "7.1.0",
       "com.twitter"                  %% "finagle-mysql"                     % finagleVersion,
       "org.scala-lang"               %  "scala-reflect"                     % "2.10.4",
       "com.twitter"                  %% "util-core"                         % finagleVersion,
       "joda-time"                    %  "joda-time"                         % "2.3",
       "org.joda"                     %  "joda-convert"                      % "1.6",
       "org.scalacheck"               %% "scalacheck"                        % "1.11.4"                  % "test, provided",
-      "com.newzly"                   %% "util-testing"                      % newzlyUtilVersion         % "provided",
+      "com.newzly"                   %% "util-testing"                      % newzlyUtilVersion         % "test, provided",
       "net.liftweb"                  %% "lift-json"                         % "2.6-M4"                  % "test, provided"
     )
   ).dependsOn(

@@ -21,6 +21,8 @@ package com.websudos.morpheus
 
 import java.util.Date
 
+import org.joda.time.DateTime
+
 import com.twitter.finagle.exp.mysql._
 
 case class InvalidTypeDefinitionException(msg: String = "Invalid SQL type declared for column") extends RuntimeException(msg)
@@ -40,6 +42,42 @@ trait SQLPrimitives {
 
   def apply[RR: SQLPrimitive]: SQLPrimitive[RR] = implicitly[SQLPrimitive[RR]]
 
+  implicit object IntIsSQLPrimitive extends SQLPrimitive[Int] {
+    val sqlType = "int"
+
+    def fromRow(row: Row, name: String): Option[Int] = row(name) map {
+      case IntValue(num) => num
+      case EmptyValue => 0
+      case _ => throw InvalidTypeDefinitionException()
+    }
+
+    def toSQL(value: Int): String = value.toString
+  }
+
+  implicit object FloatIsSQLPrimitive extends SQLPrimitive[Float] {
+    override def sqlType: String = "float"
+
+    override def fromRow(row: Row, name: String): Option[Float] = row(name) map {
+      case FloatValue(num) => num
+      case EmptyValue => 0
+      case _ => throw InvalidTypeDefinitionException()
+    }
+
+    override def toSQL(value: Float): String = value.toString
+  }
+
+  implicit object DoubleIsSQLPrimitive extends SQLPrimitive[Double] {
+    override def sqlType: String = "double"
+
+    override def fromRow(row: Row, name: String): Option[Double] = row(name) map {
+      case DoubleValue(num) => num
+      case EmptyValue => 0
+      case _ => throw InvalidTypeDefinitionException()
+    }
+
+    override def toSQL(value: Double): String = value.toString
+  }
+
   implicit object LongIsSQLPrimitive extends SQLPrimitive[Long] {
 
     val sqlType = "long"
@@ -54,24 +92,13 @@ trait SQLPrimitives {
 
   }
 
-  implicit object IntIsSQLPrimitive extends SQLPrimitive[Int] {
-    val sqlType = "int"
-
-    def fromRow(row: Row, name: String): Option[Int] = row(name) map {
-      case IntValue(num) => num
-      case EmptyValue => 0
-      case _ => throw InvalidTypeDefinitionException()
-    }
-
-    def toSQL(value: Int): String = value.toString
-  }
 
   implicit object DateIsSQLPrimitive extends SQLPrimitive[Date] {
-    val sqlType = "date"
+    override val sqlType = "date"
 
     def fromRow(row: Row, name: String): Option[Date] = row(name) map {
       case DateValue(date) => date
-      case _ => throw InvalidTypeDefinitionException()
+      case _ => throw InvalidTypeDefinitionException(s"Couldn't not parse a Date from column $name.")
     }
 
     def toSQL(value: Date): String = value.toString
@@ -90,9 +117,20 @@ trait SQLPrimitives {
     def toSQL(value: Boolean): String = value.toString
   }*/
 
+  implicit object DateTimeIsSQLPrimitive extends SQLPrimitive[DateTime] {
+    override val sqlType: String = "date"
+
+    override def fromRow(row: Row, name: String): Option[DateTime] = row(name) map {
+      case DateValue(date) => new DateTime(date)
+      case _ => throw InvalidTypeDefinitionException(s"Couldn't not parse a DateTime from column $name.")
+    }
+
+    override def toSQL(value: DateTime): String = value.toString
+  }
+
   implicit object StringIsSQLPrimitive extends SQLPrimitive[String] {
 
-    val sqlType = "string"
+    override val sqlType = "string"
 
     def fromRow(row: Row, name: String) = row(name) match {
       case Some(value) => value match {

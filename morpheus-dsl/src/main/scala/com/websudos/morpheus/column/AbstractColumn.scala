@@ -18,12 +18,9 @@
 
 package com.websudos.morpheus.column
 
-import scala.annotation.implicitNotFound
-
 import com.twitter.finagle.exp.mysql.Row
-import com.websudos.morpheus.{ SQLPrimitive, SQLPrimitives }
 import com.websudos.morpheus.dsl.Table
-import com.websudos.morpheus.query.{SQLBuiltQuery, QueryAssignment}
+import com.websudos.morpheus.query.{QueryAssignment, SQLBuiltQuery}
 
 private[morpheus] trait SchemaSerializer {
   def qb: SQLBuiltQuery
@@ -35,6 +32,8 @@ private[morpheus] trait AbstractColumn[@specialized(Int, Double, Float, Long, Bo
 
   lazy val name: String = getClass.getSimpleName.replaceAll("\\$+", "").replaceAll("(anonfun\\d+.+\\d+)|", "")
 
+  def qb: SQLBuiltQuery
+
   def sqlType: String
 
   def table: Table[_, _]
@@ -43,18 +42,6 @@ private[morpheus] trait AbstractColumn[@specialized(Int, Double, Float, Long, Bo
 
 }
 
-@implicitNotFound(msg = "Type ${RR} must be a MySQL primitive")
-private[morpheus] class PrimitiveColumn[T <: Table[T, R], R, @specialized(Int, Double, Float, Long) RR : SQLPrimitive](t: Table[T, R])
-  extends Column[T, R, RR](t) {
-
-  def sqlType: String = SQLPrimitives[RR].sqlType
-  def toQueryString(v: RR): String = SQLPrimitives[RR].toSQL(v)
-
-  def qb: SQLBuiltQuery = SQLBuiltQuery(name).pad.append(sqlType)
-
-  def optional(r: Row): Option[RR] =
-    implicitly[SQLPrimitive[RR]].fromRow(r, name)
-}
 
 private[morpheus] abstract class SelectColumn[T](val col: AbstractColumn[_]) {
   def apply(r: Row): T

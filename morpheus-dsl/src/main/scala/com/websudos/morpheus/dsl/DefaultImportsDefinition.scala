@@ -46,9 +46,21 @@ trait DefaultImportsDefinition extends ModifyImplicits {
 
   type StringColumn[Owner <: Table[Owner, Record], Record] = com.websudos.morpheus.column.PrimitiveColumn[Owner, Record, String]
   type LongColumn[Owner <: Table[Owner, Record], Record] = com.websudos.morpheus.column.PrimitiveColumn[Owner, Record, Long]
+  type IntColumn[Owner <: Table[Owner, Record], Record] = com.websudos.morpheus.column.PrimitiveColumn[Owner, Record, Int]
+  type TinyIntColumn[Owner <: Table[Owner, Record], Record] = com.websudos.morpheus.column.TinyIntColumn[Owner, Record]
+  type SmallIntColumn[Owner <: Table[Owner, Record], Record] = com.websudos.morpheus.column.PrimitiveColumn[Owner, Record, Int]
+  type MediumIntColumn[Owner <: Table[Owner, Record], Record] = com.websudos.morpheus.column.PrimitiveColumn[Owner, Record, Int]
 
   type Result = com.twitter.finagle.exp.mysql.Result
   type Row = com.twitter.finagle.exp.mysql.Row
+
+  type ForeignKey[Owner <: Table[Owner, Record], Record] = com.websudos.morpheus.column.ForeignKey[Owner, Record]
+  type PrimaryKey[ValueType] = com.websudos.morpheus.keys.PrimaryKey[ValueType]
+  type UniqueKey[ValueType] = com.websudos.morpheus.keys.UniqueKey[ValueType]
+  type NotNull = com.websudos.morpheus.keys.NonNull
+  type Autoincrement = com.websudos.morpheus.keys.Autoincrement
+
+
 
   implicit def columnToQueryColumn[T: SQLPrimitive](col: AbstractColumn[T]): AbstractQueryColumn[T]
 
