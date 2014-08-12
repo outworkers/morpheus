@@ -45,7 +45,9 @@ will be done. The method will simply not exist. Morpheus has now auto-magically 
 changed communication protocol and all underlying settings, and all you get now is Postgres features.
 
 How? Quite a lot of fun magic under the hood, have a look throughout our decently documented codebase for more information. The beauty of it is that you 
-don't have to care. Slick makes it easy to move from one SQL database to the other with less code changes, but 
+don't have to care. Slick makes it easy to move from one SQL database to the other with less code changes, but if you're well set on a database you already 
+know and love, it may be counter productive to have to learn about a framework when you could use Morpheus and all you need is IDE auto-completes to get 
+lightning fast development productivity. 
 
 
 
