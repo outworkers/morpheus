@@ -41,7 +41,7 @@ As follows: ```import com.websudos.morpheus.mysql.Imports._```. And done, you ca
 but it's a standard thing as far as MySQL is concerned. Here's how Morpheus operates.
 
 Say you change the top level import to: ```com.websudos.morpheus.postgres.Imports._``` and you try to compile the same ```distinctRow``` query. But there 
-will be done. The method will simply not exist. Morpheus has now auto-magically performed a full feature swap, 
+will be none. The method will simply not exist. Morpheus has now auto-magically performed a full feature swap, 
 changed communication protocol and all underlying settings, and all you get now is Postgres features.
 
 How? Quite a lot of fun magic under the hood, have a look throughout our decently documented codebase for more information. The beauty of it is that you 
