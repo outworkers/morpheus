@@ -19,8 +19,34 @@ not yet production ready.
 <a id="table-of-contents">Table of contents</a>
 ===============================================
 <ol>
+  <li><a href="#design-philosophy">Design philosophy</a></li>
   <li><a href="#copyright">Copyright</a></li>
 </ol>
+
+
+<a id="design-philosophy">Design philosophy</a>
+=====================================
+
+You're probably wondering how Morpheus fairs compared to the more established players in the Scala SQL market and why we set out to do something new in the 
+first place. To sum it up, we believe Slick is an excellent tool but we do not believe you should learn about our abstractions to get things done. A DSL 
+should auto-magically encode the same syntax and the logic as the tool it's designed to "enclose".
+
+Instead of learning about primitives and rules we thought of to abstract away discrepancies between the various SQL implementations, 
+morpheus features a unique approach, what we call the auto-magical flip. Although at this point in time only MySQL is supported, 
+Morpheus is design to give you an "all-you-can-eat" buffet through a single import.
+
+As follows: ```import com.websudos.morpheus.mysql.Imports._```. And done, you can now define tables, query and so on. Say you have something like this:
+
+```Recipes.select.distinctRow.where(_.name eqs "test")```. ```DISTINCTROW``` doesn't exist in the Postgres ```SELECT``` statement syntax, 
+but it's a standard thing as far as MySQL is concerned. Here's how Morpheus operates.
+
+Say you change the top level import to: ```com.websudos.morpheus.postgres.Imports._``` and you try to compile the same ```distinctRow``` query. But there 
+will be done. The method will simply not exist. Morpheus has now auto-magically performed a full feature swap, 
+changed communication protocol and all underlying settings, and all you get now is Postgres features.
+
+How? Quite a lot of fun magic under the hood, have a look throughout our decently documented codebase for more information. The beauty of it is that you 
+don't have to care. Slick makes it easy to move from one SQL database to the other with less code changes, but 
+
 
 
 <a id="contributors">Contributors</a>
