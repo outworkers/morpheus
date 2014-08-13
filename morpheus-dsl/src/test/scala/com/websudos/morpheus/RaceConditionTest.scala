@@ -32,7 +32,7 @@ class RaceConditionTest extends FunSuite {
 
   class Groups extends MySQLTable[Groups, Group] {
     object id extends LongColumn(this)
-    object name extends StringColumn(this)
+    object name extends TextColumn(this)
 
     def fromRow(row: Row) = Group(id(row), name(row))
   }
@@ -41,7 +41,7 @@ class RaceConditionTest extends FunSuite {
 
   class Users extends MySQLTable[Users, User] {
     object id extends LongColumn(this)
-    object name extends StringColumn(this)
+    object name extends TextColumn(this)
 
     def fromRow(row: Row) = User(id(row), name(row))
   }

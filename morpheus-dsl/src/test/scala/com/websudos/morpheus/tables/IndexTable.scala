@@ -52,33 +52,33 @@ sealed class KeysTable extends MySQLTable[KeysTable, KeysRecord] {
 
   object indexId extends IntColumn(this) with PrimaryKey[Int] with NotNull with Autoincrement
 
-  object foreignKey extends ForeignKey[KeysTable, KeysRecord, IndexTable](this)(IndexTable.id, IndexTable.value)
+  object foreignKey extends ForeignKey[KeysTable, KeysRecord, IndexTable](this, IndexTable.id, IndexTable.value)
 
-  object foreignUpdateKey extends ForeignKey[KeysTable, KeysRecord, IndexTable](this)(IndexTable.id, IndexTable.value) {
+  object foreignUpdateKey extends ForeignKey[KeysTable, KeysRecord, IndexTable](this, IndexTable.id, IndexTable.value) {
     override def onUpdate = Cascade
   }
 
-  object foreignDeleteKey extends ForeignKey[KeysTable, KeysRecord, IndexTable](this)(IndexTable.id, IndexTable.value) {
+  object foreignDeleteKey extends ForeignKey[KeysTable, KeysRecord, IndexTable](this, IndexTable.id, IndexTable.value) {
     override def onDelete = Cascade
   }
 
-  object foreignFull extends ForeignKey[KeysTable, KeysRecord, IndexTable](this)(IndexTable.id, IndexTable.value) {
+  object foreignFull extends ForeignKey[KeysTable, KeysRecord, IndexTable](this, IndexTable.id, IndexTable.value) {
     override def onUpdate = Cascade
     override def onDelete = Cascade
   }
 
-  object foreignFullRestrict extends ForeignKey[KeysTable, KeysRecord, IndexTable](this)(IndexTable.id, IndexTable.value) {
+  object foreignFullRestrict extends ForeignKey[KeysTable, KeysRecord, IndexTable](this, IndexTable.id, IndexTable.value) {
     override def onUpdate = Restrict
     override def onDelete = Restrict
   }
 
-  object foreignFullRestrictSetNull extends ForeignKey[KeysTable, KeysRecord, IndexTable](this)(IndexTable.id, IndexTable.value) {
+  object foreignFullRestrictSetNull extends ForeignKey[KeysTable, KeysRecord, IndexTable](this, IndexTable.id, IndexTable.value) {
     override def onUpdate = Restrict
     override def onDelete = SetNull
   }
 
-  object uniqueIndex extends StringColumn(this) with UniqueKey[String]
-  object uniqueIndexNotNull extends StringColumn(this) with UniqueKey[String] with NotNull
+  object uniqueIndex extends TextColumn(this) with UniqueKey[String]
+  object uniqueIndexNotNull extends TextColumn(this) with UniqueKey[String] with NotNull
 
 
 

@@ -105,6 +105,7 @@ abstract class AbstractSQLDataTypes {
 
   val float = "FLOAT"
   val double = "DOUBLE"
+  val long = "LONG"
 
   val char = "CHAR"
   val varchar = "VARCHAR"

@@ -20,6 +20,7 @@ package com.websudos.morpheus.column
 
 import com.websudos.morpheus.dsl.Table
 import com.websudos.morpheus.query.{SQLBuiltQuery, DefaultSQLSyntax}
+import shapeless.=:!=
 
 /**
  * This is a simple mechanism of providing a pre-defined set of FOREIGN KEY constraints.
@@ -62,7 +63,7 @@ private[morpheus] object DefaultForeignKeyConstraints extends DefaultForeignKeyC
  * @tparam T The type of the owner table.
  * @tparam R The type of the record.
  */
-abstract class ForeignKey[T <: Table[T, R], R, T1 <: Table[T1, _]](origin: T)(columns: Column[T1, _, _]*)
+abstract class ForeignKey[T <: Table[T, R], R, T1 <: Table[T1, _]](origin: T, columns: Column[T1, _, _]*)(implicit ev: T =:!= T1)
   extends AbstractColumn[String] with IndexColumn[String] {
 
   def qb: SQLBuiltQuery = {

@@ -69,6 +69,4 @@ trait Autoincrement {
 trait Zerofill[ValueType] {
   self: NumericColumn[_, _, ValueType] =>
 
-
-
 }

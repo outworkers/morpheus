@@ -24,6 +24,7 @@ import java.util.Date
 import org.joda.time.DateTime
 
 import com.twitter.finagle.exp.mysql._
+import com.websudos.morpheus.query.DefaultSQLDataTypes
 
 case class InvalidTypeDefinitionException(msg: String = "Invalid SQL type declared for column") extends RuntimeException(msg)
 
@@ -43,7 +44,7 @@ trait SQLPrimitives {
   def apply[RR: SQLPrimitive]: SQLPrimitive[RR] = implicitly[SQLPrimitive[RR]]
 
   implicit object IntIsSQLPrimitive extends SQLPrimitive[Int] {
-    val sqlType = "INT"
+    val sqlType = DefaultSQLDataTypes.int
 
     def fromRow(row: Row, name: String): Option[Int] = row(name) map {
       case IntValue(num) => num
@@ -55,7 +56,7 @@ trait SQLPrimitives {
   }
 
   implicit object FloatIsSQLPrimitive extends SQLPrimitive[Float] {
-    override def sqlType: String = "FLOAT"
+    override def sqlType: String = DefaultSQLDataTypes.float
 
     override def fromRow(row: Row, name: String): Option[Float] = row(name) map {
       case FloatValue(num) => num
@@ -67,7 +68,7 @@ trait SQLPrimitives {
   }
 
   implicit object DoubleIsSQLPrimitive extends SQLPrimitive[Double] {
-    override def sqlType: String = "DOUBLE"
+    override def sqlType: String = DefaultSQLDataTypes.double
 
     override def fromRow(row: Row, name: String): Option[Double] = row(name) map {
       case DoubleValue(num) => num
@@ -80,7 +81,7 @@ trait SQLPrimitives {
 
   implicit object LongIsSQLPrimitive extends SQLPrimitive[Long] {
 
-    val sqlType = "LONG"
+    val sqlType = DefaultSQLDataTypes.long
 
     def fromRow(row: Row, name: String): Option[Long] = row(name) map {
       case LongValue(num) => num
@@ -94,7 +95,7 @@ trait SQLPrimitives {
 
 
   implicit object DateIsSQLPrimitive extends SQLPrimitive[Date] {
-    override val sqlType = "DATE"
+    override val sqlType = DefaultSQLDataTypes.date
 
     def fromRow(row: Row, name: String): Option[Date] = row(name) map {
       case DateValue(date) => date
@@ -118,7 +119,7 @@ trait SQLPrimitives {
   }*/
 
   implicit object DateTimeIsSQLPrimitive extends SQLPrimitive[DateTime] {
-    override val sqlType: String = "DATE"
+    override val sqlType: String = DefaultSQLDataTypes.date
 
     override def fromRow(row: Row, name: String): Option[DateTime] = row(name) map {
       case DateValue(date) => new DateTime(date)
@@ -130,7 +131,7 @@ trait SQLPrimitives {
 
   implicit object StringIsSQLPrimitive extends SQLPrimitive[String] {
 
-    override val sqlType = "STRING"
+    override val sqlType = DefaultSQLDataTypes.text
 
     def fromRow(row: Row, name: String) = row(name) match {
       case Some(value) => value match {

@@ -24,7 +24,7 @@ case class BasicRecord(name: String, count: Long)
 
 class BasicTable extends MySQLTable[BasicTable, BasicRecord] {
 
-  object name extends StringColumn(this)
+  object name extends TextColumn(this)
   object count extends LongColumn(this)
 
   def fromRow(row: Row): BasicRecord = {
