@@ -19,7 +19,7 @@
 package com.websudos.morpheus.column
 
 import com.websudos.morpheus.dsl.Table
-import com.websudos.morpheus.query.{DefaultSQLSyntax, SQLBuiltQuery}
+import com.websudos.morpheus.query.{DefaultSQLDataTypes, DefaultSQLSyntax, SQLBuiltQuery}
 import shapeless.{<:!<, =:!=}
 
 /**
@@ -98,12 +98,30 @@ abstract class ForeignKey[T <: Table[T, R], R, T1 <: Table[T1, _]]
     stage3
   }
 
-  override def sqlType: String = "string"
+  /**
+   * This is actually irrelevant at any further point, since the query builder of ForeignKey will not account for it's SQL type.
+   * We do however need to satisfy the context bound of an SQL primitive and we do so easily but using a random predefined type.
+   *
+   * @return The SQL type of the column, ignored in the current context.
+   */
+  override def sqlType: String = DefaultSQLDataTypes.text
 
+
+  /**
+   * Same story as above, these are placeholders to satisfy the structure we've defined for our DSL.
+   * It is likely proof we could have decoupled certain things to prevent the need for impromptu definitions like this, but we didn't so far.
+   * @param v The value to convert to an SQL value.
+   * @return
+   */
   override def toQueryString(v: String): String = v
 
   override def table: Table[_, _] = columns.headOption.map(_.table).orNull
 
+  /**
+   * The default ForeignKey constraint with respect to the MySQL documentation is NoAction and we enforce that here.
+   * If the constraint defined on either update or delete is NoAction, then there will be no serialisation output as MySQL doesn't need it.
+   * @return The ForeignKey Constraint to execute on update.
+   */
   def onUpdate: ForeignKeyConstraint = DefaultForeignKeyConstraints.NoAction
 
   def onDelete: ForeignKeyConstraint = DefaultForeignKeyConstraints.NoAction
