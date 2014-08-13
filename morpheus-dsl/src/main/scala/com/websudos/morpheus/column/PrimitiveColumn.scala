@@ -27,6 +27,12 @@ import com.websudos.morpheus.query.{DefaultSQLDataTypes, SQLBuiltQuery}
 import com.websudos.morpheus.{SQLPrimitive, SQLPrimitives}
 
 
+private[morpheus] object KnownTypeLimits {
+  val varcharLimit = 65536
+  val textLimit = 65536
+  val mediumTextLimit = 65536
+  val longTextLimit = 65536
+}
 
 
 @implicitNotFound(msg = "Type ${RR} must be a MySQL primitive")
@@ -58,3 +64,24 @@ class MediumIntColumn[T <: Table[T, R], R](t: Table[T, R]) extends PrimitiveColu
 
 
 sealed abstract class LimitedTextColumn[T <: Table[T, R], R](t: Table[T, R], protected[this] val limit: Int) extends PrimitiveColumn[T, R, String](t)
+
+
+class VarcharColumn[T <: Table[T, R], R](t: Table[T, R], limit: Int = KnownTypeLimits.varcharLimit) extends LimitedTextColumn(t, limit) {
+  override def sqlType = s"${DefaultSQLDataTypes.varchar}($limit)"
+}
+
+class TinyTextColumn[T <: Table[T, R], R](t: Table[T, R]) extends LimitedTextColumn(t, 0) {
+  override def sqlType = DefaultSQLDataTypes.tinyText
+}
+
+class TextColumn[T <: Table[T, R], R](t: Table[T, R]) extends LimitedTextColumn(t, 0) {
+  override def sqlType = DefaultSQLDataTypes.text
+}
+
+class MediumTextColumn[T <: Table[T, R], R](t: Table[T, R]) extends LimitedTextColumn(t, 0) {
+  override def sqlType = DefaultSQLDataTypes.mediumText
+}
+
+class LargeTextColumn[T <: Table[T, R], R](t: Table[T, R]) extends LimitedTextColumn(t, 0) {
+  override def sqlType = DefaultSQLDataTypes.mediumText
+}

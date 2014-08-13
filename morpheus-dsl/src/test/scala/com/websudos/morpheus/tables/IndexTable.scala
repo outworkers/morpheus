@@ -77,6 +77,9 @@ sealed class KeysTable extends MySQLTable[KeysTable, KeysRecord] {
     override def onDelete = SetNull
   }
 
+  object uniqueIndex extends StringColumn(this) with UniqueKey[String]
+  object uniqueIndexNotNull extends StringColumn(this) with UniqueKey[String] with NotNull
+
 
 
   /**

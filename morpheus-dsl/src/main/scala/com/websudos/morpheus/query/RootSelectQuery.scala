@@ -121,7 +121,8 @@ class SelectQuery[
 ](val query: Query[T, R, Type, Group, Order, Limit, Chain, AssignChain, Status]) {
 
   @implicitNotFound("You can't use 2 SET parts on a single UPDATE query")
-  def having(condition: T => QueryAssignment)(implicit tp: Type =:= SelectType, ev: AssignChain =:= AssignUnchainned): SelectQuery[T, R, Type, Group, Order,
+  final def having(condition: T => QueryAssignment)(implicit tp: Type =:= SelectType, ev: AssignChain =:= AssignUnchainned): SelectQuery[T, R, Type, Group,
+    Order,
     Limit,
     Chain,
     AssignChainned, Status] = {
@@ -135,7 +136,7 @@ class SelectQuery[
   }
 
 
-  def leftJoin[
+  final def leftJoin[
     Owner <: Table[Owner, Record],
     Record,
     G <: GroupBind,
@@ -156,7 +157,7 @@ class SelectQuery[
     )
   }
 
-  def rightJoin[
+  final def rightJoin[
     Owner <: Table[Owner, Record],
     Record,
     G <: GroupBind,
@@ -177,7 +178,7 @@ class SelectQuery[
     )
   }
 
-  private[morpheus] def terminate: Query[T, R, SelectType, Group, Order, Limit, Chain, AssignChain, Terminated] = {
+  private[morpheus] final def terminate: Query[T, R, SelectType, Group, Order, Limit, Chain, AssignChain, Terminated] = {
     new Query(
       query.table,
       query.query,

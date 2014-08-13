@@ -100,6 +100,27 @@ abstract class AbstractSQLDataTypes {
   val smallInt = "SMALLINT"
   val mediumInt = "MEDIUMINT"
   val bigInt = "BIGINT"
+  val varchar = "VARCHAR"
+  val tinyText = "TINYTEXT"
+  val text = "TEXT"
+  val mediumText = "MEDIUMTEXT"
+  val longText = "LONGTEXT"
+  val binary = "BINARY"
+  val varbinary = "VARBINARY"
+
+  val tinyBlob = "TINYBLOB"
+  val blob = "BLOB"
+  val mediumBlob = "MEDIUMBLOB"
+  val largeBlob = "LARGEBLOB"
+
+  val date = "DATE"
+  val dateTime = "DATETIME"
+  val time = "TIME"
+  val timestamp = "TIMESTAMP"
+  val year = "YEAR"
+
+  val enum = "ENUM"
+  val set = "SET"
 }
 
 object DefaultSQLDataTypes extends AbstractSQLDataTypes

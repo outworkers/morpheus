@@ -22,7 +22,7 @@ import org.scalatest.{Matchers, FlatSpec}
 
 import com.websudos.morpheus.tables.KeysTable
 
-class SchemaSerialisationTest extends FlatSpec with Matchers {
+class KeysSerialisationTest extends FlatSpec with Matchers {
 
   it should "serialise a PrimaryKey definition to an SQL query" in {
     KeysTable.id.qb.queryString shouldEqual "id INT PRIMARY KEY"
@@ -69,6 +69,11 @@ class SchemaSerialisationTest extends FlatSpec with Matchers {
       "value) ON UPDATE RESTRICT ON DELETE SET NULL"
   }
 
+  it should "serialise a UniqueKey definition to an SQL query" in {
+    KeysTable.uniqueIndex.qb.queryString shouldEqual "uniqueIndex TEXT UNIQUE KEY"
+  }
 
-
+  it should "serialise a UniqueKey NotNull definition to an SQL query" in {
+    KeysTable.uniqueIndex.qb.queryString shouldEqual "uniqueIndex TEXT UNIQUE KEY"
+  }
 }
