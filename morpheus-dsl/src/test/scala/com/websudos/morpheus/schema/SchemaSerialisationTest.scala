@@ -20,29 +20,48 @@ package com.websudos.morpheus.schema
 
 import org.scalatest.{Matchers, FlatSpec}
 
-import com.websudos.morpheus.tables.SimplePrimaryKeyTable
+import com.websudos.morpheus.tables.KeysTable
 
 class SchemaSerialisationTest extends FlatSpec with Matchers {
 
   it should "serialise a PrimaryKey definition to an SQL query" in {
-    SimplePrimaryKeyTable.id.qb.queryString shouldEqual "id INT PRIMARY KEY"
+    KeysTable.id.qb.queryString shouldEqual "id INT PRIMARY KEY"
   }
 
   it should "serialise a PrimaryKey NotNull definition to an SQL query" in {
-    SimplePrimaryKeyTable.notNullId.qb.queryString shouldEqual "notNullId INT PRIMARY KEY NOT NULL"
+    KeysTable.notNullId.qb.queryString shouldEqual "notNullId INT PRIMARY KEY NOT NULL"
   }
 
   it should "serialise a PrimaryKey Autoincrement definition to an SQL query" in {
-    SimplePrimaryKeyTable.autoincrementedId.qb.queryString shouldEqual "autoincrementedId INT PRIMARY KEY AUTO_INCREMENT"
+    KeysTable.autoincrementedId.qb.queryString shouldEqual "autoincrementedId INT PRIMARY KEY AUTO_INCREMENT"
   }
 
   it should "serialise a PrimaryKey NotNull AutoIncrement definition to an SQL query" in {
-    SimplePrimaryKeyTable.indexId.qb.queryString shouldEqual "indexId INT PRIMARY KEY NOT NULL AUTO_INCREMENT"
+    KeysTable.indexId.qb.queryString shouldEqual "indexId INT PRIMARY KEY NOT NULL AUTO_INCREMENT"
   }
 
 
   it should "serialise a simple ForeignKey definition to an SQL query without any constraints defined by default" in {
-    SimplePrimaryKeyTable.foreignKey.qb.queryString shouldEqual "FOREIGN KEY (IndexTable_id, IndexTable_value) REFERENCES IndexTable(id, value)"
+    KeysTable.foreignKey.qb.queryString shouldEqual "FOREIGN KEY (IndexTable_id, IndexTable_value) REFERENCES IndexTable(id, value)"
+  }
+
+  it should "serialise a simple ForeignKey definition to an SQL query with an onUpdate constraint defined" in {
+    KeysTable.foreignUpdateKey.qb.queryString shouldEqual "FOREIGN KEY (IndexTable_id, IndexTable_value) REFERENCES IndexTable(id, value) ON UPDATE CASCADE"
+  }
+
+  it should "serialise a simple ForeignKey definition to an SQL query with an onDelete constraint defined" in {
+    KeysTable.foreignDeleteKey.qb.queryString shouldEqual "FOREIGN KEY (IndexTable_id, IndexTable_value) REFERENCES IndexTable(id, value) ON DELETE CASCADE"
+  }
+
+  it should "serialise a simple ForeignKey definition to an SQL query with both constraints defined" in {
+    KeysTable.foreignFull.qb.queryString shouldEqual "FOREIGN KEY (IndexTable_id, IndexTable_value) REFERENCES IndexTable(id, " +
+      "value) ON UPDATE CASCADE ON DELETE CASCADE"
+  }
+
+
+  it should "serialise a simple ForeignKey definition to an SQL query with both constraints defined as RESTRICT" in {
+    KeysTable.foreignFullRestrict.qb.queryString shouldEqual "FOREIGN KEY (IndexTable_id, IndexTable_value) REFERENCES IndexTable(id, " +
+      "value) ON UPDATE RESTRICT ON DELETE RESTRICT"
   }
 
 

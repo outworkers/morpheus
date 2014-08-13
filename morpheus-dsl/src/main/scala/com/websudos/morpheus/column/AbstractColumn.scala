@@ -40,6 +40,8 @@ private[morpheus] trait AbstractColumn[@specialized(Int, Double, Float, Long, Bo
 
   def toQueryString(v: T): String
 
+  def notNull = false
+
 }
 
 

@@ -38,8 +38,6 @@ private[morpheus] trait Key[ValueType, KeyType <: Key[ValueType, KeyType]] {
 
 
   protected[this] def keyToQueryString: String
-
-  protected[this] val notNull = false
   protected[this] val autoIncrement = false
 }
 
@@ -57,9 +55,9 @@ trait UniqueKey[ValueType] extends Key[ValueType, UniqueKey[ValueType]] {
 }
 
 trait NotNull {
-  self: Key[_, _] with AbstractColumn[_] =>
+  self: AbstractColumn[_] =>
 
-  protected[this] override val notNull = true
+  override val notNull = true
 }
 
 trait Autoincrement {

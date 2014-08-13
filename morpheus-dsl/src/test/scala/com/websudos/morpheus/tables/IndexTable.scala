@@ -40,9 +40,9 @@ sealed class IndexTable extends MySQLTable[IndexTable, IndexedRecord] {
 
 object IndexTable extends IndexTable
 
-case class SimplePrimaryRecord(id: Int)
+case class KeysRecord(id: Int)
 
-sealed class SimplePrimaryKeyTable extends MySQLTable[SimplePrimaryKeyTable, SimplePrimaryRecord] {
+sealed class KeysTable extends MySQLTable[KeysTable, KeysRecord] {
 
   object id extends IntColumn(this) with PrimaryKey[Int]
 
@@ -52,7 +52,26 @@ sealed class SimplePrimaryKeyTable extends MySQLTable[SimplePrimaryKeyTable, Sim
 
   object indexId extends IntColumn(this) with PrimaryKey[Int] with NotNull with Autoincrement
 
-  object foreignKey extends ForeignKey[SimplePrimaryKeyTable, SimplePrimaryRecord, IndexTable](this)(IndexTable.id, IndexTable.value)
+  object foreignKey extends ForeignKey[KeysTable, KeysRecord, IndexTable](this)(IndexTable.id, IndexTable.value)
+
+  object foreignUpdateKey extends ForeignKey[KeysTable, KeysRecord, IndexTable](this)(IndexTable.id, IndexTable.value) {
+    override def onUpdate = Cascade
+  }
+
+  object foreignDeleteKey extends ForeignKey[KeysTable, KeysRecord, IndexTable](this)(IndexTable.id, IndexTable.value) {
+    override def onDelete = Cascade
+  }
+
+  object foreignFull extends ForeignKey[KeysTable, KeysRecord, IndexTable](this)(IndexTable.id, IndexTable.value) {
+    override def onUpdate = Cascade
+    override def onDelete = Cascade
+  }
+
+  object foreignFullRestrict extends ForeignKey[KeysTable, KeysRecord, IndexTable](this)(IndexTable.id, IndexTable.value) {
+    override def onUpdate = Restrict
+    override def onDelete = Restrict
+  }
+
 
 
   /**
@@ -65,7 +84,7 @@ sealed class SimplePrimaryKeyTable extends MySQLTable[SimplePrimaryKeyTable, Sim
    * @param row The row incoming as a result from a MySQL query.
    * @return A Record instance.
    */
-  override def fromRow(row: Row): SimplePrimaryRecord = SimplePrimaryRecord(id(row))
+  override def fromRow(row: Row): KeysRecord = KeysRecord(id(row))
 }
 
-object SimplePrimaryKeyTable extends SimplePrimaryKeyTable
+object KeysTable extends KeysTable
