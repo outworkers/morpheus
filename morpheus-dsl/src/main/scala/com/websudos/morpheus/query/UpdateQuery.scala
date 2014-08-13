@@ -83,7 +83,8 @@ class AssignmentsQuery[
 ](val query: Query[T, R, Type, Group, Order, Limit, Chain, AssignChain, Status]) {
 
   @implicitNotFound("You can't use 2 SET parts on a single UPDATE query")
-  def set(condition: T => QueryAssignment)(implicit ev: AssignChain =:= AssignUnchainned, ev1: Status =:= Unterminated): AssignmentsQuery[T, R, Type, Group, Order,
+  final def set(condition: T => QueryAssignment)(implicit ev: AssignChain =:= AssignUnchainned, ev1: Status =:= Unterminated): AssignmentsQuery[T, R, Type,
+    Group, Order,
     Limit,
     Chain,
     AssignChainned, Status] = {
@@ -97,7 +98,8 @@ class AssignmentsQuery[
   }
 
   @implicitNotFound("""You need to use the "set" method before using the "and"""")
-  def and(condition: T => QueryAssignment, signChange: Int = 0)(implicit ev: AssignChain =:= AssignChainned): AssignmentsQuery[T, R, Type, Group, Order, Limit,
+  final def and(condition: T => QueryAssignment, signChange: Int = 0)(implicit ev: AssignChain =:= AssignChainned): AssignmentsQuery[T, R, Type, Group, Order,
+    Limit,
     Chain, AssignChainned, Status] = {
     new AssignmentsQuery[T, R, Type, Group, Order, Limit, Chain, AssignChainned, Status](
       new Query[T, R, Type, Group, Order, Limit, Chain, AssignChainned, Status](
@@ -108,7 +110,7 @@ class AssignmentsQuery[
     )
   }
 
-  private[morpheus] def terminate: Query[T, R, UpdateType, Group, Order, Limit, Chain, AssignChainned, Terminated] = {
+  private[morpheus] final def terminate: Query[T, R, UpdateType, Group, Order, Limit, Chain, AssignChainned, Terminated] = {
     new Query(
       query.table,
       query.query,

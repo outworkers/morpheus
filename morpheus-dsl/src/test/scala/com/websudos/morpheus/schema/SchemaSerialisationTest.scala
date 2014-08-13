@@ -64,6 +64,10 @@ class SchemaSerialisationTest extends FlatSpec with Matchers {
       "value) ON UPDATE RESTRICT ON DELETE RESTRICT"
   }
 
+  it should "serialise a simple ForeignKey definition to an SQL query with both constraints defined as RESTRICT and SET NULL" in {
+    KeysTable.foreignFullRestrictSetNull.qb.queryString shouldEqual "FOREIGN KEY (IndexTable_id, IndexTable_value) REFERENCES IndexTable(id, " +
+      "value) ON UPDATE RESTRICT ON DELETE SET NULL"
+  }
 
 
 

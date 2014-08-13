@@ -160,17 +160,17 @@ class Query[
   def fromRow(row: Row): R = rowFunc(row)
 
   @implicitNotFound("You cannot use two where clauses on a single query")
-  def where(condition: T => QueryCondition)(implicit ev: Chain =:= Unchainned): Query[T, R, Type, Group, Ord, Lim, Chainned, AC, Status] = {
+  final def where(condition: T => QueryCondition)(implicit ev: Chain =:= Unchainned): Query[T, R, Type, Group, Ord, Lim, Chainned, AC, Status] = {
     new Query(table, table.queryBuilder.where(query, condition(table).clause), rowFunc)
   }
 
   @implicitNotFound("You cannot set two limits on the same query")
-  def limit(value: Int)(implicit ev: Lim =:= Unlimited): Query[T, R, Type, Group, Ord, Limited, Chain, AC, Status] = {
+  final def limit(value: Int)(implicit ev: Lim =:= Unlimited): Query[T, R, Type, Group, Ord, Limited, Chain, AC, Status] = {
     new Query(table, table.queryBuilder.limit(query, value.toString), rowFunc)
   }
 
   @implicitNotFound("You cannot ORDER a query more than once")
-  def orderBy(conditions: (T => QueryOrder)*)(implicit ev: Ord =:= Unordered): Query[T, R, Type, Group, Ordered, Lim, Chain, AC, Status] = {
+  final def orderBy(conditions: (T => QueryOrder)*)(implicit ev: Ord =:= Unordered): Query[T, R, Type, Group, Ordered, Lim, Chain, AC, Status] = {
     val applied = conditions map {
       fn => fn(table).clause
     }
@@ -178,7 +178,8 @@ class Query[
   }
 
   @implicitNotFound("You cannot GROUP a query more than once or GROUP after you ORDER a query")
-  def groupBy(columns: (T => SelectColumn[_])*)(implicit ev1: Group =:= Ungroupped, ev2: Ord =:= Unordered): Query[T, R, Type, Groupped, Ord, Lim, Chain, AC,
+  final def groupBy(columns: (T => SelectColumn[_])*)(implicit ev1: Group =:= Ungroupped, ev2: Ord =:= Unordered): Query[T, R, Type, Groupped, Ord, Lim, Chain,
+    AC,
     Status
     ] = {
     val applied = columns map {
@@ -190,7 +191,7 @@ class Query[
   }
 
   @implicitNotFound("You need to use the where method first")
-  def and(condition: T => QueryCondition)(implicit ev: Chain =:= Chainned): Query[T, R, Type, Group, Ord, Lim, Chainned, AC, Status]  = {
+  final def and(condition: T => QueryCondition)(implicit ev: Chain =:= Chainned): Query[T, R, Type, Group, Ord, Lim, Chainned, AC, Status]  = {
     new Query(table, table.queryBuilder.and(query, condition(table).clause), rowFunc)
   }
 

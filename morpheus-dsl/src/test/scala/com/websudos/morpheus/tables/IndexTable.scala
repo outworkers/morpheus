@@ -72,6 +72,11 @@ sealed class KeysTable extends MySQLTable[KeysTable, KeysRecord] {
     override def onDelete = Restrict
   }
 
+  object foreignFullRestrictSetNull extends ForeignKey[KeysTable, KeysRecord, IndexTable](this)(IndexTable.id, IndexTable.value) {
+    override def onUpdate = Restrict
+    override def onDelete = SetNull
+  }
+
 
 
   /**
