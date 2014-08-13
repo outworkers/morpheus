@@ -115,6 +115,12 @@ abstract class ForeignKey[T <: Table[T, R], R, T1 <: Table[T1, _]]
    */
   override def toQueryString(v: String): String = v
 
+  /**
+   * A dangerous mix indeed, since it will all go to hell if the user defines a ForeignKey constraint to no column.
+   * The above root cause of evil for the below line is not valid SQL syntax, but we should likely upgrade to a more sensible error.
+   * TODO (flavian): Idiotic line, upgrade the preconditions.
+   * @return
+   */
   override def table: Table[_, _] = columns.headOption.map(_.table).orNull
 
   /**
