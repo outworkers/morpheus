@@ -46,10 +46,22 @@ trait DefaultImportsDefinition extends ModifyImplicits with DefaultForeignKeyCon
 
   type StringColumn[Owner <: Table[Owner, Record], Record] = com.websudos.morpheus.column.PrimitiveColumn[Owner, Record, String]
   type LongColumn[Owner <: Table[Owner, Record], Record] = com.websudos.morpheus.column.PrimitiveColumn[Owner, Record, Long]
-  type IntColumn[Owner <: Table[Owner, Record], Record] = com.websudos.morpheus.column.PrimitiveColumn[Owner, Record, Int]
+
   type TinyIntColumn[Owner <: Table[Owner, Record], Record] = com.websudos.morpheus.column.TinyIntColumn[Owner, Record]
-  type SmallIntColumn[Owner <: Table[Owner, Record], Record] = com.websudos.morpheus.column.PrimitiveColumn[Owner, Record, Int]
+  type SmallIntColumn[Owner <: Table[Owner, Record], Record] = com.websudos.morpheus.column.SmallIntColumn[Owner, Record]
+  type IntColumn[Owner <: Table[Owner, Record], Record] = com.websudos.morpheus.column.PrimitiveColumn[Owner, Record, Int]
   type MediumIntColumn[Owner <: Table[Owner, Record], Record] = com.websudos.morpheus.column.PrimitiveColumn[Owner, Record, Int]
+  type YearColumn[Owner <: Table[Owner, Record], Record] = com.websudos.morpheus.column.YearColumn[Owner, Record]
+
+  type TinyTextColumn[Owner <: Table[Owner, Record], Record] = com.websudos.morpheus.column.TinyTextColumn[Owner, Record]
+  type MediumTextColumn[Owner <: Table[Owner, Record], Record] = com.websudos.morpheus.column.MediumTextColumn[Owner, Record]
+  type LongTextColumn[Owner <: Table[Owner, Record], Record] = com.websudos.morpheus.column.LongTextColumn[Owner, Record]
+  type TextColumn[Owner <: Table[Owner, Record], Record] = com.websudos.morpheus.column.TextColumn[Owner, Record]
+
+  type TinyBlobColumn[Owner <: Table[Owner, Record], Record] = com.websudos.morpheus.column.TinyBlobColumn[Owner, Record]
+  type BlobColumn[Owner <: Table[Owner, Record], Record] = com.websudos.morpheus.column.BlobColumn[Owner, Record]
+  type MediumBlobColumn[Owner <: Table[Owner, Record], Record] = com.websudos.morpheus.column.MediumBlobColumn[Owner, Record]
+  type LongBlobColumn[Owner <: Table[Owner, Record], Record] = com.websudos.morpheus.column.LongBlobColumn[Owner, Record]
 
   type Result = com.twitter.finagle.exp.mysql.Result
   type Row = com.twitter.finagle.exp.mysql.Row

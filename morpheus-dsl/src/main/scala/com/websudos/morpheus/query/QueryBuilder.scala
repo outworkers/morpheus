@@ -100,7 +100,16 @@ abstract class AbstractSQLDataTypes {
   val smallInt = "SMALLINT"
   val mediumInt = "MEDIUMINT"
   val bigInt = "BIGINT"
+  val int = "INT"
+  val decimal = "DECIMAL"
+
+  val float = "FLOAT"
+  val double = "DOUBLE"
+
+  val char = "CHAR"
   val varchar = "VARCHAR"
+
+
   val tinyText = "TINYTEXT"
   val text = "TEXT"
   val mediumText = "MEDIUMTEXT"
@@ -111,7 +120,7 @@ abstract class AbstractSQLDataTypes {
   val tinyBlob = "TINYBLOB"
   val blob = "BLOB"
   val mediumBlob = "MEDIUMBLOB"
-  val largeBlob = "LARGEBLOB"
+  val longBlob = "LONGBLOB"
 
   val date = "DATE"
   val dateTime = "DATETIME"

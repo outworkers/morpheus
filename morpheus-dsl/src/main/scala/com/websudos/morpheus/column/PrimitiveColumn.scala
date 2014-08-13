@@ -21,9 +21,8 @@ package com.websudos.morpheus.column
 import scala.annotation.implicitNotFound
 
 import com.twitter.finagle.exp.mysql.Row
-import com.websudos.morpheus.SQLPrimitives._
 import com.websudos.morpheus.dsl.Table
-import com.websudos.morpheus.query.{DefaultSQLDataTypes, SQLBuiltQuery}
+import com.websudos.morpheus.query.SQLBuiltQuery
 import com.websudos.morpheus.{SQLPrimitive, SQLPrimitives}
 
 
@@ -46,61 +45,4 @@ private[morpheus] class PrimitiveColumn[T <: Table[T, R], R, @specialized(Int, D
 
   def optional(r: Row): Option[RR] =
     implicitly[SQLPrimitive[RR]].fromRow(r, name)
-}
-
-class TinyIntColumn[T <: Table[T, R], R](t: Table[T, R]) extends PrimitiveColumn[T, R, Int](t) {
-
-  val primitive = IntIsSQLPrimitive
-  override val sqlType: String = DefaultSQLDataTypes.tinyInt
-}
-
-class SmallIntColumn[T <: Table[T, R], R](t: Table[T, R]) extends PrimitiveColumn[T, R, Int](t) {
-  override val sqlType = DefaultSQLDataTypes.smallInt
-}
-
-class MediumIntColumn[T <: Table[T, R], R](t: Table[T, R]) extends PrimitiveColumn[T, R, Int](t) {
-  override val sqlType = DefaultSQLDataTypes.mediumInt
-}
-
-class YearColumn[T <: Table[T, R], R](t: Table[T, R]) extends PrimitiveColumn[T, R, Int](t) {
-  override val sqlType = DefaultSQLDataTypes.year
-}
-
-
-sealed abstract class LimitedTextColumn[T <: Table[T, R], R](t: Table[T, R], protected[this] val limit: Int) extends PrimitiveColumn[T, R, String](t)
-
-class VarcharColumn[T <: Table[T, R], R](t: Table[T, R], limit: Int = KnownTypeLimits.varcharLimit) extends LimitedTextColumn(t, limit) {
-  override def sqlType = s"${DefaultSQLDataTypes.varchar}($limit)"
-}
-
-class TinyTextColumn[T <: Table[T, R], R](t: Table[T, R]) extends LimitedTextColumn(t, 0) {
-  override def sqlType = DefaultSQLDataTypes.tinyText
-}
-
-class TextColumn[T <: Table[T, R], R](t: Table[T, R]) extends LimitedTextColumn(t, 0) {
-  override def sqlType = DefaultSQLDataTypes.text
-}
-
-class MediumTextColumn[T <: Table[T, R], R](t: Table[T, R]) extends LimitedTextColumn(t, 0) {
-  override def sqlType = DefaultSQLDataTypes.mediumText
-}
-
-class LongTextColumn[T <: Table[T, R], R](t: Table[T, R]) extends LimitedTextColumn(t, 0) {
-  override def sqlType = DefaultSQLDataTypes.longText
-}
-
-class TinyBlobColumn[T <: Table[T, R], R](t: Table[T, R]) extends LimitedTextColumn(t, 0) {
-  override def sqlType = DefaultSQLDataTypes.tinyBlob
-}
-
-class BlobColumn[T <: Table[T, R], R](t: Table[T, R]) extends LimitedTextColumn(t, 0) {
-  override def sqlType = DefaultSQLDataTypes.blob
-}
-
-class MediumBlobColumn[T <: Table[T, R], R](t: Table[T, R]) extends LimitedTextColumn(t, 0) {
-  override def sqlType = DefaultSQLDataTypes.mediumBlob
-}
-
-class LargeBlobColumn[T <: Table[T, R], R](t: Table[T, R]) extends LimitedTextColumn(t, 0) {
-  override def sqlType = DefaultSQLDataTypes.largeBlob
 }

@@ -18,7 +18,7 @@
 
 package com.websudos.morpheus.keys
 
-import com.websudos.morpheus.column.AbstractColumn
+import com.websudos.morpheus.column.{NumericColumn, AbstractColumn}
 import com.websudos.morpheus.query.{DefaultSQLSyntax, SQLBuiltQuery}
 
 private[morpheus] trait Key[ValueType, KeyType <: Key[ValueType, KeyType]] {
@@ -64,4 +64,11 @@ trait Autoincrement {
   self: Key[Int, _] with AbstractColumn[Int] =>
 
   override protected[this] val autoIncrement = true
+}
+
+trait Zerofill[ValueType] {
+  self: NumericColumn[_, _, ValueType] =>
+
+
+
 }
