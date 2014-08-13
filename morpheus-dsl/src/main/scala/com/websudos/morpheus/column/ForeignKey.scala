@@ -19,8 +19,8 @@
 package com.websudos.morpheus.column
 
 import com.websudos.morpheus.dsl.Table
-import com.websudos.morpheus.query.{SQLBuiltQuery, DefaultSQLSyntax}
-import shapeless.=:!=
+import com.websudos.morpheus.query.{DefaultSQLSyntax, SQLBuiltQuery}
+import shapeless.{<:!<, =:!=}
 
 /**
  * This is a simple mechanism of providing a pre-defined set of FOREIGN KEY constraints.
@@ -47,6 +47,10 @@ private[morpheus] trait DefaultForeignKeyConstraints {
 
 private[morpheus] object DefaultForeignKeyConstraints extends DefaultForeignKeyConstraints
 
+sealed abstract class TypeRestrictions {
+  type NonIndexColumn[T <: Table[T, _]] = Column[T, _, _]
+
+}
 
 /**
  * This is the implementation of a ForeignKey column. This is not a value column, therefore the `apply` method is overridden to throw an exception. It is used
@@ -63,13 +67,16 @@ private[morpheus] object DefaultForeignKeyConstraints extends DefaultForeignKeyC
  * @tparam T The type of the owner table.
  * @tparam R The type of the record.
  */
-abstract class ForeignKey[T <: Table[T, R], R, T1 <: Table[T1, _]](origin: T, columns: Column[T1, _, _]*)(implicit ev: T =:!= T1)
+abstract class ForeignKey[T <: Table[T, R], R, T1 <: Table[T1, _]]
+  (origin: T, columns: TypeRestrictions#NonIndexColumn[T1]*)
+  (implicit ev: T =:!= T1, ev2: TypeRestrictions#NonIndexColumn[T1] <:!< IndexColumn[_])
+
   extends AbstractColumn[String] with IndexColumn[String] {
 
   def qb: SQLBuiltQuery = {
     val default = SQLBuiltQuery(DefaultSQLSyntax.foreignKey)
       .forcePad.append(DefaultSQLSyntax.`(`)
-      .append(columns.map(col => {s"${col.table.tableName}_${col.name}"}).mkString(", "))
+      .append(columns.map(col => {s"${table.tableName}_${col.name}"}).mkString(", "))
       .append(DefaultSQLSyntax.`)`)
       .forcePad.append(DefaultSQLSyntax.references)
       .forcePad.append(table.tableName)
@@ -95,7 +102,7 @@ abstract class ForeignKey[T <: Table[T, R], R, T1 <: Table[T1, _]](origin: T, co
 
   override def toQueryString(v: String): String = v
 
-  override def table: Table[_, _] = columns.head.table
+  override def table: Table[_, _] = columns.headOption.map(_.table).orNull
 
   def onUpdate: ForeignKeyConstraint = DefaultForeignKeyConstraints.NoAction
 

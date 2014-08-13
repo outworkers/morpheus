@@ -9,9 +9,6 @@ object morpheus extends Build {
   val newzlyUtilVersion = "0.1.19"
   val scalatestVersion = "2.2.0-M1"
   val finagleVersion = "6.17.0"
-  val scroogeVersion = "3.15.0"
-  val thriftVersion = "0.9.1"
-  val scalatraVersion = "2.2.2"
 
   val publishUrl = "http://maven.websudos.co.uk"
 
