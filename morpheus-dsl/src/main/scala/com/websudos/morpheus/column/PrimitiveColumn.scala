@@ -62,9 +62,12 @@ class MediumIntColumn[T <: Table[T, R], R](t: Table[T, R]) extends PrimitiveColu
   override val sqlType = DefaultSQLDataTypes.mediumInt
 }
 
+class YearColumn[T <: Table[T, R], R](t: Table[T, R]) extends PrimitiveColumn[T, R, Int](t) {
+  override val sqlType = DefaultSQLDataTypes.year
+}
+
 
 sealed abstract class LimitedTextColumn[T <: Table[T, R], R](t: Table[T, R], protected[this] val limit: Int) extends PrimitiveColumn[T, R, String](t)
-
 
 class VarcharColumn[T <: Table[T, R], R](t: Table[T, R], limit: Int = KnownTypeLimits.varcharLimit) extends LimitedTextColumn(t, limit) {
   override def sqlType = s"${DefaultSQLDataTypes.varchar}($limit)"
@@ -82,6 +85,22 @@ class MediumTextColumn[T <: Table[T, R], R](t: Table[T, R]) extends LimitedTextC
   override def sqlType = DefaultSQLDataTypes.mediumText
 }
 
-class LargeTextColumn[T <: Table[T, R], R](t: Table[T, R]) extends LimitedTextColumn(t, 0) {
-  override def sqlType = DefaultSQLDataTypes.mediumText
+class LongTextColumn[T <: Table[T, R], R](t: Table[T, R]) extends LimitedTextColumn(t, 0) {
+  override def sqlType = DefaultSQLDataTypes.longText
+}
+
+class TinyBlobColumn[T <: Table[T, R], R](t: Table[T, R]) extends LimitedTextColumn(t, 0) {
+  override def sqlType = DefaultSQLDataTypes.tinyBlob
+}
+
+class BlobColumn[T <: Table[T, R], R](t: Table[T, R]) extends LimitedTextColumn(t, 0) {
+  override def sqlType = DefaultSQLDataTypes.blob
+}
+
+class MediumBlobColumn[T <: Table[T, R], R](t: Table[T, R]) extends LimitedTextColumn(t, 0) {
+  override def sqlType = DefaultSQLDataTypes.mediumBlob
+}
+
+class LargeBlobColumn[T <: Table[T, R], R](t: Table[T, R]) extends LimitedTextColumn(t, 0) {
+  override def sqlType = DefaultSQLDataTypes.largeBlob
 }
