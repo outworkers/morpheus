@@ -5,7 +5,7 @@ import org.scalatest.{FlatSpec, Matchers}
 import com.websudos.morpheus.column.ForeignKey
 import com.websudos.morpheus.dsl.{BasicRecord, BasicTable}
 import com.websudos.morpheus.mysql.Imports._
-import com.websudos.morpheus.tables.IndexTable
+import com.websudos.morpheus.tables.{KeysTable, IndexTable}
 
 class CompileTimeRestrictionsTest extends FlatSpec with Matchers {
 
@@ -110,5 +110,11 @@ class CompileTimeRestrictionsTest extends FlatSpec with Matchers {
 
   it should "not allow defining a foreignKey from a table to columns belonging to multiple tables" in {
     """ object foreign extends ForeignKey[BasicTable, BasicRecord, IndexTable](BasicTable, IndexTable.id, KeysTable.id)""" shouldNot compile
+  }
+
+  it should "not allow defining a foreignKey from a table to column that is an index column" in {
+    // This line is also because we are a lazy bunch.
+    object foreign3 extends ForeignKey[BasicTable, BasicRecord, KeysTable](BasicTable, KeysTable.id)
+    """ object foreign4 extends ForeignKey[BasicTable, BasicRecord, KeysTable](BasicTable, KeysTable.foreignKey, KeysTable.id)""" shouldNot compile
   }
 }
