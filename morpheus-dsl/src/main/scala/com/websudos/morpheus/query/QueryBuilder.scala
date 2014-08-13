@@ -89,6 +89,10 @@ abstract class AbstractSQLSyntax extends AbstractSQLKeys {
   val onDelete = "ON DELETE"
   val onUpdate = "ON UPDATE"
 
+  val leftJoin = "LEFT JOIN"
+  val rightJoin = "RIGHT JOIN"
+  val innerJoin = "INNER JOIN"
+  val outerJoin = "OUTER JOIN"
 }
 
 abstract class AbstractSQLDataTypes {
@@ -272,6 +276,30 @@ private[morpheus] trait AbstractQueryBuilder {
       .forcePad.append(syntax.`(`)
       .append(values.mkString(", "))
       .append(syntax.`)`)
+  }
+
+  def leftJoin(qb: SQLBuiltQuery, join: SQLBuiltQuery): SQLBuiltQuery = {
+    qb.pad
+      .append(syntax.leftJoin)
+      .forcePad.append(join)
+  }
+
+  def rightJoin(qb: SQLBuiltQuery, join: SQLBuiltQuery): SQLBuiltQuery = {
+    qb.pad
+      .append(syntax.rightJoin)
+      .forcePad.append(join)
+  }
+
+  def innerJoin(qb: SQLBuiltQuery, join: SQLBuiltQuery): SQLBuiltQuery = {
+    qb.pad
+      .append(syntax.innerJoin)
+      .forcePad.append(join)
+  }
+
+  def outerJoin(qb: SQLBuiltQuery, join: SQLBuiltQuery): SQLBuiltQuery = {
+    qb.pad
+      .append(syntax.outerJoin)
+      .forcePad.append(join)
   }
 }
 

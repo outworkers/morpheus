@@ -134,6 +134,49 @@ class SelectQuery[
     )
   }
 
+
+  def leftJoin[
+    Owner <: Table[Owner, Record],
+    Record,
+    G <: GroupBind,
+    O <: OrderBind,
+    L <: LimitBind,
+    C <: ChainBind,
+    AC <: AssignBind
+  ](join: Query[Owner, Record, SelectType, G, O, L, C, AC, Unterminated]): SelectQuery[T, (Record, R), SelectType, G, O, L, C, AC, Unterminated] = {
+
+    def rowFunc(row: Row): (Record, R) = (join.rowFunc(row), query.rowFunc(row))
+
+    new SelectQuery[T, (Record, R), SelectType, G, O, L, C, AC, Unterminated](
+      new Query(
+        query.table,
+        query.table.queryBuilder.leftJoin(query.query, join.query),
+        rowFunc
+      )
+    )
+  }
+
+  def rightJoin[
+    Owner <: Table[Owner, Record],
+    Record,
+    G <: GroupBind,
+    O <: OrderBind,
+    L <: LimitBind,
+    C <: ChainBind,
+    AC <: AssignBind
+  ](join: Query[Owner, Record, SelectType, G, O, L, C, AC, Unterminated]): SelectQuery[T, (R, Record), SelectType, G, O, L, C, AC, Unterminated] = {
+
+    def rowFunc(row: Row): (R, Record) = (query.rowFunc(row), join.rowFunc(row))
+
+    new SelectQuery[T, (R, Record), SelectType, G, O, L, C, AC, Unterminated](
+      new Query(
+        query.table,
+        query.table.queryBuilder.leftJoin(query.query, join.query),
+        rowFunc
+      )
+    )
+  }
+
   private[morpheus] def terminate: Query[T, R, SelectType, Group, Order, Limit, Chain, AssignChain, Terminated] = {
     new Query(
       query.table,
