@@ -24,24 +24,29 @@ import com.websudos.morpheus.dsl.Table
 import com.websudos.morpheus.query.DefaultSQLDataTypes
 
 
-sealed class NumericColumn[T <: Table[T, R], R, ValueType : Numeric : SQLPrimitive](t: Table[T, R]) extends PrimitiveColumn[T, R, ValueType](t)
+sealed abstract class NumericColumn[T <: Table[T, R], R, ValueType : Numeric : SQLPrimitive](t: Table[T, R], limit: Int = 0) extends PrimitiveColumn[T, R,
+  ValueType](t) {
+  protected[this] val numericType: String
 
-class TinyIntColumn[T <: Table[T, R], R](t: Table[T, R]) extends NumericColumn[T, R, Int](t) {
+  override val sqlType = if (limit > 0) s"$numericType($limit)" else numericType
+}
 
+class TinyIntColumn[T <: Table[T, R], R](t: Table[T, R], limit: Int = 0) extends NumericColumn[T, R, Int](t) {
   val primitive = IntIsSQLPrimitive
-  override val sqlType: String = DefaultSQLDataTypes.tinyInt
+  override protected[this] val numericType: String = DefaultSQLDataTypes.tinyInt
 }
 
-class SmallIntColumn[T <: Table[T, R], R](t: Table[T, R]) extends NumericColumn[T, R, Int](t) {
-  override val sqlType = DefaultSQLDataTypes.smallInt
+class SmallIntColumn[T <: Table[T, R], R](t: Table[T, R], limit: Int = 0) extends NumericColumn[T, R, Int](t) {
+  override protected[this] val numericType: String = DefaultSQLDataTypes.smallInt
 }
 
-class MediumIntColumn[T <: Table[T, R], R](t: Table[T, R]) extends NumericColumn[T, R, Int](t) {
-  override val sqlType = DefaultSQLDataTypes.mediumInt
+class MediumIntColumn[T <: Table[T, R], R](t: Table[T, R], limit: Int = 0) extends NumericColumn[T, R, Int](t) {
+
+  override protected[this] val numericType: String = DefaultSQLDataTypes.mediumInt
 }
 
 class IntColumn[T <: Table[T, R], R](t: Table[T, R], limit: Int = 0) extends NumericColumn[T, R, Int](t) {
-  override val sqlType = if (limit > 0) s"${DefaultSQLDataTypes.int}($limit)" else DefaultSQLDataTypes.int
+  override protected[this] val numericType: String = DefaultSQLDataTypes.int
 }
 
 class YearColumn[T <: Table[T, R], R](t: Table[T, R]) extends PrimitiveColumn[T, R, Int](t) {
