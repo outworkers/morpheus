@@ -18,21 +18,44 @@
 
 package com.websudos.morpheus.schema
 
-import org.scalatest.{Matchers, FlatSpec}
+import org.scalatest.{FlatSpec, Matchers}
 
-import com.websudos.morpheus.column.IntColumn
-import com.websudos.morpheus.dsl.BasicTable
+import com.websudos.morpheus.tables.NumericsTable
+
 
 class ColumnsSerialisationTest extends FlatSpec with Matchers {
-  it should "serialise a simple IntColumn definition to an SQL query without a limit set" in {
-    object int extends IntColumn(BasicTable)
 
-    int.qb.queryString shouldEqual "int INT"
+  it should "serialise a simple TinyIntColumn definition to an SQL query without a limit set" in {
+    NumericsTable.tinyInt.qb.queryString shouldEqual "tinyInt TINYINT"
+  }
+
+  it should "serialise a limited TinyIntColumn definition to an SQL query with a limit set" in {
+    NumericsTable.tinyIntLimited.qb.queryString shouldEqual "tinyIntLimited TINYINT(100)"
+  }
+
+  it should "serialise a simple SmallIntColumn definition to an SQL query without a limit set" in {
+    NumericsTable.smallInt.qb.queryString shouldEqual "smallInt SMALLINT"
+  }
+
+  it should "serialise a limited SmallIntColumn definition to an SQL query with a limit set" in {
+    NumericsTable.smallIntLimited.qb.queryString shouldEqual "smallIntLimited SMALLINT(100)"
+  }
+
+  it should "serialise a simple MediumIntColumn definition to an SQL query without a limit set" in {
+    NumericsTable.mediumInt.qb.queryString shouldEqual "mediumInt MEDIUMINT"
+  }
+
+  it should "serialise a limited MediumIntColumn definition to an SQL query with a limit set" in {
+    NumericsTable.mediumIntLimited.qb.queryString shouldEqual "mediumIntLimited MEDIUMINT(100)"
+  }
+
+  it should "serialise a simple IntColumn definition to an SQL query without a limit set" in {
+    NumericsTable.int.qb.queryString shouldEqual "int INT"
   }
 
   it should "serialise a limited IntColumn definition to an SQL query with a limit set" in {
-    object int extends IntColumn(BasicTable, 100)
-
-    int.qb.queryString shouldEqual "int INT(100)"
+    NumericsTable.intLimited.qb.queryString shouldEqual "intLimited INT(100)"
   }
+
+
 }

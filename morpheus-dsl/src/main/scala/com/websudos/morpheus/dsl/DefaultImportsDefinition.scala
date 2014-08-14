@@ -48,8 +48,8 @@ trait DefaultImportsDefinition extends ModifyImplicits with DefaultForeignKeyCon
 
   type TinyIntColumn[Owner <: Table[Owner, Record], Record] = com.websudos.morpheus.column.TinyIntColumn[Owner, Record]
   type SmallIntColumn[Owner <: Table[Owner, Record], Record] = com.websudos.morpheus.column.SmallIntColumn[Owner, Record]
-  type IntColumn[Owner <: Table[Owner, Record], Record] = com.websudos.morpheus.column.PrimitiveColumn[Owner, Record, Int]
-  type MediumIntColumn[Owner <: Table[Owner, Record], Record] = com.websudos.morpheus.column.PrimitiveColumn[Owner, Record, Int]
+  type IntColumn[Owner <: Table[Owner, Record], Record] = com.websudos.morpheus.column.IntColumn[Owner, Record]
+  type MediumIntColumn[Owner <: Table[Owner, Record], Record] = com.websudos.morpheus.column.MediumIntColumn[Owner, Record]
   type YearColumn[Owner <: Table[Owner, Record], Record] = com.websudos.morpheus.column.YearColumn[Owner, Record]
 
   type TinyTextColumn[Owner <: Table[Owner, Record], Record] = com.websudos.morpheus.column.TinyTextColumn[Owner, Record]

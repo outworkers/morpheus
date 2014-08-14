@@ -96,3 +96,23 @@ sealed class KeysTable extends MySQLTable[KeysTable, KeysRecord] {
 }
 
 object KeysTable extends KeysTable
+
+
+class NumericsTable extends MySQLTable[NumericsTable, Int] {
+
+  object tinyInt extends TinyIntColumn(this)
+  object tinyIntLimited extends TinyIntColumn(this, 100)
+
+  object smallInt extends SmallIntColumn(this)
+  object smallIntLimited extends SmallIntColumn(this, 100)
+
+  object mediumInt extends MediumIntColumn(this)
+  object mediumIntLimited extends MediumIntColumn(this, 100)
+
+  object int extends IntColumn(this)
+  object intLimited extends IntColumn(this, 100)
+
+  def fromRow(row: Row): Int = int(row)
+}
+
+object NumericsTable extends NumericsTable

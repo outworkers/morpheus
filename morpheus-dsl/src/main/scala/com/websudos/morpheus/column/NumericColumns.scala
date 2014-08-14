@@ -21,31 +21,34 @@ package com.websudos.morpheus.column
 import com.websudos.morpheus.SQLPrimitive
 import com.websudos.morpheus.SQLPrimitives.IntIsSQLPrimitive
 import com.websudos.morpheus.dsl.Table
-import com.websudos.morpheus.query.DefaultSQLDataTypes
+import com.websudos.morpheus.query.{SQLBuiltQuery, DefaultSQLDataTypes}
 
 
 sealed abstract class NumericColumn[T <: Table[T, R], R, ValueType : Numeric : SQLPrimitive](t: Table[T, R], limit: Int = 0) extends PrimitiveColumn[T, R,
   ValueType](t) {
-  protected[this] val numericType: String
 
-  override val sqlType = if (limit > 0) s"$numericType($limit)" else numericType
+  protected[this] def numericType: String
+
+  override def sqlType = if (limit > 0) s"$numericType($limit)" else numericType
+
+  override def qb: SQLBuiltQuery = SQLBuiltQuery(name).pad.append(sqlType)
 }
 
-class TinyIntColumn[T <: Table[T, R], R](t: Table[T, R], limit: Int = 0) extends NumericColumn[T, R, Int](t) {
+class TinyIntColumn[T <: Table[T, R], R](t: Table[T, R], limit: Int = 0) extends NumericColumn[T, R, Int](t, limit) {
   val primitive = IntIsSQLPrimitive
   override protected[this] val numericType: String = DefaultSQLDataTypes.tinyInt
 }
 
-class SmallIntColumn[T <: Table[T, R], R](t: Table[T, R], limit: Int = 0) extends NumericColumn[T, R, Int](t) {
+class SmallIntColumn[T <: Table[T, R], R](t: Table[T, R], limit: Int = 0) extends NumericColumn[T, R, Int](t, limit) {
   override protected[this] val numericType: String = DefaultSQLDataTypes.smallInt
 }
 
-class MediumIntColumn[T <: Table[T, R], R](t: Table[T, R], limit: Int = 0) extends NumericColumn[T, R, Int](t) {
+class MediumIntColumn[T <: Table[T, R], R](t: Table[T, R], limit: Int = 0) extends NumericColumn[T, R, Int](t, limit) {
 
   override protected[this] val numericType: String = DefaultSQLDataTypes.mediumInt
 }
 
-class IntColumn[T <: Table[T, R], R](t: Table[T, R], limit: Int = 0) extends NumericColumn[T, R, Int](t) {
+class IntColumn[T <: Table[T, R], R](t: Table[T, R], limit: Int = 0) extends NumericColumn[T, R, Int](t, limit) {
   override protected[this] val numericType: String = DefaultSQLDataTypes.int
 }
 
