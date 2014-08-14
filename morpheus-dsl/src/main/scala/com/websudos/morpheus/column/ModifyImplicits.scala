@@ -155,78 +155,72 @@ private[morpheus] trait ModifyImplicits extends LowPriorityImplicits {
   implicit def queryToAssignmentsQuery[
     T <: Table[T, _],
     R,
-    Type <: QueryType,
     G <: GroupBind,
     O <: OrderBind,
     L <: LimitBind,
     C <: ChainBind,
     AC <: AssignBind,
     Status <: StatusBind
-  ](query: Query[T, R, Type, G, O, L, C, AC, Status]): AssignmentsQuery[T, R, Type, G, O, L, C, AC, Status] = {
+  ](query: Query[T, R, UpdateType, G, O, L, C, AC, Status]): AssignmentsQuery[T, R, UpdateType, G, O, L, C, AC, Status] = {
     new AssignmentsQuery(query)
   }
 
   implicit def assignmentToQuery[
     T <: Table[T, _],
     R,
-    Type <: QueryType,
     G <: GroupBind,
     O <: OrderBind,
     L <: LimitBind,
     C <: ChainBind,
     AC <: AssignBind,
     Status <: StatusBind
-  ](assignment: AssignmentsQuery[T, R, Type, G, O, L, C, AC, Status]): Query[T, R, UpdateType, G, O, L, C, AssignChainned, Terminated] = assignment.terminate
+  ](assignment: AssignmentsQuery[T, R, UpdateType, G, O, L, C, AC, Status]): Query[T, R, UpdateType, G, O, L, C, AssignChainned, Terminated] = assignment.terminate
 
   implicit def queryToSelectQuery[
     T <: Table[T, _],
     R,
-    Type <: QueryType,
     G <: GroupBind,
     O <: OrderBind,
     L <: LimitBind,
     C <: ChainBind,
     AC <: AssignBind,
     Status <: StatusBind
-  ](query: Query[T, R, Type, G, O, L, C, AC, Status]): SelectQuery[T, R, Type, G, O, L, C, AC, Status] = {
+  ](query: Query[T, R, SelectType, G, O, L, C, AC, Status]): SelectQuery[T, R, SelectType, G, O, L, C, AC, Status] = {
     new SelectQuery(query)
   }
 
   implicit def selectQueryToQuery[
     T <: Table[T, _],
     R,
-    Type <: QueryType,
     G <: GroupBind,
     O <: OrderBind,
     L <: LimitBind,
     C <: ChainBind,
     AC <: AssignBind,
     Status <: StatusBind
-  ](assignment: SelectQuery[T, R, Type, G, O, L, C, AC, Status]): Query[T, R, SelectType, G, O, L, C, AC, Terminated] = assignment.terminate
+  ](assignment: SelectQuery[T, R, SelectType, G, O, L, C, AC, Status]): Query[T, R, SelectType, G, O, L, C, AC, Terminated] = assignment.terminate
 
   implicit def queryInsertQuery[
   T <: Table[T, _],
   R,
-  Type <: QueryType,
   G <: GroupBind,
   O <: OrderBind,
   L <: LimitBind,
   C <: ChainBind,
   AC <: AssignBind,
   Status <: StatusBind
-  ](query: Query[T, R, Type, G, O, L, C, AC, Status]): InsertQuery[T, R, Type, G, O, L, C, AC, Status] = {
+  ](query: Query[T, R, InsertType, G, O, L, C, AC, Status]): InsertQuery[T, R, InsertType, G, O, L, C, AC, Status] = {
     new InsertQuery(query)
   }
 
   implicit def insertQueryToQuery[
     T <: Table[T, _],
     R,
-    Type <: QueryType,
     G <: GroupBind,
     O <: OrderBind,
     L <: LimitBind,
     C <: ChainBind,
     AC <: AssignBind,
     Status <: StatusBind
-  ](assignment: InsertQuery[T, R, Type, G, O, L, C, AC, Status]): Query[T, R, Type, G, O, L, C, AC, Terminated] = assignment.toQuery
+  ](assignment: InsertQuery[T, R, InsertType, G, O, L, C, AC, Status]): Query[T, R, InsertType, G, O, L, C, AC, Terminated] = assignment.toQuery
 }
