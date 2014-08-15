@@ -28,6 +28,7 @@ private[morpheus] object KnownTypeLimits {
   val varcharLimit = 65536
   val textLimit = 65536
   val mediumTextLimit = 65536
+  val charLimit = 255
   val longTextLimit = 65536
 }
 

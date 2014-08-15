@@ -64,6 +64,7 @@ abstract class AbstractSQLSyntax extends AbstractSQLKeys {
 
   val insert = "INSERT"
   val ifNotExists = "IF NOT EXISTS"
+  val temporary = "TEMPORARY"
 
   val where = "WHERE"
   val having = "HAVING"
@@ -329,6 +330,10 @@ private[morpheus] trait AbstractQueryBuilder {
     qb.pad
       .append(syntax.outerJoin)
       .forcePad.append(join)
+  }
+
+  def ifNotExists(qb: SQLBuiltQuery): SQLBuiltQuery = {
+    qb.pad.append(syntax.ifNotExists)
   }
 }
 

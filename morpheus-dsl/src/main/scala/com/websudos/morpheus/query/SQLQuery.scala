@@ -180,12 +180,7 @@ class Query[
     AC,
     Status
     ] = {
-    val applied = columns map {
-      fn => {
-        fn(table).col.name
-      }
-    }
-    new Query(table, table.queryBuilder.groupBy(query, applied), rowFunc)
+    new Query(table, table.queryBuilder.groupBy(query, columns map { _(table).col.name }), rowFunc)
   }
 
   @implicitNotFound("You need to use the where method first")

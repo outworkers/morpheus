@@ -35,6 +35,13 @@ private[morpheus]abstract class AbstractCreateSyntaxBlock(query: String, tableNa
       .forcePad.append(syntax.ifNotExists)
       .forcePad.append(tableName)
   }
+
+  def temporary: SQLBuiltQuery = {
+    qb.pad
+      .append(syntax.temporary)
+      .forcePad.append(DefaultSQLSyntax.table)
+      .forcePad.append(tableName)
+  }
 }
 
 /**
@@ -59,6 +66,14 @@ private[morpheus] abstract class AbstractRootCreateQuery[T <: Table[T, _], R](va
     new Query(table, st.default, rowFunc)
   }
 
+  def ifNotExists: BaseCreateQuery = {
+    new Query(table, st.ifNotExists, rowFunc)
+  }
+
+  def temporary: BaseCreateQuery = {
+    new Query(table, st.temporary, rowFunc)
+  }
+
 }
 
 /**
@@ -79,10 +94,25 @@ class CreateQuery[
   Chain <: ChainBind,
   AssignChain <: AssignBind,
   Status <: StatusBind
-](val query: Query[T, R, Type, Group, Order, Limit, Chain, AssignChain, Status]) {
+](val query: Query[T, R, CreateType, Group, Order, Limit, Chain, AssignChain, Status]) {
 
 
+  final protected def columnSchema[St <: StatusBind]: CreateQuery[T, R, CreateType, Group, Order, Limit, Chain, AssignChain, St] = {
 
+    val list = query.table.columns.foldRight(List.empty[String])((col, acc) => {
+      col.qb.queryString :: acc
+    })
+
+    new CreateQuery[T, R, CreateType, Group, Order, Limit, Chain, AssignChain, St](
+      new Query(query.table, query.query.append(list.mkString(", ")), query.rowFunc)
+    )
+  }
+
+  def ifNotExists: CreateQuery[T, R, CreateType, Group, Order, Limit, Chain, AssignChain, Unterminated] = {
+    new CreateQuery[T, R, CreateType, Group, Order, Limit, Chain, AssignChain, Unterminated](
+      new Query(query.table, query.table.queryBuilder.ifNotExists(query.query), query.rowFunc)
+    )
+  }
 
 
   private[morpheus] final def terminate: Query[T, R, CreateType, Group, Order, Limit, Chain, AssignChain, Terminated] = {

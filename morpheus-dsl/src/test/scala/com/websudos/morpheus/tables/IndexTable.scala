@@ -114,3 +114,13 @@ class NumericsTable extends MySQLTable[NumericsTable, Int] {
 }
 
 object NumericsTable extends NumericsTable
+
+
+class StringsTable extends MySQLTable[StringsTable, String] {
+
+
+    object textColumn extends TextColumn(this)
+    object textColumnLimited extends TextColumn(this)
+
+    def fromRow(row: Row): String = textColumn(row)
+}

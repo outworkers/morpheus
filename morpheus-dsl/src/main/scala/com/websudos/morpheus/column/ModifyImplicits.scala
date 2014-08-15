@@ -134,6 +134,15 @@ private[morpheus] trait ModifyImplicits extends LowPriorityImplicits {
     )
   }
 
+  implicit def rootCreateQueryToQuery[T <: Table[T, _], R](root: AbstractRootCreateQuery[T, R]): Query[T, R, CreateType, Ungroupped, Unordered, Unlimited,
+    Unchainned, AssignUnchainned, Unterminated] = {
+    new Query(
+      root.table,
+      root.st.default,
+      root.rowFunc
+    )
+  }
+
   /**
    * This defines an implicit conversion from a RootInsertQuery to an InsertQuery, making the INSERT syntax block invisible to the end user.
    * This allows chaining a "value" method call directly after "Table.insert".
@@ -225,4 +234,28 @@ private[morpheus] trait ModifyImplicits extends LowPriorityImplicits {
     AC <: AssignBind,
     Status <: StatusBind
   ](assignment: InsertQuery[T, R, InsertType, G, O, L, C, AC, Status]): Query[T, R, InsertType, G, O, L, C, AC, Terminated] = assignment.toQuery
+
+  implicit def queryInsertQuery[
+    T <: Table[T, _],
+    R,
+    G <: GroupBind,
+    O <: OrderBind,
+    L <: LimitBind,
+    C <: ChainBind,
+    AC <: AssignBind,
+    Status <: StatusBind
+  ](query: Query[T, R, CreateType, G, O, L, C, AC, Status]): CreateQuery[T, R, CreateType, G, O, L, C, AC, Status] = {
+    new CreateQuery(query)
+  }
+
+  implicit def createQueryToQuery[
+    T <: Table[T, _],
+    R,
+    G <: GroupBind,
+    O <: OrderBind,
+    L <: LimitBind,
+    C <: ChainBind,
+    AC <: AssignBind,
+    Status <: StatusBind
+  ](assignment: CreateQuery[T, R, CreateType, G, O, L, C, AC, Status]): Query[T, R, CreateType, G, O, L, C, AC, Terminated] = assignment.terminate
 }

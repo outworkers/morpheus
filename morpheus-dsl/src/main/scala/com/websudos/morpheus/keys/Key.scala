@@ -68,3 +68,7 @@ trait Zerofill[ValueType] {
   self: NumericColumn[_, _, ValueType] =>
 
 }
+
+trait Unsigned[ValueType] {
+  self: NumericColumn[_, _, ValueType] =>
+}
