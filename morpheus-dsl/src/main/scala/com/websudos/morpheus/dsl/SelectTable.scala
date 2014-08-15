@@ -28,8 +28,7 @@ import com.websudos.morpheus.query.{AbstractRootSelectQuery, AbstractSelectSynta
  * @tparam Owner The table owning the record.
  * @tparam Record The record type.
  */
-private[morpheus] trait SelectTable[
-  Owner <: Table[Owner, Record],
+private[morpheus] trait SelectTable[Owner <: Table[Owner, Record],
   Record,
   RootSelectQuery[A <: Table[A, _], B] <: AbstractRootSelectQuery[A, B],
   Block <: AbstractSelectSyntaxBlock

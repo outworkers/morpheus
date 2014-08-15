@@ -68,8 +68,7 @@ sealed abstract class AssignUnchainned extends AssignBind
  * @tparam T The type of the table owning the record.
  * @tparam R The type of the record held in the table.
  */
-class AssignmentsQuery[
-  T <: Table[T, _],
+class AssignmentsQuery[T <: Table[T, _],
   R,
   Type <: QueryType,
   Group <: GroupBind,

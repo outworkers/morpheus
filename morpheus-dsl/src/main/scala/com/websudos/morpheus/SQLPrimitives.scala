@@ -102,19 +102,6 @@ trait SQLPrimitives {
     def toSQL(value: Date): String = value.toString
   }
 
-  /*
-  implicit object BooleanIsSQLPrimitive extends SQLPrimitive[Boolean] {
-    val sqlType = "boolean"
-
-    def fromRow(row: Row, name: String): Option[Boolean] = row(name) map {
-      case Value(true) => true
-      case false => false
-      case _ => throw InvalidTypeDefinitionException()
-    }
-
-    def toSQL(value: Boolean): String = value.toString
-  }*/
-
   implicit object DateTimeIsSQLPrimitive extends SQLPrimitive[DateTime] {
     override val sqlType: String = DefaultSQLDataTypes.date
 
@@ -130,7 +117,7 @@ trait SQLPrimitives {
 
     override val sqlType = DefaultSQLDataTypes.text
 
-    def fromRow(row: Row, name: String) = row(name) match {
+    def fromRow(row: Row, name: String): String = row(name) match {
       case Some(value) => value match {
         case StringValue(str) => Some(str)
         case EmptyValue => Some("")

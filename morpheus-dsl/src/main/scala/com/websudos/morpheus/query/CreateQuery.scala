@@ -84,8 +84,7 @@ private[morpheus] abstract class AbstractRootCreateQuery[T <: Table[T, _], R](va
  * @tparam T The type of the table owning the record.
  * @tparam R The type of the record held in the table.
  */
-class CreateQuery[
-  T <: Table[T, _],
+class CreateQuery[T <: Table[T, _],
   R,
   Type <: QueryType,
   Group <: GroupBind,

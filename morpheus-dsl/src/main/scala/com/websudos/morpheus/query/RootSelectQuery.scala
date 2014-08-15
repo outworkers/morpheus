@@ -106,8 +106,7 @@ private[morpheus] abstract class AbstractRootSelectQuery[T <: Table[T, _], R](va
  * @tparam T The type of the table owning the record.
  * @tparam R The type of the record held in the table.
  */
-class SelectQuery[
-  T <: Table[T, _],
+class SelectQuery[T <: Table[T, _],
   R,
   Type <: QueryType,
   Group <: GroupBind,
@@ -134,8 +133,7 @@ class SelectQuery[
   }
 
 
-  final def leftJoin[
-    Owner <: Table[Owner, Record],
+  final def leftJoin[Owner <: Table[Owner, Record],
     Record,
     G <: GroupBind,
     O <: OrderBind,
@@ -155,8 +153,7 @@ class SelectQuery[
     )
   }
 
-  final def rightJoin[
-    Owner <: Table[Owner, Record],
+  final def rightJoin[Owner <: Table[Owner, Record],
     Record,
     G <: GroupBind,
     O <: OrderBind,

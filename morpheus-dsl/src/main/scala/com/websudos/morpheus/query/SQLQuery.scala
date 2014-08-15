@@ -143,8 +143,7 @@ private[morpheus] abstract class SelectType extends QueryType
  * @tparam T The type of the table owning the record.
  * @tparam R The type of the record held in the table.
 */
-class Query[
-  T <: Table[T, _],
+class Query[T <: Table[T, _],
   R,
   Type <: QueryType,
   Group <: GroupBind,

@@ -23,41 +23,41 @@ import com.websudos.morpheus.query.DefaultSQLDataTypes
 sealed abstract class LimitedTextColumn[T <: Table[T, R], R](t: Table[T, R], protected[this] val limit: Int) extends PrimitiveColumn[T, R, String](t)(StringIsSQLPrimitive)
 
 class CharColumn[T <: Table[T, R], R](t: Table[T, R], limit: Int = KnownTypeLimits.charLimit) extends LimitedTextColumn(t, limit) {
-  override def sqlType = s"${DefaultSQLDataTypes.char}($limit)"
+  override def sqlType: String = s"${DefaultSQLDataTypes.char}($limit)"
 }
 
 class VarcharColumn[T <: Table[T, R], R](t: Table[T, R], limit: Int = KnownTypeLimits.varcharLimit) extends LimitedTextColumn(t, limit) {
-  override def sqlType = s"${DefaultSQLDataTypes.varchar}($limit)"
+  override def sqlType: String = s"${DefaultSQLDataTypes.varchar}($limit)"
 }
 
 class TinyTextColumn[T <: Table[T, R], R](t: Table[T, R]) extends LimitedTextColumn(t, 0) {
-  override def sqlType = DefaultSQLDataTypes.tinyText
+  override def sqlType: String = DefaultSQLDataTypes.tinyText
 }
 
 class TextColumn[T <: Table[T, R], R](t: Table[T, R]) extends LimitedTextColumn(t, 0) {
-  override def sqlType = DefaultSQLDataTypes.text
+  override def sqlType: String = DefaultSQLDataTypes.text
 }
 
 class MediumTextColumn[T <: Table[T, R], R](t: Table[T, R]) extends LimitedTextColumn(t, 0) {
-  override def sqlType = DefaultSQLDataTypes.mediumText
+  override def sqlType: String = DefaultSQLDataTypes.mediumText
 }
 
 class LongTextColumn[T <: Table[T, R], R](t: Table[T, R]) extends LimitedTextColumn(t, 0) {
-  override def sqlType = DefaultSQLDataTypes.longText
+  override def sqlType: String = DefaultSQLDataTypes.longText
 }
 
 class TinyBlobColumn[T <: Table[T, R], R](t: Table[T, R]) extends LimitedTextColumn(t, 0) {
-  override def sqlType = DefaultSQLDataTypes.tinyBlob
+  override def sqlType: String = DefaultSQLDataTypes.tinyBlob
 }
 
 class BlobColumn[T <: Table[T, R], R](t: Table[T, R]) extends LimitedTextColumn(t, 0) {
-  override def sqlType = DefaultSQLDataTypes.blob
+  override def sqlType: String = DefaultSQLDataTypes.blob
 }
 
 class MediumBlobColumn[T <: Table[T, R], R](t: Table[T, R]) extends LimitedTextColumn(t, 0) {
-  override def sqlType = DefaultSQLDataTypes.mediumBlob
+  override def sqlType: String = DefaultSQLDataTypes.mediumBlob
 }
 
 class LongBlobColumn[T <: Table[T, R], R](t: Table[T, R]) extends LimitedTextColumn(t, 0) {
-  override def sqlType = DefaultSQLDataTypes.longBlob
+  override def sqlType: String = DefaultSQLDataTypes.longBlob
 }

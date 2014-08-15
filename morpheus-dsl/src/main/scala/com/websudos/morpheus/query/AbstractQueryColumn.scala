@@ -86,25 +86,25 @@ private[morpheus] abstract class AbstractQueryColumn[T: SQLPrimitive](col: Abstr
     QueryCondition(col.table.queryBuilder.lt(col.name, col.toQueryString(value)))
   }
 
-  def < = lt _
+  def <(value: T): QueryCondition = lt(value)
 
   def lte(value: T): QueryCondition = {
     QueryCondition(col.table.queryBuilder.lte(col.name, col.toQueryString(value)))
   }
 
-  def <= = lte _
+  def <=(value: T): QueryCondition = lte(value)
 
   def gt(value: T): QueryCondition = {
     QueryCondition(col.table.queryBuilder.gt(col.name, col.toQueryString(value)))
   }
 
-  def > = gt _
+  def >(value: T): QueryCondition = gt(value)
 
   def gte(value: T): QueryCondition = {
     QueryCondition(col.table.queryBuilder.gte(col.name, col.toQueryString(value)))
   }
 
-  def >= = gte _
+  def >=(value: T): QueryCondition = gte(value)
 
   def !=(value: T): QueryCondition = {
     QueryCondition(col.table.queryBuilder.!=(col.name, col.toQueryString(value)))
