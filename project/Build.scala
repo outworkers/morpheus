@@ -3,6 +3,7 @@ import org.scoverage.coveralls.CoverallsPlugin.coverallsSettings
 import sbt.Keys._
 import sbt._
 import scoverage.ScoverageSbtPlugin.instrumentSettings
+import org.scalastyle.sbt.ScalastylePlugin
 
 object morpheus extends Build {
 
@@ -102,7 +103,7 @@ object morpheus extends Build {
   lazy val morpheus = Project(
     id = "morpheus",
     base = file("."),
-    settings = Defaults.coreDefaultSettings ++ sharedSettings ++ coverallsSettings
+    settings = Defaults.coreDefaultSettings ++ sharedSettings ++ coverallsSettings ++ ScalastylePlugin.Settings
   ).settings(
     name := "morpheus"
   ).aggregate(
