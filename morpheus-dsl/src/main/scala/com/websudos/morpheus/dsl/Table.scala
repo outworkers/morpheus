@@ -89,6 +89,8 @@ abstract class Table[Owner <: Table[Owner, Record], Record] {
 
   def tableName: String = _name
 
+  def create: AbstractRootCreateQuery[Owner, Record]
+
   def update: AbstractRootUpdateQuery[Owner, Record]
 
   def delete: AbstractRootDeleteQuery[Owner, Record]

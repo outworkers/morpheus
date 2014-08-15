@@ -54,4 +54,10 @@ abstract class MySQLTable[Owner <: MySQLTable[Owner, Record], Record] extends Ta
     fromRow
   )
 
+  def create: MySQLRootCreateQuery[Owner, Record] = new MySQLRootCreateQuery(
+    this.asInstanceOf[Owner],
+    new MySQLCreateSyntaxBLock(syntax.insert, tableName),
+    fromRow
+  )
+
 }

@@ -69,8 +69,6 @@ trait DefaultImportsDefinition extends ModifyImplicits with DefaultForeignKeyCon
   type NotNull = com.websudos.morpheus.keys.NotNull
   type Autoincrement = com.websudos.morpheus.keys.Autoincrement
 
-
-
   implicit def columnToQueryColumn[T: SQLPrimitive](col: AbstractColumn[T]): AbstractQueryColumn[T]
 
 }
