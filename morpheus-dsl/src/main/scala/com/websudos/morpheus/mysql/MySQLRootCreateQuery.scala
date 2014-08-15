@@ -13,22 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package com.websudos.morpheus.mysql
 
-package com.websudos.morpheus.dsl
+import com.twitter.finagle.exp.mysql.Row
+import com.websudos.morpheus.dsl.Table
+import com.websudos.morpheus.query.{AbstractRootCreateQuery, AbstractSQLSyntax, AbstractCreateSyntaxBlock}
 
-import com.websudos.morpheus.mysql.Imports._
 
-case class BasicRecord(name: String, count: Long)
-
-class BasicTable extends MySQLTable[BasicTable, BasicRecord] {
-
-  object name extends TextColumn(this)
-  object count extends LongColumn(this)
-
-  def fromRow(row: Row): BasicRecord = {
-    BasicRecord(name(row), count(row))
-  }
-
+class MySQLCreateSyntaxBLock(query: String, tableName: String) extends AbstractCreateSyntaxBlock(query, tableName) {
+  def syntax: AbstractSQLSyntax = MySQLSyntax
 }
 
-object BasicTable extends BasicTable
+class MySQLRootCreateQuery[T <: Table[T, _], R](table: T, st: AbstractCreateSyntaxBlock, rowFunc: Row => R) extends AbstractRootCreateQuery[T, R](table, st,
+  rowFunc){
+
+}

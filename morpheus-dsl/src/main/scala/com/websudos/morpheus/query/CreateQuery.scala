@@ -1,19 +1,17 @@
 /*
+ * Copyright 2014 websudos ltd.
  *
- *  * Copyright 2014 websudos ltd.
- *  *
- *  * Licensed under the Apache License, Version 2.0 (the "License");
- *  * you may not use this file except in compliance with the License.
- *  * You may obtain a copy of the License at
- *  *
- *  *     http://www.apache.org/licenses/LICENSE-2.0
- *  *
- *  * Unless required by applicable law or agreed to in writing, software
- *  * distributed under the License is distributed on an "AS IS" BASIS,
- *  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *  * See the License for the specific language governing permissions and
- *  * limitations under the License.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 package com.websudos.morpheus.query
@@ -35,6 +33,13 @@ private[morpheus]abstract class AbstractCreateSyntaxBlock(query: String, tableNa
   def ifNotExists: SQLBuiltQuery = {
     qb.pad.append(DefaultSQLSyntax.table)
       .forcePad.append(syntax.ifNotExists)
+      .forcePad.append(tableName)
+  }
+
+  def temporary: SQLBuiltQuery = {
+    qb.pad
+      .append(syntax.temporary)
+      .forcePad.append(DefaultSQLSyntax.table)
       .forcePad.append(tableName)
   }
 }
@@ -61,6 +66,14 @@ private[morpheus] abstract class AbstractRootCreateQuery[T <: Table[T, _], R](va
     new Query(table, st.default, rowFunc)
   }
 
+  def ifNotExists: BaseCreateQuery = {
+    new Query(table, st.ifNotExists, rowFunc)
+  }
+
+  def temporary: BaseCreateQuery = {
+    new Query(table, st.temporary, rowFunc)
+  }
+
 }
 
 /**
@@ -71,8 +84,7 @@ private[morpheus] abstract class AbstractRootCreateQuery[T <: Table[T, _], R](va
  * @tparam T The type of the table owning the record.
  * @tparam R The type of the record held in the table.
  */
-class CreateQuery[
-  T <: Table[T, _],
+class CreateQuery[T <: Table[T, _],
   R,
   Type <: QueryType,
   Group <: GroupBind,
@@ -81,7 +93,25 @@ class CreateQuery[
   Chain <: ChainBind,
   AssignChain <: AssignBind,
   Status <: StatusBind
-](val query: Query[T, R, Type, Group, Order, Limit, Chain, AssignChain, Status]) {
+](val query: Query[T, R, CreateType, Group, Order, Limit, Chain, AssignChain, Status]) {
+
+
+  final protected def columnSchema[St <: StatusBind]: CreateQuery[T, R, CreateType, Group, Order, Limit, Chain, AssignChain, St] = {
+
+    val list = query.table.columns.foldRight(List.empty[String])((col, acc) => {
+      col.qb.queryString :: acc
+    })
+
+    new CreateQuery[T, R, CreateType, Group, Order, Limit, Chain, AssignChain, St](
+      new Query(query.table, query.query.append(list.mkString(", ")), query.rowFunc)
+    )
+  }
+
+  def ifNotExists: CreateQuery[T, R, CreateType, Group, Order, Limit, Chain, AssignChain, Unterminated] = {
+    new CreateQuery[T, R, CreateType, Group, Order, Limit, Chain, AssignChain, Unterminated](
+      new Query(query.table, query.table.queryBuilder.ifNotExists(query.query), query.rowFunc)
+    )
+  }
 
 
   private[morpheus] final def terminate: Query[T, R, CreateType, Group, Order, Limit, Chain, AssignChain, Terminated] = {

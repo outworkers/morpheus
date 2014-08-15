@@ -1,23 +1,20 @@
 /*
+ * Copyright 2014 websudos ltd.
  *
- *  * Copyright 2014 websudos ltd.
- *  *
- *  * Licensed under the Apache License, Version 2.0 (the "License");
- *  * you may not use this file except in compliance with the License.
- *  * You may obtain a copy of the License at
- *  *
- *  *     http://www.apache.org/licenses/LICENSE-2.0
- *  *
- *  * Unless required by applicable law or agreed to in writing, software
- *  * distributed under the License is distributed on an "AS IS" BASIS,
- *  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *  * See the License for the specific language governing permissions and
- *  * limitations under the License.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 package com.websudos.morpheus
-
 
 import java.util.Date
 
@@ -105,19 +102,6 @@ trait SQLPrimitives {
     def toSQL(value: Date): String = value.toString
   }
 
-  /*
-  implicit object BooleanIsSQLPrimitive extends SQLPrimitive[Boolean] {
-    val sqlType = "boolean"
-
-    def fromRow(row: Row, name: String): Option[Boolean] = row(name) map {
-      case Value(true) => true
-      case false => false
-      case _ => throw InvalidTypeDefinitionException()
-    }
-
-    def toSQL(value: Boolean): String = value.toString
-  }*/
-
   implicit object DateTimeIsSQLPrimitive extends SQLPrimitive[DateTime] {
     override val sqlType: String = DefaultSQLDataTypes.date
 
@@ -133,7 +117,7 @@ trait SQLPrimitives {
 
     override val sqlType = DefaultSQLDataTypes.text
 
-    def fromRow(row: Row, name: String) = row(name) match {
+    def fromRow(row: Row, name: String): String = row(name) match {
       case Some(value) => value match {
         case StringValue(str) => Some(str)
         case EmptyValue => Some("")

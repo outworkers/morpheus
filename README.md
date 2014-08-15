@@ -1,6 +1,6 @@
 morpheus [NOT PRODUCTION READY][![Build Status](https://travis-ci.org/websudosuk/morpheus.svg)](https://travis-ci.org/websudosuk/morpheus)[![Coverage Status](https://img.shields.io/coveralls/websudosuk/morpheus.svg)](https://coveralls.io/r/websudosuk/morpheus)
 
-========
+========================================================================================================================================================================================================================
 
 Named after the Greek God of Dreams, morpheus is an Asynchronous type-safe Scala DSL for MySQL, Postgres, MSSQL, 
 MariaDB. We choose this name as it is the dream DSL for any Scala/SQL user, finessed to perfection up to the Websudos quality standard you've gotten 

@@ -9,7 +9,7 @@
  <check level="error" class="org.scalastyle.file.HeaderMatchesChecker" enabled="true">
   <parameters>
    <parameter name="header"><![CDATA[/*
- * Copyright 2013 websudos ltd.
+ * Copyright 2014 websudos ltd.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -67,7 +67,7 @@
  </check>
  <check level="error" class="org.scalastyle.scalariform.ImportGroupingChecker" enabled="true"></check>
  <check level="error" class="org.scalastyle.scalariform.NotImplementedErrorUsage" enabled="true"></check>
- <check level="error" class="org.scalastyle.scalariform.NumberOfMethodsInTypeChecker" enabled="true"></check>
+ <check level="warning" class="org.scalastyle.scalariform.NumberOfMethodsInTypeChecker" enabled="true"></check>
 
  <check level="error" class="org.scalastyle.scalariform.NoWhitespaceBeforeLeftBracketChecker" enabled="true"></check>
  <check level="error" class="org.scalastyle.scalariform.NoWhitespaceAfterLeftBracketChecker" enabled="true"></check>
@@ -105,14 +105,14 @@
    <parameter name="maxLength"><![CDATA[50]]></parameter>
   </parameters>
  </check>
- <check level="error" class="org.scalastyle.scalariform.MethodNamesChecker" enabled="true">
+ <check level="warning" class="org.scalastyle.scalariform.MethodNamesChecker" enabled="true">
   <parameters>
    <parameter name="regex"><![CDATA[^[a-z][A-Za-z0-9]*(_=)?$]]></parameter>
   </parameters>
  </check>
  <check level="error" class="org.scalastyle.scalariform.NumberOfMethodsInTypeChecker" enabled="true">
   <parameters>
-   <parameter name="maxMethods"><![CDATA[30]]></parameter>
+   <parameter name="maxMethods"><![CDATA[50]]></parameter>
   </parameters>
  </check>
  <check level="error" class="org.scalastyle.scalariform.PublicMethodsHaveTypeChecker" enabled="true"></check>

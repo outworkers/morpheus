@@ -1,19 +1,17 @@
 /*
+ * Copyright 2014 websudos ltd.
  *
- *  * Copyright 2014 websudos ltd.
- *  *
- *  * Licensed under the Apache License, Version 2.0 (the "License");
- *  * you may not use this file except in compliance with the License.
- *  * You may obtain a copy of the License at
- *  *
- *  *     http://www.apache.org/licenses/LICENSE-2.0
- *  *
- *  * Unless required by applicable law or agreed to in writing, software
- *  * distributed under the License is distributed on an "AS IS" BASIS,
- *  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *  * See the License for the specific language governing permissions and
- *  * limitations under the License.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 package com.websudos.morpheus.query
@@ -145,8 +143,7 @@ private[morpheus] abstract class SelectType extends QueryType
  * @tparam T The type of the table owning the record.
  * @tparam R The type of the record held in the table.
 */
-class Query[
-  T <: Table[T, _],
+class Query[T <: Table[T, _],
   R,
   Type <: QueryType,
   Group <: GroupBind,
@@ -182,12 +179,7 @@ class Query[
     AC,
     Status
     ] = {
-    val applied = columns map {
-      fn => {
-        fn(table).col.name
-      }
-    }
-    new Query(table, table.queryBuilder.groupBy(query, applied), rowFunc)
+    new Query(table, table.queryBuilder.groupBy(query, columns map { _(table).col.name }), rowFunc)
   }
 
   @implicitNotFound("You need to use the where method first")
