@@ -39,7 +39,22 @@ trait SQLOperatorSet {
   def `<=>`: String
 }
 
-abstract class AbstractSQLSyntax {
+abstract class AbstractSQLKeys {
+
+  val primaryKey = "PRIMARY KEY"
+  val foreignKey = "FOREIGN KEY"
+  val uniqueKey = "UNIQUE KEY"
+  val index = "INDEX"
+  val notNull = "NOT NULL"
+  val autoIncrement = "AUTO_INCREMENT"
+
+  val cascade = "CASCADE"
+  val restrict = "RESTRICT"
+  val setNull = "SET NULL"
+  val noAction = "NO ACTION"
+}
+
+abstract class AbstractSQLSyntax extends AbstractSQLKeys {
   val into = "INTO"
   val values = "VALUES"
   val select = "SELECT"
@@ -47,7 +62,10 @@ abstract class AbstractSQLSyntax {
   val ignore = "IGNORE"
   val quick = "QUICK"
 
+  val create = "CREATE"
+
   val insert = "INSERT"
+  val ifNotExists = "IF NOT EXISTS"
 
   val where = "WHERE"
   val having = "HAVING"
@@ -60,13 +78,62 @@ abstract class AbstractSQLSyntax {
   val or = "OR"
   val set = "SET"
   val from = "FROM"
+  val table = "TABLE"
   val eqs = "="
   val `(` = "("
   val comma = ","
   val `)` = ")"
   val asc = "ASC"
   val desc = "DESC"
+  val references = "REFERENCES"
+  val onDelete = "ON DELETE"
+  val onUpdate = "ON UPDATE"
+
+  val leftJoin = "LEFT JOIN"
+  val rightJoin = "RIGHT JOIN"
+  val innerJoin = "INNER JOIN"
+  val outerJoin = "OUTER JOIN"
 }
+
+abstract class AbstractSQLDataTypes {
+  val tinyInt = "TINYINT"
+  val smallInt = "SMALLINT"
+  val mediumInt = "MEDIUMINT"
+  val bigInt = "BIGINT"
+  val int = "INT"
+  val decimal = "DECIMAL"
+
+  val float = "FLOAT"
+  val double = "DOUBLE"
+  val long = "LONG"
+
+  val char = "CHAR"
+  val varchar = "VARCHAR"
+
+
+  val tinyText = "TINYTEXT"
+  val text = "TEXT"
+  val mediumText = "MEDIUMTEXT"
+  val longText = "LONGTEXT"
+  val binary = "BINARY"
+  val varbinary = "VARBINARY"
+
+  val tinyBlob = "TINYBLOB"
+  val blob = "BLOB"
+  val mediumBlob = "MEDIUMBLOB"
+  val longBlob = "LONGBLOB"
+
+  val date = "DATE"
+  val dateTime = "DATETIME"
+  val time = "TIME"
+  val timestamp = "TIMESTAMP"
+  val year = "YEAR"
+
+  val enum = "ENUM"
+  val set = "SET"
+}
+
+object DefaultSQLDataTypes extends AbstractSQLDataTypes
 
 object DefaultSQLSyntax extends AbstractSQLSyntax
 
@@ -115,7 +182,6 @@ private[morpheus] trait AbstractQueryBuilder {
   def !=(name: String, value: String): SQLBuiltQuery = {
     SQLBuiltQuery(s"$name ${operators.`!=`} $value")
   }
-
 
   def <>(name: String, value: String): SQLBuiltQuery = {
     SQLBuiltQuery(s"$name ${operators.`<>`} $value")
@@ -241,6 +307,30 @@ private[morpheus] trait AbstractQueryBuilder {
       .forcePad.append(syntax.`(`)
       .append(values.mkString(", "))
       .append(syntax.`)`)
+  }
+
+  def leftJoin(qb: SQLBuiltQuery, join: SQLBuiltQuery): SQLBuiltQuery = {
+    qb.pad
+      .append(syntax.leftJoin)
+      .forcePad.append(join)
+  }
+
+  def rightJoin(qb: SQLBuiltQuery, join: SQLBuiltQuery): SQLBuiltQuery = {
+    qb.pad
+      .append(syntax.rightJoin)
+      .forcePad.append(join)
+  }
+
+  def innerJoin(qb: SQLBuiltQuery, join: SQLBuiltQuery): SQLBuiltQuery = {
+    qb.pad
+      .append(syntax.innerJoin)
+      .forcePad.append(join)
+  }
+
+  def outerJoin(qb: SQLBuiltQuery, join: SQLBuiltQuery): SQLBuiltQuery = {
+    qb.pad
+      .append(syntax.outerJoin)
+      .forcePad.append(join)
   }
 }
 

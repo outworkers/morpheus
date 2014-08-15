@@ -18,8 +18,55 @@
 
 package com.websudos.morpheus.keys
 
-import com.websudos.morpheus.column.AbstractColumn
+import com.websudos.morpheus.column.{NumericColumn, AbstractColumn}
+import com.websudos.morpheus.query.{DefaultSQLSyntax, SQLBuiltQuery}
 
-trait Key[T <: Key[T]] {
-  self: AbstractColumn[T] =>
+private[morpheus] trait Key[ValueType, KeyType <: Key[ValueType, KeyType]] {
+  self: AbstractColumn[ValueType] =>
+
+  override def qb: SQLBuiltQuery = {
+    SQLBuiltQuery(name).pad.append(sqlType)
+      .forcePad.append(keyToQueryString)
+      .pad.append(notNull match {
+      case true => DefaultSQLSyntax.notNull
+      case false => ""
+    }).pad.append(autoIncrement match {
+      case true => DefaultSQLSyntax.autoIncrement
+      case false => ""
+    }).trim
+  }
+
+
+  protected[this] def keyToQueryString: String
+  protected[this] val autoIncrement = false
+}
+
+trait PrimaryKey[ValueType] extends Key[ValueType, PrimaryKey[ValueType]] {
+  self: AbstractColumn[ValueType] =>
+
+  protected[this] def keyToQueryString = DefaultSQLSyntax.primaryKey
+}
+
+trait UniqueKey[ValueType] extends Key[ValueType, UniqueKey[ValueType]] {
+  self: AbstractColumn[ValueType] =>
+
+  protected[this] def keyToQueryString = DefaultSQLSyntax.uniqueKey
+
+}
+
+trait NotNull {
+  self: AbstractColumn[_] =>
+
+  override val notNull = true
+}
+
+trait Autoincrement {
+  self: Key[Int, _] with AbstractColumn[Int] =>
+
+  override protected[this] val autoIncrement = true
+}
+
+trait Zerofill[ValueType] {
+  self: NumericColumn[_, _, ValueType] =>
+
 }

@@ -121,7 +121,8 @@ class SelectQuery[
 ](val query: Query[T, R, Type, Group, Order, Limit, Chain, AssignChain, Status]) {
 
   @implicitNotFound("You can't use 2 SET parts on a single UPDATE query")
-  def having(condition: T => QueryAssignment)(implicit tp: Type =:= SelectType, ev: AssignChain =:= AssignUnchainned): SelectQuery[T, R, Type, Group, Order,
+  final def having(condition: T => QueryAssignment)(implicit tp: Type =:= SelectType, ev: AssignChain =:= AssignUnchainned): SelectQuery[T, R, Type, Group,
+    Order,
     Limit,
     Chain,
     AssignChainned, Status] = {
@@ -134,7 +135,50 @@ class SelectQuery[
     )
   }
 
-  private[morpheus] def terminate: Query[T, R, SelectType, Group, Order, Limit, Chain, AssignChain, Terminated] = {
+
+  final def leftJoin[
+    Owner <: Table[Owner, Record],
+    Record,
+    G <: GroupBind,
+    O <: OrderBind,
+    L <: LimitBind,
+    C <: ChainBind,
+    AC <: AssignBind
+  ](join: Query[Owner, Record, SelectType, G, O, L, C, AC, Unterminated]): SelectQuery[T, (Record, R), SelectType, G, O, L, C, AC, Unterminated] = {
+
+    def rowFunc(row: Row): (Record, R) = (join.rowFunc(row), query.rowFunc(row))
+
+    new SelectQuery[T, (Record, R), SelectType, G, O, L, C, AC, Unterminated](
+      new Query(
+        query.table,
+        query.table.queryBuilder.leftJoin(query.query, join.query),
+        rowFunc
+      )
+    )
+  }
+
+  final def rightJoin[
+    Owner <: Table[Owner, Record],
+    Record,
+    G <: GroupBind,
+    O <: OrderBind,
+    L <: LimitBind,
+    C <: ChainBind,
+    AC <: AssignBind
+  ](join: Query[Owner, Record, SelectType, G, O, L, C, AC, Unterminated]): SelectQuery[T, (R, Record), SelectType, G, O, L, C, AC, Unterminated] = {
+
+    def rowFunc(row: Row): (R, Record) = (query.rowFunc(row), join.rowFunc(row))
+
+    new SelectQuery[T, (R, Record), SelectType, G, O, L, C, AC, Unterminated](
+      new Query(
+        query.table,
+        query.table.queryBuilder.leftJoin(query.query, join.query),
+        rowFunc
+      )
+    )
+  }
+
+  private[morpheus] final def terminate: Query[T, R, SelectType, Group, Order, Limit, Chain, AssignChain, Terminated] = {
     new Query(
       query.table,
       query.query,

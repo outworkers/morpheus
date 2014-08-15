@@ -1,8 +1,11 @@
 package com.websudos.morpheus.query
 
-import org.scalatest.{ FlatSpec, Matchers }
-import com.websudos.morpheus.dsl.BasicTable
+import org.scalatest.{FlatSpec, Matchers}
+
+import com.websudos.morpheus.column.ForeignKey
+import com.websudos.morpheus.dsl.{BasicRecord, BasicTable}
 import com.websudos.morpheus.mysql.Imports._
+import com.websudos.morpheus.tables.{KeysTable, IndexTable}
 
 class CompileTimeRestrictionsTest extends FlatSpec with Matchers {
 
@@ -29,6 +32,9 @@ class CompileTimeRestrictionsTest extends FlatSpec with Matchers {
   }
 
   it should "not compile a SELECT query with two limit clauses" in {
+    BasicTable.select
+      .limit(10)
+
     """BasicTable.select
       .limit(10)
       .limit(10)
@@ -83,10 +89,32 @@ class CompileTimeRestrictionsTest extends FlatSpec with Matchers {
       .queryString""" should compile
   }
 
-  it should "not compiled a select query ordered before grouping" in {
+  it should "not compile a select query ordered before grouping" in {
     """BasicTable.select
       .orderBy(_.name asc)
       .groupBy(_.count, _.name)
       .queryString""" shouldNot compile
+  }
+
+  it should "allow defining a foreignKey from one table to another" in {
+    """object foreign extends ForeignKey[BasicTable, BasicRecord, IndexTable](BasicTable, IndexTable.id, IndexTable.value)""" should compile
+  }
+
+  it should "not allow defining a foreignKey from a table to columns in the same table" in {
+    // this line is because InteliJ will remove the imports automatically as it's not detecting objects inside string literals.
+    // We are also too lazy to remove the automatic import management.
+    object foreign extends ForeignKey[BasicTable, BasicRecord, IndexTable](BasicTable, IndexTable.id, IndexTable.value)
+
+    """object foreign2 extends ForeignKey[BasicTable, BasicRecord, BasicTable](BasicTable, BasicTable.name, BasicTable.count)""" shouldNot compile
+  }
+
+  it should "not allow defining a foreignKey from a table to columns belonging to multiple tables" in {
+    """ object foreign extends ForeignKey[BasicTable, BasicRecord, IndexTable](BasicTable, IndexTable.id, KeysTable.id)""" shouldNot compile
+  }
+
+  it should "not allow defining a foreignKey from a table to column that is an index column" in {
+    // This line is also because we are a lazy bunch.
+    object foreign3 extends ForeignKey[BasicTable, BasicRecord, KeysTable](BasicTable, KeysTable.id)
+    """ object foreign4 extends ForeignKey[BasicTable, BasicRecord, KeysTable](BasicTable, KeysTable.foreignKey, KeysTable.id)""" shouldNot compile
   }
 }

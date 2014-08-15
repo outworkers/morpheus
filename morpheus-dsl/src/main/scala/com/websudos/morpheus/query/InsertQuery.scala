@@ -111,10 +111,6 @@ class InsertQuery[
    * serialised value. This is a very simple accumulator that will eventually allow calling the "insert" method on a queryBuilder to produce the final
    * serialisation result, a hopefully valid MySQL insert query.
    *
-   * We even try to get really clever here and terminate the query if the number of assignments in the accumulator exceeds the number of columns available in
-   * the table, essentially preventing multiple assignments per table. Although we have no way of guaranteeing a single assignment was made for every
-   * individual column, it's still a good way to force out some invalid queries.
-   *
    * @param insertion The insert condition is a pair of a column with the value to use for it. It looks like this: value(_.someColumn, someValue),
    *                  where the assignment is of course type safe.
    * @param obj The object is the value to use for the column.
@@ -130,23 +126,12 @@ class InsertQuery[
    */
   @implicitNotFound(msg = "To use the value method this query needs to be an insert query and the query needs to be unterminated. You probably have more " +
     "value calls than columns in your table, which would result in an invalid MySQL query.")
-  def value[RR](insertion: T => AbstractColumn[RR], obj: RR)(
+  final def value[RR](insertion: T => AbstractColumn[RR], obj: RR)(
     implicit primitive: SQLPrimitive[RR],
     ev: Type =:= InsertType,
     ev1: Status =:= Unterminated
     ): InsertQuery[T, R, Type, Group, Order, Limit, Chain, AssignChain, Unterminated] = {
 
-    // If the number of statements in the accumulator is equal to the number of columns in the table means no more "value" assignments are possible.
-    /*if (statements.size > query.table.columns.size) {
-      new InsertQuery[T, R, Type, Group, Order, Limit, Chain, AssignChain, Terminated](
-        new Query[T, R, Type, Group, Order, Limit, Chain, AssignChain, Terminated](
-          query.table,
-          query.query,
-          query.fromRow
-        ), Tuple2(insertion(query.table).name,
-        primitive.toSQL(obj)) :: statements
-      )
-    } else {*/
     new InsertQuery[T, R, Type, Group, Order, Limit, Chain, AssignChain, Unterminated](
       new Query[T, R, Type, Group, Order, Limit, Chain, AssignChain, Unterminated](
         query.table,
@@ -155,8 +140,6 @@ class InsertQuery[
       ), Tuple2(insertion(query.table).name,
         primitive.toSQL(obj)) :: statements
     )
-    //}
-
 
   }
 
