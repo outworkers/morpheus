@@ -99,7 +99,6 @@ object morpheus extends Build {
     javaOptions in Test ++= Seq("-Xmx2G")
   ) ++ net.virtualvoid.sbt.graph.Plugin.graphSettings ++ instrumentSettings ++ publishSettings ++ ScalastylePlugin.Settings
 
-
   lazy val morpheus = Project(
     id = "morpheus",
     base = file("."),
