@@ -117,7 +117,7 @@ trait SQLPrimitives {
 
     override val sqlType = DefaultSQLDataTypes.text
 
-    def fromRow(row: Row, name: String): String = row(name) match {
+    def fromRow(row: Row, name: String): Option[String] = row(name) match {
       case Some(value) => value match {
         case StringValue(str) => Some(str)
         case EmptyValue => Some("")
