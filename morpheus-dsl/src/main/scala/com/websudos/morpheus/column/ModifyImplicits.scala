@@ -31,7 +31,8 @@ private[morpheus] trait ModifyImplicits extends LowPriorityImplicits {
    * @return An executable SelectQuery.
    */
   implicit def rootUpdateQueryToUpdateQuery[T <: Table[T, _], R](root: AbstractRootUpdateQuery[T, R]): Query[T, R, UpdateType, Ungroupped, Unordered, Unlimited,
-    Unchainned, AssignUnchainned, Unterminated] = {
+    Unchainned, AssignUnchainned, Unterminated
+  ] = {
     new Query(
       root.table,
       root.st.all,
@@ -42,7 +43,8 @@ private[morpheus] trait ModifyImplicits extends LowPriorityImplicits {
   implicit def rootUpdateQueryToAssignQuery[T <: Table[T, _], R](root: AbstractRootUpdateQuery[T, R]): AssignmentsQuery[T, R, UpdateType, Ungroupped,
     Unordered,
     Unlimited,
-    Unchainned, AssignUnchainned, Unterminated] = {
+    Unchainned, AssignUnchainned, Unterminated
+  ] = {
     new AssignmentsQuery(
       new Query(
         root.table,
@@ -78,7 +80,7 @@ private[morpheus] trait ModifyImplicits extends LowPriorityImplicits {
     Unchainned,
     AssignUnchainned,
     Unterminated
-    ] = {
+  ] = {
     new Query(
       root.table,
       root.st.all,
