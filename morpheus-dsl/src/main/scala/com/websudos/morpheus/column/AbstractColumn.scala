@@ -1,19 +1,17 @@
 /*
+ * Copyright 2014 websudos ltd.
  *
- *  * Copyright 2014 websudos ltd.
- *  *
- *  * Licensed under the Apache License, Version 2.0 (the "License");
- *  * you may not use this file except in compliance with the License.
- *  * You may obtain a copy of the License at
- *  *
- *  *     http://www.apache.org/licenses/LICENSE-2.0
- *  *
- *  * Unless required by applicable law or agreed to in writing, software
- *  * distributed under the License is distributed on an "AS IS" BASIS,
- *  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *  * See the License for the specific language governing permissions and
- *  * limitations under the License.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 package com.websudos.morpheus.column
@@ -40,7 +38,13 @@ private[morpheus] trait AbstractColumn[@specialized(Int, Double, Float, Long, Bo
 
   def toQueryString(v: T): String
 
-  def notNull = false
+  /**
+   * This method, overridden by the Null and NotNull Key mixins, tells if a column is allowed to be null with respect to the SQL schema.
+   * Using the stackable trait pattern it's easier for the end DSL users to mentally map a Scala schema to an SQL schema with 0 effort and inversely,
+   * go from SQL to Morpheus DSL code.
+   * @return A Boolean value.
+   */
+  def notNull: Boolean = false
 
 }
 
