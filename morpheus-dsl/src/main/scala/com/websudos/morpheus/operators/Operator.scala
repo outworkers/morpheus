@@ -17,17 +17,20 @@
 package com.websudos.morpheus.operators
 
 import com.websudos.morpheus.SQLPrimitive
+import com.websudos.morpheus.SQLPrimitives.StringIsSQLPrimitive
 import com.websudos.morpheus.dsl.Table
 import com.websudos.morpheus.mysql.DefaultQueryBuilder
 import com.websudos.morpheus.query._
 
 
-sealed abstract class Operator  {}
+sealed abstract class Operator  {
+  val stringPrimitive = StringIsSQLPrimitive
+}
 
 
 sealed class AsciOperator extends Operator {
 
-  def apply[T : SQLPrimitive](value: T): QueryCondition = {
+  final def apply[T : SQLPrimitive](value: T): QueryCondition = {
     QueryCondition(
       DefaultQueryBuilder.asci(implicitly[SQLPrimitive[T]].toSQL(value))
     )
@@ -35,7 +38,7 @@ sealed class AsciOperator extends Operator {
 }
 
 sealed class BinOperator extends Operator {
-  def apply[T : SQLPrimitive[T] : Numeric](value: T): QueryCondition = {
+  final def apply[T : SQLPrimitive : Numeric](value: T): QueryCondition = {
     QueryCondition(
       DefaultQueryBuilder.bin(implicitly[SQLPrimitive[T]].toSQL(value))
     )
@@ -43,7 +46,7 @@ sealed class BinOperator extends Operator {
 }
 
 sealed class BitLengthOperator extends Operator {
-  def apply[T : SQLPrimitive](value: T): QueryCondition = {
+  final def apply[T : SQLPrimitive](value: T): QueryCondition = {
     QueryCondition(
       DefaultQueryBuilder.bitLength(implicitly[SQLPrimitive[T]].toSQL(value))
     )
@@ -51,7 +54,7 @@ sealed class BitLengthOperator extends Operator {
 }
 
 sealed class CharLengthOperator extends Operator {
-  def apply[T: SQLPrimitive](value: T): QueryCondition = {
+  final def apply[T: SQLPrimitive](value: T): QueryCondition = {
     QueryCondition(
       DefaultQueryBuilder.charLength(implicitly[SQLPrimitive[T]].toSQL(value))
     )
@@ -59,7 +62,7 @@ sealed class CharLengthOperator extends Operator {
 }
 
 sealed class CharacterLengthOperator extends Operator {
-  def apply[T: SQLPrimitive](value: T): QueryCondition = {
+  final def apply[T: SQLPrimitive](value: T): QueryCondition = {
     QueryCondition(
       DefaultQueryBuilder.characterLength(implicitly[SQLPrimitive[T]].toSQL(value))
     )
@@ -69,13 +72,13 @@ sealed class CharacterLengthOperator extends Operator {
 sealed class ConcatWsOperator extends Operator {
   val primitive = implicitly[SQLPrimitive[String]]
 
-  def apply(values: List[String]): QueryCondition = {
+  final def apply(values: List[String]): QueryCondition = {
     QueryCondition(
       DefaultQueryBuilder.concatWs(values.map(primitive.toSQL))
     )
   }
 
-  def apply(sep: String, values: List[String]): QueryCondition = {
+  final def apply(sep: String, values: List[String]): QueryCondition = {
     QueryCondition(
       DefaultQueryBuilder.concatWs(primitive.toSQL(sep) +: values.map(primitive.toSQL))
     )
@@ -85,7 +88,7 @@ sealed class ConcatWsOperator extends Operator {
 sealed class ConcatOperator extends Operator {
   val primitive = implicitly[SQLPrimitive[String]]
 
-  def apply(values: List[String]): QueryCondition = {
+  final def apply(values: List[String]): QueryCondition = {
     QueryCondition(
       DefaultQueryBuilder.concat(values.map(primitive.toSQL))
     )
@@ -95,7 +98,7 @@ sealed class ConcatOperator extends Operator {
 
 sealed class ExistsOperator extends Operator {
 
-  def apply[
+  final def apply[
     T <: Table[T, R],
     R,
     Group <: GroupBind,
@@ -113,7 +116,7 @@ sealed class ExistsOperator extends Operator {
 
 sealed class NotExistsOperator extends Operator {
 
-  def apply[
+  final def apply[
     T <: Table[T, R],
     R,
     Group <: GroupBind,

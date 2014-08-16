@@ -21,6 +21,18 @@ import com.websudos.morpheus.dsl.BasicTable
 import com.websudos.morpheus.mysql.Imports._
 
 class InFlightOperatorsTest extends FlatSpec with Matchers {
+
+  it should "serialise an inFlight usage of a EXISTS operator" in {
+    exists(BasicTable.select.where(_.count eqs 10)).clause.queryString shouldEqual "EXISTS (SELECT * FROM BasicTable WHERE count = 10)"
+  }
+
+  it should "serialise a nested EXISTS sub-query" in {
+    BasicTable.select
+      .where(exists(BasicTable.select.where(_.count eqs 10)))
+      .queryString shouldEqual "SELECT * FROM BasicTable WHERE EXISTS (SELECT * FROM BasicTable WHERE count = 10)"
+  }
+
+
   it should "serialise an inFlight usage of a NOT EXISTS operator" in {
     notExists(BasicTable.select.where(_.count eqs 10)).clause.queryString shouldEqual "NOT EXISTS (SELECT * FROM BasicTable WHERE count = 10)"
 

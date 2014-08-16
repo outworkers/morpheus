@@ -35,7 +35,9 @@ case class SQLBuiltQuery(queryString: String) {
   def pad: SQLBuiltQuery = if (spaced) this else SQLBuiltQuery(queryString + " ")
   def forcePad: SQLBuiltQuery = SQLBuiltQuery(queryString + " ")
   def trim: SQLBuiltQuery = SQLBuiltQuery(queryString.trim)
-  def wrap(query: SQLBuiltQuery): SQLBuiltQuery = pad.append(DefaultSQLSyntax.`(`).append(query).append(DefaultSQLSyntax.`)`)
+
+  def wrap(str: String): SQLBuiltQuery = pad.append(DefaultSQLSyntax.`(`).append(str).append(DefaultSQLSyntax.`)`)
+  def wrap(query: SQLBuiltQuery): SQLBuiltQuery = wrap(query.queryString)
 
 
 }

@@ -413,72 +413,43 @@ private[morpheus] trait AbstractQueryBuilder {
   }
 
   def on(qb: SQLBuiltQuery, clause: SQLBuiltQuery): SQLBuiltQuery = {
-    qb.pad
-      .append(syntax.on)
-      .forcePad.append(clause)
+    qb.pad.append(syntax.on).forcePad.append(clause)
   }
 
   def exists(select: SQLBuiltQuery) = {
-    SQLBuiltQuery(syntax.notExists)
-      .forcePad.append(syntax.`(`)
-      .append(select)
-      .forcePad.append(syntax.`)`)
+    SQLBuiltQuery(syntax.exists).wrap(select)
   }
 
   def notExists(select: SQLBuiltQuery) = {
-    SQLBuiltQuery(syntax.notExists)
-      .forcePad.append(syntax.`(`)
-      .append(select)
-      .forcePad.append(syntax.`)`)
+    SQLBuiltQuery(syntax.notExists).wrap(select)
   }
 
   def asci(value: String): SQLBuiltQuery = {
-    SQLBuiltQuery(operators.asci)
-      .forcePad.append(syntax.`(`)
-      .append(value)
-      .forcePad.append(syntax.`)`)
+    SQLBuiltQuery(operators.asci).wrap(value)
   }
 
   def bitLength(value: String): SQLBuiltQuery = {
-    SQLBuiltQuery(operators.bitLength)
-      .forcePad.append(syntax.`(`)
-      .append(value)
-      .forcePad.append(syntax.`)`)
+    SQLBuiltQuery(operators.bitLength).wrap(value)
   }
 
   def charLength(value: String): SQLBuiltQuery = {
-    SQLBuiltQuery(operators.charLength)
-      .forcePad.append(syntax.`(`)
-      .append(value)
-      .forcePad.append(syntax.`)`)
+    SQLBuiltQuery(operators.charLength).wrap(value)
   }
 
   def characterLength(value: String): SQLBuiltQuery = {
-    SQLBuiltQuery(operators.characterLength)
-      .forcePad.append(syntax.`(`)
-      .append(value)
-      .forcePad.append(syntax.`)`)
+    SQLBuiltQuery(operators.characterLength).wrap(value)
   }
 
   def concat(values: List[String]): SQLBuiltQuery = {
-    SQLBuiltQuery(operators.concat)
-      .forcePad.append(syntax.`(`)
-      .append(values.mkString(", "))
-      .forcePad.append(syntax.`)`)
+    SQLBuiltQuery(operators.concat).wrap(values.mkString(", "))
   }
 
   def concatWs(values: List[String]): SQLBuiltQuery = {
-    SQLBuiltQuery(operators.concatWs)
-      .forcePad.append(syntax.`(`)
-      .append(values.mkString(", "))
-      .forcePad.append(syntax.`)`)
+    SQLBuiltQuery(operators.concatWs).wrap(values.mkString(", "))
   }
 
   def bin(value: String): SQLBuiltQuery = {
-    SQLBuiltQuery(operators.bin)
-      .forcePad.append(syntax.`(`)
-      .append(value)
-      .forcePad.append(syntax.`)`)
+    SQLBuiltQuery(operators.bin).wrap(value)
   }
 }
 
