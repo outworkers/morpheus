@@ -149,6 +149,8 @@ abstract class AbstractSQLSyntax extends AbstractSQLKeys {
   val notExists = "NOT EXISTS"
   val on = "ON"
 
+  val engine = "ENGINE"
+
   val leftJoin = "LEFT JOIN"
   val rightJoin = "RIGHT JOIN"
   val innerJoin = "INNER JOIN"
@@ -451,6 +453,11 @@ private[morpheus] trait AbstractQueryBuilder {
   def bin(value: String): SQLBuiltQuery = {
     SQLBuiltQuery(operators.bin).wrap(value)
   }
+
+  def engine(qb: SQLBuiltQuery, value: String): SQLBuiltQuery = {
+    qb.pad.append(syntax.engine).forcePad.append(value)
+  }
+
 }
 
 

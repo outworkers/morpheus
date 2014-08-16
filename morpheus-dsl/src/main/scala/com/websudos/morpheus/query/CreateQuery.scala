@@ -80,7 +80,7 @@ object DefaultMySQLEngines {
   val InnoDB = "InnoDB"
 }
 
-sealed abstract class SQLEngine(value: String)
+sealed abstract class SQLEngine(val value: String)
 
 trait DefaultSQLEngines {
   case object InnoDB extends SQLEngine(DefaultMySQLEngines.InnoDB)
@@ -109,20 +109,32 @@ class CreateQuery[T <: Table[T, _],
 ](val query: Query[T, R, CreateType, Group, Order, Limit, Chain, AssignChain, Status]) {
 
 
-  final protected def columnSchema[St <: StatusBind]: CreateQuery[T, R, CreateType, Group, Order, Limit, Chain, AssignChain, St] = {
-
-    val list = query.table.columns.foldRight(List.empty[String])((col, acc) => {
+  final protected def columnDefinitions: List[String] = {
+    query.table.columns.foldRight(List.empty[String])((col, acc) => {
       col.qb.queryString :: acc
     })
+  }
+
+  final protected def columnSchema[St <: StatusBind]: CreateQuery[T, R, CreateType, Group, Order, Limit, Chain, AssignChain, St] = {
 
     new CreateQuery[T, R, CreateType, Group, Order, Limit, Chain, AssignChain, St](
-      new Query(query.table, query.query.append(list.mkString(", ")), query.rowFunc)
+      new Query(query.table, query.query.append(columnDefinitions.mkString(", ")), query.rowFunc)
     )
   }
 
   def ifNotExists: CreateQuery[T, R, CreateType, Group, Order, Limit, Chain, AssignChain, Unterminated] = {
     new CreateQuery[T, R, CreateType, Group, Order, Limit, Chain, AssignChain, Unterminated](
       new Query(query.table, query.table.queryBuilder.ifNotExists(query.query), query.rowFunc)
+    )
+  }
+
+  def engine(engine: SQLEngine): Query[T, R, CreateType, Group, Order, Limit, Chain, AssignChain, Unterminated] = {
+    new Query(query.table,
+      query.table.queryBuilder.engine(
+        query.query.wrap(columnDefinitions.mkString(", ")),
+        engine.value
+      ),
+      query.rowFunc
     )
   }
 
@@ -140,6 +152,24 @@ class CreateQuery[T <: Table[T, _],
 
 
 private[morpheus] trait CreateImplicits extends DefaultSQLEngines {
-
+  /**
+   * This defines an implicit conversion from a RootInsertQuery to an InsertQuery, making the INSERT syntax block invisible to the end user.
+   * This allows chaining a "value" method call directly after "Table.insert".
+   *
+   * @param root The RootSelectQuery to convert.
+   * @tparam T The table owning the record.
+   * @tparam R The record type.
+   * @return An executable SelectQuery.
+   */
+  implicit def rootCreateQueryToCreateQuery[T <: Table[T, _], R](root: AbstractRootCreateQuery[T, R]): CreateQuery[T, R, CreateType, Ungroupped, Unordered,
+    Unlimited, Unchainned, AssignUnchainned, Unterminated] = {
+    new CreateQuery(
+      new Query(
+        root.table,
+        root.st.default,
+        root.rowFunc
+      )
+    )
+  }
 }
 

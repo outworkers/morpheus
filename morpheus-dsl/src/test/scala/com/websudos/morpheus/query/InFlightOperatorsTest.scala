@@ -19,6 +19,7 @@ package com.websudos.morpheus.query
 import org.scalatest.{Matchers, FlatSpec}
 import com.websudos.morpheus.dsl.BasicTable
 import com.websudos.morpheus.mysql.Imports._
+import com.websudos.morpheus.tables.IndexTable
 
 class InFlightOperatorsTest extends FlatSpec with Matchers {
 
@@ -41,6 +42,12 @@ class InFlightOperatorsTest extends FlatSpec with Matchers {
   it should "serialise a nested NOT EXISTS sub-query" in {
     BasicTable.select
       .where(notExists(BasicTable.select.where(_.count eqs 10)))
+      .queryString shouldEqual "SELECT * FROM BasicTable WHERE NOT EXISTS (SELECT * FROM BasicTable WHERE count = 10)"
+  }
+
+  it should "serialise a three nested alternation of EXISTS/NOT EXISTS sub-queries" in {
+    BasicTable.select
+      .where(notExists(BasicTable.select.where(exists(IndexTable.select.where(_.id eqs 10)))))
       .queryString shouldEqual "SELECT * FROM BasicTable WHERE NOT EXISTS (SELECT * FROM BasicTable WHERE count = 10)"
   }
 }
