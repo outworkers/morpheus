@@ -16,9 +16,9 @@
 
 package com.websudos.morpheus.query
 
-import scala.annotation.implicitNotFound
-import scala.concurrent.{ Future => ScalaFuture}
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.{Future => ScalaFuture}
+
 import com.twitter.finagle.exp.mysql.{Client, Row}
 import com.twitter.util.Future
 import com.websudos.morpheus.dsl.Table
@@ -117,8 +117,7 @@ class SelectQuery[T <: Table[T, _],
   Status <: StatusBind
 ](val query: Query[T, R, Type, Group, Order, Limit, Chain, AssignChain, Status]) {
 
-  @implicitNotFound("You can't use 2 SET parts on a single UPDATE query")
-  final def having(condition: T => QueryAssignment)(implicit tp: Type =:= SelectType, ev: AssignChain =:= AssignUnchainned): SelectQuery[T, R, Type, Group,
+  final def having(condition: T => QueryCondition)(implicit tp: Type =:= SelectType): SelectQuery[T, R, Type, Group,
     Order,
     Limit,
     Chain,
@@ -131,7 +130,6 @@ class SelectQuery[T <: Table[T, _],
       )
     )
   }
-
 
   final def leftJoin[Owner <: Table[Owner, Record],
     Record,

@@ -244,7 +244,7 @@ private[morpheus] trait ModifyImplicits extends LowPriorityImplicits {
     Status <: StatusBind
   ](assignment: InsertQuery[T, R, InsertType, G, O, L, C, AC, Status]): Query[T, R, InsertType, G, O, L, C, AC, Terminated] = assignment.toQuery
 
-  implicit def queryInsertQuery[T <: Table[T, _],
+  implicit def queryToCreateQuery[T <: Table[T, _],
     R,
     G <: GroupBind,
     O <: OrderBind,
