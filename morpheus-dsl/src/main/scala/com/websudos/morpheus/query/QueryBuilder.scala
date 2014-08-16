@@ -23,21 +23,28 @@ package com.websudos.morpheus.query
  * A QueryBuilder singleton will exist for every database, and every QueryBuilder will select a specific set of operators.
  */
 trait SQLOperatorSet {
-  def eq: String
-  def lt: String
-  def lte: String
-  def gt: String
-  def gte: String
-  def `!=`: String
-  def `<>`: String
-  def like: String
-  def notLike: String
-  def in: String
-  def notIn: String
-  def `<=>`: String
+  val eq = "="
+  val lt = "<"
+  val lte = "<="
+  val gt = ">"
+  val gte = ">="
+  val != = "!="
+  val <> = "<>"
+  val like = "LIKE"
+  val notLike = "NOT LIKE"
+  val in = "IN"
+  val notIn = "NOT IN"
+  val <=> = "<=>"
+
+  val asci = "ASCI"
+  val bin = "BIN"
+  val bitLength = "BIT_LENGTH"
+  val charLength = "CHAR_LENGTH"
+  val concat = "CONCAT"
+  val characterLength = "CHARACTER_LENGTH"
 }
 
-abstract class AbstractSQLKeys {
+trait AbstractSQLKeys {
 
   val primaryKey = "PRIMARY KEY"
   val foreignKey = "FOREIGN KEY"
@@ -90,6 +97,8 @@ abstract class AbstractSQLSyntax extends AbstractSQLKeys {
 
   val between = "BETWEEN"
   val not = "NOT"
+  val notExists = "NOT EXISTS"
+  val on = "ON"
 
   val leftJoin = "LEFT JOIN"
   val rightJoin = "RIGHT JOIN"
@@ -162,7 +171,9 @@ private[morpheus] trait AbstractQueryBuilder {
   def syntax: AbstractSQLSyntax
 
   def eqs(name: String, value: String): SQLBuiltQuery = {
-    SQLBuiltQuery(s"$name ${operators.eq} $value")
+    SQLBuiltQuery(name)
+      .forcePad.append(operators.eq)
+      .forcePad.append(value)
   }
 
   def lt(name: String, value: String): SQLBuiltQuery = {
@@ -311,28 +322,28 @@ private[morpheus] trait AbstractQueryBuilder {
       .append(syntax.`)`)
   }
 
-  def leftJoin(qb: SQLBuiltQuery, join: SQLBuiltQuery): SQLBuiltQuery = {
+  def leftJoin(qb: SQLBuiltQuery, tableName: String): SQLBuiltQuery = {
     qb.pad
       .append(syntax.leftJoin)
-      .forcePad.append(join)
+      .forcePad.append(tableName)
   }
 
-  def rightJoin(qb: SQLBuiltQuery, join: SQLBuiltQuery): SQLBuiltQuery = {
+  def rightJoin(qb: SQLBuiltQuery, tableName: String): SQLBuiltQuery = {
     qb.pad
       .append(syntax.rightJoin)
-      .forcePad.append(join)
+      .forcePad.append(tableName)
   }
 
-  def innerJoin(qb: SQLBuiltQuery, join: SQLBuiltQuery): SQLBuiltQuery = {
+  def innerJoin(qb: SQLBuiltQuery, tableName: String): SQLBuiltQuery = {
     qb.pad
       .append(syntax.innerJoin)
-      .forcePad.append(join)
+      .forcePad.append(tableName)
   }
 
-  def outerJoin(qb: SQLBuiltQuery, join: SQLBuiltQuery): SQLBuiltQuery = {
+  def outerJoin(qb: SQLBuiltQuery, tableName: String): SQLBuiltQuery = {
     qb.pad
       .append(syntax.outerJoin)
-      .forcePad.append(join)
+      .forcePad.append(tableName)
   }
 
   def ifNotExists(qb: SQLBuiltQuery): SQLBuiltQuery = {
@@ -350,6 +361,40 @@ private[morpheus] trait AbstractQueryBuilder {
       .forcePad.append(syntax.not)
       .forcePad.append(syntax.between)
       .forcePad.append(value)
+  }
+
+  def on(qb: SQLBuiltQuery, clause: SQLBuiltQuery): SQLBuiltQuery = {
+    qb.pad
+      .append(syntax.on)
+      .forcePad.append(clause)
+  }
+
+  def notExists(select: SQLBuiltQuery) = {
+    SQLBuiltQuery(syntax.notExists)
+      .forcePad.append(syntax.`(`)
+      .append(select)
+      .forcePad.append(syntax.`)`)
+  }
+
+  def asci(value: String): SQLBuiltQuery = {
+    SQLBuiltQuery(operators.asci)
+      .forcePad.append(syntax.`(`)
+      .append(value)
+      .forcePad.append(syntax.`)`)
+  }
+
+  def bitLength(value: String): SQLBuiltQuery = {
+    SQLBuiltQuery(operators.bitLength)
+      .forcePad.append(syntax.`(`)
+      .append(value)
+      .forcePad.append(syntax.`)`)
+  }
+
+  def bin(value: String): SQLBuiltQuery = {
+    SQLBuiltQuery(operators.bin)
+      .forcePad.append(syntax.`(`)
+      .append(value)
+      .forcePad.append(syntax.`)`)
   }
 }
 

@@ -21,6 +21,15 @@ not yet production ready.
 ===============================================
 <ol>
   <li><a href="#design-philosophy">Design philosophy</a></li>
+  <li>
+    <p>Supported databases and documentation</p>
+    <ul>
+      <li><a href="../docs/MySQL.md">MySQL</a></li>
+      <li>MariaDB</li>
+      <li>Oracle</li>
+      <li>Postgres</li>
+      <li>MSSQL</li>
+  </li>
   <li><a href="#copyright">Copyright</a></li>
 </ol>
 

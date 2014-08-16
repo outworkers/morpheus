@@ -76,6 +76,19 @@ private[morpheus] abstract class AbstractRootCreateQuery[T <: Table[T, _], R](va
 
 }
 
+object DefaultMySQLEngines {
+  val InnoDB = "InnoDB"
+}
+
+sealed abstract class SQLEngine(value: String)
+
+trait DefaultSQLEngines {
+  case object InnoDB extends SQLEngine(DefaultMySQLEngines.InnoDB)
+}
+
+trait MySQLEngines extends DefaultSQLEngines {
+}
+
 /**
  * This bit of magic allows all extending sub-classes to implement the "set" and "and" SQL clauses with all the necessary operators,
  * in a type safe way. By providing the third type argument and a custom way to subclass with the predetermined set of arguments,
@@ -114,6 +127,7 @@ class CreateQuery[T <: Table[T, _],
   }
 
 
+
   private[morpheus] final def terminate: Query[T, R, CreateType, Group, Order, Limit, Chain, AssignChain, Terminated] = {
     new Query(
       query.table,
@@ -125,5 +139,7 @@ class CreateQuery[T <: Table[T, _],
 }
 
 
+private[morpheus] trait CreateImplicits extends DefaultSQLEngines {
 
+}
 

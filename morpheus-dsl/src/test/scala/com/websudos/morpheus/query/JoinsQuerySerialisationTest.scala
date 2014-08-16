@@ -16,6 +16,21 @@
 
 package com.websudos.morpheus.query
 
-class JoinsQuerySerialisationTest {
+import org.scalatest.{FlatSpec, Matchers}
 
+import com.websudos.morpheus.mysql.Imports._
+import com.websudos.morpheus.tables.{IndexTable, KeysTable}
+
+class JoinsQuerySerialisationTest extends FlatSpec with Matchers {
+
+  it should "serialise a simple LEFT JOIN query" in {
+    val qb = KeysTable
+      .select
+      .where(_.id eqs 10)
+      .leftJoin(IndexTable)
+      .on(_.foreignKey joinEqs IndexTable.value)
+      .queryString
+
+    qb shouldEqual "SELECT * FROM KeysTable WHERE id = 10 LEFT JOIN IndexTable ON KeysTable.foreignKey = IndexTable.value"
+  }
 }

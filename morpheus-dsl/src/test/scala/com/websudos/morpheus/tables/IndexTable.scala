@@ -136,3 +136,5 @@ class StringsTable extends MySQLTable[StringsTable, String] {
 
   def fromRow(row: Row): String = textColumn(row)
 }
+
+object StringsTable extends StringsTable

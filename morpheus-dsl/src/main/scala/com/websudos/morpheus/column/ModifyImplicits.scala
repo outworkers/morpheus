@@ -20,7 +20,7 @@ import com.websudos.morpheus.dsl.Table
 import com.websudos.morpheus.query._
 import com.websudos.morpheus.SQLPrimitive
 
-private[morpheus] trait ModifyImplicits extends LowPriorityImplicits {
+private[morpheus] trait ModifyImplicits extends LowPriorityImplicits with JoinImplicits {
 
   implicit class SelectColumnRequired[Owner <: Table[Owner, Record], Record, T](col: Column[Owner, Record, T]) extends SelectColumn[T](col) {
     def apply(r: Row): T = col.apply(r)

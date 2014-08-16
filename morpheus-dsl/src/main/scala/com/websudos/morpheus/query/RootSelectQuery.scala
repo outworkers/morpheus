@@ -21,6 +21,8 @@ import scala.concurrent.{Future => ScalaFuture}
 
 import com.twitter.finagle.exp.mysql.{Client, Row}
 import com.twitter.util.Future
+import com.websudos.morpheus.SQLPrimitive
+import com.websudos.morpheus.column.{AbstractColumn, ForeignKeyDefinition}
 import com.websudos.morpheus.dsl.Table
 
 
@@ -97,7 +99,6 @@ private[morpheus] abstract class AbstractRootSelectQuery[T <: Table[T, _], R](va
 
 
 
-
 /**
  * This bit of magic allows all extending sub-classes to implement the "set" and "and" SQL clauses with all the necessary operators,
  * in a type safe way. By providing the third type argument and a custom way to subclass with the predetermined set of arguments,
@@ -117,6 +118,7 @@ class SelectQuery[T <: Table[T, _],
   Status <: StatusBind
 ](val query: Query[T, R, Type, Group, Order, Limit, Chain, AssignChain, Status]) {
 
+
   final def having(condition: T => QueryCondition)(implicit tp: Type =:= SelectType): SelectQuery[T, R, Type, Group,
     Order,
     Limit,
@@ -131,42 +133,24 @@ class SelectQuery[T <: Table[T, _],
     )
   }
 
-  final def leftJoin[Owner <: Table[Owner, Record],
-    Record,
-    G <: GroupBind,
-    O <: OrderBind,
-    L <: LimitBind,
-    C <: ChainBind,
-    AC <: AssignBind
-  ](join: Query[Owner, Record, SelectType, G, O, L, C, AC, Unterminated]): SelectQuery[T, (Record, R), SelectType, G, O, L, C, AC, Unterminated] = {
+  final def leftJoin[Owner <: Table[Owner, Record], Record](join: Table[Owner, Record]): OnJoinQuery[T, R, SelectType, Group, Order, Limit, Chain,
+    AssignChain, Unterminated] = {
 
-    def rowFunc(row: Row): (Record, R) = (join.rowFunc(row), query.rowFunc(row))
-
-    new SelectQuery[T, (Record, R), SelectType, G, O, L, C, AC, Unterminated](
+    new OnJoinQuery(
       new Query(
         query.table,
-        query.table.queryBuilder.leftJoin(query.query, join.query),
-        rowFunc
+        query.table.queryBuilder.leftJoin(query.query, join.tableName),
+        query.rowFunc
       )
     )
   }
 
-  final def rightJoin[Owner <: Table[Owner, Record],
-    Record,
-    G <: GroupBind,
-    O <: OrderBind,
-    L <: LimitBind,
-    C <: ChainBind,
-    AC <: AssignBind
-  ](join: Query[Owner, Record, SelectType, G, O, L, C, AC, Unterminated]): SelectQuery[T, (R, Record), SelectType, G, O, L, C, AC, Unterminated] = {
-
-    def rowFunc(row: Row): (R, Record) = (query.rowFunc(row), join.rowFunc(row))
-
-    new SelectQuery[T, (R, Record), SelectType, G, O, L, C, AC, Unterminated](
+  final def rightJoin[Owner <: Table[Owner, Record], Record](join: Table[Owner, Record]): OnJoinQuery[T, R, SelectType, Group, Order, Limit, Chain, AssignChain, Unterminated] = {
+    new OnJoinQuery(
       new Query(
         query.table,
-        query.table.queryBuilder.leftJoin(query.query, join.query),
-        rowFunc
+        query.table.queryBuilder.rightJoin(query.query, join.tableName),
+        query.rowFunc
       )
     )
   }
@@ -178,6 +162,54 @@ class SelectQuery[T <: Table[T, _],
       query.fromRow
     )
   }
+}
 
+case class JoinClause(clause: SQLBuiltQuery)
+
+/**
+ * This bit of magic allows all extending sub-classes to implement the "set" and "and" SQL clauses with all the necessary operators,
+ * in a type safe way. By providing the third type argument and a custom way to subclass with the predetermined set of arguments,
+ * all DSL representations of an UPDATE query can use the implementation without violating DRY.
+ *
+ * @tparam T The type of the table owning the record.
+ * @tparam R The type of the record held in the table.
+ */
+class OnJoinQuery[T <: Table[T, _],
+  R,
+  Type <: QueryType,
+  Group <: GroupBind,
+  Order <: OrderBind,
+  Limit <: LimitBind,
+  Chain <: ChainBind,
+  AssignChain <: AssignBind,
+  Status <: StatusBind
+](val query: Query[T, R, Type, Group, Order, Limit, Chain, AssignChain, Status]) {
+
+  def on(condition: T => JoinClause): Query[T, R, Type, Group, Order, Limit, Chain, AssignChain, Status] = {
+    new Query(
+      query.table,
+      query.table.queryBuilder.on(query.query, condition(query.table).clause),
+      query.fromRow
+    )
+  }
+
+}
+
+private[morpheus] trait JoinImplicits {
+
+  implicit class JoinColumn[T: SQLPrimitive](val origin: AbstractColumn[T] with ForeignKeyDefinition) {
+
+    final def joinEqs(col: AbstractColumn[_]): JoinClause = {
+
+      Console.println(origin.table.tableName)
+
+      JoinClause(
+        origin.table.queryBuilder.eqs(
+          s"${origin.table.tableName}.${origin.name}",
+          s"${col.table.tableName}.${col.name}"
+        )
+      )
+    }
+  }
 
 }

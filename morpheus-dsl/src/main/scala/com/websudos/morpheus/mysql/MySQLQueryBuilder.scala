@@ -18,7 +18,7 @@ package com.websudos.morpheus.mysql
 
 import com.websudos.morpheus.{SQLPrimitives, SQLPrimitive}
 import com.websudos.morpheus.column.AbstractColumn
-import com.websudos.morpheus.query.{AbstractSQLSyntax, SQLOperatorSet, AbstractQueryColumn, AbstractQueryBuilder}
+import com.websudos.morpheus.query.{DefaultSQLSyntax, AbstractSQLSyntax, SQLOperatorSet, AbstractQueryColumn, AbstractQueryBuilder}
 
 
 trait MySQLPrimitives extends SQLPrimitives {}
@@ -39,24 +39,22 @@ object MySQLSyntax extends AbstractSQLSyntax {
 }
 
 
+object DefaultSQLOperatorSet extends SQLOperatorSet {
+
+}
+
 object MySQLOperatorSet extends SQLOperatorSet {
-  val eq = "="
-  val lt = "<"
-  val lte = "<="
-  val gt = ">"
-  val gte = ">="
-  val != = "!="
-  val <> = "<>"
-  val like = "LIKE"
-  val notLike = "NOT LIKE"
-  val in = "IN"
-  val notIn = "NOT IN"
-  val <=> = "<=>"
+
 }
 
 object MySQLQueryBuilder extends AbstractQueryBuilder {
   val operators = MySQLOperatorSet
   val syntax = MySQLSyntax
+}
+
+private[morpheus] object DefaultQueryBuilder extends AbstractQueryBuilder {
+  val syntax = DefaultSQLSyntax
+  val operators: SQLOperatorSet = DefaultSQLOperatorSet
 }
 
 private[morpheus] class MySQLQueryColumn[T : SQLPrimitive](col: AbstractColumn[T]) extends AbstractQueryColumn[T](col)
