@@ -126,7 +126,7 @@ class StringsTable extends MySQLTable[StringsTable, String] {
 
   object tinyText extends TinyTextColumn(this)
   object mediumText extends MediumTextColumn(this)
-  object largeText extends LongTextColumn(this)
+  object longText extends LongTextColumn(this)
   object textColumn extends TextColumn(this)
 
   object blobColumn extends BlobColumn(this)

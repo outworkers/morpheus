@@ -28,11 +28,11 @@ sealed abstract class Operator  {
 }
 
 
-sealed class AsciOperator extends Operator {
+sealed class AsciiOperator extends Operator {
 
   final def apply[T : SQLPrimitive](value: T): QueryCondition = {
     QueryCondition(
-      DefaultQueryBuilder.asci(implicitly[SQLPrimitive[T]].toSQL(value))
+      DefaultQueryBuilder.ascii(implicitly[SQLPrimitive[T]].toSQL(value))
     )
   }
 }
@@ -135,7 +135,7 @@ sealed class NotExistsOperator extends Operator {
 sealed trait SQLOperatorSet {
 
 
-  object asci extends AsciOperator
+  object ascii extends AsciiOperator
   object bin extends BinOperator
   object bitLength extends BitLengthOperator
   object charLength extends CharLengthOperator

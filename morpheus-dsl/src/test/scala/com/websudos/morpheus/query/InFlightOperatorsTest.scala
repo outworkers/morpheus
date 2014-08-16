@@ -48,6 +48,6 @@ class InFlightOperatorsTest extends FlatSpec with Matchers {
   it should "serialise a three nested alternation of EXISTS/NOT EXISTS sub-queries" in {
     BasicTable.select
       .where(notExists(BasicTable.select.where(exists(IndexTable.select.where(_.id eqs 10)))))
-      .queryString shouldEqual "SELECT * FROM BasicTable WHERE NOT EXISTS (SELECT * FROM BasicTable WHERE count = 10)"
+      .queryString shouldEqual "SELECT * FROM BasicTable WHERE NOT EXISTS (SELECT * FROM BasicTable WHERE EXISTS (SELECT * FROM IndexTable WHERE id = 10))"
   }
 }

@@ -23,20 +23,35 @@ import com.websudos.morpheus.tables.StringsTable
 
 class StringColumnSerialisationTest extends FlatSpec with Matchers {
 
-  it should "serialise a simple Char definition to an SQL query without a limit set" in {
-    StringsTable.charColumn.qb.queryString shouldEqual "charColumn CHAR"
+  it should "serialise a simple CHAR definition to an SQL query without a limit set" in {
+    StringsTable.charColumn.qb.queryString shouldEqual s"charColumn CHAR(${KnownTypeLimits.charLimit})"
   }
 
-  it should "serialise a simple Char definition to an SQL query with a limit set" in {
-    StringsTable.charLimited.qb.queryString shouldEqual s"charLimited CHAR(${KnownTypeLimits.charLimit})"
+  it should "serialise a simple CHAR definition to an SQL query with a limit set" in {
+    StringsTable.charLimited.qb.queryString shouldEqual s"charLimited CHAR(100)"
   }
 
-  it should "serialise a simple VarChar definition to an SQL query without a limit set" in {
-    StringsTable.varChar.qb.queryString shouldEqual s"varChar VARCHAR(${KnownTypeLimits.varcharLimit}})"
+  it should "serialise a simple VARCHAR definition to an SQL query without a limit set" in {
+    StringsTable.varChar.qb.queryString shouldEqual s"varChar VARCHAR(${KnownTypeLimits.varcharLimit})"
   }
 
-  it should "serialise a simple VarChar definition to an SQL query with a limit set" in {
+  it should "serialise a simple VARCHAR definition to an SQL query with a limit set" in {
     StringsTable.varCharLimited.qb.queryString shouldEqual "varCharLimited VARCHAR(100)"
   }
 
+  it should "serialise a TINYTEXT column definition to the correct SQL type" in {
+    StringsTable.tinyText.qb.queryString shouldEqual "tinyText TINYTEXT"
+  }
+
+  it should "serialise a MEDIUMTEXT column definition to the correct SQL type" in {
+    StringsTable.mediumText.qb.queryString shouldEqual "mediumText MEDIUMTEXT"
+  }
+
+  it should "serialise a LONGTEXT column definition to the correct SQL type" in {
+    StringsTable.longText.qb.queryString shouldEqual "longText LONGTEXT"
+  }
+
+  it should "serialise a TEXT column definition to the correct SQL type" in {
+    StringsTable.textColumn.qb.queryString shouldEqual "textColumn TEXT"
+  }
 }

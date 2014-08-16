@@ -36,7 +36,7 @@ trait SQLOperatorSet {
   val notIn = "NOT IN"
   val <=> = "<=>"
 
-  val asci = "ASCI"
+  val ascii = "ASCII"
   val bin = "BIN"
   val bitLength = "BIT_LENGTH"
   val charLength = "CHAR_LENGTH"
@@ -426,8 +426,8 @@ private[morpheus] trait AbstractQueryBuilder {
     SQLBuiltQuery(syntax.notExists).wrap(select)
   }
 
-  def asci(value: String): SQLBuiltQuery = {
-    SQLBuiltQuery(operators.asci).wrap(value)
+  def ascii(value: String): SQLBuiltQuery = {
+    SQLBuiltQuery(operators.ascii).wrap(value)
   }
 
   def bitLength(value: String): SQLBuiltQuery = {

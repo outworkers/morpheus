@@ -90,13 +90,15 @@ abstract class ForeignKey[T <: Table[T, R], R, T1 <: Table[T1, _]]
 
   extends AbstractColumn[String] with IndexColumn[R] with ForeignKeyDefinition {
 
+  private[this] val refTable: Table[_, _] = columns.headOption.map(_.table).orNull
+
   def qb: SQLBuiltQuery = {
     val default = SQLBuiltQuery(DefaultSQLSyntax.foreignKey)
       .forcePad.append(DefaultSQLSyntax.`(`)
-      .append(columns.map(col => {s"${table.tableName}_${col.name}"}).mkString(", "))
+      .append(columns.map(col => {s"${refTable.tableName}_${col.name}"}).mkString(", "))
       .append(DefaultSQLSyntax.`)`)
       .forcePad.append(DefaultSQLSyntax.references)
-      .forcePad.append(table.tableName)
+      .forcePad.append(refTable.tableName)
       .append(DefaultSQLSyntax.`(`)
       .append(columns.map(_.name).mkString(", "))
       .append(DefaultSQLSyntax.`)`)
