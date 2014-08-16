@@ -66,6 +66,18 @@ case class QueryCondition(override val clause: SQLBuiltQuery, count: Int = 0) ex
   }
 }
 
+
+case class BetweenClause[T: SQLPrimitive](qb: SQLBuiltQuery) {
+
+  def and(value: T): QueryCondition = {
+    QueryCondition(
+      qb.forcePad
+        .append(DefaultSQLSyntax.and)
+        .forcePad.append(implicitly[SQLPrimitive[T]].toSQL(value))
+    )
+  }
+}
+
 /**
  * This encloses the full list of available comparison operators.
  * @param col The column to cast to an IndexedColumn.
@@ -130,6 +142,18 @@ private[morpheus] abstract class AbstractQueryColumn[T: SQLPrimitive](col: Abstr
   def notIn(values: List[T]) : QueryCondition = {
     val primitive = implicitly[SQLPrimitive[T]]
     QueryCondition(col.table.queryBuilder.notIn(col.name, values.map(primitive.toSQL)))
+  }
+
+  def between(value: T): BetweenClause[T] = {
+    BetweenClause(
+      col.table.queryBuilder.between(col.name, col.toQueryString(value))
+    )
+  }
+
+  def notBetween(value: T): BetweenClause[T] = {
+    BetweenClause(
+      col.table.queryBuilder.notBetween(col.name, col.toQueryString(value))
+    )
   }
 }
 

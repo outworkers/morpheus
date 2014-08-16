@@ -88,6 +88,9 @@ abstract class AbstractSQLSyntax extends AbstractSQLKeys {
   val onDelete = "ON DELETE"
   val onUpdate = "ON UPDATE"
 
+  val between = "BETWEEN"
+  val not = "NOT"
+
   val leftJoin = "LEFT JOIN"
   val rightJoin = "RIGHT JOIN"
   val innerJoin = "INNER JOIN"
@@ -334,6 +337,19 @@ private[morpheus] trait AbstractQueryBuilder {
 
   def ifNotExists(qb: SQLBuiltQuery): SQLBuiltQuery = {
     qb.pad.append(syntax.ifNotExists)
+  }
+
+  def between(name: String, value: String): SQLBuiltQuery = {
+    SQLBuiltQuery(name)
+      .forcePad.append(syntax.between)
+      .forcePad.append(value)
+  }
+
+  def notBetween(name: String, value: String): SQLBuiltQuery = {
+    SQLBuiltQuery(name)
+      .forcePad.append(syntax.not)
+      .forcePad.append(syntax.between)
+      .forcePad.append(value)
   }
 }
 
