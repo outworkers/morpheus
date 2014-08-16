@@ -35,8 +35,9 @@ sealed class ForeignKeyConstraint(val value: String)
 
 /**
  * This trait encloses all default variations of a FOREIGN KEY constraint as per the MySQL documentation.
- * It is a trait so that the default set of MySQL imports.
- *
+ * It is a trait so that the default set of MySQL imports can mix it in to propagate the values and make them available to the end DSL user without anymore
+ * work.
+ * This approach will be standard throughout our DSL and it can be seen in use for things like available SQL engines and so on.
  */
 private[morpheus] trait DefaultForeignKeyConstraints {
   case object Restrict extends ForeignKeyConstraint(DefaultSQLSyntax.restrict)
@@ -47,11 +48,23 @@ private[morpheus] trait DefaultForeignKeyConstraints {
 
 private[morpheus] object DefaultForeignKeyConstraints extends DefaultForeignKeyConstraints
 
-sealed abstract class TypeRestrictions {
+/**
+ * A simple value holder for some useful type constructors we use in this class.
+ * The NonIndexColumn is a simple way of expressing a column and enforcing a bound on it.
+ *
+ * For instance, this is useful when using lower type and negative lower type bounds from shapeless.
+ * Abstract type members can be referenced via TypeRestrictions#TypeMember, a useful bit of information if you are coming from say, Haskell.
+ */
+sealed trait TypeRestrictions {
   type NonIndexColumn[T <: Table[T, _]] = Column[T, _, _]
 
 }
 
+/**
+ * This apparently fruitless trait is used to enforce a type bound restriction in other parts of the DSL where the tables are not known.
+ * It's a simple way of verifying that the column being dealt with is a ForeignKey and nothing else. For instance,
+ * this is used when building join queries to ensure joins are properly created from a foreign key to the respective indexes.
+ */
 private[morpheus] trait ForeignKeyDefinition {}
 
 /**

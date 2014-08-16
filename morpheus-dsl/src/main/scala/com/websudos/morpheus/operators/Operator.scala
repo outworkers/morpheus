@@ -50,6 +50,49 @@ sealed class BitLengthOperator extends Operator {
   }
 }
 
+sealed class CharLengthOperator extends Operator {
+  def apply[T: SQLPrimitive](value: T): QueryCondition = {
+    QueryCondition(
+      DefaultQueryBuilder.charLength(implicitly[SQLPrimitive[T]].toSQL(value))
+    )
+  }
+}
+
+sealed class CharacterLengthOperator extends Operator {
+  def apply[T: SQLPrimitive](value: T): QueryCondition = {
+    QueryCondition(
+      DefaultQueryBuilder.characterLength(implicitly[SQLPrimitive[T]].toSQL(value))
+    )
+  }
+}
+
+sealed class ConcatWsOperator extends Operator {
+  val primitive = implicitly[SQLPrimitive[String]]
+
+  def apply(values: List[String]): QueryCondition = {
+    QueryCondition(
+      DefaultQueryBuilder.concatWs(values.map(primitive.toSQL))
+    )
+  }
+
+  def apply(sep: String, values: List[String]): QueryCondition = {
+    QueryCondition(
+      DefaultQueryBuilder.concatWs(primitive.toSQL(sep) +: values.map(primitive.toSQL))
+    )
+  }
+}
+
+sealed class ConcatOperator extends Operator {
+  val primitive = implicitly[SQLPrimitive[String]]
+
+  def apply(values: List[String]): QueryCondition = {
+    QueryCondition(
+      DefaultQueryBuilder.concat(values.map(primitive.toSQL))
+    )
+  }
+}
+
+
 sealed class NotExistsOperator extends Operator {
 
   def apply[
@@ -74,6 +117,10 @@ sealed trait SQLOperatorSet {
   object asci extends AsciOperator
   object bin extends BinOperator
   object bitLength extends BitLengthOperator
+  object charLength extends CharLengthOperator
+  object characterLength extends CharacterLengthOperator
+  object concatWs extends ConcatWsOperator
+  object concat extends ConcatOperator
 }
 
 

@@ -40,8 +40,56 @@ trait SQLOperatorSet {
   val bin = "BIN"
   val bitLength = "BIT_LENGTH"
   val charLength = "CHAR_LENGTH"
-  val concat = "CONCAT"
   val characterLength = "CHARACTER_LENGTH"
+
+  val concat = "CONCAT"
+  val concatWs = "CONCAT_WS"
+
+  val elt = "ELT"
+  val exportSet = "EXPORT_SET"
+  val field = "FIELD"
+  val findInSet = "FIND_IN_SET"
+  val format = "FORMAT"
+  val fromBase64 = "FROM_BASE64"
+  val hex = "HEX"
+  val instr = "INSTR"
+  val lcase = "LCASE"
+  val left = "LEFT"
+  val loadFile = "LOAD_FILE"
+  val locate = "LOCATE"
+  val lower = "LOWER"
+  val lpad = "LPAD"
+  val ltrim = "LTRIM"
+  val makeSet = "MAKE_SET"
+  val `match` = "MATCH"
+  val mid = "MID"
+  val notRegexp = "NOT REGEXP"
+  val oct = "OCT"
+  val octetLength = "OCTET_LENGTH"
+  val ord = "ORD"
+  val position = "POSITION"
+  val quote = "QUOTE"
+  val regexp = "REGEXP"
+  val repeat = "REPEAT"
+  val replace = "REPLACE"
+  val reverse = "REVERSE"
+  val right = "RIGHT"
+  val rlike = "RLIKE"
+  val rpad = "RPAD"
+  val rtrim = "RTRIM"
+  val soundex = "SOUNDEX"
+  val soundsLike = "SOUNDS LIKE"
+  val space = "SPACE"
+  val strcmp = "STRCMP"
+  val substr = "SUBSTR"
+  val substringIndex = "SUBSTRING_INDEX"
+  val substring = "SUBSTRING"
+  val toBase64 = "TO_BASE64"
+  val trim = "TRIM"
+  val ucase = "UCASE"
+  val unhex = "UNHEX"
+  val upper = "UPPER"
+  val weightString = "WEIGHT_STRING"
 }
 
 trait AbstractSQLKeys {
@@ -387,6 +435,34 @@ private[morpheus] trait AbstractQueryBuilder {
     SQLBuiltQuery(operators.bitLength)
       .forcePad.append(syntax.`(`)
       .append(value)
+      .forcePad.append(syntax.`)`)
+  }
+
+  def charLength(value: String): SQLBuiltQuery = {
+    SQLBuiltQuery(operators.charLength)
+      .forcePad.append(syntax.`(`)
+      .append(value)
+      .forcePad.append(syntax.`)`)
+  }
+
+  def characterLength(value: String): SQLBuiltQuery = {
+    SQLBuiltQuery(operators.characterLength)
+      .forcePad.append(syntax.`(`)
+      .append(value)
+      .forcePad.append(syntax.`)`)
+  }
+
+  def concat(values: List[String]): SQLBuiltQuery = {
+    SQLBuiltQuery(operators.concat)
+      .forcePad.append(syntax.`(`)
+      .append(values.mkString(", "))
+      .forcePad.append(syntax.`)`)
+  }
+
+  def concatWs(values: List[String]): SQLBuiltQuery = {
+    SQLBuiltQuery(operators.concatWs)
+      .forcePad.append(syntax.`(`)
+      .append(values.mkString(", "))
       .forcePad.append(syntax.`)`)
   }
 
