@@ -93,6 +93,24 @@ sealed class ConcatOperator extends Operator {
 }
 
 
+sealed class ExistsOperator extends Operator {
+
+  def apply[
+    T <: Table[T, R],
+    R,
+    Group <: GroupBind,
+    Order <: OrderBind,
+    Limit <: LimitBind,
+    Chain <: ChainBind,
+    AssignChain <: AssignBind
+  ](query: Query[T, R, SelectType, Group, Order, Limit, Chain, AssignChain, Unterminated]): QueryCondition = {
+    QueryCondition(
+      query.table.queryBuilder.exists(query.query)
+    )
+  }
+}
+
+
 sealed class NotExistsOperator extends Operator {
 
   def apply[
@@ -113,7 +131,7 @@ sealed class NotExistsOperator extends Operator {
 
 sealed trait SQLOperatorSet {
 
-  object notExists extends NotExistsOperator
+
   object asci extends AsciOperator
   object bin extends BinOperator
   object bitLength extends BitLengthOperator
@@ -121,6 +139,9 @@ sealed trait SQLOperatorSet {
   object characterLength extends CharacterLengthOperator
   object concatWs extends ConcatWsOperator
   object concat extends ConcatOperator
+
+  object exists extends ExistsOperator
+  object notExists extends NotExistsOperator
 }
 
 

@@ -35,6 +35,8 @@ case class SQLBuiltQuery(queryString: String) {
   def pad: SQLBuiltQuery = if (spaced) this else SQLBuiltQuery(queryString + " ")
   def forcePad: SQLBuiltQuery = SQLBuiltQuery(queryString + " ")
   def trim: SQLBuiltQuery = SQLBuiltQuery(queryString.trim)
+  def wrap(query: SQLBuiltQuery): SQLBuiltQuery = pad.append(DefaultSQLSyntax.`(`).append(query).append(DefaultSQLSyntax.`)`)
+
 
 }
 
@@ -161,6 +163,21 @@ class Query[T <: Table[T, _],
     new Query(table, table.queryBuilder.where(query, condition(table).clause), rowFunc)
   }
 
+  @implicitNotFound("You cannot use two where clauses on a single query")
+  final def where(condition: QueryCondition)(implicit ev: Chain =:= Unchainned): Query[T, R, Type, Group, Ord, Lim, Chainned, AC, Status] = {
+    new Query(table, table.queryBuilder.where(query, condition.clause), rowFunc)
+  }
+
+  @implicitNotFound("You need to use the where method first")
+  final def and(condition: T => QueryCondition)(implicit ev: Chain =:= Chainned): Query[T, R, Type, Group, Ord, Lim, Chainned, AC, Status]  = {
+    new Query(table, table.queryBuilder.and(query, condition(table).clause), rowFunc)
+  }
+
+  @implicitNotFound("You need to use the where method first")
+  final def and(condition: QueryCondition)(implicit ev: Chain =:= Chainned): Query[T, R, Type, Group, Ord, Lim, Chainned, AC, Status]  = {
+    new Query(table, table.queryBuilder.and(query, condition.clause), rowFunc)
+  }
+
   @implicitNotFound("You cannot set two limits on the same query")
   final def limit(value: Int)(implicit ev: Lim =:= Unlimited): Query[T, R, Type, Group, Ord, Limited, Chain, AC, Status] = {
     new Query(table, table.queryBuilder.limit(query, value.toString), rowFunc)
@@ -181,12 +198,6 @@ class Query[T <: Table[T, _],
     ] = {
     new Query(table, table.queryBuilder.groupBy(query, columns map { _(table).col.name }), rowFunc)
   }
-
-  @implicitNotFound("You need to use the where method first")
-  final def and(condition: T => QueryCondition)(implicit ev: Chain =:= Chainned): Query[T, R, Type, Group, Ord, Lim, Chainned, AC, Status]  = {
-    new Query(table, table.queryBuilder.and(query, condition(table).clause), rowFunc)
-  }
-
 }
 
 object Query {

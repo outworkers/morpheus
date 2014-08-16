@@ -145,6 +145,7 @@ abstract class AbstractSQLSyntax extends AbstractSQLKeys {
 
   val between = "BETWEEN"
   val not = "NOT"
+  val exists = "EXISTS"
   val notExists = "NOT EXISTS"
   val on = "ON"
 
@@ -415,6 +416,13 @@ private[morpheus] trait AbstractQueryBuilder {
     qb.pad
       .append(syntax.on)
       .forcePad.append(clause)
+  }
+
+  def exists(select: SQLBuiltQuery) = {
+    SQLBuiltQuery(syntax.notExists)
+      .forcePad.append(syntax.`(`)
+      .append(select)
+      .forcePad.append(syntax.`)`)
   }
 
   def notExists(select: SQLBuiltQuery) = {
