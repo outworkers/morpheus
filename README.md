@@ -24,7 +24,7 @@ not yet production ready.
   <li>
     <p>Supported databases and documentation</p>
     <ul>
-      <li><a href="../docs/MySQL.md">MySQL</a></li>
+      <li><a href="./docs/MySQL.md">MySQL</a></li>
       <li>MariaDB</li>
       <li>Oracle</li>
       <li>Postgres</li>
