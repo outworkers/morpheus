@@ -16,7 +16,7 @@
 
 package com.websudos.morpheus.dsl
 
-import com.websudos.morpheus.query.mysql.Imports._
+import com.websudos.morpheus.mysql.Imports._
 
 case class BasicRecord(name: String, count: Long)
 

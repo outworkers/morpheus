@@ -21,7 +21,7 @@ import com.twitter.finagle.exp.mysql.Row
 import com.websudos.morpheus.SQLPrimitive
 import com.websudos.morpheus.column.AbstractColumn
 import com.websudos.morpheus.dsl.Table
-import com.websudos.morpheus.query.mysql.MySQLSyntax
+import com.websudos.morpheus.mysql.MySQLSyntax
 
 
 private[morpheus] abstract class AbstractInsertSyntaxBlock(query: String, tableName: String) extends AbstractSyntaxBlock {

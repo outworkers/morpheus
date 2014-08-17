@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.websudos.morpheus.query.mysql
+package com.websudos.morpheus.mysql
 
 import com.twitter.finagle.exp.mysql.Row
 import com.websudos.morpheus.dsl.Table

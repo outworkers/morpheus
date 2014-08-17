@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.websudos.morpheus.query.mysql
+package com.websudos.morpheus.mysql
 
 import com.websudos.morpheus.{SQLPrimitives, SQLPrimitive}
 import com.websudos.morpheus.column.AbstractColumn

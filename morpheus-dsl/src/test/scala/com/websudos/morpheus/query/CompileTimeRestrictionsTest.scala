@@ -4,7 +4,7 @@ import org.scalatest.{FlatSpec, Matchers}
 
 import com.websudos.morpheus.column.ForeignKey
 import com.websudos.morpheus.dsl.{BasicRecord, BasicTable}
-import com.websudos.morpheus.query.mysql.Imports._
+import com.websudos.morpheus.mysql.Imports._
 import com.websudos.morpheus.tables.{KeysRecord, KeysTable, IndexTable}
 
 class CompileTimeRestrictionsTest extends FlatSpec with Matchers {

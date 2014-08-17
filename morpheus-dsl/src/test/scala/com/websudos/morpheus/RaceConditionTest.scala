@@ -22,7 +22,7 @@ import scala.collection.JavaConversions._
 
 import org.scalatest.FunSuite
 
-import com.websudos.morpheus.query.mysql.Imports._
+import com.websudos.morpheus.mysql.Imports._
 
 class RaceConditionTest extends FunSuite {
 
