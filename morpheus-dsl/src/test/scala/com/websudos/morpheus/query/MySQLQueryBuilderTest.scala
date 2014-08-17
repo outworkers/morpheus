@@ -269,4 +269,49 @@ class MySQLQueryBuilderTest extends FlatSpec with Matchers with GeneratorDrivenP
       }
     }
   }
+
+  it should "serialise an EXISTS clause" in {
+    forAll(minSuccessful(300)) { (part: String) =>
+      whenever (part.length > 0) {
+        val query = MySQLQueryBuilder.exists(SQLBuiltQuery(part)).queryString
+        query shouldEqual s"EXISTS ($part)"
+      }
+    }
+  }
+
+  it should "serialise a NOT EXISTS clause" in {
+    forAll(minSuccessful(300)) { (part: String) =>
+      whenever (part.length > 0) {
+        val query = MySQLQueryBuilder.notExists(SQLBuiltQuery(part)).queryString
+        query shouldEqual s"NOT EXISTS ($part)"
+      }
+    }
+  }
+
+  it should "serialise a ON clause" in {
+    forAll(minSuccessful(300)) { (part: String, value: String) =>
+      whenever (!part.isEmpty && !value.isEmpty) {
+        val query = MySQLQueryBuilder.on(SQLBuiltQuery(part), SQLBuiltQuery(value)).queryString
+        query shouldEqual s"$part ON $value"
+      }
+    }
+  }
+
+  it should "serialise a BETWEEN clause" in {
+    forAll(minSuccessful(300)) { (part: String, value: String) =>
+      whenever (!part.isEmpty && !value.isEmpty) {
+        val query = MySQLQueryBuilder.between(part, value).queryString
+        query shouldEqual s"$part BETWEEN $value"
+      }
+    }
+  }
+
+  it should "serialise a NOT BETWEEN clause" in {
+    forAll(minSuccessful(300)) { (part: String, value: String) =>
+      whenever (!part.isEmpty && !value.isEmpty) {
+        val query = MySQLQueryBuilder.notBetween(part, value).queryString
+        query shouldEqual s"$part NOT BETWEEN $value"
+      }
+    }
+  }
 }
