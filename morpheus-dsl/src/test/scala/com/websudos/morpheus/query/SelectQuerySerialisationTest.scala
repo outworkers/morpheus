@@ -511,6 +511,79 @@ class SelectQuerySerialisationTest extends FlatSpec with Matchers {
     BasicTable.select(_.name, _.count).sqlBufferResult.where(_.count <= 10).queryString shouldEqual "SELECT SQL_BUFFER_RESULT name, count FROM BasicTable WHERE count <= 10"
   }
 
+  it should "serialise a simple SELECT SQL_CACHE query" in {
+    BasicTable.select.sqlCache.queryString shouldEqual "SELECT SQL_CACHE * FROM BasicTable"
+  }
+
+  it should "serialise a simple SELECT SQL_CACHE query with an WHERE clause" in {
+    BasicTable.select.sqlCache.where(_.name eqs "test").queryString shouldEqual "SELECT SQL_CACHE * FROM BasicTable WHERE name = 'test'"
+  }
+
+  it should "serialise a partial SELECT SQL_CACHE query with a single column in the partial select" in {
+    BasicTable.select(_.name).sqlCache.queryString shouldEqual "SELECT SQL_CACHE name FROM BasicTable"
+  }
+
+  it should "serialise a partial SELECT SQL_CACHE query with a single column in the partial select and a single WHERE clause" in {
+    BasicTable.select(_.name).sqlCache.where(_.count >= 5).queryString shouldEqual "SELECT SQL_CACHE name FROM BasicTable WHERE count >= 5"
+  }
+
+  it should "serialise a partial SELECT SQL_CACHE query with multiple columns in a partial select" in {
+    BasicTable.select(_.name, _.count).sqlCache.queryString shouldEqual "SELECT SQL_CACHE name, count FROM BasicTable"
+  }
+
+  it should "serialise a partial SELECT SQL_CACHE query with multiple columns in a partial select and a simple where clause" in {
+    BasicTable.select(_.name, _.count).sqlCache.where(_.count <= 10).queryString shouldEqual "SELECT SQL_CACHE name, count FROM BasicTable WHERE count <= 10"
+  }
+
+  it should "serialise a simple SELECT SQL_NO_CACHE query" in {
+    BasicTable.select.sqlNoCache.queryString shouldEqual "SELECT SQL_NO_CACHE * FROM BasicTable"
+  }
+
+  it should "serialise a simple SELECT SQL_NO_CACHE query with an WHERE clause" in {
+    BasicTable.select.sqlNoCache.where(_.name eqs "test").queryString shouldEqual "SELECT SQL_NO_CACHE * FROM BasicTable WHERE name = 'test'"
+  }
+
+  it should "serialise a partial SELECT SQL_NO_CACHE query with a single column in the partial select" in {
+    BasicTable.select(_.name).sqlNoCache.queryString shouldEqual "SELECT SQL_NO_CACHE name FROM BasicTable"
+  }
+
+  it should "serialise a partial SELECT SQL_NO_CACHE query with a single column in the partial select and a single WHERE clause" in {
+    BasicTable.select(_.name).sqlNoCache.where(_.count >= 5).queryString shouldEqual "SELECT SQL_NO_CACHE name FROM BasicTable WHERE count >= 5"
+  }
+
+  it should "serialise a partial SELECT SQL_NO_CACHE query with multiple columns in a partial select" in {
+    BasicTable.select(_.name, _.count).sqlNoCache.queryString shouldEqual "SELECT SQL_NO_CACHE name, count FROM BasicTable"
+  }
+
+  it should "serialise a partial SELECT SQL_NO_CACHE query with multiple columns in a partial select and a simple where clause" in {
+    BasicTable.select(_.name, _.count).sqlNoCache.where(_.count <= 10).queryString shouldEqual "SELECT SQL_NO_CACHE name, count FROM BasicTable WHERE count <= 10"
+  }
+
+
+  it should "serialise a simple SELECT SQL_CALC_FOUND_ROWS query" in {
+    BasicTable.select.sqlCalcFoundRows.queryString shouldEqual "SELECT SQL_CALC_FOUND_ROWS * FROM BasicTable"
+  }
+
+  it should "serialise a simple SELECT SQL_CALC_FOUND_ROWS query with an WHERE clause" in {
+    BasicTable.select.sqlCalcFoundRows.where(_.name eqs "test").queryString shouldEqual "SELECT SQL_CALC_FOUND_ROWS * FROM BasicTable WHERE name = 'test'"
+  }
+
+  it should "serialise a partial SELECT SQL_CALC_FOUND_ROWS query with a single column in the partial select" in {
+    BasicTable.select(_.name).sqlCalcFoundRows.queryString shouldEqual "SELECT SQL_CALC_FOUND_ROWS name FROM BasicTable"
+  }
+
+  it should "serialise a partial SELECT SQL_CALC_FOUND_ROWS query with a single column in the partial select and a single WHERE clause" in {
+    BasicTable.select(_.name).sqlCalcFoundRows.where(_.count >= 5).queryString shouldEqual "SELECT SQL_CALC_FOUND_ROWS name FROM BasicTable WHERE count >= 5"
+  }
+
+  it should "serialise a partial SELECT SQL_CALC_FOUND_ROWS query with multiple columns in a partial select" in {
+    BasicTable.select(_.name, _.count).sqlCalcFoundRows.queryString shouldEqual "SELECT SQL_CALC_FOUND_ROWS name, count FROM BasicTable"
+  }
+
+  it should "serialise a partial SELECT SQL_CALC_FOUND_ROWS query with multiple columns in a partial select and a simple where clause" in {
+    BasicTable.select(_.name, _.count).sqlCalcFoundRows.where(_.count <= 10).queryString shouldEqual "SELECT SQL_CALC_FOUND_ROWS name, count FROM BasicTable WHERE count <= 10"
+  }
+
   it should "serialise a partial SELECT SQL_BUFFER_RESULT query with multiple columns in a partial select and an where-and clause" in {
     BasicTable
       .select(_.name, _.count)

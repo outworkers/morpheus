@@ -46,8 +46,6 @@ private[morpheus] abstract class AbstractUpdateSyntaxBlock(query: String, tableN
  */
 private[morpheus] abstract class AbstractRootUpdateQuery[T <: Table[T, _], R](val table: T, val st: AbstractUpdateSyntaxBlock, val rowFunc: Row => R) {
 
-  def fromRow(r: Row): R = rowFunc(r)
-
   protected[this] type BaseUpdateQuery = Query[T, R, UpdateType, Ungroupped, Unordered, Unlimited, Unchainned, AssignUnchainned, Unterminated]
 
   private[morpheus] def all: BaseUpdateQuery = {

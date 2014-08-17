@@ -146,13 +146,13 @@ class CreateQuery[T <: Table[T, _],
 ](val query: Query[T, R, CreateType, Group, Order, Limit, Chain, AssignChain, Status]) {
 
 
-  final protected def columnDefinitions: List[String] = {
+  final protected[morpheus] def columnDefinitions: List[String] = {
     query.table.columns.foldRight(List.empty[String])((col, acc) => {
       col.qb.queryString :: acc
     })
   }
 
-  final protected def columnSchema[St <: StatusBind]: CreateQuery[T, R, CreateType, Group, Order, Limit, Chain, AssignChain, St] = {
+  final protected[morpheus] def columnSchema[St <: StatusBind]: CreateQuery[T, R, CreateType, Group, Order, Limit, Chain, AssignChain, St] = {
 
     new CreateQuery[T, R, CreateType, Group, Order, Limit, Chain, AssignChain, St](
       new Query(query.table, query.query.append(columnDefinitions.mkString(", ")), query.rowFunc)

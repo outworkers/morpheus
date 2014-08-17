@@ -43,9 +43,10 @@ class SQLBuiltQueryTest extends FlatSpec with Matchers with GeneratorDrivenPrope
 
   it should "serialise and pad an SQLBuiltQuery with a trailing space if the space is missing" in {
     forAll(minSuccessful(300)) { (part1: String) =>
-      whenever (part1.length > 0) {
-        val query = SQLBuiltQuery(part1).pad.queryString
-        query shouldEqual s"$part1 "
+      whenever (!part1.isEmpty ) {
+        val tested = part1.trim
+        val query = SQLBuiltQuery(tested).pad.queryString
+        query shouldEqual s"$tested "
       }
     }
   }

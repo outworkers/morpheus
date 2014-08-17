@@ -192,8 +192,9 @@ class MySQLQueryBuilderTest extends FlatSpec with Matchers with GeneratorDrivenP
   it should "serialise a LIKE operator query" in {
     forAll(minSuccessful(300)) { (part: String, name: String) =>
       whenever (name.length > 0) {
-        val query = MySQLQueryBuilder.like(part, name).queryString
-        query shouldEqual s"$part LIKE $name"
+        val tested = part.trim
+        val query = MySQLQueryBuilder.like(tested, name).queryString
+        query shouldEqual s"$tested LIKE $name"
       }
     }
   }
