@@ -215,4 +215,103 @@ class MySQLQueryBuilderTest extends FlatSpec with Matchers with GeneratorDrivenP
       }
     }
   }
+
+  it should "append an ENGINE clause" in {
+    forAll(minSuccessful(300)) { (part: String, name: String) =>
+      whenever (name.length > 0) {
+        val query = MySQLQueryBuilder.engine(SQLBuiltQuery(part), name).queryString
+        query shouldEqual s"$part ENGINE $name"
+      }
+    }
+  }
+
+  it should "serialise a BIN clause" in {
+    forAll(minSuccessful(300)) { (part: String) =>
+      whenever (part.length > 0) {
+        val query = MySQLQueryBuilder.bin(part).queryString
+        query shouldEqual s"BIN ($part)"
+      }
+    }
+  }
+
+  it should "serialise a CHAR_LENGTH clause" in {
+    forAll(minSuccessful(300)) { (part: String) =>
+      whenever (part.length > 0) {
+        val query = MySQLQueryBuilder.charLength(part).queryString
+        query shouldEqual s"CHAR_LENGTH ($part)"
+      }
+    }
+  }
+
+  it should "serialise a CHARACTER_LENGTH clause" in {
+    forAll(minSuccessful(300)) { (part: String) =>
+      whenever (part.length > 0) {
+        val query = MySQLQueryBuilder.characterLength(part).queryString
+        query shouldEqual s"CHARACTER_LENGTH ($part)"
+      }
+    }
+  }
+
+  it should "serialise a BIT_LENGTH clause" in {
+    forAll(minSuccessful(300)) { (part: String) =>
+      whenever (part.length > 0) {
+        val query = MySQLQueryBuilder.bitLength(part).queryString
+        query shouldEqual s"BIT_LENGTH ($part)"
+      }
+    }
+  }
+
+  it should "serialise a ASCII clause" in {
+    forAll(minSuccessful(300)) { (part: String) =>
+      whenever (part.length > 0) {
+        val query = MySQLQueryBuilder.ascii(part).queryString
+        query shouldEqual s"ASCII ($part)"
+      }
+    }
+  }
+
+  it should "serialise an EXISTS clause" in {
+    forAll(minSuccessful(300)) { (part: String) =>
+      whenever (part.length > 0) {
+        val query = MySQLQueryBuilder.exists(SQLBuiltQuery(part)).queryString
+        query shouldEqual s"EXISTS ($part)"
+      }
+    }
+  }
+
+  it should "serialise a NOT EXISTS clause" in {
+    forAll(minSuccessful(300)) { (part: String) =>
+      whenever (part.length > 0) {
+        val query = MySQLQueryBuilder.notExists(SQLBuiltQuery(part)).queryString
+        query shouldEqual s"NOT EXISTS ($part)"
+      }
+    }
+  }
+
+  it should "serialise a ON clause" in {
+    forAll(minSuccessful(300)) { (part: String, value: String) =>
+      whenever (!part.isEmpty && !value.isEmpty) {
+        val query = MySQLQueryBuilder.on(SQLBuiltQuery(part), SQLBuiltQuery(value)).queryString
+        query shouldEqual s"$part ON $value"
+      }
+    }
+  }
+
+  it should "serialise a BETWEEN clause" in {
+    forAll(minSuccessful(300)) { (part: String, value: String) =>
+      whenever (!part.isEmpty && !value.isEmpty) {
+        val query = MySQLQueryBuilder.between(part, value).queryString
+        query shouldEqual s"$part BETWEEN $value"
+      }
+    }
+  }
+
+  it should "serialise a NOT BETWEEN clause" in {
+    forAll(minSuccessful(300)) { (part: String, value: String) =>
+      whenever (!part.isEmpty && !value.isEmpty) {
+        val query = MySQLQueryBuilder.notBetween(part, value).queryString
+        query shouldEqual s"$part NOT BETWEEN $value"
+      }
+    }
+  }
 }

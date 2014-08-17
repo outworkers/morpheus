@@ -1,4 +1,4 @@
 #!/bin/bash
 # Usage: ./scripts/run_tests.sh
 
-sbt "coveralls" "scalastyle"
+sbt "coveralls"

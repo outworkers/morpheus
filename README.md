@@ -1,4 +1,4 @@
-morpheus [NOT PRODUCTION READY][![Build Status](https://travis-ci.org/websudosuk/morpheus.svg)](https://travis-ci.org/websudosuk/morpheus)[![Coverage Status](https://img.shields.io/coveralls/websudosuk/morpheus.svg)](https://coveralls.io/r/websudosuk/morpheus)
+morpheus [NOT PRODUCTION READY][![Build Status](https://travis-ci.org/websudosuk/morpheus.svg)](https://travis-ci.org/websudosuk/morpheus)[![Coverage Status](https://img.shields.io/coveralls/websudosuk/morpheus.svg)](https://coveralls.io/r/websudosuk/morpheus?branch=develop)
 
 ========================================================================================================================================================================================================================
 
@@ -21,6 +21,15 @@ not yet production ready.
 ===============================================
 <ol>
   <li><a href="#design-philosophy">Design philosophy</a></li>
+  <li>
+    <p>Supported databases and documentation</p>
+    <ul>
+      <li><a href="./docs/MySQL.md">MySQL</a></li>
+      <li>MariaDB</li>
+      <li>Oracle</li>
+      <li>Postgres</li>
+      <li>MSSQL</li>
+  </li>
   <li><a href="#copyright">Copyright</a></li>
 </ol>
 

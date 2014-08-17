@@ -19,19 +19,28 @@ package com.websudos.morpheus.column
 import com.twitter.finagle.exp.mysql.Row
 import com.websudos.morpheus.dsl.Table
 import com.websudos.morpheus.query.{DefaultSQLSyntax, SQLBuiltQuery}
+import shapeless.<:!<
 
-private[morpheus] trait IndexColumn[T] {
-  def apply(r: Row): T = throw new Exception(s"Index column is not a value column. This apply method cannot extract anything from it.")
+private[morpheus] trait IndexColumn {
+
+  type NonIndexColumn[Owner <: Table[Owner, _]] = Column[Owner, _, _]
+
+  def apply(r: Row): String = throw new Exception(s"Index column is not a value column. This apply method cannot extract anything from it.")
 }
 
 /**
  * This implements an SQL index column. With this the user can define indexes on a table.
  * An Index is also an implementation of an Indexed column, meaning it holds no concrete value to be extracted.
+ *
+ * Using the "not a descendant of" bound, the constructor is also ensuring an Index cannot be built out of other indexes. That would be invalid with respect
+ * to the SQL syntax rules.
+ *
  * @param columns The columns that form the
- * @tparam T
- * @tparam R
+ * @tparam T The table owning the Record.
+ * @tparam R The record of the table.
  */
-class Index[T <: Table[T, R], R](columns: AbstractColumn[_]*) extends AbstractColumn[String] with IndexColumn[String] {
+class Index[T <: Table[T, R], R](columns: IndexColumn#NonIndexColumn[_]*)(implicit ev: IndexColumn#NonIndexColumn[_] <:!< IndexColumn)
+  extends AbstractColumn[String] with IndexColumn {
 
   def qb: SQLBuiltQuery = {
     SQLBuiltQuery(DefaultSQLSyntax.index)

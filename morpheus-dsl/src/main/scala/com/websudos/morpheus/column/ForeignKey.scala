@@ -16,6 +16,8 @@
 
 package com.websudos.morpheus.column
 
+import scala.annotation.implicitNotFound
+
 import com.websudos.morpheus.dsl.Table
 import com.websudos.morpheus.query.{DefaultSQLDataTypes, DefaultSQLSyntax, SQLBuiltQuery}
 import shapeless.{<:!<, =:!=}
@@ -33,8 +35,9 @@ sealed class ForeignKeyConstraint(val value: String)
 
 /**
  * This trait encloses all default variations of a FOREIGN KEY constraint as per the MySQL documentation.
- * It is a trait so that the default set of MySQL imports.
- *
+ * It is a trait so that the default set of MySQL imports can mix it in to propagate the values and make them available to the end DSL user without anymore
+ * work.
+ * This approach will be standard throughout our DSL and it can be seen in use for things like available SQL engines and so on.
  */
 private[morpheus] trait DefaultForeignKeyConstraints {
   case object Restrict extends ForeignKeyConstraint(DefaultSQLSyntax.restrict)
@@ -45,10 +48,12 @@ private[morpheus] trait DefaultForeignKeyConstraints {
 
 private[morpheus] object DefaultForeignKeyConstraints extends DefaultForeignKeyConstraints
 
-sealed abstract class TypeRestrictions {
-  type NonIndexColumn[T <: Table[T, _]] = Column[T, _, _]
-
-}
+/**
+ * This apparently fruitless trait is used to enforce a type bound restriction in other parts of the DSL where the tables are not known.
+ * It's a simple way of verifying that the column being dealt with is a ForeignKey and nothing else. For instance,
+ * this is used when building join queries to ensure joins are properly created from a foreign key to the respective indexes.
+ */
+private[morpheus] trait ForeignKeyDefinition {}
 
 /**
  * This is the implementation of a ForeignKey column. This is not a value column, therefore the `apply` method is overridden to throw an exception. It is used
@@ -65,19 +70,23 @@ sealed abstract class TypeRestrictions {
  * @tparam T The type of the owner table.
  * @tparam R The type of the record.
  */
+@implicitNotFound("You are trying to define a ForeignKey from a table to its own columns or you are trying to define a relationship between this ForeignKey " +
+  "and another ForeignKey or Index.")
 abstract class ForeignKey[T <: Table[T, R], R, T1 <: Table[T1, _]]
-  (origin: T, columns: TypeRestrictions#NonIndexColumn[T1]*)
-  (implicit ev: T =:!= T1, ev2: TypeRestrictions#NonIndexColumn[T1] <:!< IndexColumn[_])
+  (origin: T, columns: IndexColumn#NonIndexColumn[T1]*)
+  (implicit ev: T =:!= T1, ev2: IndexColumn#NonIndexColumn[T1] <:!< IndexColumn)
 
-  extends AbstractColumn[String] with IndexColumn[String] {
+  extends AbstractColumn[String] with IndexColumn with ForeignKeyDefinition {
+
+  private[this] val refTable: Table[_, _] = columns.headOption.map(_.table).orNull
 
   def qb: SQLBuiltQuery = {
     val default = SQLBuiltQuery(DefaultSQLSyntax.foreignKey)
       .forcePad.append(DefaultSQLSyntax.`(`)
-      .append(columns.map(col => {s"${table.tableName}_${col.name}"}).mkString(", "))
+      .append(columns.map(col => {s"${refTable.tableName}_${col.name}"}).mkString(", "))
       .append(DefaultSQLSyntax.`)`)
       .forcePad.append(DefaultSQLSyntax.references)
-      .forcePad.append(table.tableName)
+      .forcePad.append(refTable.tableName)
       .append(DefaultSQLSyntax.`(`)
       .append(columns.map(_.name).mkString(", "))
       .append(DefaultSQLSyntax.`)`)
@@ -119,7 +128,7 @@ abstract class ForeignKey[T <: Table[T, R], R, T1 <: Table[T1, _]]
    * TODO (flavian): Idiotic line, upgrade the preconditions.
    * @return
    */
-  override def table: Table[_, _] = columns.headOption.map(_.table).orNull
+  override def table: Table[_, _] = origin
 
   /**
    * The default ForeignKey constraint with respect to the MySQL documentation is NoAction and we enforce that here.

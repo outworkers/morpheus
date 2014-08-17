@@ -36,7 +36,7 @@ case class QueryAssignment(clause: SQLBuiltQuery)
 case class QueryCondition(override val clause: SQLBuiltQuery, count: Int = 0) extends BaseQueryCondition(clause) {
 
   /**
-   * This rather mysterious implementation is used to handle enclosing parentheses for an unknown number of OR operator usages.
+   * This implementation is used to handle enclosing parentheses for an unknown number of OR operator usages.
    * Since an unlimited number of OR operators and conditions can be chained to form a single WHERE or AND clause,
    * we need a way to delimit the full clause by enclosing parentheses without knowing how many OR clauses there are or without knowing what the internals
    * of a clause look like. Clauses like the IN clause have their own set of parentheses.
@@ -63,6 +63,18 @@ case class QueryCondition(override val clause: SQLBuiltQuery, count: Int = 0) ex
         count + 1
       )
     }
+  }
+}
+
+
+case class BetweenClause[T: SQLPrimitive](qb: SQLBuiltQuery) {
+
+  def and(value: T): QueryCondition = {
+    QueryCondition(
+      qb.forcePad
+        .append(DefaultSQLSyntax.and)
+        .forcePad.append(implicitly[SQLPrimitive[T]].toSQL(value))
+    )
   }
 }
 
@@ -131,8 +143,19 @@ private[morpheus] abstract class AbstractQueryColumn[T: SQLPrimitive](col: Abstr
     val primitive = implicitly[SQLPrimitive[T]]
     QueryCondition(col.table.queryBuilder.notIn(col.name, values.map(primitive.toSQL)))
   }
-}
 
+  def between(value: T): BetweenClause[T] = {
+    BetweenClause(
+      col.table.queryBuilder.between(col.name, col.toQueryString(value))
+    )
+  }
+
+  def notBetween(value: T): BetweenClause[T] = {
+    BetweenClause(
+      col.table.queryBuilder.notBetween(col.name, col.toQueryString(value))
+    )
+  }
+}
 
 
 case class QueryOrder(clause: SQLBuiltQuery)

@@ -118,9 +118,23 @@ object NumericsTable extends NumericsTable
 
 class StringsTable extends MySQLTable[StringsTable, String] {
 
+  object charColumn extends CharColumn(this)
+  object charLimited extends CharColumn(this, 100)
 
-    object textColumn extends TextColumn(this)
-    object textColumnLimited extends TextColumn(this)
+  object varChar extends VarcharColumn(this)
+  object varCharLimited extends VarcharColumn(this, 100)
 
-    def fromRow(row: Row): String = textColumn(row)
+  object tinyText extends TinyTextColumn(this)
+  object mediumText extends MediumTextColumn(this)
+  object longText extends LongTextColumn(this)
+  object textColumn extends TextColumn(this)
+
+  object blobColumn extends BlobColumn(this)
+  object tinyBlog extends TinyBlobColumn(this)
+  object mediumBlob extends MediumBlobColumn(this)
+  object largeBlob extends LongBlobColumn(this)
+
+  def fromRow(row: Row): String = textColumn(row)
 }
+
+object StringsTable extends StringsTable

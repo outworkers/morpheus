@@ -21,7 +21,7 @@ import org.scalatest.{FlatSpec, Matchers}
 import com.websudos.morpheus.tables.NumericsTable
 
 
-class ColumnsSerialisationTest extends FlatSpec with Matchers {
+class NumericColumnsSerialisationTest extends FlatSpec with Matchers {
 
   it should "serialise a simple TinyIntColumn definition to an SQL query without a limit set" in {
     NumericsTable.tinyInt.qb.queryString shouldEqual "tinyInt TINYINT"
