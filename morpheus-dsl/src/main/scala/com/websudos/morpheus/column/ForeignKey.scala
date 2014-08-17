@@ -49,18 +49,6 @@ private[morpheus] trait DefaultForeignKeyConstraints {
 private[morpheus] object DefaultForeignKeyConstraints extends DefaultForeignKeyConstraints
 
 /**
- * A simple value holder for some useful type constructors we use in this class.
- * The NonIndexColumn is a simple way of expressing a column and enforcing a bound on it.
- *
- * For instance, this is useful when using lower type and negative lower type bounds from shapeless.
- * Abstract type members can be referenced via TypeRestrictions#TypeMember, a useful bit of information if you are coming from say, Haskell.
- */
-sealed trait TypeRestrictions {
-  type NonIndexColumn[T <: Table[T, _]] = Column[T, _, _]
-
-}
-
-/**
  * This apparently fruitless trait is used to enforce a type bound restriction in other parts of the DSL where the tables are not known.
  * It's a simple way of verifying that the column being dealt with is a ForeignKey and nothing else. For instance,
  * this is used when building join queries to ensure joins are properly created from a foreign key to the respective indexes.
@@ -85,10 +73,10 @@ private[morpheus] trait ForeignKeyDefinition {}
 @implicitNotFound("You are trying to define a ForeignKey from a table to its own columns or you are trying to define a relationship between this ForeignKey " +
   "and another ForeignKey or Index.")
 abstract class ForeignKey[T <: Table[T, R], R, T1 <: Table[T1, _]]
-  (origin: T, columns: TypeRestrictions#NonIndexColumn[T1]*)
-  (implicit ev: T =:!= T1, ev2: TypeRestrictions#NonIndexColumn[T1] <:!< IndexColumn[_])
+  (origin: T, columns: IndexColumn#NonIndexColumn[T1]*)
+  (implicit ev: T =:!= T1, ev2: IndexColumn#NonIndexColumn[T1] <:!< IndexColumn)
 
-  extends AbstractColumn[String] with IndexColumn[R] with ForeignKeyDefinition {
+  extends AbstractColumn[String] with IndexColumn with ForeignKeyDefinition {
 
   private[this] val refTable: Table[_, _] = columns.headOption.map(_.table).orNull
 

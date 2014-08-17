@@ -25,8 +25,6 @@ import com.websudos.morpheus.query.DefaultSQLDataTypes
 
 case class InvalidTypeDefinitionException(msg: String = "Invalid SQL type declared for column") extends RuntimeException(msg)
 
-// sealed case class BooleanValue(f: Boolean) extends Value
-
 trait SQLPrimitive[T] {
 
   def sqlType: String

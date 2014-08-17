@@ -145,6 +145,7 @@ abstract class AbstractSQLSyntax extends AbstractSQLKeys {
 
   val between = "BETWEEN"
   val not = "NOT"
+  val notBetween = "NOT BETWEEN"
   val exists = "EXISTS"
   val notExists = "NOT EXISTS"
   val on = "ON"
@@ -228,27 +229,27 @@ private[morpheus] trait AbstractQueryBuilder {
   }
 
   def lt(name: String, value: String): SQLBuiltQuery = {
-    SQLBuiltQuery(s"$name ${operators.lt} $value")
+    SQLBuiltQuery(name).forcePad.append(operators.lt).forcePad.append(value)
   }
 
   def lte(name: String, value: String): SQLBuiltQuery = {
-    SQLBuiltQuery(s"$name ${operators.lte} $value")
+    SQLBuiltQuery(name).forcePad.append(operators.lte).forcePad.append(value)
   }
 
   def gt(name: String, value: String): SQLBuiltQuery = {
-    SQLBuiltQuery(s"$name ${operators.gt} $value")
+    SQLBuiltQuery(name).forcePad.append(operators.gt).forcePad.append(value)
   }
 
   def gte(name: String, value: String): SQLBuiltQuery = {
-    SQLBuiltQuery(s"$name ${operators.gte} $value")
+    SQLBuiltQuery(name).forcePad.append(operators.gte).forcePad.append(value)
   }
 
   def !=(name: String, value: String): SQLBuiltQuery = {
-    SQLBuiltQuery(s"$name ${operators.`!=`} $value")
+    SQLBuiltQuery(name).forcePad.append(operators.`!=`).forcePad.append(value)
   }
 
   def <>(name: String, value: String): SQLBuiltQuery = {
-    SQLBuiltQuery(s"$name ${operators.`<>`} $value")
+    SQLBuiltQuery(name).forcePad.append(operators.`<>`).forcePad.append(value)
   }
 
   def <=>(name: String, value: String): SQLBuiltQuery = {
@@ -270,19 +271,11 @@ private[morpheus] trait AbstractQueryBuilder {
   }
 
   def in(name: String, values: List[String]): SQLBuiltQuery = {
-    SQLBuiltQuery(name)
-      .pad.append(operators.in)
-      .forcePad.append(syntax.`(`)
-      .append(values.mkString(", "))
-      .append(syntax.`)`)
+    SQLBuiltQuery(name).pad.append(operators.in).wrap(values.mkString(", "))
   }
 
   def notIn(name: String, values: List[String]): SQLBuiltQuery = {
-    SQLBuiltQuery(name)
-      .pad.append(operators.notIn)
-      .forcePad.append(syntax.`(`)
-      .append(values.mkString(", "))
-      .append(syntax.`)`)
+    SQLBuiltQuery(name).pad.append(operators.notIn).wrap(values.mkString(", "))
   }
 
 
@@ -364,13 +357,9 @@ private[morpheus] trait AbstractQueryBuilder {
   }
 
   def insert(qb: SQLBuiltQuery, columns: List[String], values: List[String]): SQLBuiltQuery = {
-    qb.pad.append(syntax.`(`)
-      .append(columns.mkString(", "))
-      .append(syntax.`)`)
+    qb.wrap(columns.mkString(", "))
       .forcePad.append(syntax.values)
-      .forcePad.append(syntax.`(`)
-      .append(values.mkString(", "))
-      .append(syntax.`)`)
+      .wrap(values.mkString(", "))
   }
 
   def leftJoin(qb: SQLBuiltQuery, tableName: String): SQLBuiltQuery = {
@@ -409,8 +398,7 @@ private[morpheus] trait AbstractQueryBuilder {
 
   def notBetween(name: String, value: String): SQLBuiltQuery = {
     SQLBuiltQuery(name)
-      .forcePad.append(syntax.not)
-      .forcePad.append(syntax.between)
+      .forcePad.append(syntax.notBetween)
       .forcePad.append(value)
   }
 

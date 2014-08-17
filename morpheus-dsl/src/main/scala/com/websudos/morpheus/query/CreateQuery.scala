@@ -78,12 +78,49 @@ private[morpheus] abstract class AbstractRootCreateQuery[T <: Table[T, _], R](va
 
 object DefaultMySQLEngines {
   val InnoDB = "InnoDB"
+  val Memory = "MEMORY"
+  val Heap = "HEAP"
+  val Merge = "MERGE"
+  val MrgMyLSAM = "MRG_MYISAM"
+  val isam = "ISAM"
+  val MrgISAM = "MRG_ISAM"
+  val innoBase = "INNOBASE"
+  val BDB = "BDB"
+  val BerkleyDB = "BERKELEYDB"
+  val NDBCluster = "NDBCLUSTER"
+  val NDB = "NDB"
+  val example = "EXAMPLE"
+  val archive = "ARCHIVE"
+  val csv = "CSV"
+  val federated = "FEDERATED"
+  val blackhole = "BLACKHOLE"
 }
 
 sealed abstract class SQLEngine(val value: String)
 
+/**
+ * This is the sequence of default available storage engines in the MySQL 5.0 specification.
+ * For the official documentation, @see <a href="http://dev.mysql.com/doc/refman/5.0/en/show-engines.html">the MySQL 5.0 docs</a>.
+ *
+ * More recent versions of MySQL features far less available options. The official list is available on @see <a href="http://dev.mysql.com/doc/refman/5
+ * .7/en/show-engines.html">the MySQL 5.7 docs</a> page.
+ */
 trait DefaultSQLEngines {
   case object InnoDB extends SQLEngine(DefaultMySQLEngines.InnoDB)
+  case object InnoBase extends SQLEngine(DefaultMySQLEngines.innoBase)
+  case object Memory extends SQLEngine(DefaultMySQLEngines.Memory)
+  case object Heap extends SQLEngine(DefaultMySQLEngines.Heap)
+  case object Merge extends SQLEngine(DefaultMySQLEngines.Merge)
+  case object BDB extends SQLEngine(DefaultMySQLEngines.BDB)
+  case object BerkleyDB extends SQLEngine(DefaultMySQLEngines.BerkleyDB)
+  case object NDBCluster extends SQLEngine(DefaultMySQLEngines.NDBCluster)
+  case object NDB extends SQLEngine(DefaultMySQLEngines.NDB)
+  case object Example extends SQLEngine(DefaultMySQLEngines.example)
+  case object Archive extends SQLEngine(DefaultMySQLEngines.archive)
+  case object CSV extends SQLEngine(DefaultMySQLEngines.csv)
+  case object Federated extends SQLEngine(DefaultMySQLEngines.federated)
+  case object Blackhole extends SQLEngine(DefaultMySQLEngines.blackhole)
+
 }
 
 trait MySQLEngines extends DefaultSQLEngines {
