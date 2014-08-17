@@ -18,7 +18,7 @@ package com.websudos.morpheus.query
 
 import org.scalatest.{FlatSpec, Matchers}
 
-import com.websudos.morpheus.mysql.Imports._
+import com.websudos.morpheus.sql._
 import com.websudos.morpheus.tables.{IndexTable, KeysTable}
 
 class JoinsQuerySerialisationTest extends FlatSpec with Matchers {

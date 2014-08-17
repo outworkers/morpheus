@@ -127,8 +127,6 @@ object morpheus extends Build {
       "com.twitter"                  %% "util-core"                         % finagleVersion,
       "joda-time"                    %  "joda-time"                         % "2.3",
       "org.joda"                     %  "joda-convert"                      % "1.6",
-      "org.scalacheck"               %% "scalacheck"                        % "1.11.4"                  % "test, provided",
-      "com.newzly"                   %% "util-testing"                      % newzlyUtilVersion         % "test, provided",
       "net.liftweb"                  %% "lift-json"                         % "2.6-M4"                  % "test, provided"
     )
   ).dependsOn(
@@ -141,10 +139,10 @@ object morpheus extends Build {
     settings = Defaults.coreDefaultSettings ++
       sharedSettings ++ publishSettings
   ).settings(
-    name := "morpheus-mysql",
-    fork in Test := true
+    name := "morpheus-mysql"
   ).dependsOn(
-    morpheusDsl
+    morpheusDsl,
+    morpheusTesting % "test, provided"
   )
 
   lazy val morpheusZookeeper = Project(
@@ -154,10 +152,8 @@ object morpheus extends Build {
   ).settings(
     name := "morpheus-zookeeper",
     libraryDependencies ++= Seq(
-      "org.scalatest"                %% "scalatest"                         % scalatestVersion,
       "com.twitter"                  %% "finagle-serversets"                % finagleVersion,
-      "com.twitter"                  %% "finagle-zookeeper"                 % finagleVersion,
-      "com.newzly"                   %% "util-testing"                      % newzlyUtilVersion      % "test, provided"
+      "com.twitter"                  %% "finagle-zookeeper"                 % finagleVersion
     )
   )
 
@@ -169,8 +165,9 @@ object morpheus extends Build {
     name := "morpheus-testing",
     libraryDependencies ++= Seq(
       "com.twitter"                      %% "util-core"                % finagleVersion,
+      "com.newzly"                       %% "util-testing"             % newzlyUtilVersion,
       "org.scalatest"                    %% "scalatest"                % scalatestVersion,
-      "org.scalacheck"                   %% "scalacheck"               % "1.11.3"              % "test",
+      "org.scalacheck"                   %% "scalacheck"               % "1.11.3",
       "org.fluttercode.datafactory"      %  "datafactory"              % "0.8"
     )
   ).dependsOn(

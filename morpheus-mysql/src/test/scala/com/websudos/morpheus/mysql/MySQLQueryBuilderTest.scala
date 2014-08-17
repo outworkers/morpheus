@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package com.websudos.morpheus.query
+package com.websudos.morpheus.mysql
 
 import org.scalatest.prop.GeneratorDrivenPropertyChecks
-import org.scalatest.{FlatSpec, Matchers}
+import org.scalatest.{Matchers, FlatSpec}
 
-import com.websudos.morpheus.mysql.MySQLQueryBuilder
+import com.websudos.morpheus.query.SQLBuiltQuery
 
 
 class MySQLQueryBuilderTest extends FlatSpec with Matchers with GeneratorDrivenPropertyChecks {

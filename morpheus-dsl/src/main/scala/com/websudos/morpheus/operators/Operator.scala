@@ -131,7 +131,7 @@ sealed class NotExistsOperator extends Operator {
 }
 
 
-sealed trait SQLOperatorSet {
+private[morpheus] trait SQLOperatorSet {
 
 
   object ascii extends AsciiOperator
