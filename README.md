@@ -1,4 +1,4 @@
-morpheus [NOT PRODUCTION READY][![Build Status](https://travis-ci.org/websudosuk/morpheus.svg)](https://travis-ci.org/websudosuk/morpheus)[![Coverage Status](https://img.shields.io/coveralls/websudosuk/morpheus.svg)](https://coveralls.io/r/websudosuk/morpheus?branch=develop)
+morpheus [NOT PRODUCTION READY][![Build Status](https://travis-ci.org/websudosuk/morpheus.svg)](https://travis-ci.org/websudosuk/morpheus)[![Coverage Status](https://img.shields.io/coveralls/websudosuk/morpheus.svg)](https://coveralls.io/r/websudosuk/morpheus)
 
 ========================================================================================================================================================================================================================
 
@@ -64,7 +64,7 @@ don't have to care. Slick makes it easy to move from one SQL database to the oth
 know and love, it may be counter productive to have to learn about a framework when you could use Morpheus and all you need is IDE auto-completes to get 
 lightning fast development productivity. 
 
-Oh, and did we mention it's entirely asynchronous, build on Finagle and of course the underlying Netty?
+Oh, and did we mention it's entirely asynchronous and reactive, build on Finagle and of course the underlying Netty?
 
 
 <a id="integrating-morpheus">Integrating Morpheus</a>
