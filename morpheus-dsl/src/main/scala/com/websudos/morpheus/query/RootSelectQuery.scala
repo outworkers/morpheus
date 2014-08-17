@@ -199,10 +199,7 @@ private[morpheus] trait JoinImplicits {
 
   implicit class JoinColumn[T: SQLPrimitive](val origin: AbstractColumn[T] with ForeignKeyDefinition) {
 
-    final def joinEqs(col: AbstractColumn[_]): JoinClause = {
-
-      Console.println(origin.table.tableName)
-
+    final def eqs(col: AbstractColumn[_]): JoinClause = {
       JoinClause(
         origin.table.queryBuilder.eqs(
           s"${origin.table.tableName}.${origin.name}",

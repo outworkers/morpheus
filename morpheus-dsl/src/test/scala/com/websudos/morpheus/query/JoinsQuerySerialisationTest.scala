@@ -28,7 +28,7 @@ class JoinsQuerySerialisationTest extends FlatSpec with Matchers {
       .select
       .where(_.id eqs 10)
       .leftJoin(IndexTable)
-      .on(_.foreignKey joinEqs IndexTable.value)
+      .on(_.foreignKey eqs IndexTable.value)
       .queryString
 
     qb shouldEqual "SELECT * FROM KeysTable WHERE id = 10 LEFT JOIN IndexTable ON KeysTable.foreignKey = IndexTable.value"
