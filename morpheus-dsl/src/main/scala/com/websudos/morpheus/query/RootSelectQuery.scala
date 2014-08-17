@@ -133,24 +133,30 @@ class SelectQuery[T <: Table[T, _],
     )
   }
 
-  final def leftJoin[Owner <: Table[Owner, Record], Record](join: Table[Owner, Record]): OnJoinQuery[T, R, SelectType, Group, Order, Limit, Chain,
+  final def leftJoin[Owner <: Table[Owner, Record], Record](join: Table[Owner, Record]): OnJoinQuery[T, (R, Record), SelectType, Group, Order, Limit, Chain,
     AssignChain, Unterminated] = {
+
+    def fromRow(row: Row): (R, Record) = (query.fromRow(row), join.fromRow(row))
 
     new OnJoinQuery(
       new Query(
         query.table,
         query.table.queryBuilder.leftJoin(query.query, join.tableName),
-        query.rowFunc
+        fromRow
       )
     )
   }
 
-  final def rightJoin[Owner <: Table[Owner, Record], Record](join: Table[Owner, Record]): OnJoinQuery[T, R, SelectType, Group, Order, Limit, Chain, AssignChain, Unterminated] = {
+  final def rightJoin[Owner <: Table[Owner, Record], Record](join: Table[Owner, Record]): OnJoinQuery[T, (R, Record), SelectType, Group, Order, Limit, Chain,
+    AssignChain, Unterminated] = {
+
+    def fromRow(row: Row): (R, Record) = (query.fromRow(row), join.fromRow(row))
+
     new OnJoinQuery(
       new Query(
         query.table,
         query.table.queryBuilder.rightJoin(query.query, join.tableName),
-        query.rowFunc
+        fromRow
       )
     )
   }
@@ -192,7 +198,6 @@ class OnJoinQuery[T <: Table[T, _],
       query.fromRow
     )
   }
-
 }
 
 private[morpheus] trait JoinImplicits {

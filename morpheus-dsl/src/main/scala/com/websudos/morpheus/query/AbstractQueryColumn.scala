@@ -18,7 +18,7 @@ package com.websudos.morpheus.query
 
 import com.websudos.morpheus.SQLPrimitive
 import com.websudos.morpheus.column.AbstractColumn
-import com.websudos.morpheus.mysql.MySQLQueryBuilder
+import com.websudos.morpheus.query.mysql.MySQLQueryBuilder
 
 
 private[morpheus] abstract class BaseQueryCondition(val clause: SQLBuiltQuery)

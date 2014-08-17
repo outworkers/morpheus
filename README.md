@@ -45,7 +45,7 @@ Instead of learning about primitives and rules we thought of to abstract away di
 morpheus features a unique approach, what we call the auto-magical flip. Although at this point in time only MySQL is supported, 
 Morpheus is design to give you an "all-you-can-eat" buffet through a single import.
 
-As follows: ```import com.websudos.morpheus.mysql.Imports._```. And done, you can now define tables, query and so on. Say you have something like this:
+As follows: ```import com.websudos.morpheus.query.mysql.Imports._```. And done, you can now define tables, query and so on. Say you have something like this:
 
 ```Recipes.select.distinctRow.where(_.name eqs "test")```. ```DISTINCTROW``` doesn't exist in the Postgres ```SELECT``` statement syntax, 
 but it's a standard thing as far as MySQL is concerned. Here's how Morpheus operates.

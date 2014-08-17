@@ -16,6 +16,8 @@
 
 package com.websudos.morpheus.query
 
+import java.util.{List => JList}
+
 import scala.annotation.implicitNotFound
 
 import com.twitter.finagle.exp.mysql.Row
@@ -49,8 +51,6 @@ private[morpheus] abstract class UpdateType extends QueryType
 private[morpheus] abstract class DeleteType extends QueryType
 private[morpheus] abstract class CreateType extends QueryType
 private[morpheus] abstract class SelectType extends QueryType
-
-
 
 /**
  * This bit of magic allows all extending sub-classes to implement the "where" and "and" SQL clauses with all the necessary operators,
@@ -115,12 +115,14 @@ class Query[T <: Table[T, _],
   }
 
   @implicitNotFound("You cannot GROUP a query more than once or GROUP after you ORDER a query")
-  final def groupBy(columns: (T => SelectColumn[_])*)(implicit ev1: Group =:= Ungroupped, ev2: Ord =:= Unordered): Query[T, R, Type, Groupped, Ord, Lim, Chain,
+  final def groupBy(columns: (T => SelectColumn[_])*)(implicit ev1: Group =:= Ungroupped, ev2: Ord =:= Unordered): Query[T, _, Type, Groupped, Ord, Lim, Chain,
     AC,
     Status
     ] = {
     new Query(table, table.queryBuilder.groupBy(query, columns map { _(table).col.name }), rowFunc)
   }
+
+
 }
 
 object Query {

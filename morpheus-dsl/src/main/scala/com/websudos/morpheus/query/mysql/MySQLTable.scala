@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.websudos.morpheus.mysql
+package com.websudos.morpheus.query.mysql
 
 import com.twitter.finagle.exp.mysql.Row
 import com.websudos.morpheus.dsl.{SelectTable, Table}

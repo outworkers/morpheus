@@ -19,7 +19,7 @@ package com.websudos.morpheus
 import org.scalatest.{Matchers, FlatSpec}
 import org.scalatest.prop.GeneratorDrivenPropertyChecks
 
-import com.websudos.morpheus.mysql.Imports._
+import com.websudos.morpheus.query.mysql.Imports._
 
 class SQLPrimitivesTest extends FlatSpec with Matchers with GeneratorDrivenPropertyChecks {
 

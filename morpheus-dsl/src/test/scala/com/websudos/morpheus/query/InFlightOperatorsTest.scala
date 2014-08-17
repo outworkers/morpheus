@@ -18,7 +18,7 @@ package com.websudos.morpheus.query
 
 import org.scalatest.{Matchers, FlatSpec}
 import com.websudos.morpheus.dsl.BasicTable
-import com.websudos.morpheus.mysql.Imports._
+import com.websudos.morpheus.query.mysql.Imports._
 import com.websudos.morpheus.tables.IndexTable
 
 class InFlightOperatorsTest extends FlatSpec with Matchers {

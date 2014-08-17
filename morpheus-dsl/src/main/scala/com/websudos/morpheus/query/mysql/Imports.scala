@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.websudos.morpheus.mysql
+package com.websudos.morpheus.query.mysql
 
 import com.websudos.morpheus.column.AbstractColumn
 import com.websudos.morpheus.dsl.DefaultImportsDefinition
@@ -35,5 +35,5 @@ object Imports extends DefaultImportsDefinition with MySQLPrimitives with MySQLO
     )
   }
 
-  type MySQLTable[Owner <: MySQLTable[Owner, Record], Record] = com.websudos.morpheus.mysql.MySQLTable[Owner, Record]
+  type MySQLTable[Owner <: MySQLTable[Owner, Record], Record] = com.websudos.morpheus.query.mysql.MySQLTable[Owner, Record]
 }

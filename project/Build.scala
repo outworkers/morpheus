@@ -107,6 +107,7 @@ object morpheus extends Build {
     name := "morpheus"
   ).aggregate(
     morpheusDsl,
+    morpheusMySQL,
     morpheusTesting,
     morpheusZookeeper
   )
@@ -119,15 +120,8 @@ object morpheus extends Build {
       publishSettings
   ).settings(
     name := "morpheus-dsl",
-    fork := true,
-    logBuffered in Test := false,
-    testOptions in Test := Seq(Tests.Filter(s => s.indexOf("IterateeBig") == -1)),
-    concurrentRestrictions in Test := Seq(
-      Tags.limit(Tags.ForkedTestGroup, 4)
-    ),
     libraryDependencies ++= Seq(
       "com.chuusai"                  % "shapeless_2.10.4"                   % "2.0.0",
-      "org.scalaz"                   %% "scalaz-core"                       % "7.1.0",
       "com.twitter"                  %% "finagle-mysql"                     % finagleVersion,
       "org.scala-lang"               %  "scala-reflect"                     % "2.10.4",
       "com.twitter"                  %% "util-core"                         % finagleVersion,
@@ -139,6 +133,18 @@ object morpheus extends Build {
     )
   ).dependsOn(
     morpheusTesting % "test, provided"
+  )
+
+  lazy val morpheusMySQL = Project(
+    id = "morpheus-mysql",
+    base = file("morpheus-mysql"),
+    settings = Defaults.coreDefaultSettings ++
+      sharedSettings ++ publishSettings
+  ).settings(
+    name := "morpheus-mysql",
+    fork in Test := true
+  ).dependsOn(
+    morpheusDsl
   )
 
   lazy val morpheusZookeeper = Project(

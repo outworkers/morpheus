@@ -16,8 +16,8 @@
 
 package com.websudos.morpheus.query
 
-import org.scalatest.{FlatSpec, Matchers}
+import org.scalatest.{Matchers, FlatSpec}
 
-class Test extends FlatSpec with Matchers {
+class SQLPrimitivesTest extends FlatSpec with Matchers {
 
 }
