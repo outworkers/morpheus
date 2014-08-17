@@ -20,9 +20,9 @@ import com.twitter.finagle.exp.mysql.Row
 import com.websudos.morpheus.dsl.Table
 import com.websudos.morpheus.query._
 
-case class MySQLDeleteSyntaxBlock(query: String, tableName: String) extends AbstractDeleteSyntaxBlock(query, tableName) {
+case class MySQLDeleteSyntaxBlock(query: String, tableName: String) extends RootDeleteSyntaxBlock(query, tableName) {
 
-  val syntax = MySQLSyntax
+  override val syntax = MySQLSyntax
 
   def lowPriority: SQLBuiltQuery = {
     qb.pad.append(syntax.lowPriority)
@@ -43,7 +43,7 @@ case class MySQLDeleteSyntaxBlock(query: String, tableName: String) extends Abst
   }
 }
 
-private[morpheus] class MySQLRootDeleteQuery[T <: Table[T, _], R](table: T, st: MySQLDeleteSyntaxBlock, rowFunc: Row => R)  extends AbstractRootDeleteQuery(table, st,
+private[morpheus] class MySQLRootDeleteQuery[T <: Table[T, _], R](table: T, st: MySQLDeleteSyntaxBlock, rowFunc: Row => R)  extends RootDeleteQuery(table, st,
   rowFunc) {
 
   def lowPriority: BaseDeleteQuery = {

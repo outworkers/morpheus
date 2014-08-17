@@ -19,7 +19,6 @@ package com.websudos.morpheus.operators
 import com.websudos.morpheus.SQLPrimitive
 import com.websudos.morpheus.SQLPrimitives.StringIsSQLPrimitive
 import com.websudos.morpheus.dsl.Table
-import com.websudos.morpheus.mysql.DefaultQueryBuilder
 import com.websudos.morpheus.query._
 
 

@@ -89,13 +89,13 @@ abstract class Table[Owner <: Table[Owner, Record], Record] {
 
   def tableName: String = _name
 
-  def create: AbstractRootCreateQuery[Owner, Record]
+  def create: RootCreateQuery[Owner, Record]
 
-  def update: AbstractRootUpdateQuery[Owner, Record]
+  def update: RootUpdateQuery[Owner, Record]
 
-  def delete: AbstractRootDeleteQuery[Owner, Record]
+  def delete: RootDeleteQuery[Owner, Record]
 
-  def insert: AbstractRootInsertQuery[Owner, Record]
+  def insert: RootInsertQuery[Owner, Record]
 
   def columns: List[AbstractColumn[_]] = _columns.toList
 

@@ -46,7 +46,7 @@ trait BaseSelectQuery[T <: Table[T, _], R] extends SQLResultsQuery[T, R] {
 
 }
 
-private[morpheus] abstract class AbstractSelectSyntaxBlock(
+private[morpheus] class AbstractSelectSyntaxBlock(
   query: String, tableName: String,
   columns: List[String] = List("*")) extends AbstractSyntaxBlock {
 
@@ -66,6 +66,8 @@ private[morpheus] abstract class AbstractSelectSyntaxBlock(
       .pad.append(syntax.from)
       .pad.append(tableName)
   }
+
+  override def syntax: AbstractSQLSyntax = DefaultSQLSyntax
 }
 
 
@@ -84,7 +86,7 @@ private[morpheus] abstract class AbstractSelectSyntaxBlock(
  * @tparam T The type of the owning table.
  * @tparam R The type of the record.
  */
-private[morpheus] abstract class AbstractRootSelectQuery[T <: Table[T, _], R](val table: T, val st: AbstractSelectSyntaxBlock, val rowFunc: Row => R) {
+private[morpheus] class AbstractRootSelectQuery[T <: Table[T, _], R](val table: T, val st: AbstractSelectSyntaxBlock, val rowFunc: Row => R) {
 
   def fromRow(r: Row): R = rowFunc(r)
 

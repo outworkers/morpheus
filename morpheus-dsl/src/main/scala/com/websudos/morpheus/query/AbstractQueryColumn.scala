@@ -18,8 +18,6 @@ package com.websudos.morpheus.query
 
 import com.websudos.morpheus.SQLPrimitive
 import com.websudos.morpheus.column.AbstractColumn
-import com.websudos.morpheus.mysql.MySQLQueryBuilder
-
 
 private[morpheus] abstract class BaseQueryCondition(val clause: SQLBuiltQuery)
 
@@ -51,13 +49,13 @@ case class QueryCondition(override val clause: SQLBuiltQuery, count: Int = 0) ex
    */
   def or(condition: QueryCondition): QueryCondition = {
     if (count == 0) {
-      QueryCondition(MySQLQueryBuilder.or(
+      QueryCondition(DefaultQueryBuilder.or(
         clause.prepend(DefaultSQLSyntax.`(`),
         condition.clause.append(DefaultSQLSyntax.`)`)),
         count + 1
       )
     } else {
-      QueryCondition(MySQLQueryBuilder.or(
+      QueryCondition(DefaultQueryBuilder.or(
         SQLBuiltQuery(clause.queryString.dropRight(1)),
         condition.clause.append(DefaultSQLSyntax.`)`)),
         count + 1
@@ -156,6 +154,8 @@ private[morpheus] abstract class AbstractQueryColumn[T: SQLPrimitive](col: Abstr
     )
   }
 }
+
+class SQLQueryColumn[T: SQLPrimitive](col: AbstractColumn[T]) extends AbstractQueryColumn[T](col)
 
 
 case class QueryOrder(clause: SQLBuiltQuery)

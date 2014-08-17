@@ -18,7 +18,6 @@ package com.websudos.morpheus.mysql
 
 import com.twitter.finagle.exp.mysql.Row
 import com.websudos.morpheus.dsl.{SelectTable, Table}
-import com.websudos.morpheus.query.{MySQLInsertSyntaxBlock, MySQLRootInsertQuery}
 
 abstract class MySQLTable[Owner <: MySQLTable[Owner, Record], Record] extends Table[Owner, Record] with SelectTable[Owner, Record,
   MySQLRootSelectQuery, MySQLSelectSyntaxBlock] {

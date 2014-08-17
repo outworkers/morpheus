@@ -21,8 +21,8 @@ import com.websudos.morpheus.dsl.Table
 import com.websudos.morpheus.query._
 
 
-case class MySQLUpdateSyntaxBlock(query: String, tableName: String) extends AbstractUpdateSyntaxBlock(query, tableName) {
-  val syntax = MySQLSyntax
+case class MySQLUpdateSyntaxBlock(query: String, tableName: String) extends RootUpdateSyntaxBlock(query, tableName) {
+  override val syntax = MySQLSyntax
 
   def lowPriority: SQLBuiltQuery = {
     qb.pad.append(syntax.lowPriority)
@@ -37,7 +37,7 @@ case class MySQLUpdateSyntaxBlock(query: String, tableName: String) extends Abst
 
 
 private[morpheus] class MySQLRootUpdateQuery[T <: Table[T, _], R](table: T, st: MySQLUpdateSyntaxBlock,
-                                                                  rowFunc: Row => R) extends AbstractRootUpdateQuery[T, R](table, st, rowFunc) {
+                                                                  rowFunc: Row => R) extends RootUpdateQuery[T, R](table, st, rowFunc) {
 
   def lowPriority: BaseUpdateQuery = {
     new Query(table, st.lowPriority, rowFunc)

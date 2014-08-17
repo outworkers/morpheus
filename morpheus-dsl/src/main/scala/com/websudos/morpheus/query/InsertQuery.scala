@@ -21,10 +21,8 @@ import com.twitter.finagle.exp.mysql.Row
 import com.websudos.morpheus.SQLPrimitive
 import com.websudos.morpheus.column.AbstractColumn
 import com.websudos.morpheus.dsl.Table
-import com.websudos.morpheus.mysql.MySQLSyntax
 
-
-private[morpheus] abstract class AbstractInsertSyntaxBlock(query: String, tableName: String) extends AbstractSyntaxBlock {
+private[morpheus] class RootInsertSyntaxBlock(query: String, tableName: String) extends AbstractSyntaxBlock {
 
   protected[this] val qb = SQLBuiltQuery(query)
 
@@ -33,35 +31,10 @@ private[morpheus] abstract class AbstractInsertSyntaxBlock(query: String, tableN
       .forcePad.append(tableName)
   }
 
+  override def syntax: AbstractSQLSyntax = DefaultSQLSyntax
 }
 
-private[morpheus] class MySQLInsertSyntaxBlock(query: String, tableName: String) extends AbstractInsertSyntaxBlock(query, tableName) {
-  val syntax = MySQLSyntax
 
-  def delayed: SQLBuiltQuery = {
-    qb.pad.append(syntax.delayed)
-      .forcePad.append(syntax.into)
-      .forcePad.append(tableName)
-  }
-
-  def lowPriority: SQLBuiltQuery = {
-    qb.pad.append(syntax.lowPriority)
-      .forcePad.append(syntax.into)
-      .forcePad.append(tableName)
-  }
-
-  def highPriority: SQLBuiltQuery = {
-    qb.pad.append(syntax.highPriority)
-      .forcePad.append(syntax.into)
-      .forcePad.append(tableName)
-  }
-
-  def ignore: SQLBuiltQuery = {
-    qb.pad.append(syntax.ignore)
-      .forcePad.append(syntax.into)
-      .forcePad.append(tableName)
-  }
-}
 
 
 /**
@@ -76,7 +49,7 @@ private[morpheus] class MySQLInsertSyntaxBlock(query: String, tableName: String)
  * @tparam T The type of the owning table.
  * @tparam R The type of the record.
  */
-private[morpheus] abstract class AbstractRootInsertQuery[T <: Table[T, _], R](val table: T, val st: AbstractInsertSyntaxBlock, val rowFunc: Row => R) {
+private[morpheus] class RootInsertQuery[T <: Table[T, _], R](val table: T, val st: RootInsertSyntaxBlock, val rowFunc: Row => R) {
 
   def fromRow(r: Row): R = rowFunc(r)
 
@@ -85,26 +58,7 @@ private[morpheus] abstract class AbstractRootInsertQuery[T <: Table[T, _], R](va
   }
 }
 
-private[morpheus] class MySQLRootInsertQuery[T <: Table[T, _], R](table: T, st: MySQLInsertSyntaxBlock, rowFunc: Row => R) extends AbstractRootInsertQuery[T,
-  R](table, st, rowFunc) {
 
-  def delayed: Query[T, R, InsertType, Ungroupped, Unordered, Unlimited, Unchainned, AssignUnchainned, Unterminated] = {
-    new Query(table, st.delayed, rowFunc)
-  }
-
-  def lowPriority: Query[T, R, InsertType, Ungroupped, Unordered, Unlimited, Unchainned, AssignUnchainned, Unterminated] = {
-    new Query(table, st.lowPriority, rowFunc)
-  }
-
-  def highPriority: Query[T, R, InsertType, Ungroupped, Unordered, Unlimited, Unchainned, AssignUnchainned, Unterminated] = {
-    new Query(table, st.highPriority, rowFunc)
-  }
-
-  def ignore: Query[T, R, InsertType, Ungroupped, Unordered, Unlimited, Unchainned, AssignUnchainned, Unterminated] = {
-    new Query(table, st.ignore, rowFunc)
-  }
-
-}
 
 
 class InsertQuery[T <: Table[T, _],
