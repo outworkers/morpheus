@@ -17,7 +17,7 @@
 package com.websudos.morpheus.mysql.tables
 
 import com.websudos.morpheus.column.DefaultForeignKeyConstraints.{SetNull, Restrict, Cascade}
-import com.websudos.morpheus.mysql.Imports._
+import com.websudos.morpheus.mysql._
 
 case class IndexedRecord(id: Int, value: Long)
 

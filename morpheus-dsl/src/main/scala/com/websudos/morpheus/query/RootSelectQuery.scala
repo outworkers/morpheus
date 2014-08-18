@@ -135,7 +135,8 @@ class SelectQuery[T <: BaseTable[T, _],
     )
   }
 
-  final def innerJoin[Owner <: Table[Owner, Record], Record](join: Table[Owner, Record]): OnJoinQuery[T, (R, Record), SelectType, Group, Order, Limit, Chain,
+  final def innerJoin[Owner <: BaseTable[Owner, Record], Record](join: BaseTable[Owner, Record]): OnJoinQuery[T, (R, Record), SelectType, Group, Order, Limit,
+    Chain,
     AssignChain, Unterminated] = {
 
     def fromRow(row: Row): (R, Record) = (query.fromRow(row), join.fromRow(row))
@@ -149,7 +150,7 @@ class SelectQuery[T <: BaseTable[T, _],
     )
   }
 
-  final def leftJoin[Owner <: Table[Owner, Record], Record](join: Table[Owner, Record]): OnJoinQuery[T, (R, Record), SelectType, Group, Order, Limit, Chain,
+  final def leftJoin[Owner <: BaseTable[Owner, Record], Record](join: BaseTable[Owner, Record]): OnJoinQuery[T, (R, Record), SelectType, Group, Order, Limit, Chain,
     AssignChain, Unterminated] = {
 
     def fromRow(row: Row): (R, Record) = (query.fromRow(row), join.fromRow(row))
