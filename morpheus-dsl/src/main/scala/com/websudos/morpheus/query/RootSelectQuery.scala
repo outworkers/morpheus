@@ -135,6 +135,20 @@ class SelectQuery[T <: Table[T, _],
     )
   }
 
+  final def innerJoin[Owner <: Table[Owner, Record], Record](join: Table[Owner, Record]): OnJoinQuery[T, (R, Record), SelectType, Group, Order, Limit, Chain,
+    AssignChain, Unterminated] = {
+
+    def fromRow(row: Row): (R, Record) = (query.fromRow(row), join.fromRow(row))
+
+    new OnJoinQuery(
+      new Query(
+        query.table,
+        query.table.queryBuilder.innerJoin(query.query, join.tableName),
+        fromRow
+      )
+    )
+  }
+
   final def leftJoin[Owner <: Table[Owner, Record], Record](join: Table[Owner, Record]): OnJoinQuery[T, (R, Record), SelectType, Group, Order, Limit, Chain,
     AssignChain, Unterminated] = {
 
