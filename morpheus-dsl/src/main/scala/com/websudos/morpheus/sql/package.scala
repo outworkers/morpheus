@@ -17,10 +17,12 @@
 package com.websudos.morpheus
 
 import com.websudos.morpheus.column.AbstractColumn
-import com.websudos.morpheus.dsl.DefaultImportsDefinition
+import com.websudos.morpheus.dsl.{DefaultImportsDefinition, BaseTable => BaseTable}
 import com.websudos.morpheus.operators.SQLOperatorSet
 import com.websudos.morpheus.query.{DefaultSQLEngines, SQLQueryColumn}
 
 package object sql extends DefaultImportsDefinition with SQLPrimitives with DefaultSQLEngines with SQLOperatorSet {
   override implicit def columnToQueryColumn[T : SQLPrimitive](col: AbstractColumn[T]): SQLQueryColumn[T] = new SQLQueryColumn[T](col)
+
+  type Table[Owner <: BaseTable[Owner, Record], Record] = com.websudos.morpheus.sql.SQLTable[Owner, Record]
 }

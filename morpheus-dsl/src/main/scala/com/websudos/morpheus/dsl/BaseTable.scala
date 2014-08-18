@@ -40,7 +40,7 @@ import com.websudos.morpheus.query._
  * @tparam Record The user defined Scala class, usually a case class, holding a type safe data model definition. This allows for type safe querying of
  *                records, as all select all queries will return an instance of Record.
  */
-abstract class Table[Owner <: Table[Owner, Record], Record] {
+abstract class BaseTable[Owner <: BaseTable[Owner, Record], Record] {
 
   val queryBuilder: AbstractQueryBuilder
 

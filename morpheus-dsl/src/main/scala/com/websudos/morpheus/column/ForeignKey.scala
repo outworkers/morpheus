@@ -18,7 +18,7 @@ package com.websudos.morpheus.column
 
 import scala.annotation.implicitNotFound
 
-import com.websudos.morpheus.dsl.Table
+import com.websudos.morpheus.dsl.BaseTable
 import com.websudos.morpheus.query.{DefaultSQLDataTypes, DefaultSQLSyntax, SQLBuiltQuery}
 import shapeless.{<:!<, =:!=}
 
@@ -72,13 +72,13 @@ private[morpheus] trait ForeignKeyDefinition {}
  */
 @implicitNotFound("You are trying to define a ForeignKey from a table to its own columns or you are trying to define a relationship between this ForeignKey " +
   "and another ForeignKey or Index.")
-abstract class ForeignKey[T <: Table[T, R], R, T1 <: Table[T1, _]]
+abstract class ForeignKey[T <: BaseTable[T, R], R, T1 <: BaseTable[T1, _]]
   (origin: T, columns: IndexColumn#NonIndexColumn[T1]*)
   (implicit ev: T =:!= T1, ev2: IndexColumn#NonIndexColumn[T1] <:!< IndexColumn)
 
   extends AbstractColumn[String] with IndexColumn with ForeignKeyDefinition {
 
-  private[this] val refTable: Table[_, _] = columns.headOption.map(_.table).orNull
+  private[this] val refTable: BaseTable[_, _] = columns.headOption.map(_.table).orNull
 
   def qb: SQLBuiltQuery = {
     val default = SQLBuiltQuery(DefaultSQLSyntax.foreignKey)
@@ -128,7 +128,7 @@ abstract class ForeignKey[T <: Table[T, R], R, T1 <: Table[T1, _]]
    * TODO (flavian): Idiotic line, upgrade the preconditions.
    * @return
    */
-  override def table: Table[_, _] = origin
+  override def table: BaseTable[_, _] = origin
 
   /**
    * The default ForeignKey constraint with respect to the MySQL documentation is NoAction and we enforce that here.

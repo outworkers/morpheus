@@ -16,13 +16,13 @@
 package com.websudos.morpheus.column
 
 import com.twitter.finagle.exp.mysql.Row
-import com.websudos.morpheus.dsl.Table
+import com.websudos.morpheus.dsl.BaseTable
 import com.websudos.morpheus.query._
 import com.websudos.morpheus.SQLPrimitive
 
 private[morpheus] trait ModifyImplicits extends LowPriorityImplicits with JoinImplicits {
 
-  implicit class SelectColumnRequired[Owner <: Table[Owner, Record], Record, T](col: Column[Owner, Record, T]) extends SelectColumn[T](col) {
+  implicit class SelectColumnRequired[Owner <: BaseTable[Owner, Record], Record, T](col: Column[Owner, Record, T]) extends SelectColumn[T](col) {
     def apply(r: Row): T = col.apply(r)
   }
 
@@ -45,7 +45,7 @@ private[morpheus] trait ModifyImplicits extends LowPriorityImplicits with JoinIm
    * @tparam R The record type.
    * @return An executable SelectQuery.
    */
-  implicit def rootUpdateQueryToUpdateQuery[T <: Table[T, _], R](root: RootUpdateQuery[T, R]): Query[T, R, UpdateType, Ungroupped, Unordered, Unlimited,
+  implicit def rootUpdateQueryToUpdateQuery[T <: BaseTable[T, _], R](root: RootUpdateQuery[T, R]): Query[T, R, UpdateType, Ungroupped, Unordered, Unlimited,
     Unchainned, AssignUnchainned, Unterminated
   ] = {
     new Query(
@@ -55,7 +55,7 @@ private[morpheus] trait ModifyImplicits extends LowPriorityImplicits with JoinIm
     )
   }
 
-  implicit def rootUpdateQueryToAssignQuery[T <: Table[T, _], R](root: RootUpdateQuery[T, R]): AssignmentsQuery[T, R, UpdateType, Ungroupped,
+  implicit def rootUpdateQueryToAssignQuery[T <: BaseTable[T, _], R](root: RootUpdateQuery[T, R]): AssignmentsQuery[T, R, UpdateType, Ungroupped,
     Unordered,
     Unlimited,
     Unchainned, AssignUnchainned, Unterminated
@@ -85,7 +85,7 @@ private[morpheus] trait ModifyImplicits extends LowPriorityImplicits with JoinIm
    * @tparam R The record type.
    * @return An executable SelectQuery.
    */
-  implicit def rootDeleteQueryToDeleteQuery[T <: Table[T, _], R](root: RootDeleteQuery[T, R]): Query[T,
+  implicit def rootDeleteQueryToDeleteQuery[T <: BaseTable[T, _], R](root: RootDeleteQuery[T, R]): Query[T,
     R,
     DeleteType,
     Ungroupped,
@@ -117,7 +117,7 @@ private[morpheus] trait ModifyImplicits extends LowPriorityImplicits with JoinIm
    * @tparam R The record type.
    * @return An executable SelectQuery.
    */
-  implicit def rootSelectQueryToSelectQuery[T <: Table[T, _], R](root: AbstractRootSelectQuery[T, R]): Query[T, R, SelectType, Ungroupped, Unordered, Unlimited,
+  implicit def rootSelectQueryToSelectQuery[T <: BaseTable[T, _], R](root: AbstractRootSelectQuery[T, R]): Query[T, R, SelectType, Ungroupped, Unordered, Unlimited,
     Unchainned, AssignUnchainned, Unterminated] = {
     new Query(
       root.table,
@@ -139,7 +139,7 @@ private[morpheus] trait ModifyImplicits extends LowPriorityImplicits with JoinIm
    * @tparam R The record type.
    * @return An executable SelectQuery.
    */
-  implicit def rootInsertQueryToQuery[T <: Table[T, _], R](root: RootInsertQuery[T, R]): Query[T, R, InsertType, Ungroupped, Unordered, Unlimited,
+  implicit def rootInsertQueryToQuery[T <: BaseTable[T, _], R](root: RootInsertQuery[T, R]): Query[T, R, InsertType, Ungroupped, Unordered, Unlimited,
     Unchainned, AssignUnchainned, Unterminated] = {
     new Query(
       root.table,
@@ -148,7 +148,7 @@ private[morpheus] trait ModifyImplicits extends LowPriorityImplicits with JoinIm
     )
   }
 
-  implicit def rootCreateQueryToQuery[T <: Table[T, _], R](root: RootCreateQuery[T, R]): Query[T, R, CreateType, Ungroupped, Unordered, Unlimited,
+  implicit def rootCreateQueryToQuery[T <: BaseTable[T, _], R](root: RootCreateQuery[T, R]): Query[T, R, CreateType, Ungroupped, Unordered, Unlimited,
     Unchainned, AssignUnchainned, Unterminated] = {
     new Query(
       root.table,
@@ -166,7 +166,7 @@ private[morpheus] trait ModifyImplicits extends LowPriorityImplicits with JoinIm
    * @tparam R The record type.
    * @return An executable SelectQuery.
    */
-  implicit def rootInsertQueryToInsertQuery[T <: Table[T, _], R](root: RootInsertQuery[T, R]): InsertQuery[T, R, InsertType, Ungroupped, Unordered,
+  implicit def rootInsertQueryToInsertQuery[T <: BaseTable[T, _], R](root: RootInsertQuery[T, R]): InsertQuery[T, R, InsertType, Ungroupped, Unordered,
     Unlimited, Unchainned, AssignUnchainned, Unterminated] = {
     new InsertQuery(
       new Query(
@@ -177,7 +177,7 @@ private[morpheus] trait ModifyImplicits extends LowPriorityImplicits with JoinIm
     )
   }
 
-  implicit def queryToAssignmentsQuery[T <: Table[T, _],
+  implicit def queryToAssignmentsQuery[T <: BaseTable[T, _],
     R,
     G <: GroupBind,
     O <: OrderBind,
@@ -189,7 +189,7 @@ private[morpheus] trait ModifyImplicits extends LowPriorityImplicits with JoinIm
     new AssignmentsQuery(query)
   }
 
-  implicit def assignmentToQuery[T <: Table[T, _],
+  implicit def assignmentToQuery[T <: BaseTable[T, _],
     R,
     G <: GroupBind,
     O <: OrderBind,
@@ -200,7 +200,7 @@ private[morpheus] trait ModifyImplicits extends LowPriorityImplicits with JoinIm
   ](assignment: AssignmentsQuery[T, R, UpdateType, G, O, L, C, AC, Status]): Query[T, R, UpdateType, G, O, L, C, AssignChainned, Terminated] =
     assignment.terminate
 
-  implicit def queryToSelectQuery[T <: Table[T, _],
+  implicit def queryToSelectQuery[T <: BaseTable[T, _],
     R,
     G <: GroupBind,
     O <: OrderBind,
@@ -212,7 +212,7 @@ private[morpheus] trait ModifyImplicits extends LowPriorityImplicits with JoinIm
     new SelectQuery(query)
   }
 
-  implicit def selectQueryToQuery[T <: Table[T, _],
+  implicit def selectQueryToQuery[T <: BaseTable[T, _],
     R,
     G <: GroupBind,
     O <: OrderBind,
@@ -222,7 +222,7 @@ private[morpheus] trait ModifyImplicits extends LowPriorityImplicits with JoinIm
     Status <: StatusBind
   ](assignment: SelectQuery[T, R, SelectType, G, O, L, C, AC, Status]): Query[T, R, SelectType, G, O, L, C, AC, Terminated] = assignment.terminate
 
-  implicit def queryInsertQuery[T <: Table[T, _],
+  implicit def queryInsertQuery[T <: BaseTable[T, _],
     R,
     G <: GroupBind,
     O <: OrderBind,
@@ -234,7 +234,7 @@ private[morpheus] trait ModifyImplicits extends LowPriorityImplicits with JoinIm
     new InsertQuery(query)
   }
 
-  implicit def insertQueryToQuery[T <: Table[T, _],
+  implicit def insertQueryToQuery[T <: BaseTable[T, _],
     R,
     G <: GroupBind,
     O <: OrderBind,
@@ -244,7 +244,7 @@ private[morpheus] trait ModifyImplicits extends LowPriorityImplicits with JoinIm
     Status <: StatusBind
   ](assignment: InsertQuery[T, R, InsertType, G, O, L, C, AC, Status]): Query[T, R, InsertType, G, O, L, C, AC, Terminated] = assignment.toQuery
 
-  implicit def queryToCreateQuery[T <: Table[T, _],
+  implicit def queryToCreateQuery[T <: BaseTable[T, _],
     R,
     G <: GroupBind,
     O <: OrderBind,
@@ -256,7 +256,7 @@ private[morpheus] trait ModifyImplicits extends LowPriorityImplicits with JoinIm
     new CreateQuery(query)
   }
 
-  implicit def createQueryToQuery[T <: Table[T, _],
+  implicit def createQueryToQuery[T <: BaseTable[T, _],
     R,
     G <: GroupBind,
     O <: OrderBind,

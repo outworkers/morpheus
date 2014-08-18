@@ -22,7 +22,7 @@ import scala.annotation.implicitNotFound
 
 import com.twitter.finagle.exp.mysql.Row
 import com.websudos.morpheus.column.SelectColumn
-import com.websudos.morpheus.dsl.Table
+import com.websudos.morpheus.dsl.BaseTable
 
 private[morpheus] trait GroupBind
 private[morpheus] abstract class Groupped extends GroupBind
@@ -68,7 +68,7 @@ private[morpheus] abstract class SelectType extends QueryType
  * @tparam T The type of the table owning the record.
  * @tparam R The type of the record held in the table.
  */
-class Query[T <: Table[T, _],
+class Query[T <: BaseTable[T, _],
   R,
   Type <: QueryType,
   Group <: GroupBind,
@@ -126,7 +126,7 @@ class Query[T <: Table[T, _],
 }
 
 object Query {
-  def apply[T <: Table[T, _], R, QType <: QueryType](table: T, query: SQLBuiltQuery, rowFunc: Row => R): Query[T, R, QType, Ungroupped, Unordered, Unlimited,
+  def apply[T <: BaseTable[T, _], R, QType <: QueryType](table: T, query: SQLBuiltQuery, rowFunc: Row => R): Query[T, R, QType, Ungroupped, Unordered, Unlimited,
     Unchainned,
     AssignUnchainned, Unterminated] = {
     new Query(table, query, rowFunc)

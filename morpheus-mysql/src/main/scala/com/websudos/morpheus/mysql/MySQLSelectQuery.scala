@@ -17,7 +17,7 @@
 package com.websudos.morpheus.mysql
 
 import com.twitter.finagle.exp.mysql.Row
-import com.websudos.morpheus.dsl.Table
+import com.websudos.morpheus.dsl.BaseTable
 import com.websudos.morpheus.query._
 
 
@@ -90,7 +90,7 @@ private[morpheus] class MySQLSelectSyntaxBlock(
 }
 
 
-private[morpheus] class MySQLRootSelectQuery[T <: Table[T, _], R](table: T, st: MySQLSelectSyntaxBlock, rowFunc: Row => R)
+private[morpheus] class MySQLRootSelectQuery[T <: BaseTable[T, _], R](table: T, st: MySQLSelectSyntaxBlock, rowFunc: Row => R)
   extends AbstractRootSelectQuery[T, R](table, st, rowFunc) {
 
   type BaseSelectQuery = Query[T, R, SelectType, Ungroupped, Unordered, Unlimited, Unchainned, AssignUnchainned, Unterminated]

@@ -17,7 +17,7 @@
 package com.websudos.morpheus.column
 
 import com.twitter.finagle.exp.mysql.Row
-import com.websudos.morpheus.dsl.Table
+import com.websudos.morpheus.dsl.BaseTable
 import com.websudos.morpheus.query.{QueryAssignment, SQLBuiltQuery}
 
 private[morpheus] trait SchemaSerializer {
@@ -34,7 +34,7 @@ private[morpheus] trait AbstractColumn[@specialized(Int, Double, Float, Long, Bo
 
   def sqlType: String
 
-  def table: Table[_, _]
+  def table: BaseTable[_, _]
 
   def toQueryString(v: T): String
 
@@ -53,7 +53,7 @@ private[morpheus] abstract class SelectColumn[T](val col: AbstractColumn[_]) {
   def apply(r: Row): T
 }
 
-private[morpheus] abstract class Column[Owner <: Table[Owner, Record], Record, T](val table: Table[Owner, Record]) extends AbstractColumn[T] {
+private[morpheus] abstract class Column[Owner <: BaseTable[Owner, Record], Record, T](val table: BaseTable[Owner, Record]) extends AbstractColumn[T] {
 
   def optional(r: Row): Option[T]
 

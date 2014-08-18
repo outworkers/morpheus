@@ -17,7 +17,7 @@
 package com.websudos.morpheus.mysql
 
 import com.twitter.finagle.exp.mysql.Row
-import com.websudos.morpheus.dsl.Table
+import com.websudos.morpheus.dsl.BaseTable
 import com.websudos.morpheus.query._
 
 import com.websudos.morpheus.query.{RootInsertSyntaxBlock, SQLBuiltQuery}
@@ -51,7 +51,7 @@ private[morpheus] class MySQLInsertSyntaxBlock(query: String, tableName: String)
 }
 
 
-private[morpheus] class MySQLRootInsertQuery[T <: Table[T, _], R](table: T, st: MySQLInsertSyntaxBlock, rowFunc: Row => R) extends RootInsertQuery[T,
+private[morpheus] class MySQLRootInsertQuery[T <: BaseTable[T, _], R](table: T, st: MySQLInsertSyntaxBlock, rowFunc: Row => R) extends RootInsertQuery[T,
   R](table, st, rowFunc) {
 
   def delayed: Query[T, R, InsertType, Ungroupped, Unordered, Unlimited, Unchainned, AssignUnchainned, Unterminated] = {

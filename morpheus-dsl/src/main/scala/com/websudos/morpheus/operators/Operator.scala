@@ -18,7 +18,7 @@ package com.websudos.morpheus.operators
 
 import com.websudos.morpheus.SQLPrimitive
 import com.websudos.morpheus.SQLPrimitives.StringIsSQLPrimitive
-import com.websudos.morpheus.dsl.Table
+import com.websudos.morpheus.dsl.BaseTable
 import com.websudos.morpheus.query._
 
 
@@ -98,7 +98,7 @@ sealed class ConcatOperator extends Operator {
 sealed class ExistsOperator extends Operator {
 
   final def apply[
-    T <: Table[T, R],
+    T <: BaseTable[T, R],
     R,
     Group <: GroupBind,
     Order <: OrderBind,
@@ -116,7 +116,7 @@ sealed class ExistsOperator extends Operator {
 sealed class NotExistsOperator extends Operator {
 
   final def apply[
-    T <: Table[T, R],
+    T <: BaseTable[T, R],
     R,
     Group <: GroupBind,
     Order <: OrderBind,

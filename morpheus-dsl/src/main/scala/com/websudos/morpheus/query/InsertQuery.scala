@@ -20,7 +20,7 @@ import scala.annotation.implicitNotFound
 import com.twitter.finagle.exp.mysql.Row
 import com.websudos.morpheus.SQLPrimitive
 import com.websudos.morpheus.column.AbstractColumn
-import com.websudos.morpheus.dsl.Table
+import com.websudos.morpheus.dsl.BaseTable
 
 private[morpheus] class RootInsertSyntaxBlock(query: String, tableName: String) extends AbstractSyntaxBlock {
 
@@ -49,7 +49,7 @@ private[morpheus] class RootInsertSyntaxBlock(query: String, tableName: String) 
  * @tparam T The type of the owning table.
  * @tparam R The type of the record.
  */
-private[morpheus] class RootInsertQuery[T <: Table[T, _], R](val table: T, val st: RootInsertSyntaxBlock, val rowFunc: Row => R) {
+private[morpheus] class RootInsertQuery[T <: BaseTable[T, _], R](val table: T, val st: RootInsertSyntaxBlock, val rowFunc: Row => R) {
 
   def fromRow(r: Row): R = rowFunc(r)
 
@@ -61,7 +61,7 @@ private[morpheus] class RootInsertQuery[T <: Table[T, _], R](val table: T, val s
 
 
 
-class InsertQuery[T <: Table[T, _],
+class InsertQuery[T <: BaseTable[T, _],
   R,
   Type <: QueryType,
   Group <: GroupBind,

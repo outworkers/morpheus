@@ -35,5 +35,5 @@ object Imports extends DefaultImportsDefinition with MySQLPrimitives with MySQLO
     )
   }
 
-  type MySQLTable[Owner <: MySQLTable[Owner, Record], Record] = com.websudos.morpheus.mysql.MySQLTable[Owner, Record]
+  type Table[Owner <: BaseTable[Owner, Record], Record] = com.websudos.morpheus.mysql.MySQLTable[Owner, Record]
 }

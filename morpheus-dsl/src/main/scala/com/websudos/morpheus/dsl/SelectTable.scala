@@ -28,12 +28,12 @@ import com.websudos.morpheus.query.{AbstractRootSelectQuery, AbstractSelectSynta
  * @tparam Owner The table owning the record.
  * @tparam Record The record type.
  */
-private[morpheus] trait SelectTable[Owner <: Table[Owner, Record],
+private[morpheus] trait SelectTable[Owner <: BaseTable[Owner, Record],
   Record,
-  RootSelectQuery[A <: Table[A, _], B] <: AbstractRootSelectQuery[A, B],
+  RootSelectQuery[A <: BaseTable[A, _], B] <: AbstractRootSelectQuery[A, B],
   Block <: AbstractSelectSyntaxBlock
 ] {
-  self: Table[Owner, Record] =>
+  self: BaseTable[Owner, Record] =>
 
   /**
    * This allows a table implementation targeting a specific database to specify it's own root select query.
@@ -48,7 +48,7 @@ private[morpheus] trait SelectTable[Owner <: Table[Owner, Record],
    * @tparam B The type of the record.
    * @return A root select query implementation.
    */
-  protected[this] def createRootSelect[A <: Table[A, _], B](table: A, block: Block, rowFunc: Row => B): RootSelectQuery[A, B]
+  protected[this] def createRootSelect[A <: BaseTable[A, _], B](table: A, block: Block, rowFunc: Row => B): RootSelectQuery[A, B]
 
   protected[this] def createSelectSyntaxBlock(query: String, tableName: String, cols: List[String] = List("*")): Block
 
