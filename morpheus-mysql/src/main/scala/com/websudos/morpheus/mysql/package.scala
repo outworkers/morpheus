@@ -31,7 +31,6 @@ import com.websudos.morpheus.dsl.DefaultImportsDefinition
 
 package object mysql extends DefaultImportsDefinition with MySQLPrimitives with MySQLOperatorSet {
 
-
   override implicit def columnToQueryColumn[T : SQLPrimitive](col: AbstractColumn[T]): MySQLQueryColumn[T] = new MySQLQueryColumn[T](col)
 
   implicit def rootSelectQueryToQuery[T <: Table[T, _], R](root: MySQLRootSelectQuery[T, R]): Query[T, R, SelectType, Ungroupped, Unordered, Unlimited,

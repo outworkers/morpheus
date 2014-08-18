@@ -46,7 +46,7 @@ Instead of learning about primitives and rules we thought of to abstract away di
 Morpheus features a unique approach, what we call the auto-magical flip. Although at this point in time only MySQL is supported, 
 Morpheus is designed to give you an "all-you-can-eat" buffet through a single import.
 
-As follows: ```import com.websudos.morpheus.mysql.Imports._```.
+As follows: ```import com.websudos.morpheus.mysql._```.
 
 And done, you can now define tables, query and so on. Say you have something like this:
 
@@ -55,7 +55,7 @@ but it's a standard thing as far as MySQL is concerned.
 
 Here's how Morpheus operates:
 
-If you change the top level import to: ```com.websudos.morpheus.postgres.Imports._``` and you try to compile the same ```distinctRow``` query. But there 
+If you change the top level import to: ```com.websudos.morpheus.postgres._``` and you try to compile the same ```distinctRow``` query. But there 
 will be none. The method will simply not exist. Morpheus has now auto-magically performed a full feature swap, 
 changed communication protocol and all underlying settings, and all you get now is Postgres features.
 
