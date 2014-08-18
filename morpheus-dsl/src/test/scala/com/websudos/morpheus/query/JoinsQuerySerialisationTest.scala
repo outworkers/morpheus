@@ -33,4 +33,16 @@ class JoinsQuerySerialisationTest extends FlatSpec with Matchers {
 
     qb shouldEqual "SELECT * FROM KeysTable WHERE id = 10 LEFT JOIN IndexTable ON KeysTable.foreignKey = IndexTable.value"
   }
+
+  it should "serialise a simple INNER JOIN query" in {
+    val qb = KeysTable
+      .select
+      .where(_.id eqs 10)
+      .innerJoin(IndexTable)
+      .on(_.foreignKey eqs IndexTable.value)
+      .queryString
+
+    qb shouldEqual "SELECT * FROM KeysTable WHERE id = 10 INNER JOIN IndexTable ON KeysTable.foreignKey = IndexTable.value"
+  }
+
 }
