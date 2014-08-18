@@ -135,48 +135,33 @@ class SelectQuery[T <: BaseTable[T, _],
     )
   }
 
-  final def innerJoin[Owner <: BaseTable[Owner, Record], Record](join: BaseTable[Owner, Record]): OnJoinQuery[T, (R, Record), SelectType, Group, Order, Limit,
-    Chain,
-    AssignChain, Unterminated] = {
+  @inline
+  private[this] def joinBuilder[Owner <: BaseTable[Owner, Record], Record](
+      joiner: (SQLBuiltQuery, String) => SQLBuiltQuery,
+      join: BaseTable[Owner, Record]): OnJoinQuery[T, (R, Record), SelectType, Group, Order, Limit, Chain, AssignChain, Unterminated] = {
 
     def fromRow(row: Row): (R, Record) = (query.fromRow(row), join.fromRow(row))
 
     new OnJoinQuery(
       new Query(
         query.table,
-        query.table.queryBuilder.innerJoin(query.query, join.tableName),
+        joiner(query.query, join.tableName),
         fromRow
       )
     )
   }
 
-  final def leftJoin[Owner <: BaseTable[Owner, Record], Record](join: BaseTable[Owner, Record]): OnJoinQuery[T, (R, Record), SelectType, Group, Order, Limit, Chain,
-    AssignChain, Unterminated] = {
+  def innerJoin[Owner <: BaseTable[Owner, Record], Record](join: BaseTable[Owner, Record])
+      : OnJoinQuery[T, (R, Record), SelectType, Group, Order, Limit, Chain, AssignChain, Unterminated] =
+    joinBuilder(query.table.queryBuilder.innerJoin, join)
 
-    def fromRow(row: Row): (R, Record) = (query.fromRow(row), join.fromRow(row))
+  def leftJoin[Owner <: BaseTable[Owner, Record], Record](join: BaseTable[Owner, Record])
+      : OnJoinQuery[T, (R, Record), SelectType, Group, Order, Limit, Chain, AssignChain, Unterminated] =
+    joinBuilder(query.table.queryBuilder.leftJoin, join)
 
-    new OnJoinQuery(
-      new Query(
-        query.table,
-        query.table.queryBuilder.leftJoin(query.query, join.tableName),
-        fromRow
-      )
-    )
-  }
-
-  final def rightJoin[Owner <: BaseTable[Owner, Record], Record](join: BaseTable[Owner, Record]): OnJoinQuery[T, (R, Record), SelectType, Group, Order, Limit, Chain,
-    AssignChain, Unterminated] = {
-
-    def fromRow(row: Row): (R, Record) = (query.fromRow(row), join.fromRow(row))
-
-    new OnJoinQuery(
-      new Query(
-        query.table,
-        query.table.queryBuilder.rightJoin(query.query, join.tableName),
-        fromRow
-      )
-    )
-  }
+  def rightJoin[Owner <: BaseTable[Owner, Record], Record](join: BaseTable[Owner, Record])
+      : OnJoinQuery[T, (R, Record), SelectType, Group, Order, Limit, Chain, AssignChain, Unterminated] =
+    joinBuilder(query.table.queryBuilder.rightJoin, join)
 
   private[morpheus] final def terminate: Query[T, R, SelectType, Group, Order, Limit, Chain, AssignChain, Terminated] = {
     new Query(
