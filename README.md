@@ -1,4 +1,4 @@
-morpheus [NOT PRODUCTION READY][![Build Status](https://travis-ci.org/websudosuk/morpheus.svg)](https://travis-ci.org/websudosuk/morpheus)[![Coverage Status](https://img.shields.io/coveralls/websudosuk/morpheus.svg)](https://coveralls.io/r/websudosuk/morpheus?branch=develop)
+morpheus [NOT PRODUCTION READY][![Build Status](https://travis-ci.org/websudosuk/morpheus.svg)](https://travis-ci.org/websudosuk/morpheus)[![Coverage Status](https://coveralls.io/repos/websudosuk/morpheus/badge.png?branch=develop)](https://coveralls.io/r/websudosuk/morpheus?branch=develop)
 
 ========================================================================================================================================================================================================================
 
@@ -21,6 +21,7 @@ not yet production ready.
 ===============================================
 <ol>
   <li><a href="#design-philosophy">Design philosophy</a></li>
+  <li><a href="#integrating-morpheus">Integrating Morpheus</a></li>
   <li>
     <p>Supported databases and documentation</p>
     <ul>
@@ -39,18 +40,22 @@ not yet production ready.
 
 You're probably wondering how Morpheus fairs compared to the more established players in the Scala SQL market and why we set out to do something new in the 
 first place. To sum it up, we believe Slick is an excellent tool but we do not believe you should learn about our abstractions to get things done. A DSL 
-should auto-magically encode the same syntax and the logic as the tool it's designed to "enclose".
+should auto-magically encode the same syntax and the logic as the tool it's designed for.
 
 Instead of learning about primitives and rules we thought of to abstract away discrepancies between the various SQL implementations, 
-morpheus features a unique approach, what we call the auto-magical flip. Although at this point in time only MySQL is supported, 
-Morpheus is design to give you an "all-you-can-eat" buffet through a single import.
+Morpheus features a unique approach, what we call the auto-magical flip. Although at this point in time only MySQL is supported, 
+Morpheus is designed to give you an "all-you-can-eat" buffet through a single import.
 
-As follows: ```import com.websudos.morpheus.mysql.Imports._```. And done, you can now define tables, query and so on. Say you have something like this:
+As follows: ```import com.websudos.morpheus.mysql.Imports._```.
+
+And done, you can now define tables, query and so on. Say you have something like this:
 
 ```Recipes.select.distinctRow.where(_.name eqs "test")```. ```DISTINCTROW``` doesn't exist in the Postgres ```SELECT``` statement syntax, 
-but it's a standard thing as far as MySQL is concerned. Here's how Morpheus operates.
+but it's a standard thing as far as MySQL is concerned.
 
-Say you change the top level import to: ```com.websudos.morpheus.postgres.Imports._``` and you try to compile the same ```distinctRow``` query. But there 
+Here's how Morpheus operates:
+
+If you change the top level import to: ```com.websudos.morpheus.postgres.Imports._``` and you try to compile the same ```distinctRow``` query. But there 
 will be none. The method will simply not exist. Morpheus has now auto-magically performed a full feature swap, 
 changed communication protocol and all underlying settings, and all you get now is Postgres features.
 
@@ -59,6 +64,36 @@ don't have to care. Slick makes it easy to move from one SQL database to the oth
 know and love, it may be counter productive to have to learn about a framework when you could use Morpheus and all you need is IDE auto-completes to get 
 lightning fast development productivity. 
 
+Oh, and did we mention it's entirely asynchronous and reactive, build on Finagle and of course the underlying Netty?
+
+
+<a id="integrating-morpheus">Integrating Morpheus</a>
+======================================================
+<a href="#table-of-contents">back to top</a>
+
+Morpheus is designed to give you an all-you-can eat buffet through a single import, so all you really have to do is to pick the module corresponding to the 
+database you want to use. At this point in time only MySQL is supported.
+
+If you are using MySQL, you would simply use the following:
+
+```scala
+libraryDependencies ++= Seq(
+  "com.websudos"  %% "morpheus-mysql"                % morpheusVersion
+)
+```
+
+And then you can: ```import com.websudos.morpheus.mysql.Imports._```, which will give you the full set of MySQL methods and features without any overlaps or 
+unsupported operations. Morpheus guarantees you can almost never write an invalid SQL query unless you try really really hard.
+
+
+The full list of available modules is:
+
+```scala
+libraryDependencies ++= Seq(
+  "com.websudos"  %% "morpheus-dsl"                  % morpheusVersion,
+  "com.websudos"  %% "morpheus-mysql"                % morpheusVersion
+)
+```
 
 
 <a id="contributors">Contributors</a>
@@ -86,6 +121,7 @@ Contributions are most welcome! Don't forget to add your name and GitHub handle 
 
 <a id="git-flow">Using GitFlow</a>
 ==================================
+<a href="#table-of-contents">back to top</a>
 
 To contribute, simply submit a "Pull request" via GitHub.
 
@@ -97,9 +133,11 @@ We use GitFlow as a branching model and SemVer for versioning.
 
 <a id="style-guidelines">Scala Style Guidelines</a>
 ===================================================
+<a href="#table-of-contents">back to top</a>
 
 In spirit, we follow the [Twitter Scala Style Guidelines](http://twitter.github.io/effectivescala/).
-We will reject your pull request if it doesn't meet code standards, but we'll happily give you a hand to get it right.
+We will reject your pull request if it doesn't meet code standards, but we'll happily give you a hand to get it right. Morpheus is even using ScalaTest to 
+build, which means your build will also fail if your code doesn't comply with the style rules.
 
 Some of the things that will make us seriously frown:
 

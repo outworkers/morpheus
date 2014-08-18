@@ -46,7 +46,7 @@ trait BaseSelectQuery[T <: Table[T, _], R] extends SQLResultsQuery[T, R] {
 
 }
 
-private[morpheus] abstract class AbstractSelectSyntaxBlock(
+private[morpheus] class AbstractSelectSyntaxBlock(
   query: String, tableName: String,
   columns: List[String] = List("*")) extends AbstractSyntaxBlock {
 
@@ -66,6 +66,8 @@ private[morpheus] abstract class AbstractSelectSyntaxBlock(
       .pad.append(syntax.from)
       .pad.append(tableName)
   }
+
+  override def syntax: AbstractSQLSyntax = DefaultSQLSyntax
 }
 
 
@@ -84,7 +86,7 @@ private[morpheus] abstract class AbstractSelectSyntaxBlock(
  * @tparam T The type of the owning table.
  * @tparam R The type of the record.
  */
-private[morpheus] abstract class AbstractRootSelectQuery[T <: Table[T, _], R](val table: T, val st: AbstractSelectSyntaxBlock, val rowFunc: Row => R) {
+private[morpheus] class AbstractRootSelectQuery[T <: Table[T, _], R](val table: T, val st: AbstractSelectSyntaxBlock, val rowFunc: Row => R) {
 
   def fromRow(r: Row): R = rowFunc(r)
 
@@ -133,24 +135,44 @@ class SelectQuery[T <: Table[T, _],
     )
   }
 
-  final def leftJoin[Owner <: Table[Owner, Record], Record](join: Table[Owner, Record]): OnJoinQuery[T, R, SelectType, Group, Order, Limit, Chain,
+  final def innerJoin[Owner <: Table[Owner, Record], Record](join: Table[Owner, Record]): OnJoinQuery[T, (R, Record), SelectType, Group, Order, Limit, Chain,
     AssignChain, Unterminated] = {
+
+    def fromRow(row: Row): (R, Record) = (query.fromRow(row), join.fromRow(row))
+
+    new OnJoinQuery(
+      new Query(
+        query.table,
+        query.table.queryBuilder.innerJoin(query.query, join.tableName),
+        fromRow
+      )
+    )
+  }
+
+  final def leftJoin[Owner <: Table[Owner, Record], Record](join: Table[Owner, Record]): OnJoinQuery[T, (R, Record), SelectType, Group, Order, Limit, Chain,
+    AssignChain, Unterminated] = {
+
+    def fromRow(row: Row): (R, Record) = (query.fromRow(row), join.fromRow(row))
 
     new OnJoinQuery(
       new Query(
         query.table,
         query.table.queryBuilder.leftJoin(query.query, join.tableName),
-        query.rowFunc
+        fromRow
       )
     )
   }
 
-  final def rightJoin[Owner <: Table[Owner, Record], Record](join: Table[Owner, Record]): OnJoinQuery[T, R, SelectType, Group, Order, Limit, Chain, AssignChain, Unterminated] = {
+  final def rightJoin[Owner <: Table[Owner, Record], Record](join: Table[Owner, Record]): OnJoinQuery[T, (R, Record), SelectType, Group, Order, Limit, Chain,
+    AssignChain, Unterminated] = {
+
+    def fromRow(row: Row): (R, Record) = (query.fromRow(row), join.fromRow(row))
+
     new OnJoinQuery(
       new Query(
         query.table,
         query.table.queryBuilder.rightJoin(query.query, join.tableName),
-        query.rowFunc
+        fromRow
       )
     )
   }
@@ -192,7 +214,6 @@ class OnJoinQuery[T <: Table[T, _],
       query.fromRow
     )
   }
-
 }
 
 private[morpheus] trait JoinImplicits {

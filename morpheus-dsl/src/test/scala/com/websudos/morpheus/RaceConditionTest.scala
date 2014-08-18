@@ -22,13 +22,13 @@ import scala.collection.JavaConversions._
 
 import org.scalatest.FunSuite
 
-import com.websudos.morpheus.mysql.Imports._
+import com.websudos.morpheus.sql._
 
 class RaceConditionTest extends FunSuite {
 
   case class Group(id: Long, name: String)
 
-  class Groups extends MySQLTable[Groups, Group] {
+  class Groups extends SQLTable[Groups, Group] {
     object id extends LongColumn(this)
     object name extends TextColumn(this)
 
@@ -37,7 +37,7 @@ class RaceConditionTest extends FunSuite {
 
   case class User(id: Long, name: String)
 
-  class Users extends MySQLTable[Users, User] {
+  class Users extends SQLTable[Users, User] {
     object id extends LongColumn(this)
     object name extends TextColumn(this)
 

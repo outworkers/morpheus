@@ -16,11 +16,11 @@
 
 package com.websudos.morpheus.dsl
 
-import com.websudos.morpheus.mysql.Imports._
+import com.websudos.morpheus.sql._
 
 case class BasicRecord(name: String, count: Long)
 
-class BasicTable extends MySQLTable[BasicTable, BasicRecord] {
+class BasicTable extends SQLTable[BasicTable, BasicRecord] {
 
   object name extends TextColumn(this)
   object count extends LongColumn(this)

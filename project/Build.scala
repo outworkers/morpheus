@@ -107,6 +107,7 @@ object morpheus extends Build {
     name := "morpheus"
   ).aggregate(
     morpheusDsl,
+    morpheusMySQL,
     morpheusTesting,
     morpheusZookeeper
   )
@@ -119,25 +120,28 @@ object morpheus extends Build {
       publishSettings
   ).settings(
     name := "morpheus-dsl",
-    fork := true,
-    logBuffered in Test := false,
-    testOptions in Test := Seq(Tests.Filter(s => s.indexOf("IterateeBig") == -1)),
-    concurrentRestrictions in Test := Seq(
-      Tags.limit(Tags.ForkedTestGroup, 4)
-    ),
     libraryDependencies ++= Seq(
       "com.chuusai"                  % "shapeless_2.10.4"                   % "2.0.0",
-      "org.scalaz"                   %% "scalaz-core"                       % "7.1.0",
       "com.twitter"                  %% "finagle-mysql"                     % finagleVersion,
       "org.scala-lang"               %  "scala-reflect"                     % "2.10.4",
       "com.twitter"                  %% "util-core"                         % finagleVersion,
       "joda-time"                    %  "joda-time"                         % "2.3",
       "org.joda"                     %  "joda-convert"                      % "1.6",
-      "org.scalacheck"               %% "scalacheck"                        % "1.11.4"                  % "test, provided",
-      "com.newzly"                   %% "util-testing"                      % newzlyUtilVersion         % "test, provided",
       "net.liftweb"                  %% "lift-json"                         % "2.6-M4"                  % "test, provided"
     )
   ).dependsOn(
+    morpheusTesting % "test, provided"
+  )
+
+  lazy val morpheusMySQL = Project(
+    id = "morpheus-mysql",
+    base = file("morpheus-mysql"),
+    settings = Defaults.coreDefaultSettings ++
+      sharedSettings ++ publishSettings
+  ).settings(
+    name := "morpheus-mysql"
+  ).dependsOn(
+    morpheusDsl,
     morpheusTesting % "test, provided"
   )
 
@@ -148,10 +152,8 @@ object morpheus extends Build {
   ).settings(
     name := "morpheus-zookeeper",
     libraryDependencies ++= Seq(
-      "org.scalatest"                %% "scalatest"                         % scalatestVersion,
       "com.twitter"                  %% "finagle-serversets"                % finagleVersion,
-      "com.twitter"                  %% "finagle-zookeeper"                 % finagleVersion,
-      "com.newzly"                   %% "util-testing"                      % newzlyUtilVersion      % "test, provided"
+      "com.twitter"                  %% "finagle-zookeeper"                 % finagleVersion
     )
   )
 
@@ -163,8 +165,9 @@ object morpheus extends Build {
     name := "morpheus-testing",
     libraryDependencies ++= Seq(
       "com.twitter"                      %% "util-core"                % finagleVersion,
+      "com.newzly"                       %% "util-testing"             % newzlyUtilVersion,
       "org.scalatest"                    %% "scalatest"                % scalatestVersion,
-      "org.scalacheck"                   %% "scalacheck"               % "1.11.3"              % "test",
+      "org.scalacheck"                   %% "scalacheck"               % "1.11.3",
       "org.fluttercode.datafactory"      %  "datafactory"              % "0.8"
     )
   ).dependsOn(

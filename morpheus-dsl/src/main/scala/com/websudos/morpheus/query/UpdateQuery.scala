@@ -22,13 +22,15 @@ import com.twitter.finagle.exp.mysql.Row
 import com.websudos.morpheus.dsl.Table
 
 
-private[morpheus] abstract class AbstractUpdateSyntaxBlock(query: String, tableName: String) extends AbstractSyntaxBlock {
+private[morpheus] class RootUpdateSyntaxBlock(query: String, tableName: String) extends AbstractSyntaxBlock {
 
   protected[this] val qb = SQLBuiltQuery(query)
 
   def all: SQLBuiltQuery = {
     qb.pad.append(tableName)
   }
+
+  def syntax: AbstractSQLSyntax = DefaultSQLSyntax
 }
 
 
@@ -44,9 +46,7 @@ private[morpheus] abstract class AbstractUpdateSyntaxBlock(query: String, tableN
  * @tparam T The type of the owning table.
  * @tparam R The type of the record.
  */
-private[morpheus] abstract class AbstractRootUpdateQuery[T <: Table[T, _], R](val table: T, val st: AbstractUpdateSyntaxBlock, val rowFunc: Row => R) {
-
-  def fromRow(r: Row): R = rowFunc(r)
+private[morpheus] class RootUpdateQuery[T <: Table[T, _], R](val table: T, val st: RootUpdateSyntaxBlock, val rowFunc: Row => R) {
 
   protected[this] type BaseUpdateQuery = Query[T, R, UpdateType, Ungroupped, Unordered, Unlimited, Unchainned, AssignUnchainned, Unterminated]
 

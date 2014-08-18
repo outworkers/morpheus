@@ -20,30 +20,39 @@ import com.twitter.finagle.exp.mysql.Row
 import com.websudos.morpheus.dsl.Table
 import com.websudos.morpheus.query._
 
+case class MySQLDeleteSyntaxBlock(query: String, tableName: String) extends RootDeleteSyntaxBlock(query, tableName) {
 
-case class MySQLUpdateSyntaxBlock(query: String, tableName: String) extends AbstractUpdateSyntaxBlock(query, tableName) {
-  val syntax = MySQLSyntax
+  override val syntax = MySQLSyntax
 
   def lowPriority: SQLBuiltQuery = {
     qb.pad.append(syntax.lowPriority)
-      .pad.append(tableName)
+      .forcePad.append(DefaultSQLSyntax.from)
+      .forcePad.append(tableName)
   }
 
   def ignore: SQLBuiltQuery = {
     qb.pad.append(syntax.ignore)
-      .pad.append(tableName)
+      .forcePad.append(DefaultSQLSyntax.from)
+      .forcePad.append(tableName)
+  }
+
+  def quick: SQLBuiltQuery = {
+    qb.pad.append(syntax.quick)
+      .forcePad.append(DefaultSQLSyntax.from)
+      .forcePad.append(tableName)
   }
 }
 
+private[morpheus] class MySQLRootDeleteQuery[T <: Table[T, _], R](table: T, st: MySQLDeleteSyntaxBlock, rowFunc: Row => R)  extends RootDeleteQuery(table, st,
+  rowFunc) {
 
-private[morpheus] class MySQLRootUpdateQuery[T <: Table[T, _], R](table: T, st: MySQLUpdateSyntaxBlock,
-                                                                  rowFunc: Row => R) extends AbstractRootUpdateQuery[T, R](table, st, rowFunc) {
-
-  def lowPriority: BaseUpdateQuery = {
+  def lowPriority: BaseDeleteQuery = {
     new Query(table, st.lowPriority, rowFunc)
   }
 
-  def ignore: BaseUpdateQuery = {
+  def ignore: BaseDeleteQuery = {
     new Query(table, st.ignore, rowFunc)
   }
+
+
 }

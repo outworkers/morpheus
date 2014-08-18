@@ -16,13 +16,12 @@
 
 package com.websudos.morpheus.mysql
 
-import com.websudos.morpheus.{SQLPrimitives, SQLPrimitive}
 import com.websudos.morpheus.column.AbstractColumn
-import com.websudos.morpheus.query.{DefaultSQLSyntax, AbstractSQLSyntax, SQLOperatorSet, AbstractQueryColumn, AbstractQueryBuilder}
+import com.websudos.morpheus.query.{AbstractQueryBuilder, AbstractQueryColumn, AbstractSQLSyntax, SQLOperatorSet}
+import com.websudos.morpheus.{SQLPrimitive, SQLPrimitives}
 
 
 trait MySQLPrimitives extends SQLPrimitives {}
-
 
 object MySQLSyntax extends AbstractSQLSyntax {
   val distinctRow = "DISTINCTROW"
@@ -39,22 +38,11 @@ object MySQLSyntax extends AbstractSQLSyntax {
 }
 
 
-object DefaultSQLOperatorSet extends SQLOperatorSet {
-
-}
-
-object MySQLOperatorSet extends SQLOperatorSet {
-
-}
+object MySQLOperatorSet extends SQLOperatorSet
 
 object MySQLQueryBuilder extends AbstractQueryBuilder {
   val operators = MySQLOperatorSet
   val syntax = MySQLSyntax
-}
-
-private[morpheus] object DefaultQueryBuilder extends AbstractQueryBuilder {
-  val syntax = DefaultSQLSyntax
-  val operators: SQLOperatorSet = DefaultSQLOperatorSet
 }
 
 private[morpheus] class MySQLQueryColumn[T : SQLPrimitive](col: AbstractColumn[T]) extends AbstractQueryColumn[T](col)

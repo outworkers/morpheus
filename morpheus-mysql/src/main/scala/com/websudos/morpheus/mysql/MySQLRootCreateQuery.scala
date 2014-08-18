@@ -17,14 +17,14 @@ package com.websudos.morpheus.mysql
 
 import com.twitter.finagle.exp.mysql.Row
 import com.websudos.morpheus.dsl.Table
-import com.websudos.morpheus.query.{AbstractRootCreateQuery, AbstractSQLSyntax, AbstractCreateSyntaxBlock}
+import com.websudos.morpheus.query.{RootCreateQuery, AbstractSQLSyntax, RootCreateSyntaxBlock}
 
 
-class MySQLCreateSyntaxBLock(query: String, tableName: String) extends AbstractCreateSyntaxBlock(query, tableName) {
-  def syntax: AbstractSQLSyntax = MySQLSyntax
+class MySQLCreateSyntaxBLock(query: String, tableName: String) extends RootCreateSyntaxBlock(query, tableName) {
+  override def syntax: AbstractSQLSyntax = MySQLSyntax
 }
 
-class MySQLRootCreateQuery[T <: Table[T, _], R](table: T, st: AbstractCreateSyntaxBlock, rowFunc: Row => R) extends AbstractRootCreateQuery[T, R](table, st,
+class MySQLRootCreateQuery[T <: Table[T, _], R](table: T, st: RootCreateSyntaxBlock, rowFunc: Row => R) extends RootCreateQuery[T, R](table, st,
   rowFunc){
 
 }

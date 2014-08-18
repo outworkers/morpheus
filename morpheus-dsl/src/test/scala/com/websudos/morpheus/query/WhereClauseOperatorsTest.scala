@@ -17,7 +17,7 @@
 package com.websudos.morpheus.query
 
 import org.scalatest.{Matchers, FlatSpec}
-import com.websudos.morpheus.mysql.Imports._
+import com.websudos.morpheus.sql._
 
 import com.websudos.morpheus.dsl.BasicTable
 

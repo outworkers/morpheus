@@ -196,9 +196,16 @@ abstract class AbstractSQLDataTypes {
   val set = "SET"
 }
 
+object DefaultSQLOperatorSet extends SQLOperatorSet
+
 object DefaultSQLDataTypes extends AbstractSQLDataTypes
 
 object DefaultSQLSyntax extends AbstractSQLSyntax
+
+private[morpheus] object DefaultQueryBuilder extends AbstractQueryBuilder {
+  val syntax = DefaultSQLSyntax
+  val operators: SQLOperatorSet = DefaultSQLOperatorSet
+}
 
 
 /**

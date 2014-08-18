@@ -24,8 +24,7 @@ import com.websudos.morpheus.query._
 private[morpheus] class MySQLSelectSyntaxBlock(
                                                 query: String, tableName: String,
                                                 columns: List[String] = List("*")) extends AbstractSelectSyntaxBlock(query, tableName, columns) {
-
-  val syntax = MySQLSyntax
+  override val syntax = MySQLSyntax
 
   def distinctRow: SQLBuiltQuery = {
     qb.pad.append(syntax.distinctRow)

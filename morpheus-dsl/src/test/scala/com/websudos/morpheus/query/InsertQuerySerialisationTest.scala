@@ -19,7 +19,7 @@ package com.websudos.morpheus.query
 import org.scalatest.{FlatSpec, Matchers}
 
 import com.websudos.morpheus.dsl.BasicTable
-import com.websudos.morpheus.mysql.Imports._
+import com.websudos.morpheus.sql._
 
 class InsertQuerySerialisationTest extends FlatSpec with Matchers {
 
@@ -29,22 +29,6 @@ class InsertQuerySerialisationTest extends FlatSpec with Matchers {
 
   it should "serialise an INSERT INTO query to the correct query" in {
     BasicTable.insert.into.queryString shouldEqual "INSERT INTO BasicTable"
-  }
-
-  it should "serialise an INSERT IGNORE INTO query to the correct query" in {
-    BasicTable.insert.ignore.queryString shouldEqual "INSERT IGNORE INTO BasicTable"
-  }
-
-  it should "serialise an INSERT HIGH_PRIORITY INTO query to the correct query" in {
-    BasicTable.insert.highPriority.queryString shouldEqual "INSERT HIGH_PRIORITY INTO BasicTable"
-  }
-
-  it should "serialise an INSERT LOW_PRIORITY INTO query to the correct query" in {
-    BasicTable.insert.lowPriority.queryString shouldEqual "INSERT LOW_PRIORITY INTO BasicTable"
-  }
-
-  it should "serialise an INSERT DELAYED INTO query to the correct query" in {
-    BasicTable.insert.delayed.queryString shouldEqual "INSERT DELAYED INTO BasicTable"
   }
 
   it should "count statements correctly" in {

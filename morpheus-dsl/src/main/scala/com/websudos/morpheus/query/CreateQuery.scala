@@ -19,11 +19,11 @@ package com.websudos.morpheus.query
 import com.twitter.finagle.exp.mysql.Row
 import com.websudos.morpheus.dsl.Table
 
-private[morpheus]abstract class AbstractCreateSyntaxBlock(query: String, tableName: String) extends AbstractSyntaxBlock {
+private[morpheus] class RootCreateSyntaxBlock(query: String, tableName: String) extends AbstractSyntaxBlock {
 
   protected[this] val qb: SQLBuiltQuery = SQLBuiltQuery(query)
 
-  def syntax: AbstractSQLSyntax
+  def syntax: AbstractSQLSyntax = DefaultSQLSyntax
 
   def default: SQLBuiltQuery = {
     qb.pad.append(DefaultSQLSyntax.table)
@@ -56,9 +56,7 @@ private[morpheus]abstract class AbstractCreateSyntaxBlock(query: String, tableNa
  * @tparam T The type of the owning table.
  * @tparam R The type of the record.
  */
-private[morpheus] abstract class AbstractRootCreateQuery[T <: Table[T, _], R](val table: T, val st: AbstractCreateSyntaxBlock, val rowFunc: Row => R) {
-
-  def fromRow(r: Row): R = rowFunc(r)
+private[morpheus] class RootCreateQuery[T <: Table[T, _], R](val table: T, val st: RootCreateSyntaxBlock, val rowFunc: Row => R) {
 
   protected[this] type BaseCreateQuery = Query[T, R, CreateType, Ungroupped, Unordered, Unlimited, Unchainned, AssignUnchainned, Unterminated]
 
@@ -123,8 +121,7 @@ trait DefaultSQLEngines {
 
 }
 
-trait MySQLEngines extends DefaultSQLEngines {
-}
+trait MySQLEngines extends DefaultSQLEngines {}
 
 /**
  * This bit of magic allows all extending sub-classes to implement the "set" and "and" SQL clauses with all the necessary operators,
@@ -146,13 +143,13 @@ class CreateQuery[T <: Table[T, _],
 ](val query: Query[T, R, CreateType, Group, Order, Limit, Chain, AssignChain, Status]) {
 
 
-  final protected def columnDefinitions: List[String] = {
+  final protected[morpheus] def columnDefinitions: List[String] = {
     query.table.columns.foldRight(List.empty[String])((col, acc) => {
       col.qb.queryString :: acc
     })
   }
 
-  final protected def columnSchema[St <: StatusBind]: CreateQuery[T, R, CreateType, Group, Order, Limit, Chain, AssignChain, St] = {
+  final protected[morpheus] def columnSchema[St <: StatusBind]: CreateQuery[T, R, CreateType, Group, Order, Limit, Chain, AssignChain, St] = {
 
     new CreateQuery[T, R, CreateType, Group, Order, Limit, Chain, AssignChain, St](
       new Query(query.table, query.query.append(columnDefinitions.mkString(", ")), query.rowFunc)
@@ -198,7 +195,7 @@ private[morpheus] trait CreateImplicits extends DefaultSQLEngines {
    * @tparam R The record type.
    * @return An executable SelectQuery.
    */
-  implicit def rootCreateQueryToCreateQuery[T <: Table[T, _], R](root: AbstractRootCreateQuery[T, R]): CreateQuery[T, R, CreateType, Ungroupped, Unordered,
+  implicit def rootCreateQueryToCreateQuery[T <: Table[T, _], R](root: RootCreateQuery[T, R]): CreateQuery[T, R, CreateType, Ungroupped, Unordered,
     Unlimited, Unchainned, AssignUnchainned, Unterminated] = {
     new CreateQuery(
       new Query(
