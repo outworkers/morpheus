@@ -16,11 +16,7 @@
 
 package com.websudos.morpheus.mysql
 
-import com.twitter.finagle.exp.mysql.Row
-import com.websudos.morpheus.dsl.BaseTable
-import com.websudos.morpheus.query._
-
-import com.websudos.morpheus.query.{RootInsertSyntaxBlock, SQLBuiltQuery}
+import com.websudos.morpheus.query.{RootInsertSyntaxBlock, SQLBuiltQuery, _}
 
 private[morpheus] class MySQLInsertSyntaxBlock(query: String, tableName: String) extends RootInsertSyntaxBlock(query, tableName) {
   override val syntax = MySQLSyntax

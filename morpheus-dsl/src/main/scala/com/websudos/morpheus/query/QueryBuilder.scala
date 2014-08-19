@@ -217,7 +217,7 @@ private[morpheus] trait AbstractSyntaxBlock {
 }
 
 /**
- * The AbstractQueryBuilder is designed to define the basic
+ * The AbstractQueryBuilder is designed to define the basic behaviour of an SQL query builder.
  * A QueryBuilder singleton will exist for every database supported by Morpheus.
  *
  * Every specific table implementation will automatically select the appropriate QueryBuilder while the user doesn't have to do anything.

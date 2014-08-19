@@ -25,32 +25,32 @@ import com.websudos.morpheus.column.SelectColumn
 import com.websudos.morpheus.dsl.BaseTable
 
 private[morpheus] trait GroupBind
-private[morpheus] abstract class Groupped extends GroupBind
-private[morpheus] abstract class Ungroupped extends GroupBind
+private[morpheus] final abstract class Groupped extends GroupBind
+private[morpheus] final abstract class Ungroupped extends GroupBind
 
 private[morpheus] trait ChainBind
-private[morpheus] abstract class Chainned extends ChainBind
-private[morpheus] abstract class Unchainned extends ChainBind
+private[morpheus] final abstract class Chainned extends ChainBind
+private[morpheus] final abstract class Unchainned extends ChainBind
 
 private[morpheus] trait OrderBind
-private[morpheus] abstract class Ordered extends OrderBind
-private[morpheus] abstract class Unordered extends OrderBind
+private[morpheus] final abstract class Ordered extends OrderBind
+private[morpheus] final abstract class Unordered extends OrderBind
 
 private[morpheus] trait LimitBind
-private[morpheus] abstract class Limited extends LimitBind
-private[morpheus] abstract class Unlimited extends LimitBind
+private[morpheus] final abstract class Limited extends LimitBind
+private[morpheus] final abstract class Unlimited extends LimitBind
 
 private[morpheus] trait StatusBind
-private[morpheus] abstract class Terminated extends StatusBind
-private[morpheus] abstract class Unterminated extends StatusBind
+private[morpheus] final abstract class Terminated extends StatusBind
+private[morpheus] final abstract class Unterminated extends StatusBind
 
 
 private[morpheus] trait QueryType
-private[morpheus] abstract class InsertType extends QueryType
-private[morpheus] abstract class UpdateType extends QueryType
-private[morpheus] abstract class DeleteType extends QueryType
-private[morpheus] abstract class CreateType extends QueryType
-private[morpheus] abstract class SelectType extends QueryType
+private[morpheus] final abstract class InsertType extends QueryType
+private[morpheus] final abstract class UpdateType extends QueryType
+private[morpheus] final abstract class DeleteType extends QueryType
+private[morpheus] final abstract class CreateType extends QueryType
+private[morpheus] final abstract class SelectType extends QueryType
 
 /**
  * This bit of magic allows all extending sub-classes to implement the "where" and "and" SQL clauses with all the necessary operators,

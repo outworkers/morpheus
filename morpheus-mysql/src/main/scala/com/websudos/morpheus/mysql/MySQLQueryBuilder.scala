@@ -16,9 +16,9 @@
 
 package com.websudos.morpheus.mysql
 
+import com.websudos.morpheus.SQLPrimitives
 import com.websudos.morpheus.column.AbstractColumn
 import com.websudos.morpheus.query.{AbstractQueryBuilder, AbstractQueryColumn, AbstractSQLSyntax, SQLOperatorSet}
-import com.websudos.morpheus.{SQLPrimitive, SQLPrimitives}
 
 
 trait MySQLPrimitives extends SQLPrimitives {}

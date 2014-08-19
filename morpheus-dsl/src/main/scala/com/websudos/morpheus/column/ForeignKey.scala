@@ -57,13 +57,17 @@ private[morpheus] trait ForeignKeyDefinition {}
 
 /**
  * This is the implementation of a ForeignKey column. This is not a value column, therefore the `apply` method is overridden to throw an exception. It is used
- * at reflection time and schema generation time to correctly create the schema for a given table.
+ * at reflection time and schema generation time to correctly create the schema for a given table and serialise a ForeignKey accordingly.
  *
  * The peculiar type signature is very simple really. It's using the all known and loved shapeless type inequality constraint,
  * essentially forcing DSL users to specify 2 different owning tables for the origin and reference of a FOREIGN_KEY. It's a way of making FOREIGN_KEY
- * indexes impossible between a table and itself and it's also nicely confining all columns to belong to the same reference table.
+ * indexes impossible between a table and itself and it's also nicely confining all columns to belong to the same reference table,
+ * effectively enforcing the SQL constraint that a ForeignKey cannot reference columns from more than one table.
  *
- * By default the action performed is DefaultForeignKeyConstraints.NoAction, with respect to the MySQL behaviour.
+ * The second type constraint enforced via the ev2 implicit parameter is requesting that the columns referenced in a ForeignKey are not an Index or
+ * ForeignKey themselves, as this is invalid with respect to SQL syntax.
+ *
+ * By default the action performed is DefaultForeignKeyConstraints.NoAction, with respect to the SQL standard.
  *
  * @param origin The table owning the foreign key.
  * @param columns The columns this foreign key references.

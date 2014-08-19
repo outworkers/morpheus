@@ -16,8 +16,6 @@
 
 package com.websudos.morpheus.mysql
 
-import com.twitter.finagle.exp.mysql.Row
-import com.websudos.morpheus.dsl.BaseTable
 import com.websudos.morpheus.query._
 
 

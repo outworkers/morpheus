@@ -15,9 +15,7 @@
  */
 package com.websudos.morpheus.mysql
 
-import com.twitter.finagle.exp.mysql.Row
-import com.websudos.morpheus.dsl.BaseTable
-import com.websudos.morpheus.query.{RootCreateQuery, AbstractSQLSyntax, RootCreateSyntaxBlock}
+import com.websudos.morpheus.query.{AbstractSQLSyntax, RootCreateQuery, RootCreateSyntaxBlock}
 
 
 class MySQLCreateSyntaxBLock(query: String, tableName: String) extends RootCreateSyntaxBlock(query, tableName) {
