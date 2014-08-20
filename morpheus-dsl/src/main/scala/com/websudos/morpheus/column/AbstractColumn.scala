@@ -49,7 +49,7 @@ private[morpheus] trait AbstractColumn[@specialized(Int, Double, Float, Long, Bo
 }
 
 
-private[morpheus] abstract class SelectColumn[T](val col: AbstractColumn[_]) {
+private[morpheus] abstract class SelectColumn[T](val qb: SQLBuiltQuery) {
   def apply(r: Row): T
 }
 
