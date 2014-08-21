@@ -20,6 +20,9 @@ import com.twitter.finagle.exp.mysql.Row
 import com.websudos.morpheus.dsl.BaseTable
 import com.websudos.morpheus.query.{QueryAssignment, SQLBuiltQuery}
 
+import scala.reflect.runtime.{currentMirror => cm}
+
+
 private[morpheus] trait SchemaSerializer {
   def qb: SQLBuiltQuery
 }
@@ -28,7 +31,7 @@ private[morpheus] trait AbstractColumn[@specialized(Int, Double, Float, Long, Bo
 
   type Value = T
 
-  lazy val name: String = getClass.getSimpleName.replaceAll("\\$+", "").replaceAll("(anonfun\\d+.+\\d+)|", "")
+  lazy val name: String = cm.reflect(this).symbol.name.toTypeName.decoded
 
   def qb: SQLBuiltQuery
 
