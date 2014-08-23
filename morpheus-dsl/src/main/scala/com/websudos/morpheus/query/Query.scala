@@ -119,7 +119,7 @@ class Query[T <: BaseTable[T, _],
     AC,
     Status
     ] = {
-    new Query(table, table.queryBuilder.groupBy(query, columns map { _(table).qb.queryString }), rowFunc)
+    new Query(table, table.queryBuilder.groupBy(query, columns map { _(table).col.name }), rowFunc)
   }
 
 

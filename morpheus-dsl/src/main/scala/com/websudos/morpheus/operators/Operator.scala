@@ -29,40 +29,40 @@ sealed abstract class Operator  {
 
 sealed class AsciiOperator extends Operator {
 
-  final def apply[T : SQLPrimitive](value: T): QueryCondition = {
-    QueryCondition(
+  final def apply[T : SQLPrimitive](value: T): SelectOperatorClause = {
+    SelectOperatorClause(
       DefaultQueryBuilder.ascii(implicitly[SQLPrimitive[T]].toSQL(value))
     )
   }
 }
 
 sealed class BinOperator extends Operator {
-  final def apply[T : SQLPrimitive : Numeric](value: T): QueryCondition = {
-    QueryCondition(
+  final def apply[T : SQLPrimitive : Numeric](value: T): SelectOperatorClause = {
+    SelectOperatorClause(
       DefaultQueryBuilder.bin(implicitly[SQLPrimitive[T]].toSQL(value))
     )
   }
 }
 
 sealed class BitLengthOperator extends Operator {
-  final def apply[T : SQLPrimitive](value: T): QueryCondition = {
-    QueryCondition(
+  final def apply[T : SQLPrimitive](value: T): SelectOperatorClause = {
+    SelectOperatorClause(
       DefaultQueryBuilder.bitLength(implicitly[SQLPrimitive[T]].toSQL(value))
     )
   }
 }
 
 sealed class CharLengthOperator extends Operator {
-  final def apply[T: SQLPrimitive](value: T): QueryCondition = {
-    QueryCondition(
+  final def apply[T: SQLPrimitive](value: T): SelectOperatorClause = {
+    SelectOperatorClause(
       DefaultQueryBuilder.charLength(implicitly[SQLPrimitive[T]].toSQL(value))
     )
   }
 }
 
 sealed class CharacterLengthOperator extends Operator {
-  final def apply[T: SQLPrimitive](value: T): QueryCondition = {
-    QueryCondition(
+  final def apply[T: SQLPrimitive](value: T): SelectOperatorClause = {
+    SelectOperatorClause(
       DefaultQueryBuilder.characterLength(implicitly[SQLPrimitive[T]].toSQL(value))
     )
   }
@@ -71,8 +71,8 @@ sealed class CharacterLengthOperator extends Operator {
 sealed class ConcatWsOperator extends Operator {
   val primitive = implicitly[SQLPrimitive[String]]
 
-  final def apply(values: List[String]): QueryCondition = {
-    QueryCondition(
+  final def apply(values: List[String]): SelectOperatorClause = {
+    SelectOperatorClause(
       DefaultQueryBuilder.concatWs(values.map(primitive.toSQL))
     )
   }
@@ -87,8 +87,8 @@ sealed class ConcatWsOperator extends Operator {
 sealed class ConcatOperator extends Operator {
   val primitive = implicitly[SQLPrimitive[String]]
 
-  final def apply(values: List[String]): QueryCondition = {
-    QueryCondition(
+  final def apply(values: List[String]): SelectOperatorClause = {
+    SelectOperatorClause(
       DefaultQueryBuilder.concat(values.map(primitive.toSQL))
     )
   }

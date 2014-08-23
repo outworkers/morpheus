@@ -23,6 +23,7 @@ private[morpheus] abstract class BaseQueryCondition(val clause: SQLBuiltQuery)
 
 
 case class QueryAssignment(clause: SQLBuiltQuery)
+case class SelectOperatorClause(clause: SQLBuiltQuery)
 
 /**
  * This is a wrapper clause for primary conditions.

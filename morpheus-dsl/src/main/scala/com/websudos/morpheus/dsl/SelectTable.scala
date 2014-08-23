@@ -18,7 +18,7 @@ package com.websudos.morpheus.dsl
 
 import com.twitter.finagle.exp.mysql.Row
 import com.websudos.morpheus.column.SelectColumn
-import com.websudos.morpheus.query.{AbstractRootSelectQuery, AbstractSelectSyntaxBlock}
+import com.websudos.morpheus.query._
 
 
 /**
@@ -52,6 +52,10 @@ private[morpheus] trait SelectTable[Owner <: BaseTable[Owner, Record],
 
   protected[this] def createSelectSyntaxBlock(query: String, tableName: String, cols: List[String] = List("*")): Block
 
+  def select(func: SelectOperatorClause): Query[Owner, Record, SelectType, Ungroupped, Unordered, Unlimited, Unchainned, AssignUnchainned,
+    Unterminated] = {
+    Query(this.asInstanceOf[Owner], func.clause, fromRow)
+  }
 
   /**
    * This is the SELECT * query, where the user won't specify any partial select.
