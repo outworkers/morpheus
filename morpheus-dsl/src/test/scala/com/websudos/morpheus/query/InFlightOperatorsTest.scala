@@ -50,4 +50,8 @@ class InFlightOperatorsTest extends FlatSpec with Matchers {
       .where(notExists(BasicTable.select.where(exists(IndexTable.select.where(_.id eqs 10)))))
       .queryString shouldEqual "SELECT * FROM BasicTable WHERE NOT EXISTS (SELECT * FROM BasicTable WHERE EXISTS (SELECT * FROM IndexTable WHERE id = 10))"
   }
+
+  it should "serialise a CONCAT clause to the appropiate select query" in {
+    BasicTable.select(_ => concat("A", "B", "C", "D")).queryString shouldEqual "SELECT CONCAT('A', 'B', 'C', 'D') FROM BasicTable"
+  }
 }

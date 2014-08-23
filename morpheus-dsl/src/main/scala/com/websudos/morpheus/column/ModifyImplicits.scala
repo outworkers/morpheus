@@ -22,13 +22,18 @@ import com.websudos.morpheus.SQLPrimitive
 
 private[morpheus] trait ModifyImplicits extends LowPriorityImplicits with JoinImplicits {
 
-  implicit class SelectColumnRequired[Owner <: BaseTable[Owner, Record], Record, T](col: Column[Owner, Record, T]) extends SelectColumn[T](col) {
+  implicit class SelectColumnRequired[Owner <: BaseTable[Owner, Record], Record, T](col: Column[Owner, Record, T])
+    extends SelectColumn[T](SQLBuiltQuery(col.name)) {
     def apply(r: Row): T = col.apply(r)
   }
 
 
   implicit class ModifyColumn[RR: SQLPrimitive](col: AbstractColumn[RR]) extends AbstractModifyColumn[RR](col)
   implicit class OrderingColumn[RR: SQLPrimitive](col: AbstractColumn[RR]) extends AbstractOrderingColumn[RR](col)
+
+  implicit def selectOperatorClauseToSelectColumn[T](clause: SelectOperatorClause[T]): SelectColumn[T] = new SelectColumn[T](clause.qb) {
+    def apply(row: Row): T = clause.fromRow(row)
+  }
 
   /**
    * This defines an implicit conversion from a RootUpdateQuery to an UpdateQuery, making the UPDATE syntax block invisible to the end user.

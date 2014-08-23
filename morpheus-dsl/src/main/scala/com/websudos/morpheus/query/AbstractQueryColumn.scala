@@ -16,6 +16,7 @@
 
 package com.websudos.morpheus.query
 
+import com.twitter.finagle.exp.mysql.Row
 import com.websudos.morpheus.SQLPrimitive
 import com.websudos.morpheus.column.AbstractColumn
 
@@ -23,7 +24,10 @@ private[morpheus] abstract class BaseQueryCondition(val clause: SQLBuiltQuery)
 
 
 case class QueryAssignment(clause: SQLBuiltQuery)
-case class SelectOperatorClause(clause: SQLBuiltQuery)
+
+abstract class SelectOperatorClause[T : SQLPrimitive](val qb: SQLBuiltQuery) {
+  def fromRow(row: Row): T
+}
 
 /**
  * This is a wrapper clause for primary conditions.

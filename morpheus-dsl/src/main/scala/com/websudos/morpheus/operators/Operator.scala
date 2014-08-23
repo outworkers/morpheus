@@ -16,81 +16,105 @@
 
 package com.websudos.morpheus.operators
 
+import com.twitter.finagle.exp.mysql.Row
 import com.websudos.morpheus.SQLPrimitive
-import com.websudos.morpheus.SQLPrimitives.StringIsSQLPrimitive
+import com.websudos.morpheus.SQLPrimitives._
 import com.websudos.morpheus.dsl.BaseTable
 import com.websudos.morpheus.query._
 
 
-sealed abstract class Operator  {
-  val stringPrimitive = StringIsSQLPrimitive
+sealed abstract class Operator {
 }
 
 
 sealed class AsciiOperator extends Operator {
 
-  final def apply[T : SQLPrimitive](value: T): SelectOperatorClause = {
-    SelectOperatorClause(
+  final def apply[T : SQLPrimitive](value: T): SelectOperatorClause[String] = {
+    new SelectOperatorClause[String](
       DefaultQueryBuilder.ascii(implicitly[SQLPrimitive[T]].toSQL(value))
-    )
+    ) {
+      def fromRow(row: Row): String = ""
+    }
   }
 }
 
 sealed class BinOperator extends Operator {
-  final def apply[T : SQLPrimitive : Numeric](value: T): SelectOperatorClause = {
-    SelectOperatorClause(
+  final def apply[T : SQLPrimitive : Numeric](value: T): SelectOperatorClause[Int] = {
+    new SelectOperatorClause[Int](
       DefaultQueryBuilder.bin(implicitly[SQLPrimitive[T]].toSQL(value))
-    )
+    ) {
+      def fromRow(row: Row): Int = 5
+    }
   }
 }
 
 sealed class BitLengthOperator extends Operator {
-  final def apply[T : SQLPrimitive](value: T): SelectOperatorClause = {
-    SelectOperatorClause(
+  final def apply[T : SQLPrimitive](value: T): SelectOperatorClause[Int] = {
+    new SelectOperatorClause[Int](
       DefaultQueryBuilder.bitLength(implicitly[SQLPrimitive[T]].toSQL(value))
-    )
+    ) {
+      def fromRow(row: Row): Int = 5
+    }
   }
 }
 
 sealed class CharLengthOperator extends Operator {
-  final def apply[T: SQLPrimitive](value: T): SelectOperatorClause = {
-    SelectOperatorClause(
+  final def apply[T: SQLPrimitive](value: T): SelectOperatorClause[Int] = {
+    new SelectOperatorClause[Int](
       DefaultQueryBuilder.charLength(implicitly[SQLPrimitive[T]].toSQL(value))
-    )
+    ) {
+      def fromRow(row: Row): Int = 5
+    }
   }
 }
 
 sealed class CharacterLengthOperator extends Operator {
-  final def apply[T: SQLPrimitive](value: T): SelectOperatorClause = {
-    SelectOperatorClause(
+  final def apply[T: SQLPrimitive](value: T): SelectOperatorClause[Int] = {
+    new SelectOperatorClause[Int](
       DefaultQueryBuilder.characterLength(implicitly[SQLPrimitive[T]].toSQL(value))
-    )
+    ) {
+      def fromRow(row: Row): Int = 5
+    }
   }
 }
 
 sealed class ConcatWsOperator extends Operator {
   val primitive = implicitly[SQLPrimitive[String]]
 
-  final def apply(values: List[String]): SelectOperatorClause = {
-    SelectOperatorClause(
+  final def apply(values: List[String]): SelectOperatorClause[String] = {
+    new SelectOperatorClause[String](
       DefaultQueryBuilder.concatWs(values.map(primitive.toSQL))
-    )
+    ) {
+      def fromRow(row: Row): String = ""
+    }
   }
 
-  final def apply(sep: String, values: List[String]): QueryCondition = {
-    QueryCondition(
+  final def apply(sep: String, values: List[String]): SelectOperatorClause[String] = {
+    new SelectOperatorClause[String](
       DefaultQueryBuilder.concatWs(primitive.toSQL(sep) +: values.map(primitive.toSQL))
-    )
+    ) {
+      def fromRow(row: Row): String = ""
+    }
   }
 }
 
 sealed class ConcatOperator extends Operator {
   val primitive = implicitly[SQLPrimitive[String]]
 
-  final def apply(values: List[String]): SelectOperatorClause = {
-    SelectOperatorClause(
+  final def apply(values: List[String]): SelectOperatorClause[String] = {
+    new SelectOperatorClause[String](
       DefaultQueryBuilder.concat(values.map(primitive.toSQL))
-    )
+    ) {
+      def fromRow(row: Row): String = ""
+    }
+  }
+
+  final def apply(values: String*): SelectOperatorClause[String] = {
+    new SelectOperatorClause[String](
+      DefaultQueryBuilder.concat(values.map(primitive.toSQL).toList)
+    ) {
+      override def fromRow(row: Row): String = ""
+    }
   }
 }
 

@@ -300,6 +300,13 @@ private[morpheus] trait AbstractQueryBuilder {
       .forcePad.append(tableName)
   }
 
+  def select(tableName: String, clause: SQLBuiltQuery) = {
+    SQLBuiltQuery(syntax.select)
+      .pad.append(clause)
+      .pad.append(syntax.from)
+      .pad.append(tableName)
+  }
+
   def where(qb: SQLBuiltQuery, condition: SQLBuiltQuery): SQLBuiltQuery = {
     qb.pad.append(syntax.where).forcePad.append(condition)
   }

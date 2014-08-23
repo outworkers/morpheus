@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.websudos.morpheus.mysql
+package com.websudos.morpheus.mysql.query
 
 import org.scalatest.{FlatSpec, Matchers}
 
