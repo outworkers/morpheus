@@ -85,7 +85,7 @@ libraryDependencies ++= Seq(
 )
 ```
 
-And then you can: ```import com.websudos.morpheus.mysql.Imports._```, which will give you the full set of MySQL methods and features without any overlaps or 
+And then you can: ```import com.websudos.morpheus.mysql._```, which will give you the full set of MySQL methods and features without any overlaps or 
 unsupported operations. Morpheus guarantees you can almost never write an invalid SQL query unless you try really really hard.
 
 
