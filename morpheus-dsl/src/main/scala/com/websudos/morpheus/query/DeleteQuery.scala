@@ -24,7 +24,7 @@ private[morpheus] class RootDeleteSyntaxBlock(query: String, tableName: String) 
 
   def all: SQLBuiltQuery = {
     qb.pad.append(DefaultSQLSyntax.from)
-      .forcePad.append(tableName)
+      .forcePad.appendEscape(tableName)
   }
 
   def syntax: AbstractSQLSyntax = DefaultSQLSyntax

@@ -27,7 +27,7 @@ private[morpheus] class RootUpdateSyntaxBlock(query: String, tableName: String) 
   protected[this] val qb = SQLBuiltQuery(query)
 
   def all: SQLBuiltQuery = {
-    qb.pad.append(tableName)
+    qb.pad.appendEscape(tableName)
   }
 
   def syntax: AbstractSQLSyntax = DefaultSQLSyntax

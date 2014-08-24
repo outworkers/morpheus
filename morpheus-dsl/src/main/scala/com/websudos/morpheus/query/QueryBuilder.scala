@@ -290,21 +290,21 @@ private[morpheus] trait AbstractQueryBuilder {
     SQLBuiltQuery(syntax.select)
       .forcePad.append("*").forcePad
       .append(syntax.from)
-      .forcePad.append(tableName)
+      .forcePad.appendEscape(tableName)
   }
 
   def select(tableName: String, names: String*): SQLBuiltQuery = {
     SQLBuiltQuery(syntax.select)
       .pad.append(names.mkString(" "))
       .forcePad.append(syntax.from)
-      .forcePad.append(tableName)
+      .forcePad.appendEscape(tableName)
   }
 
   def select(tableName: String, clause: SQLBuiltQuery) = {
     SQLBuiltQuery(syntax.select)
       .pad.append(clause)
       .pad.append(syntax.from)
-      .pad.append(tableName)
+      .pad.appendEscape(tableName)
   }
 
   def where(qb: SQLBuiltQuery, condition: SQLBuiltQuery): SQLBuiltQuery = {
@@ -379,25 +379,25 @@ private[morpheus] trait AbstractQueryBuilder {
   def leftJoin(qb: SQLBuiltQuery, tableName: String): SQLBuiltQuery = {
     qb.pad
       .append(syntax.leftJoin)
-      .forcePad.append(tableName)
+      .forcePad.appendEscape(tableName)
   }
 
   def rightJoin(qb: SQLBuiltQuery, tableName: String): SQLBuiltQuery = {
     qb.pad
       .append(syntax.rightJoin)
-      .forcePad.append(tableName)
+      .forcePad.appendEscape(tableName)
   }
 
   def innerJoin(qb: SQLBuiltQuery, tableName: String): SQLBuiltQuery = {
     qb.pad
       .append(syntax.innerJoin)
-      .forcePad.append(tableName)
+      .forcePad.appendEscape(tableName)
   }
 
   def outerJoin(qb: SQLBuiltQuery, tableName: String): SQLBuiltQuery = {
     qb.pad
       .append(syntax.outerJoin)
-      .forcePad.append(tableName)
+      .forcePad.appendEscape(tableName)
   }
 
   def ifNotExists(qb: SQLBuiltQuery): SQLBuiltQuery = {

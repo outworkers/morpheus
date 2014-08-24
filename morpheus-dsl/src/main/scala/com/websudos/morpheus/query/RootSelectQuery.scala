@@ -55,7 +55,7 @@ private[morpheus] class AbstractSelectSyntaxBlock(
   def `*`: SQLBuiltQuery = {
     qb.pad.append(columns.mkString(" "))
       .pad.append(syntax.from)
-      .pad.append(tableName)
+      .pad.appendEscape(tableName)
   }
 
   def all: SQLBuiltQuery = this.`*`
@@ -64,7 +64,7 @@ private[morpheus] class AbstractSelectSyntaxBlock(
     qb.pad.append(syntax.distinct)
       .pad.append(columns.mkString(", "))
       .pad.append(syntax.from)
-      .pad.append(tableName)
+      .pad.appendEscape(tableName)
   }
 
   override def syntax: AbstractSQLSyntax = DefaultSQLSyntax

@@ -26,8 +26,13 @@ case class SQLBuiltQuery(queryString: String) {
   def append(st: String): SQLBuiltQuery = SQLBuiltQuery(queryString + st)
   def append(st: SQLBuiltQuery): SQLBuiltQuery = append(st.queryString)
 
+  def appendEscape(st: String): SQLBuiltQuery = append(escape(st))
+  def appendEscape(st: SQLBuiltQuery): SQLBuiltQuery = append(escape(st.queryString))
+
   def prepend(st: String): SQLBuiltQuery = SQLBuiltQuery(st + queryString)
   def prepend(st: SQLBuiltQuery): SQLBuiltQuery = prepend(st.queryString)
+
+  def escape(st: String): String = "'" + st + "'"
 
   def spaced: Boolean = queryString.endsWith(" ")
   def pad: SQLBuiltQuery = if (spaced) this else SQLBuiltQuery(queryString + " ")

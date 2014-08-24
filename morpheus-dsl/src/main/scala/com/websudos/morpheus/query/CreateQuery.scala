@@ -27,20 +27,20 @@ private[morpheus] class RootCreateSyntaxBlock(query: String, tableName: String) 
 
   def default: SQLBuiltQuery = {
     qb.pad.append(DefaultSQLSyntax.table)
-      .forcePad.append(tableName)
+      .forcePad.appendEscape(tableName)
   }
 
   def ifNotExists: SQLBuiltQuery = {
     qb.pad.append(DefaultSQLSyntax.table)
       .forcePad.append(syntax.ifNotExists)
-      .forcePad.append(tableName)
+      .forcePad.appendEscape(tableName)
   }
 
   def temporary: SQLBuiltQuery = {
     qb.pad
       .append(syntax.temporary)
       .forcePad.append(DefaultSQLSyntax.table)
-      .forcePad.append(tableName)
+      .forcePad.appendEscape(tableName)
   }
 }
 

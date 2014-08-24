@@ -28,62 +28,62 @@ private[morpheus] class MySQLSelectSyntaxBlock(
     qb.pad.append(syntax.distinctRow)
       .pad.append(columns.mkString(", "))
       .pad.append(syntax.from)
-      .pad.append(tableName)
+      .pad.appendEscape(tableName)
   }
 
   def highPriority: SQLBuiltQuery = {
     qb.pad.append(syntax.highPriority)
       .pad.append(columns.mkString(", "))
       .pad.append(syntax.from)
-      .pad.append(tableName)
+      .pad.appendEscape(tableName)
   }
 
   def straightJoin: SQLBuiltQuery = {
     qb.pad.append(syntax.straightJoin)
       .pad.append(columns.mkString(", "))
       .pad.append(syntax.from)
-      .pad.append(tableName)
+      .pad.appendEscape(tableName)
   }
   def sqlSmallResult: SQLBuiltQuery = {
     qb.pad.append(syntax.sqlSmallResult)
       .pad.append(columns.mkString(", "))
       .pad.append(syntax.from)
-      .pad.append(tableName)
+      .pad.appendEscape(tableName)
   }
 
   def sqlBigResult: SQLBuiltQuery = {
     qb.pad.append(syntax.sqlBigResult)
       .pad.append(columns.mkString(", "))
       .pad.append(syntax.from)
-      .pad.append(tableName)
+      .pad.appendEscape(tableName)
   }
 
   def sqlBufferResult: SQLBuiltQuery = {
     qb.pad.append(syntax.sqlBufferResult)
       .pad.append(columns.mkString(", "))
       .pad.append(syntax.from)
-      .pad.append(tableName)
+      .pad.appendEscape(tableName)
   }
 
   def sqlCache: SQLBuiltQuery = {
     qb.pad.append(syntax.sqlCache)
       .pad.append(columns.mkString(", "))
       .pad.append(syntax.from)
-      .pad.append(tableName)
+      .pad.appendEscape(tableName)
   }
 
   def sqlNoCache: SQLBuiltQuery = {
     qb.pad.append(syntax.sqlNoCache)
       .pad.append(columns.mkString(", "))
       .pad.append(syntax.from)
-      .pad.append(tableName)
+      .pad.appendEscape(tableName)
   }
 
   def sqlCalcFoundRows: SQLBuiltQuery = {
     qb.pad.append(syntax.sqlCalcFoundRows)
       .pad.append(columns.mkString(", "))
       .pad.append(syntax.from)
-      .pad.append(tableName)
+      .pad.appendEscape(tableName)
   }
 }
 

@@ -24,31 +24,31 @@ import com.websudos.morpheus.sql._
 class CreateQueryTest extends FlatSpec with Matchers {
 
   it should "serialise a simple CREATE query" in {
-    BasicTable.create.queryString shouldEqual "CREATE TABLE BasicTable"
+    BasicTable.create.queryString shouldEqual "CREATE TABLE 'BasicTable'"
   }
 
   it should "serialise a simple CREATE query with an IF NOT EXISTS clause" in {
-    BasicTable.create.ifNotExists.queryString shouldEqual "CREATE TABLE IF NOT EXISTS BasicTable"
+    BasicTable.create.ifNotExists.queryString shouldEqual "CREATE TABLE IF NOT EXISTS 'BasicTable'"
   }
 
   it should "serialise a CREATE query with a TEMPORARY clause" in {
-    BasicTable.create.temporary.queryString shouldEqual "CREATE TEMPORARY TABLE BasicTable"
+    BasicTable.create.temporary.queryString shouldEqual "CREATE TEMPORARY TABLE 'BasicTable'"
   }
 
   it should "serialise a CREATE create query with a TEMPORARY clause" in {
-    BasicTable.create.temporary.queryString shouldEqual "CREATE TEMPORARY TABLE BasicTable"
+    BasicTable.create.temporary.queryString shouldEqual "CREATE TEMPORARY TABLE 'BasicTable'"
   }
 
   ignore should "serialise a CREATE create query with a TEMPORARY clause and an IF NOT EXISTS clause" in {
-    BasicTable.create.temporary.ifNotExists.queryString shouldEqual "CREATE TEMPORARY TABLE IF NOT EXISTS BasicTable"
+    BasicTable.create.temporary.ifNotExists.queryString shouldEqual "CREATE TEMPORARY TABLE IF NOT EXISTS 'BasicTable'"
   }
 
   it should "serialise a complete table definition when an engine is specified" in {
-    BasicTable.create.engine(InnoDB).queryString shouldEqual "CREATE TABLE BasicTable (name TEXT, count LONG) ENGINE InnoDB"
+    BasicTable.create.engine(InnoDB).queryString shouldEqual "CREATE TABLE 'BasicTable' (name TEXT, count LONG) ENGINE InnoDB"
   }
 
   it should "serialise a complete table definition with an IF NOT EXSITS clause when an engine is specified" in {
-    BasicTable.create.ifNotExists.engine(InnoDB).queryString shouldEqual "CREATE TABLE IF NOT EXISTS BasicTable (name TEXT, count LONG) ENGINE InnoDB"
+    BasicTable.create.ifNotExists.engine(InnoDB).queryString shouldEqual "CREATE TABLE IF NOT EXISTS 'BasicTable' (name TEXT, count LONG) ENGINE InnoDB"
   }
 
 
