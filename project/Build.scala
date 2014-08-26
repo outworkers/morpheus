@@ -108,6 +108,7 @@ object morpheus extends Build {
   ).aggregate(
     morpheusDsl,
     morpheusMySQL,
+    morpheusPostgres,
     morpheusTesting,
     morpheusZookeeper
   )
@@ -144,6 +145,19 @@ object morpheus extends Build {
     morpheusDsl,
     morpheusTesting % "test, provided"
   )
+
+  lazy val morpheusPostgres = Project(
+    id = "morpheus-postgres",
+    base = file("morpheus-postgres"),
+    settings = Defaults.coreDefaultSettings ++
+      sharedSettings ++ publishSettings
+  ).settings(
+      name := "morpheus-postgres"
+    ).dependsOn(
+      morpheusDsl,
+      morpheusTesting % "test, provided"
+    )
+
 
   lazy val morpheusZookeeper = Project(
     id = "morpheus-zookeeper",
