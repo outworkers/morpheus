@@ -23,22 +23,22 @@ import com.websudos.morpheus.dsl.BasicTable
 
 class WhereClauseOperatorsTest extends FlatSpec with Matchers {
   it should "serialise a SELECT clause with a BETWEEN - AND operator sequence" in {
-    BasicTable.select.where(_.count between 5 and 10).queryString shouldEqual "SELECT * FROM BasicTable WHERE count BETWEEN 5 AND 10"
+    BasicTable.select.where(_.count between 5 and 10).queryString shouldEqual "SELECT * FROM 'BasicTable' WHERE count BETWEEN 5 AND 10"
   }
 
   it should "serialise a SELECT clause with a BETWEEN - AND operator sequence inside an OR sequence" in {
     BasicTable.select
       .where(t => { (t.count between 5 and 10) or (t.count gte 5) })
-      .queryString shouldEqual "SELECT * FROM BasicTable WHERE (count BETWEEN 5 AND 10 OR count >= 5)"
+      .queryString shouldEqual "SELECT * FROM 'BasicTable' WHERE (count BETWEEN 5 AND 10 OR count >= 5)"
   }
 
   it should "serialise a SELECT clause with a NOT BETWEEN - AND operator sequence" in {
-    BasicTable.select.where(_.count notBetween 5 and 10).queryString shouldEqual "SELECT * FROM BasicTable WHERE count NOT BETWEEN 5 AND 10"
+    BasicTable.select.where(_.count notBetween 5 and 10).queryString shouldEqual "SELECT * FROM 'BasicTable' WHERE count NOT BETWEEN 5 AND 10"
   }
 
   it should "serialise a SELECT clause with a NOT BETWEEN - AND operator sequence inside an OR sequence" in {
     BasicTable.select
       .where(t => { (t.count notBetween 5 and 10) or (t.count gte 5) })
-      .queryString shouldEqual "SELECT * FROM BasicTable WHERE (count NOT BETWEEN 5 AND 10 OR count >= 5)"
+      .queryString shouldEqual "SELECT * FROM 'BasicTable' WHERE (count NOT BETWEEN 5 AND 10 OR count >= 5)"
   }
 }
