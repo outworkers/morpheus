@@ -123,9 +123,7 @@ object morpheus extends Build {
     name := "morpheus-dsl",
     libraryDependencies ++= Seq(
       "com.chuusai"                  % "shapeless_2.10.4"                   % "2.0.0",
-      "com.twitter"                  %% "finagle-mysql"                     % finagleVersion,
       "org.scala-lang"               %  "scala-reflect"                     % "2.10.4",
-      "com.twitter"                  %% "util-core"                         % finagleVersion,
       "joda-time"                    %  "joda-time"                         % "2.3",
       "org.joda"                     %  "joda-convert"                      % "1.6",
       "net.liftweb"                  %% "lift-json"                         % "2.6-M4"                  % "test, provided"
@@ -140,7 +138,11 @@ object morpheus extends Build {
     settings = Defaults.coreDefaultSettings ++
       sharedSettings ++ publishSettings
   ).settings(
-    name := "morpheus-mysql"
+    name := "morpheus-mysql",
+    libraryDependencies ++= Seq(
+      "com.twitter"                  %% "util-core"                         % finagleVersion,
+      "com.twitter"                  %% "finagle-mysql"                     % finagleVersion
+    )
   ).dependsOn(
     morpheusDsl,
     morpheusTesting % "test, provided"
