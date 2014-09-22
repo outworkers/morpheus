@@ -2,6 +2,9 @@
 
 language: scala
 
+services:
+    - mysql
+
 scala:
  - "2.10.4"
 

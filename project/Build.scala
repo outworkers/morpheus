@@ -178,6 +178,7 @@ object morpheus extends Build {
   ).settings(
     name := "morpheus-testing",
     libraryDependencies ++= Seq(
+      "com.h2database"                   % "h2"                        % "1.4.181",
       "com.twitter"                      %% "util-core"                % finagleVersion,
       "com.newzly"                       %% "util-testing"             % newzlyUtilVersion,
       "org.scalatest"                    %% "scalatest"                % scalatestVersion,
