@@ -20,14 +20,10 @@ import com.twitter.conversions.time._
 import com.twitter.finagle.exp.Mysql
 import com.twitter.finagle.exp.mysql.Client
 import com.twitter.util.Await
-import org.h2
 
 object MySQLConnector {
-
-  lazy val db
-
   lazy val client = {
-    val c = Mysql.newRichClient("localhost:3306")
+    val c = Mysql.withCredentials("root", "").newRichClient("localhost:3306")
     Await.result(c.ping(), 2.seconds)
     c
   }

@@ -261,7 +261,7 @@ private[morpheus] trait AbstractQueryBuilder {
 
   def <=>(name: String, value: String): SQLBuiltQuery = {
     SQLBuiltQuery(name)
-      .pad.append(operators.`<=>`)
+      .forcePad.append(operators.`<=>`)
       .forcePad.append(value)
   }
 
