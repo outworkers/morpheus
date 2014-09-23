@@ -16,9 +16,8 @@
 
 package com.websudos.morpheus.query
 
-import com.twitter.finagle.exp.mysql.Row
 import com.websudos.morpheus.SQLPrimitive
-import com.websudos.morpheus.column.AbstractColumn
+import com.websudos.morpheus.column.{Row, AbstractColumn}
 
 private[morpheus] abstract class BaseQueryCondition(val clause: SQLBuiltQuery)
 

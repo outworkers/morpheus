@@ -16,7 +16,6 @@
 
 package com.websudos.morpheus.column
 
-import com.twitter.finagle.exp.mysql.Row
 import com.websudos.morpheus.dsl.BaseTable
 import com.websudos.morpheus.query.{DefaultSQLSyntax, SQLBuiltQuery}
 import shapeless.<:!<

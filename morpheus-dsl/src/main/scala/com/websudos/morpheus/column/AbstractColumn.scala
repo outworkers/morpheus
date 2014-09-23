@@ -16,12 +16,13 @@
 
 package com.websudos.morpheus.column
 
-import com.twitter.finagle.exp.mysql.Row
 import com.websudos.morpheus.dsl.BaseTable
 import com.websudos.morpheus.query.{QueryAssignment, SQLBuiltQuery}
 
 import scala.reflect.runtime.{currentMirror => cm}
 
+
+abstract class Row()
 
 private[morpheus] trait SchemaSerializer {
   def qb: SQLBuiltQuery

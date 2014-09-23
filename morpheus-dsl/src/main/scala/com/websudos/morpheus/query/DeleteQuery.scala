@@ -15,7 +15,7 @@
  */
 package com.websudos.morpheus.query
 
-import com.twitter.finagle.exp.mysql.Row
+import com.websudos.morpheus.column.Row
 import com.websudos.morpheus.dsl.BaseTable
 
 private[morpheus] class RootDeleteSyntaxBlock(query: String, tableName: String) extends AbstractSyntaxBlock {

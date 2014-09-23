@@ -123,7 +123,7 @@ object morpheus extends Build {
     name := "morpheus-dsl",
     libraryDependencies ++= Seq(
       "com.chuusai"                  % "shapeless_2.10.4"                   % "2.0.0",
-      "org.scala-lang"               %  "scala-reflect"                     % "2.10.4",
+      "org.scala-lang"               %  "scala-reflect"                     % scalaVersion.value,
       "joda-time"                    %  "joda-time"                         % "2.3",
       "org.joda"                     %  "joda-convert"                      % "1.6",
       "net.liftweb"                  %% "lift-json"                         % "2.6-M4"                  % "test, provided"
@@ -154,11 +154,14 @@ object morpheus extends Build {
     settings = Defaults.coreDefaultSettings ++
       sharedSettings ++ publishSettings
   ).settings(
-      name := "morpheus-postgres"
-    ).dependsOn(
-      morpheusDsl,
-      morpheusTesting % "test, provided"
+    name := "morpheus-postgres",
+    libraryDependencies ++= Seq(
+      "com.github.mauricio" %% "postgresql-async" % "0.2.15"
     )
+  ).dependsOn(
+    morpheusDsl,
+    morpheusTesting % "test, provided"
+  )
 
 
   lazy val morpheusZookeeper = Project(

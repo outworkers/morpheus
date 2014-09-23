@@ -18,7 +18,6 @@ package com.websudos.morpheus.query
 
 import scala.annotation.implicitNotFound
 
-import com.twitter.finagle.exp.mysql.Row
 import com.websudos.morpheus.dsl.BaseTable
 
 
