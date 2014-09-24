@@ -16,8 +16,6 @@
 
 package com.websudos.morpheus.mysql
 
-import com.twitter.finagle.exp.mysql.Row
-import com.websudos.morpheus.dsl.Table
 import com.websudos.morpheus.query._
 
 case class MySQLDeleteSyntaxBlock(query: String, tableName: String) extends RootDeleteSyntaxBlock(query, tableName) {
@@ -43,7 +41,7 @@ case class MySQLDeleteSyntaxBlock(query: String, tableName: String) extends Root
   }
 }
 
-private[morpheus] class MySQLRootDeleteQuery[T <: Table[T, _], R](table: T, st: MySQLDeleteSyntaxBlock, rowFunc: Row => R)  extends RootDeleteQuery(table, st,
+private[morpheus] class MySQLRootDeleteQuery[T <: BaseTable[T, _], R](table: T, st: MySQLDeleteSyntaxBlock, rowFunc: Row => R)  extends RootDeleteQuery(table, st,
   rowFunc) {
 
   def lowPriority: BaseDeleteQuery = {

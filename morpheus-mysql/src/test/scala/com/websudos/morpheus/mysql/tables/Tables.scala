@@ -17,11 +17,11 @@
 package com.websudos.morpheus.mysql.tables
 
 import com.websudos.morpheus.column.DefaultForeignKeyConstraints.{SetNull, Restrict, Cascade}
-import com.websudos.morpheus.mysql.Imports._
+import com.websudos.morpheus.mysql._
 
 case class IndexedRecord(id: Int, value: Long)
 
-sealed class IndexTable extends MySQLTable[IndexTable, IndexedRecord] {
+sealed class IndexTable extends Table[IndexTable, IndexedRecord] {
 
   object id extends SmallIntColumn(this) with PrimaryKey[Int] with NotNull with Autoincrement
 
@@ -41,7 +41,7 @@ object IndexTable extends IndexTable
 
 case class KeysRecord(id: Int)
 
-sealed class KeysTable extends MySQLTable[KeysTable, KeysRecord] {
+sealed class KeysTable extends Table[KeysTable, KeysRecord] {
 
   object id extends IntColumn(this) with PrimaryKey[Int]
 
@@ -97,7 +97,7 @@ sealed class KeysTable extends MySQLTable[KeysTable, KeysRecord] {
 object KeysTable extends KeysTable
 
 
-class NumericsTable extends MySQLTable[NumericsTable, Int] {
+class NumericsTable extends Table[NumericsTable, Int] {
 
   object tinyInt extends TinyIntColumn(this)
   object tinyIntLimited extends TinyIntColumn(this, 100)
@@ -117,7 +117,7 @@ class NumericsTable extends MySQLTable[NumericsTable, Int] {
 object NumericsTable extends NumericsTable
 
 
-class StringsTable extends MySQLTable[StringsTable, String] {
+class StringsTable extends Table[StringsTable, String] {
 
   object charColumn extends CharColumn(this)
   object charLimited extends CharColumn(this, 100)
@@ -142,7 +142,7 @@ object StringsTable extends StringsTable
 
 case class BasicRecord(name: String, count: Long)
 
-class BasicTable extends MySQLTable[BasicTable, BasicRecord] {
+class BasicTable extends Table[BasicTable, BasicRecord] {
 
   object name extends TextColumn(this)
   object count extends LongColumn(this)

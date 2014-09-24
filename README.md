@@ -1,6 +1,9 @@
-morpheus [NOT PRODUCTION READY][![Build Status](https://travis-ci.org/websudosuk/morpheus.svg)](https://travis-ci.org/websudosuk/morpheus)[![Coverage Status](https://coveralls.io/repos/websudosuk/morpheus/badge.png?branch=develop)](https://coveralls.io/r/websudosuk/morpheus?branch=develop)
+morpheus [NOT PRODUCTION READY][![Build Status](https://travis-ci.org/websudos/morpheus.svg)](https://travis-ci.org/websudos/morpheus)[![Coverage Status](https://coveralls.io/repos/websudosuk/morpheus/badge.png?branch=develop)](https://coveralls.io/r/websudosuk/morpheus?branch=develop)
 
 ========================================================================================================================================================================================================================
+
+![Morpheus](http://websudos.com/images/morpheus.png "Morpheus")
+
 
 Named after the Greek God of Dreams, morpheus is an Asynchronous type-safe Scala DSL for MySQL, Postgres, MSSQL, 
 MariaDB. We choose this name as it is the dream DSL for any Scala/SQL user, finessed to perfection up to the Websudos quality standard you've gotten 
@@ -46,7 +49,7 @@ Instead of learning about primitives and rules we thought of to abstract away di
 Morpheus features a unique approach, what we call the auto-magical flip. Although at this point in time only MySQL is supported, 
 Morpheus is designed to give you an "all-you-can-eat" buffet through a single import.
 
-As follows: ```import com.websudos.morpheus.mysql.Imports._```.
+As follows: ```import com.websudos.morpheus.mysql._```.
 
 And done, you can now define tables, query and so on. Say you have something like this:
 
@@ -55,7 +58,7 @@ but it's a standard thing as far as MySQL is concerned.
 
 Here's how Morpheus operates:
 
-If you change the top level import to: ```com.websudos.morpheus.postgres.Imports._``` and you try to compile the same ```distinctRow``` query. But there 
+If you change the top level import to: ```com.websudos.morpheus.postgres._``` and you try to compile the same ```distinctRow``` query. But there 
 will be none. The method will simply not exist. Morpheus has now auto-magically performed a full feature swap, 
 changed communication protocol and all underlying settings, and all you get now is Postgres features.
 
@@ -82,7 +85,7 @@ libraryDependencies ++= Seq(
 )
 ```
 
-And then you can: ```import com.websudos.morpheus.mysql.Imports._```, which will give you the full set of MySQL methods and features without any overlaps or 
+And then you can: ```import com.websudos.morpheus.mysql._```, which will give you the full set of MySQL methods and features without any overlaps or 
 unsupported operations. Morpheus guarantees you can almost never write an invalid SQL query unless you try really really hard.
 
 

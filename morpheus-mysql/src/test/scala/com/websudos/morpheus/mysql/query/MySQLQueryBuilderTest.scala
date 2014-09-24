@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 
-package com.websudos.morpheus.mysql
+package com.websudos.morpheus.mysql.query
 
 import org.scalatest.prop.GeneratorDrivenPropertyChecks
-import org.scalatest.{Matchers, FlatSpec}
+import org.scalatest.{FlatSpec, Matchers}
 
+import com.websudos.morpheus.mysql.MySQLQueryBuilder
 import com.websudos.morpheus.query.SQLBuiltQuery
 
 
@@ -100,7 +101,7 @@ class MySQLQueryBuilderTest extends FlatSpec with Matchers with GeneratorDrivenP
     forAll(minSuccessful(300)) { (name: String) =>
       whenever (name.length > 0) {
         val query = MySQLQueryBuilder.select(name).queryString
-        query shouldEqual s"SELECT * FROM $name"
+        query shouldEqual s"SELECT * FROM '$name'"
       }
     }
   }
@@ -109,7 +110,7 @@ class MySQLQueryBuilderTest extends FlatSpec with Matchers with GeneratorDrivenP
     forAll(minSuccessful(300)) { (name: String, column: String) =>
       whenever (name.length > 0 && column.length > 0) {
         val query = MySQLQueryBuilder.select(name, column).queryString
-        query shouldEqual s"SELECT $column FROM $name"
+        query shouldEqual s"SELECT $column FROM '$name'"
       }
     }
   }
@@ -118,7 +119,7 @@ class MySQLQueryBuilderTest extends FlatSpec with Matchers with GeneratorDrivenP
     forAll(minSuccessful(300)) { (name: String, column1: String, column2: String) =>
       whenever (name.length > 0 && column1.length > 0 && column2.length > 0) {
         val query = MySQLQueryBuilder.select(name, column1, column2).queryString
-        query shouldEqual s"SELECT $column1 $column2 FROM $name"
+        query shouldEqual s"SELECT $column1 $column2 FROM '$name'"
       }
     }
   }
@@ -127,7 +128,7 @@ class MySQLQueryBuilderTest extends FlatSpec with Matchers with GeneratorDrivenP
     forAll(minSuccessful(300)) { (name: String, column1: String, column2: String, column3: String) =>
       whenever (name.length > 0 && column1.length > 0 && column2.length > 0 && column3.length > 0) {
         val query = MySQLQueryBuilder.select(name, column1, column2, column3).queryString
-        query shouldEqual s"SELECT $column1 $column2 $column3 FROM $name"
+        query shouldEqual s"SELECT $column1 $column2 $column3 FROM '$name'"
       }
     }
   }

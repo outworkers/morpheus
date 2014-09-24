@@ -20,7 +20,7 @@ import com.websudos.morpheus.sql._
 
 case class IndexedRecord(id: Int, value: Long)
 
-sealed class IndexTable extends SQLTable[IndexTable, IndexedRecord] {
+sealed class IndexTable extends Table[IndexTable, IndexedRecord] {
 
   object id extends SmallIntColumn(this) with PrimaryKey[Int] with NotNull with Autoincrement
 
@@ -40,7 +40,7 @@ object IndexTable extends IndexTable
 
 case class KeysRecord(id: Int)
 
-sealed class KeysTable extends SQLTable[KeysTable, KeysRecord] {
+sealed class KeysTable extends Table[KeysTable, KeysRecord] {
 
   object id extends IntColumn(this) with PrimaryKey[Int]
 
@@ -96,7 +96,7 @@ sealed class KeysTable extends SQLTable[KeysTable, KeysRecord] {
 object KeysTable extends KeysTable
 
 
-class NumericsTable extends SQLTable[NumericsTable, Int] {
+class NumericsTable extends Table[NumericsTable, Int] {
 
   object tinyInt extends TinyIntColumn(this)
   object tinyIntLimited extends TinyIntColumn(this, 100)
@@ -116,7 +116,7 @@ class NumericsTable extends SQLTable[NumericsTable, Int] {
 object NumericsTable extends NumericsTable
 
 
-class StringsTable extends SQLTable[StringsTable, String] {
+class StringsTable extends Table[StringsTable, String] {
 
   object charColumn extends CharColumn(this)
   object charLimited extends CharColumn(this, 100)

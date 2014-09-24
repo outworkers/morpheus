@@ -16,14 +16,13 @@
 
 package com.websudos.morpheus.column
 
-import com.twitter.finagle.exp.mysql.Row
-import com.websudos.morpheus.dsl.Table
+import com.websudos.morpheus.dsl.BaseTable
 import com.websudos.morpheus.query.{DefaultSQLSyntax, SQLBuiltQuery}
 import shapeless.<:!<
 
 private[morpheus] trait IndexColumn {
 
-  type NonIndexColumn[Owner <: Table[Owner, _]] = Column[Owner, _, _]
+  type NonIndexColumn[Owner <: BaseTable[Owner, _]] = Column[Owner, _, _]
 
   def apply(r: Row): String = throw new Exception(s"Index column is not a value column. This apply method cannot extract anything from it.")
 }
@@ -39,7 +38,7 @@ private[morpheus] trait IndexColumn {
  * @tparam T The table owning the Record.
  * @tparam R The record of the table.
  */
-class Index[T <: Table[T, R], R](columns: IndexColumn#NonIndexColumn[_]*)(implicit ev: IndexColumn#NonIndexColumn[_] <:!< IndexColumn)
+class Index[T <: BaseTable[T, R], R](columns: IndexColumn#NonIndexColumn[_]*)(implicit ev: IndexColumn#NonIndexColumn[_] <:!< IndexColumn)
   extends AbstractColumn[String] with IndexColumn {
 
   def qb: SQLBuiltQuery = {
@@ -53,5 +52,5 @@ class Index[T <: Table[T, R], R](columns: IndexColumn#NonIndexColumn[_]*)(implic
 
   override def toQueryString(v: String): String = v
 
-  override def table: Table[_, _] = columns.head.table
+  override def table: BaseTable[_, _] = columns.head.table
 }

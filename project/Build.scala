@@ -108,6 +108,7 @@ object morpheus extends Build {
   ).aggregate(
     morpheusDsl,
     morpheusMySQL,
+    morpheusPostgres,
     morpheusTesting,
     morpheusZookeeper
   )
@@ -122,9 +123,7 @@ object morpheus extends Build {
     name := "morpheus-dsl",
     libraryDependencies ++= Seq(
       "com.chuusai"                  % "shapeless_2.10.4"                   % "2.0.0",
-      "com.twitter"                  %% "finagle-mysql"                     % finagleVersion,
-      "org.scala-lang"               %  "scala-reflect"                     % "2.10.4",
-      "com.twitter"                  %% "util-core"                         % finagleVersion,
+      "org.scala-lang"               %  "scala-reflect"                     % scalaVersion.value,
       "joda-time"                    %  "joda-time"                         % "2.3",
       "org.joda"                     %  "joda-convert"                      % "1.6",
       "net.liftweb"                  %% "lift-json"                         % "2.6-M4"                  % "test, provided"
@@ -139,11 +138,31 @@ object morpheus extends Build {
     settings = Defaults.coreDefaultSettings ++
       sharedSettings ++ publishSettings
   ).settings(
-    name := "morpheus-mysql"
+    name := "morpheus-mysql",
+    libraryDependencies ++= Seq(
+      "com.twitter"                  %% "util-core"                         % finagleVersion,
+      "com.twitter"                  %% "finagle-mysql"                     % finagleVersion
+    )
   ).dependsOn(
     morpheusDsl,
     morpheusTesting % "test, provided"
   )
+
+  lazy val morpheusPostgres = Project(
+    id = "morpheus-postgres",
+    base = file("morpheus-postgres"),
+    settings = Defaults.coreDefaultSettings ++
+      sharedSettings ++ publishSettings
+  ).settings(
+    name := "morpheus-postgres",
+    libraryDependencies ++= Seq(
+      "com.github.mauricio" %% "postgresql-async" % "0.2.15"
+    )
+  ).dependsOn(
+    morpheusDsl,
+    morpheusTesting % "test, provided"
+  )
+
 
   lazy val morpheusZookeeper = Project(
     id = "morpheus-zookeeper",
@@ -164,6 +183,7 @@ object morpheus extends Build {
   ).settings(
     name := "morpheus-testing",
     libraryDependencies ++= Seq(
+      "com.h2database"                   % "h2"                        % "1.4.181",
       "com.twitter"                      %% "util-core"                % finagleVersion,
       "com.newzly"                       %% "util-testing"             % newzlyUtilVersion,
       "org.scalatest"                    %% "scalatest"                % scalatestVersion,

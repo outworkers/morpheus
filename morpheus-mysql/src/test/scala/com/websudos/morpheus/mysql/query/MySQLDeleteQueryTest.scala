@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package com.websudos.morpheus.mysql
+package com.websudos.morpheus.mysql.query
 
-import org.scalatest.{Matchers, FlatSpec}
+import org.scalatest.{FlatSpec, Matchers}
 
+import com.websudos.morpheus.mysql._
 import com.websudos.morpheus.mysql.tables.BasicTable
-import com.websudos.morpheus.mysql.Imports._
 
 class MySQLDeleteQueryTest extends FlatSpec with Matchers {
 

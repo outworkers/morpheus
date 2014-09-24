@@ -16,9 +16,13 @@
 
 package com.websudos.morpheus.column
 
-import com.twitter.finagle.exp.mysql.Row
-import com.websudos.morpheus.dsl.Table
+import com.websudos.morpheus.dsl.BaseTable
 import com.websudos.morpheus.query.{QueryAssignment, SQLBuiltQuery}
+
+import scala.reflect.runtime.{currentMirror => cm}
+
+
+abstract class Row()
 
 private[morpheus] trait SchemaSerializer {
   def qb: SQLBuiltQuery
@@ -28,13 +32,13 @@ private[morpheus] trait AbstractColumn[@specialized(Int, Double, Float, Long, Bo
 
   type Value = T
 
-  lazy val name: String = getClass.getSimpleName.replaceAll("\\$+", "").replaceAll("(anonfun\\d+.+\\d+)|", "")
+  lazy val name: String = cm.reflect(this).symbol.name.toTypeName.decoded
 
   def qb: SQLBuiltQuery
 
   def sqlType: String
 
-  def table: Table[_, _]
+  def table: BaseTable[_, _]
 
   def toQueryString(v: T): String
 
@@ -49,11 +53,13 @@ private[morpheus] trait AbstractColumn[@specialized(Int, Double, Float, Long, Bo
 }
 
 
-private[morpheus] abstract class SelectColumn[T](val col: AbstractColumn[_]) {
+private[morpheus] abstract class SelectColumn[T](val qb: SQLBuiltQuery) {
   def apply(r: Row): T
+
+  def queryString: String = qb.queryString
 }
 
-private[morpheus] abstract class Column[Owner <: Table[Owner, Record], Record, T](val table: Table[Owner, Record]) extends AbstractColumn[T] {
+private[morpheus] abstract class Column[Owner <: BaseTable[Owner, Record], Record, T](val table: BaseTable[Owner, Record]) extends AbstractColumn[T] {
 
   def optional(r: Row): Option[T]
 

@@ -28,7 +28,7 @@ class RaceConditionTest extends FunSuite {
 
   case class Group(id: Long, name: String)
 
-  class Groups extends SQLTable[Groups, Group] {
+  class Groups extends Table[Groups, Group] {
     object id extends LongColumn(this)
     object name extends TextColumn(this)
 
@@ -37,7 +37,7 @@ class RaceConditionTest extends FunSuite {
 
   case class User(id: Long, name: String)
 
-  class Users extends SQLTable[Users, User] {
+  class Users extends Table[Users, User] {
     object id extends LongColumn(this)
     object name extends TextColumn(this)
 

@@ -16,13 +16,13 @@
 
 package com.websudos.morpheus.dsl
 
-import scala.collection.mutable.{ArrayBuffer => MutableArrayBuffer, SynchronizedBuffer => MutableSyncBuffer}
-import scala.reflect.runtime.universe.Symbol
-import scala.reflect.runtime.{currentMirror => cm, universe => ru}
-
 import com.twitter.finagle.exp.mysql.Row
 import com.websudos.morpheus.column.AbstractColumn
 import com.websudos.morpheus.query._
+
+import scala.collection.mutable.{ArrayBuffer => MutableArrayBuffer, SynchronizedBuffer => MutableSyncBuffer}
+import scala.reflect.runtime.universe.Symbol
+import scala.reflect.runtime.{currentMirror => cm, universe => ru}
 
 /**
  * The basic wrapper definition of an SQL table. This will force greedy initialisation of all column object members and provide a way to map
@@ -40,7 +40,7 @@ import com.websudos.morpheus.query._
  * @tparam Record The user defined Scala class, usually a case class, holding a type safe data model definition. This allows for type safe querying of
  *                records, as all select all queries will return an instance of Record.
  */
-abstract class Table[Owner <: Table[Owner, Record], Record] {
+abstract class BaseTable[Owner <: BaseTable[Owner, Record], Record] {
 
   val queryBuilder: AbstractQueryBuilder
 
@@ -58,7 +58,6 @@ abstract class Table[Owner <: Table[Owner, Record], Record] {
   private[this] lazy val _columns: MutableArrayBuffer[AbstractColumn[_]] = new MutableArrayBuffer[AbstractColumn[_]] with MutableSyncBuffer[AbstractColumn[_]]
 
   /**
-   * This ugly looking Regex is probably a less than ideal of way of extracting the Scala class name directly from the definition.
    * It allows DSL users to obtain good "default" values for their table names.
    *
    * As we don't want ugly looking strings bleeding all over our DSL like they do in Slick, a user can easily override the name of a table as follows:
@@ -72,7 +71,7 @@ abstract class Table[Owner <: Table[Owner, Record], Record] {
    * The default name in the above case would have been "MyTable".
    */
   private[this] lazy val _name: String = {
-    getClass.getName.split("\\.").toList.last.replaceAll("[^$]*\\$\\$[^$]*\\$[^$]*\\$|\\$\\$[^\\$]*\\$", "").dropRight(1)
+    cm.reflect(this).symbol.name.toTypeName.decoded
   }
 
   /**

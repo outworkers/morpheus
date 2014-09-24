@@ -16,17 +16,16 @@
 
 package com.websudos.morpheus.mysql
 
-import com.twitter.finagle.exp.mysql.Row
-import com.websudos.morpheus.dsl.{SelectTable, Table}
+import com.websudos.morpheus.dsl.SelectTable
 
-abstract class MySQLTable[Owner <: MySQLTable[Owner, Record], Record] extends Table[Owner, Record] with SelectTable[Owner, Record,
+abstract class MySQLTable[Owner <: BaseTable[Owner, Record], Record] extends BaseTable[Owner, Record] with SelectTable[Owner, Record,
   MySQLRootSelectQuery, MySQLSelectSyntaxBlock] {
 
   val queryBuilder = MySQLQueryBuilder
 
   val syntax = MySQLSyntax
 
-  protected[this] def createRootSelect[A <: Table[A, _], B](table: A, block: MySQLSelectSyntaxBlock, rowFunc: Row => B): MySQLRootSelectQuery[A,
+  protected[this] def createRootSelect[A <: BaseTable[A, _], B](table: A, block: MySQLSelectSyntaxBlock, rowFunc: Row => B): MySQLRootSelectQuery[A,
     B] = {
     new MySQLRootSelectQuery[A, B](table, block, rowFunc)
   }

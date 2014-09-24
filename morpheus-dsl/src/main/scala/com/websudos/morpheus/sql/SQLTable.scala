@@ -16,17 +16,18 @@
 
 package com.websudos.morpheus.sql
 
-import com.websudos.morpheus.dsl.SelectTable
+
+import com.websudos.morpheus.dsl.{ SelectTable }
 import com.websudos.morpheus.query._
 
-abstract class SQLTable[Owner <: Table[Owner, Record], Record] extends Table[Owner, Record] with SelectTable[Owner, Record,
+abstract class SQLTable[Owner <: BaseTable[Owner, Record], Record] extends BaseTable[Owner, Record] with SelectTable[Owner, Record,
   AbstractRootSelectQuery, AbstractSelectSyntaxBlock] {
 
   val queryBuilder = DefaultQueryBuilder
 
   val syntax = DefaultSQLSyntax
 
-  protected[this] def createRootSelect[A <: Table[A, _], B](table: A, block: AbstractSelectSyntaxBlock, rowFunc: Row => B): AbstractRootSelectQuery[A,
+  protected[this] def createRootSelect[A <: BaseTable[A, _], B](table: A, block: AbstractSelectSyntaxBlock, rowFunc: Row => B): AbstractRootSelectQuery[A,
     B] = {
     new AbstractRootSelectQuery[A, B](table, block, rowFunc)
   }

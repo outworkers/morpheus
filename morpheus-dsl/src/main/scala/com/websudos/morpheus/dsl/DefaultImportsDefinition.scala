@@ -30,43 +30,44 @@ import com.websudos.morpheus.query.{CreateImplicits, AbstractQueryColumn}
  * This includes the various conversions and implicit mechanisms which will have there own underlying structure. As any underlying variable implementation
  * between databases will still extend the same base implementations internally, we can easily override with the settings we need in any place we want.
  *
- * Thanks to Scala's ability to override the below type aliases, we can easily swap out the base table implementation for a MySQL specific table
+ * Thanks to Scala's ability to override the below type aliases, we can easily swap out the base BaseTable implementation for a MySQL specific BaseTable
  * implementation in a manner that's completely invisible to the API user. The naming of things can stay the same while morpheus invisibly implements all
  * necessary discrepancies.
  */
 trait DefaultImportsDefinition extends ModifyImplicits with DefaultForeignKeyConstraints with CreateImplicits {
 
   type SQLPrimitive[T] = com.websudos.morpheus.SQLPrimitive[T]
-  type Table[Owner <: Table[Owner, Record], Record] = com.websudos.morpheus.dsl.Table[Owner, Record]
 
-  type Index[Owner <: Table[Owner, Record], Record] = com.websudos.morpheus.column.Index[Owner, Record]
-  type PrimitiveColumn[Owner <: Table[Owner, Record], Record, ValueType] = com.websudos.morpheus.column.PrimitiveColumn[Owner, Record, ValueType]
+  type BaseTable[Owner <: BaseTable[Owner, Record], Record] = com.websudos.morpheus.dsl.BaseTable[Owner, Record]
 
-  type LongColumn[Owner <: Table[Owner, Record], Record] = com.websudos.morpheus.column.PrimitiveColumn[Owner, Record, Long]
+  type Index[Owner <: BaseTable[Owner, Record], Record] = com.websudos.morpheus.column.Index[Owner, Record]
+  type PrimitiveColumn[Owner <: BaseTable[Owner, Record], Record, ValueType] = com.websudos.morpheus.column.PrimitiveColumn[Owner, Record, ValueType]
 
-  type TinyIntColumn[Owner <: Table[Owner, Record], Record] = com.websudos.morpheus.column.TinyIntColumn[Owner, Record]
-  type SmallIntColumn[Owner <: Table[Owner, Record], Record] = com.websudos.morpheus.column.SmallIntColumn[Owner, Record]
-  type IntColumn[Owner <: Table[Owner, Record], Record] = com.websudos.morpheus.column.IntColumn[Owner, Record]
-  type MediumIntColumn[Owner <: Table[Owner, Record], Record] = com.websudos.morpheus.column.MediumIntColumn[Owner, Record]
-  type YearColumn[Owner <: Table[Owner, Record], Record] = com.websudos.morpheus.column.YearColumn[Owner, Record]
+  type LongColumn[Owner <: BaseTable[Owner, Record], Record] = com.websudos.morpheus.column.PrimitiveColumn[Owner, Record, Long]
 
-  type TinyTextColumn[Owner <: Table[Owner, Record], Record] = com.websudos.morpheus.column.TinyTextColumn[Owner, Record]
-  type MediumTextColumn[Owner <: Table[Owner, Record], Record] = com.websudos.morpheus.column.MediumTextColumn[Owner, Record]
-  type LongTextColumn[Owner <: Table[Owner, Record], Record] = com.websudos.morpheus.column.LongTextColumn[Owner, Record]
-  type TextColumn[Owner <: Table[Owner, Record], Record] = com.websudos.morpheus.column.TextColumn[Owner, Record]
+  type TinyIntColumn[Owner <: BaseTable[Owner, Record], Record] = com.websudos.morpheus.column.TinyIntColumn[Owner, Record]
+  type SmallIntColumn[Owner <: BaseTable[Owner, Record], Record] = com.websudos.morpheus.column.SmallIntColumn[Owner, Record]
+  type IntColumn[Owner <: BaseTable[Owner, Record], Record] = com.websudos.morpheus.column.IntColumn[Owner, Record]
+  type MediumIntColumn[Owner <: BaseTable[Owner, Record], Record] = com.websudos.morpheus.column.MediumIntColumn[Owner, Record]
+  type YearColumn[Owner <: BaseTable[Owner, Record], Record] = com.websudos.morpheus.column.YearColumn[Owner, Record]
 
-  type CharColumn[Owner <: Table[Owner, Record], Record] = com.websudos.morpheus.column.CharColumn[Owner, Record]
-  type VarcharColumn[Owner <: Table[Owner, Record], Record] = com.websudos.morpheus.column.VarcharColumn[Owner, Record]
+  type TinyTextColumn[Owner <: BaseTable[Owner, Record], Record] = com.websudos.morpheus.column.TinyTextColumn[Owner, Record]
+  type MediumTextColumn[Owner <: BaseTable[Owner, Record], Record] = com.websudos.morpheus.column.MediumTextColumn[Owner, Record]
+  type LongTextColumn[Owner <: BaseTable[Owner, Record], Record] = com.websudos.morpheus.column.LongTextColumn[Owner, Record]
+  type TextColumn[Owner <: BaseTable[Owner, Record], Record] = com.websudos.morpheus.column.TextColumn[Owner, Record]
 
-  type TinyBlobColumn[Owner <: Table[Owner, Record], Record] = com.websudos.morpheus.column.TinyBlobColumn[Owner, Record]
-  type BlobColumn[Owner <: Table[Owner, Record], Record] = com.websudos.morpheus.column.BlobColumn[Owner, Record]
-  type MediumBlobColumn[Owner <: Table[Owner, Record], Record] = com.websudos.morpheus.column.MediumBlobColumn[Owner, Record]
-  type LongBlobColumn[Owner <: Table[Owner, Record], Record] = com.websudos.morpheus.column.LongBlobColumn[Owner, Record]
+  type CharColumn[Owner <: BaseTable[Owner, Record], Record] = com.websudos.morpheus.column.CharColumn[Owner, Record]
+  type VarcharColumn[Owner <: BaseTable[Owner, Record], Record] = com.websudos.morpheus.column.VarcharColumn[Owner, Record]
+
+  type TinyBlobColumn[Owner <: BaseTable[Owner, Record], Record] = com.websudos.morpheus.column.TinyBlobColumn[Owner, Record]
+  type BlobColumn[Owner <: BaseTable[Owner, Record], Record] = com.websudos.morpheus.column.BlobColumn[Owner, Record]
+  type MediumBlobColumn[Owner <: BaseTable[Owner, Record], Record] = com.websudos.morpheus.column.MediumBlobColumn[Owner, Record]
+  type LongBlobColumn[Owner <: BaseTable[Owner, Record], Record] = com.websudos.morpheus.column.LongBlobColumn[Owner, Record]
 
   type Result = com.twitter.finagle.exp.mysql.Result
   type Row = com.twitter.finagle.exp.mysql.Row
 
-  type ForeignKey[Owner <: Table[Owner, Record], Record, T1 <: Table[T1, _]] = com.websudos.morpheus.column.ForeignKey[Owner, Record, T1]
+  type ForeignKey[Owner <: BaseTable[Owner, Record], Record, T1 <: BaseTable[T1, _]] = com.websudos.morpheus.column.ForeignKey[Owner, Record, T1]
   type PrimaryKey[ValueType] = com.websudos.morpheus.keys.PrimaryKey[ValueType]
   type UniqueKey[ValueType] = com.websudos.morpheus.keys.UniqueKey[ValueType]
   type NotNull = com.websudos.morpheus.keys.NotNull

@@ -19,7 +19,7 @@ package com.websudos.morpheus.column
 import scala.annotation.implicitNotFound
 
 import com.twitter.finagle.exp.mysql.Row
-import com.websudos.morpheus.dsl.Table
+import com.websudos.morpheus.dsl.BaseTable
 import com.websudos.morpheus.query.SQLBuiltQuery
 import com.websudos.morpheus.{SQLPrimitive, SQLPrimitives}
 
@@ -34,7 +34,7 @@ private[morpheus] object KnownTypeLimits {
 
 
 @implicitNotFound(msg = "Type ${RR} must be a MySQL primitive")
-private[morpheus] class PrimitiveColumn[T <: Table[T, R], R, @specialized(Int, Double, Float, Long) RR : SQLPrimitive](t: Table[T, R])
+private[morpheus] class PrimitiveColumn[T <: BaseTable[T, R], R, @specialized(Int, Double, Float, Long) RR : SQLPrimitive](t: BaseTable[T, R])
   extends Column[T, R, RR](t) {
 
   def sqlType: String = SQLPrimitives[RR].sqlType

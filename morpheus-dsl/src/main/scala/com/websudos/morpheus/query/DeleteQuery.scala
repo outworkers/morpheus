@@ -15,8 +15,8 @@
  */
 package com.websudos.morpheus.query
 
-import com.twitter.finagle.exp.mysql.Row
-import com.websudos.morpheus.dsl.Table
+import com.websudos.morpheus.column.Row
+import com.websudos.morpheus.dsl.BaseTable
 
 private[morpheus] class RootDeleteSyntaxBlock(query: String, tableName: String) extends AbstractSyntaxBlock {
 
@@ -24,7 +24,7 @@ private[morpheus] class RootDeleteSyntaxBlock(query: String, tableName: String) 
 
   def all: SQLBuiltQuery = {
     qb.pad.append(DefaultSQLSyntax.from)
-      .forcePad.append(tableName)
+      .forcePad.appendEscape(tableName)
   }
 
   def syntax: AbstractSQLSyntax = DefaultSQLSyntax
@@ -42,7 +42,7 @@ private[morpheus] class RootDeleteSyntaxBlock(query: String, tableName: String) 
  * @tparam T The type of the owning table.
  * @tparam R The type of the record.
  */
-private[morpheus] class RootDeleteQuery[T <: Table[T, _], R](val table: T, val st: RootDeleteSyntaxBlock, val rowFunc: Row => R) {
+private[morpheus] class RootDeleteQuery[T <: BaseTable[T, _], R](val table: T, val st: RootDeleteSyntaxBlock, val rowFunc: Row => R) {
 
   def fromRow(r: Row): R = rowFunc(r)
 

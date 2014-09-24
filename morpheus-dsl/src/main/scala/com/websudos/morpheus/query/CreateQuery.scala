@@ -17,7 +17,7 @@
 package com.websudos.morpheus.query
 
 import com.twitter.finagle.exp.mysql.Row
-import com.websudos.morpheus.dsl.Table
+import com.websudos.morpheus.dsl.BaseTable
 
 private[morpheus] class RootCreateSyntaxBlock(query: String, tableName: String) extends AbstractSyntaxBlock {
 
@@ -27,20 +27,20 @@ private[morpheus] class RootCreateSyntaxBlock(query: String, tableName: String) 
 
   def default: SQLBuiltQuery = {
     qb.pad.append(DefaultSQLSyntax.table)
-      .forcePad.append(tableName)
+      .forcePad.appendEscape(tableName)
   }
 
   def ifNotExists: SQLBuiltQuery = {
     qb.pad.append(DefaultSQLSyntax.table)
       .forcePad.append(syntax.ifNotExists)
-      .forcePad.append(tableName)
+      .forcePad.appendEscape(tableName)
   }
 
   def temporary: SQLBuiltQuery = {
     qb.pad
       .append(syntax.temporary)
       .forcePad.append(DefaultSQLSyntax.table)
-      .forcePad.append(tableName)
+      .forcePad.appendEscape(tableName)
   }
 }
 
@@ -56,7 +56,7 @@ private[morpheus] class RootCreateSyntaxBlock(query: String, tableName: String) 
  * @tparam T The type of the owning table.
  * @tparam R The type of the record.
  */
-private[morpheus] class RootCreateQuery[T <: Table[T, _], R](val table: T, val st: RootCreateSyntaxBlock, val rowFunc: Row => R) {
+private[morpheus] class RootCreateQuery[T <: BaseTable[T, _], R](val table: T, val st: RootCreateSyntaxBlock, val rowFunc: Row => R) {
 
   protected[this] type BaseCreateQuery = Query[T, R, CreateType, Ungroupped, Unordered, Unlimited, Unchainned, AssignUnchainned, Unterminated]
 
@@ -131,7 +131,7 @@ trait MySQLEngines extends DefaultSQLEngines {}
  * @tparam T The type of the table owning the record.
  * @tparam R The type of the record held in the table.
  */
-class CreateQuery[T <: Table[T, _],
+class CreateQuery[T <: BaseTable[T, _],
   R,
   Type <: QueryType,
   Group <: GroupBind,
@@ -195,7 +195,7 @@ private[morpheus] trait CreateImplicits extends DefaultSQLEngines {
    * @tparam R The record type.
    * @return An executable SelectQuery.
    */
-  implicit def rootCreateQueryToCreateQuery[T <: Table[T, _], R](root: RootCreateQuery[T, R]): CreateQuery[T, R, CreateType, Ungroupped, Unordered,
+  implicit def rootCreateQueryToCreateQuery[T <: BaseTable[T, _], R](root: RootCreateQuery[T, R]): CreateQuery[T, R, CreateType, Ungroupped, Unordered,
     Unlimited, Unchainned, AssignUnchainned, Unterminated] = {
     new CreateQuery(
       new Query(

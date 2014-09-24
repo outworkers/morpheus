@@ -20,14 +20,19 @@ import scala.concurrent.{Future => ScalaFuture}
 
 import com.twitter.finagle.exp.mysql.{Client, Result, Row}
 import com.twitter.util.Future
-import com.websudos.morpheus.dsl.{ResultSetOperations, Table}
+import com.websudos.morpheus.dsl.{ResultSetOperations, BaseTable}
 
 case class SQLBuiltQuery(queryString: String) {
   def append(st: String): SQLBuiltQuery = SQLBuiltQuery(queryString + st)
   def append(st: SQLBuiltQuery): SQLBuiltQuery = append(st.queryString)
 
+  def appendEscape(st: String): SQLBuiltQuery = append(escape(st))
+  def appendEscape(st: SQLBuiltQuery): SQLBuiltQuery = append(escape(st.queryString))
+
   def prepend(st: String): SQLBuiltQuery = SQLBuiltQuery(st + queryString)
   def prepend(st: SQLBuiltQuery): SQLBuiltQuery = prepend(st.queryString)
+
+  def escape(st: String): String = "'" + st + "'"
 
   def spaced: Boolean = queryString.endsWith(" ")
   def pad: SQLBuiltQuery = if (spaced) this else SQLBuiltQuery(queryString + " ")
@@ -41,7 +46,7 @@ case class SQLBuiltQuery(queryString: String) {
 }
 
 
-trait SQLQuery[T <: Table[T, _], R] extends ResultSetOperations {
+trait SQLQuery[T <: BaseTable[T, _], R] extends ResultSetOperations {
   protected[morpheus] val query: SQLBuiltQuery
 
   /**
@@ -81,7 +86,7 @@ trait SQLQuery[T <: Table[T, _], R] extends ResultSetOperations {
 }
 
 
-trait SQLResultsQuery[T <: Table[T, _], R] extends SQLQuery[T, R] {
+trait SQLResultsQuery[T <: BaseTable[T, _], R] extends SQLQuery[T, R] {
   def fromRow(r: Row): R
 
   /**

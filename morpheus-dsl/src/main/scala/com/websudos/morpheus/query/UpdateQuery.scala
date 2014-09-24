@@ -18,8 +18,7 @@ package com.websudos.morpheus.query
 
 import scala.annotation.implicitNotFound
 
-import com.twitter.finagle.exp.mysql.Row
-import com.websudos.morpheus.dsl.Table
+import com.websudos.morpheus.dsl.BaseTable
 
 
 private[morpheus] class RootUpdateSyntaxBlock(query: String, tableName: String) extends AbstractSyntaxBlock {
@@ -27,7 +26,7 @@ private[morpheus] class RootUpdateSyntaxBlock(query: String, tableName: String) 
   protected[this] val qb = SQLBuiltQuery(query)
 
   def all: SQLBuiltQuery = {
-    qb.pad.append(tableName)
+    qb.pad.appendEscape(tableName)
   }
 
   def syntax: AbstractSQLSyntax = DefaultSQLSyntax
@@ -46,7 +45,7 @@ private[morpheus] class RootUpdateSyntaxBlock(query: String, tableName: String) 
  * @tparam T The type of the owning table.
  * @tparam R The type of the record.
  */
-private[morpheus] class RootUpdateQuery[T <: Table[T, _], R](val table: T, val st: RootUpdateSyntaxBlock, val rowFunc: Row => R) {
+private[morpheus] class RootUpdateQuery[T <: BaseTable[T, _], R](val table: T, val st: RootUpdateSyntaxBlock, val rowFunc: Row => R) {
 
   protected[this] type BaseUpdateQuery = Query[T, R, UpdateType, Ungroupped, Unordered, Unlimited, Unchainned, AssignUnchainned, Unterminated]
 
@@ -68,7 +67,7 @@ sealed abstract class AssignUnchainned extends AssignBind
  * @tparam T The type of the table owning the record.
  * @tparam R The type of the record held in the table.
  */
-class AssignmentsQuery[T <: Table[T, _],
+class AssignmentsQuery[T <: BaseTable[T, _],
   R,
   Type <: QueryType,
   Group <: GroupBind,

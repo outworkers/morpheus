@@ -16,8 +16,6 @@
 
 package com.websudos.morpheus.mysql
 
-import com.twitter.finagle.exp.mysql.Row
-import com.websudos.morpheus.dsl.Table
 import com.websudos.morpheus.query._
 
 
@@ -36,7 +34,7 @@ case class MySQLUpdateSyntaxBlock(query: String, tableName: String) extends Root
 }
 
 
-private[morpheus] class MySQLRootUpdateQuery[T <: Table[T, _], R](table: T, st: MySQLUpdateSyntaxBlock,
+private[morpheus] class MySQLRootUpdateQuery[T <: BaseTable[T, _], R](table: T, st: MySQLUpdateSyntaxBlock,
                                                                   rowFunc: Row => R) extends RootUpdateQuery[T, R](table, st, rowFunc) {
 
   def lowPriority: BaseUpdateQuery = {

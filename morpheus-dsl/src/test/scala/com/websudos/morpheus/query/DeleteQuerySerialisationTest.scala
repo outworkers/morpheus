@@ -8,57 +8,57 @@ import com.websudos.morpheus.sql._
 class DeleteQuerySerialisationTest extends FlatSpec with Matchers {
 
   it should "serialise a simple DELETE query" in {
-    BasicTable.delete.queryString shouldEqual "DELETE FROM BasicTable"
+    BasicTable.delete.queryString shouldEqual "DELETE FROM 'BasicTable'"
   }
 
   it should  "serialise a simple DELETE where query" in {
     BasicTable.delete
-      .where(_.name eqs "test").queryString shouldEqual "DELETE FROM BasicTable WHERE name = 'test'"
+      .where(_.name eqs "test").queryString shouldEqual "DELETE FROM 'BasicTable' WHERE name = 'test'"
   }
 
   it should "serialise an DELETE query with an < operator" in {
     BasicTable.delete
-      .where(_.count < 5).queryString shouldEqual "DELETE FROM BasicTable WHERE count < 5"
+      .where(_.count < 5).queryString shouldEqual "DELETE FROM 'BasicTable' WHERE count < 5"
   }
 
   it should "serialise an DELETE query with an lt operator" in {
     BasicTable.delete
       .where(_.count lt 5)
-      .queryString shouldEqual "DELETE FROM BasicTable WHERE count < 5"
+      .queryString shouldEqual "DELETE FROM 'BasicTable' WHERE count < 5"
   }
 
   it should "serialise an DELETE query with an <= operator" in {
     BasicTable.delete
       .where(_.count <= 5)
-      .queryString shouldEqual "DELETE FROM BasicTable WHERE count <= 5"
+      .queryString shouldEqual "DELETE FROM 'BasicTable' WHERE count <= 5"
   }
 
   it should "serialise an DELETE query with an lte operator" in {
     BasicTable.delete
       .where(_.count lte 5)
-      .queryString shouldEqual "DELETE FROM BasicTable WHERE count <= 5"
+      .queryString shouldEqual "DELETE FROM 'BasicTable' WHERE count <= 5"
   }
 
   it should "serialise an DELETE query with a gt operator" in {
     BasicTable.delete
       .where(_.count gt 5)
-      .queryString shouldEqual "DELETE FROM BasicTable WHERE count > 5"
+      .queryString shouldEqual "DELETE FROM 'BasicTable' WHERE count > 5"
   }
 
   it should "serialise an DELETE query with a > operator" in {
     BasicTable.delete
       .where(_.count > 5)
-      .queryString shouldEqual "DELETE FROM BasicTable WHERE count > 5"
+      .queryString shouldEqual "DELETE FROM 'BasicTable' WHERE count > 5"
   }
 
   it should "serialise an DELETE query with a gte operator" in {
     BasicTable.delete
-      .where(_.count gte 5).queryString shouldEqual "DELETE FROM BasicTable WHERE count >= 5"
+      .where(_.count gte 5).queryString shouldEqual "DELETE FROM 'BasicTable' WHERE count >= 5"
   }
 
   it should "serialise an DELETE query with a >= operator" in {
     BasicTable.delete
-      .where(_.count >= 5).queryString shouldEqual "DELETE FROM BasicTable WHERE count >= 5"
+      .where(_.count >= 5).queryString shouldEqual "DELETE FROM 'BasicTable' WHERE count >= 5"
   }
 
   it should  "not allow specifying the WHERE part before the SET in an DELETE query" in {
@@ -68,34 +68,34 @@ class DeleteQuerySerialisationTest extends FlatSpec with Matchers {
   it should "serialise a multiple assignments query with a single where clause" in {
     BasicTable.delete
       .where(_.name eqs "test")
-      .queryString shouldEqual "DELETE FROM BasicTable WHERE name = 'test'"
+      .queryString shouldEqual "DELETE FROM 'BasicTable' WHERE name = 'test'"
   }
 
   it should "serialise a multiple assignments query with a multiple where clause" in {
     BasicTable.delete
       .where(_.name eqs "test")
       .and(_.count eqs 10)
-      .queryString shouldEqual "DELETE FROM BasicTable WHERE name = 'test' AND count = 10"
+      .queryString shouldEqual "DELETE FROM 'BasicTable' WHERE name = 'test' AND count = 10"
   }
 
 
   it should  "serialise a simple DELETE where-and query" in {
     BasicTable.delete
       .where(_.name eqs "test")
-      .and(_.count eqs 5).queryString shouldEqual "DELETE FROM BasicTable WHERE name = 'test' AND count = 5"
+      .and(_.count eqs 5).queryString shouldEqual "DELETE FROM 'BasicTable' WHERE name = 'test' AND count = 5"
   }
 
   it should "serialise a conditional DELETE clause with an OR operator" in {
     BasicTable.delete
       .where(_.name eqs "test")
       .and(t => { (t.count eqs 5) or (t.name eqs "test") })
-      .queryString shouldEqual "DELETE FROM BasicTable WHERE name = 'test' AND (count = 5 OR name = 'test')"
+      .queryString shouldEqual "DELETE FROM 'BasicTable' WHERE name = 'test' AND (count = 5 OR name = 'test')"
   }
 
   it should "serialise a conditional DELETE clause with an a double WHERE-OR operator" in {
     BasicTable.delete
       .where(t => { (t.count eqs 15) or (t.name eqs "test5") })
       .and(t => { (t.count eqs 5) or (t.name eqs "test") })
-      .queryString shouldEqual "DELETE FROM BasicTable WHERE (count = 15 OR name = 'test5') AND (count = 5 OR name = 'test')"
+      .queryString shouldEqual "DELETE FROM 'BasicTable' WHERE (count = 15 OR name = 'test5') AND (count = 5 OR name = 'test')"
   }
 }
