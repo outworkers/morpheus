@@ -16,11 +16,12 @@
 
 package com.websudos.morpheus.column
 
-import com.websudos.morpheus.SQLPrimitives.StringIsSQLPrimitive
+import com.websudos.morpheus.SQLPrimitives._
 import com.websudos.morpheus.dsl.BaseTable
 import com.websudos.morpheus.query.DefaultSQLDataTypes
 
-sealed abstract class LimitedTextColumn[T <: BaseTable[T, R], R](t: BaseTable[T, R], protected[this] val limit: Int) extends PrimitiveColumn[T, R, String](t)(StringIsSQLPrimitive)
+sealed abstract class LimitedTextColumn[T <: BaseTable[T, R], R](t: BaseTable[T, R], protected[this] val limit: Int) extends PrimitiveColumn[T, R,
+  String](t)(StringPrimitive)
 
 class CharColumn[T <: BaseTable[T, R], R](t: BaseTable[T, R], limit: Int = KnownTypeLimits.charLimit) extends LimitedTextColumn(t, limit) {
   override def sqlType: String = s"${DefaultSQLDataTypes.char}($limit)"

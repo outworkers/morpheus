@@ -18,8 +18,9 @@ package com.websudos.morpheus.mysql.db
 
 import com.twitter.conversions.time._
 import com.twitter.finagle.exp.Mysql
-import com.twitter.finagle.exp.mysql.Client
 import com.twitter.util.Await
+import com.websudos.morpheus.Client
+import com.websudos.morpheus.mysql.{MySQLResult, MySQLRow, MySQLClient}
 
 object MySQLConnector {
   lazy val client = {
@@ -32,5 +33,5 @@ object MySQLConnector {
 
 
 trait MySQLSuite {
-  implicit lazy val client: Client = MySQLConnector.client
+  implicit lazy val client: Client[MySQLRow, MySQLResult] = new MySQLClient(MySQLConnector.client)
 }

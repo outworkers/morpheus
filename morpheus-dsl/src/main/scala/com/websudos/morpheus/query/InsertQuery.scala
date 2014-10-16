@@ -17,8 +17,8 @@ package com.websudos.morpheus.query
 
 import scala.annotation.implicitNotFound
 
-import com.websudos.morpheus.SQLPrimitive
-import com.websudos.morpheus.column.{Row, AbstractColumn}
+import com.websudos.morpheus.{Row, SQLPrimitive}
+import com.websudos.morpheus.column.AbstractColumn
 import com.websudos.morpheus.dsl.BaseTable
 
 private[morpheus] class RootInsertSyntaxBlock(query: String, tableName: String) extends AbstractSyntaxBlock {

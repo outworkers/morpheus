@@ -2,7 +2,7 @@ morpheus [NOT PRODUCTION READY][![Build Status](https://travis-ci.org/websudos/m
 
 ========================================================================================================================================================================================================================
 
-![Morpheus](http://websudos.com/images/morpheus.png "Morpheus")
+![Morpheus](http://websudos.com/images/work/morpheus.png "Morpheus")
 
 
 Named after the Greek God of Dreams, morpheus is an Asynchronous type-safe Scala DSL for MySQL, Postgres, MSSQL, 
@@ -89,12 +89,15 @@ And then you can: ```import com.websudos.morpheus.mysql._```, which will give yo
 unsupported operations. Morpheus guarantees you can almost never write an invalid SQL query unless you try really really hard.
 
 
+### Available modules ###
+
 The full list of available modules is:
 
 ```scala
 libraryDependencies ++= Seq(
   "com.websudos"  %% "morpheus-dsl"                  % morpheusVersion,
-  "com.websudos"  %% "morpheus-mysql"                % morpheusVersion
+  "com.websudos"  %% "morpheus-mysql"                % morpheusVersion,
+  "com.websudos"  %% "morpheus-postgres"             % morpheusVersion
 )
 ```
 

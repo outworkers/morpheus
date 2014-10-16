@@ -18,16 +18,16 @@ package com.websudos.morpheus.dsl
 
 import scala.concurrent.{Future => ScalaFuture, Promise => ScalaPromise}
 
-import com.twitter.finagle.exp.mysql.{Client, Result}
 import com.twitter.util.{ Future, Throw, Return }
+import com.websudos.morpheus.{Row, Result, Client}
 
 private[morpheus] trait ResultSetOperations {
 
-  protected[this] def queryToFuture(query: String)(implicit client: Client): Future[Result] = {
+  protected[this] def queryToFuture[DBRow <: Row, DBResult <: Result](query: String)(implicit client: Client[DBRow, DBResult]): Future[DBResult] = {
     client.query(query)
   }
 
-  protected[this] def queryToScalaFuture(query: String)(implicit client: Client): ScalaFuture[Result] = {
+  protected[this] def queryToScalaFuture[DBRow <: Row, DBResult <: Result](query: String)(implicit client: Client[DBRow, DBResult]): ScalaFuture[DBResult] = {
     twitterToScala(client.query(query))
   }
 

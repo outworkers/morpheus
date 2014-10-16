@@ -16,7 +16,30 @@
 
 package com.websudos.morpheus.mysql
 
+import scala.concurrent.{ Future => ScalaFuture }
+import scala.concurrent.ExecutionContext.Implicits.global
+import com.twitter.util.Future
+import com.websudos.morpheus.Client
 import com.websudos.morpheus.query._
+
+trait BaseSelectQuery[T <: BaseTable[T, _], R] extends SQLResultsQuery[T, R, MySQLRow, MySQLResult] {
+
+  def fetch()(implicit client: Client[MySQLRow, MySQLResult]): ScalaFuture[Seq[R]] = {
+    twitterToScala(client.select(query.queryString)(fromRow))
+  }
+
+  def collect()(implicit client: Client[MySQLRow, MySQLResult]): Future[Seq[R]] = {
+    client.select(query.queryString)(fromRow)
+  }
+
+  def one()(implicit client: Client[MySQLRow, MySQLResult]): ScalaFuture[Option[R]] = {
+    fetch.map(_.headOption)
+  }
+
+  def get()(implicit client: Client[MySQLRow, MySQLResult]): Future[Option[R]] = {
+    collect().map(_.headOption)
+  }
+}
 
 
 private[morpheus] class MySQLSelectSyntaxBlock(
