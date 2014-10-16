@@ -16,21 +16,20 @@
 
 package com.websudos.morpheus.postgres
 
-import com.websudos.morpheus.dsl.BaseTable
-import com.websudos.morpheus.query._
+import com.websudos.morpheus.operators.SQLOperatorSet
+import com.websudos.morpheus.query.{AbstractQueryBuilder, AbstractSQLSyntax}
 
-abstract class PostgresTable[Owner <: PostgresTable[Owner, Record], Record] extends BaseTable[Owner, Record] {
-
-  val queryBuilder: AbstractQueryBuilder = PostgresQueryBuilder
-
-  override protected[this] def syntax: AbstractSQLSyntax = PostgresSyntax
-
-  override def update: RootUpdateQuery[Owner, Record] = ???
-
-  override def insert: RootInsertQuery[Owner, Record] = ???
-
-  override def delete: RootDeleteQuery[Owner, Record] = ???
-
-  override def create: RootCreateQuery[Owner, Record] = ???
+sealed class PostgresOperatorSet extends SQLOperatorSet {
 
 }
+
+object PostgresOperatorSet extends PostgresOperatorSet
+
+
+sealed class PostgresQueryBuilder extends AbstractQueryBuilder {
+  val operators: SQLOperatorSet = PostgresOperatorSet
+
+  val syntax: AbstractSQLSyntax = PostgresSyntax
+}
+
+object PostgresQueryBuilder extends PostgresQueryBuilder
