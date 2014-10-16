@@ -16,14 +16,15 @@
 
 package com.websudos.morpheus.column
 
+import com.websudos.morpheus.SQLPrimitives.IntPrimitive
 import com.websudos.morpheus.SQLPrimitive
-import com.websudos.morpheus.SQLPrimitives.IntIsSQLPrimitive
 import com.websudos.morpheus.dsl.BaseTable
 import com.websudos.morpheus.query.{SQLBuiltQuery, DefaultSQLDataTypes}
 
-
 sealed abstract class NumericColumn[T <: BaseTable[T, R], R, ValueType : Numeric : SQLPrimitive](t: BaseTable[T, R], limit: Int = 0) extends PrimitiveColumn[T, R,
   ValueType](t) {
+
+  val int = IntPrimitive
 
   protected[this] def numericType: String
 
@@ -33,7 +34,6 @@ sealed abstract class NumericColumn[T <: BaseTable[T, R], R, ValueType : Numeric
 }
 
 class TinyIntColumn[T <: BaseTable[T, R], R](t: BaseTable[T, R], limit: Int = 0) extends NumericColumn[T, R, Int](t, limit) {
-  val primitive = IntIsSQLPrimitive
   override protected[this] val numericType: String = DefaultSQLDataTypes.tinyInt
 }
 

@@ -18,6 +18,7 @@ package com.websudos.morpheus.query
 
 import scala.annotation.implicitNotFound
 
+import com.websudos.morpheus.Row
 import com.websudos.morpheus.dsl.BaseTable
 
 

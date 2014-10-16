@@ -19,113 +19,35 @@ package com.websudos.morpheus.mysql
 import java.util.Date
 import org.joda.time.DateTime
 
-import com.twitter.finagle.exp.mysql._
-import com.websudos.morpheus.InvalidTypeDefinitionException
+import com.twitter.finagle.exp.mysql.{ Row => FinagleRow, Client => FinagleClient, Result => FinagleResult, ResultSet => FinagleResultSet, _ }
+import com.twitter.util.Future
+import com.websudos.morpheus._
 import com.websudos.morpheus.column.AbstractColumn
 import com.websudos.morpheus.query._
 
-trait SQLPrimitives {
 
-  def apply[RR: SQLPrimitive]: SQLPrimitive[RR] = implicitly[SQLPrimitive[RR]]
+case class MySQLResult(result: FinagleResult) extends Result {}
 
-  implicit object IntIsSQLPrimitive extends SQLPrimitive[Int] {
-    val sqlType = DefaultSQLDataTypes.int
+case class MySQLRow(res: FinagleRow) extends Row {
+  def get[A](name: String): A = res.apply(name).asInstanceOf[A]
+}
 
-    def fromRow(row: Row, name: String): Option[Int] = row(name) map {
-      case IntValue(num) => num
-      case EmptyValue => 0
-      case _ => throw InvalidTypeDefinitionException()
-    }
+class MySQLClient(val client: FinagleClient) extends Client[MySQLRow, MySQLResult] {
 
-    def toSQL(value: Int): String = value.toString
-  }
-
-  implicit object FloatIsSQLPrimitive extends SQLPrimitive[Float] {
-    override def sqlType: String = DefaultSQLDataTypes.float
-
-    override def fromRow(row: Row, name: String): Option[Float] = row(name) map {
-      case FloatValue(num) => num
-      case EmptyValue => 0
-      case _ => throw InvalidTypeDefinitionException()
-    }
-
-    override def toSQL(value: Float): String = value.toString
-  }
-
-  implicit object DoubleIsSQLPrimitive extends SQLPrimitive[Double] {
-    override def sqlType: String = DefaultSQLDataTypes.double
-
-    override def fromRow(row: Row, name: String): Option[Double] = row(name) map {
-      case DoubleValue(num) => num
-      case EmptyValue => 0
-      case _ => throw InvalidTypeDefinitionException()
-    }
-
-    override def toSQL(value: Double): String = value.toString
-  }
-
-  implicit object LongIsSQLPrimitive extends SQLPrimitive[Long] {
-
-    val sqlType = DefaultSQLDataTypes.long
-
-    def fromRow(row: Row, name: String): Option[Long] = row(name) map {
-      case LongValue(num) => num
-      case EmptyValue => 0L
-      case _ => throw InvalidTypeDefinitionException()
-    }
-
-    def toSQL(value: Long): String = value.toString
-
-  }
-
-
-  implicit object DateIsSQLPrimitive extends SQLPrimitive[Date] {
-    override val sqlType = DefaultSQLDataTypes.date
-
-    def fromRow(row: Row, name: String): Option[Date] = row(name) map {
-      case DateValue(date) => date
-      case _ => throw InvalidTypeDefinitionException(s"Couldn't not parse a Date from column $name.")
-    }
-
-    def toSQL(value: Date): String = value.toString
-  }
-
-  implicit object DateTimeIsSQLPrimitive extends SQLPrimitive[DateTime] {
-    override val sqlType: String = DefaultSQLDataTypes.date
-
-    override def fromRow(row: Row, name: String): Option[DateTime] = row(name) map {
-      case DateValue(date) => new DateTime(date)
-      case _ => throw InvalidTypeDefinitionException(s"Couldn't not parse a DateTime from column $name.")
-    }
-
-    override def toSQL(value: DateTime): String = value.toString
-  }
-
-  implicit object StringIsSQLPrimitive extends SQLPrimitive[String] {
-
-    override val sqlType = DefaultSQLDataTypes.text
-
-    def fromRow(row: Row, name: String): Option[String] = row(name) match {
-      case Some(value) => value match {
-        case StringValue(str) => Some(str)
-        case EmptyValue => Some("")
-        case NullValue => None
-        case _ => throw InvalidTypeDefinitionException()
+  def select[T](qb: String)(f: MySQLRow => T): Future[Seq[T]] = {
+    client.query(qb).map {
+      case set: FinagleResultSet => set.rows.map {
+        row => f(new MySQLRow(row))
       }
-
-      case None => None
+      case _ => Seq.empty[T]
     }
-
-    def toSQL(value: String): String = "'" + value + "'"
   }
+
+  def query(query: String): Future[MySQLResult] = client.query(query).map { res => MySQLResult(res)}
 }
 
 
 
-object SQLPrimitives extends SQLPrimitives
-
-
-trait MySQLPrimitives extends SQLPrimitives {}
 
 object MySQLSyntax extends AbstractSQLSyntax {
   val distinctRow = "DISTINCTROW"

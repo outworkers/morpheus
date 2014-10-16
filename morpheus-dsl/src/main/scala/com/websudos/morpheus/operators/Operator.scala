@@ -16,16 +16,12 @@
 
 package com.websudos.morpheus.operators
 
-import com.twitter.finagle.exp.mysql.Row
-import com.websudos.morpheus.SQLPrimitive
+import com.websudos.morpheus.{Row, SQLPrimitive}
 import com.websudos.morpheus.SQLPrimitives._
 import com.websudos.morpheus.dsl.BaseTable
 import com.websudos.morpheus.query._
 
-
-sealed abstract class Operator {
-}
-
+sealed abstract class Operator {}
 
 sealed class AsciiOperator extends Operator {
 

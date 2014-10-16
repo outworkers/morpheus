@@ -1,6 +1,4 @@
-morpheus [NOT PRODUCTION READY][![Build Status](https://travis-ci.org/websudosuk/morpheus.svg)](https://travis-ci.org/websudosuk/morpheus)[![Coverage Status](https://img.shields.io/coveralls/websudosuk/morpheus.svg)](https://coveralls.io/r/websudosuk/morpheus)
+# morpheus [NOT PRODUCTION READY][![Build Status](https://travis-ci.org/websudos/morpheus.svg)](https://travis-ci.org/websudos/morpheus)[![Coverage Status]
+(https://coveralls.io/repos/websudosuk/morpheus/badge.png?branch=develop)](https://coveralls.io/r/websudosuk/morpheus?branch=develop) 
 
-========================================================================================================================================================================================================================
-
-Using morpheus with MySQL
-=========================
+### Using morpheus with MySQL

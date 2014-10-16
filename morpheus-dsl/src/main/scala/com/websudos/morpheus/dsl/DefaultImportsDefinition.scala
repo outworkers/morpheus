@@ -16,8 +16,8 @@
 
 package com.websudos.morpheus.dsl
 
-import com.websudos.morpheus.column.{DefaultForeignKeyConstraints, AbstractColumn, ModifyImplicits}
-import com.websudos.morpheus.query.{CreateImplicits, AbstractQueryColumn}
+import com.websudos.morpheus.column.{AbstractColumn, DefaultForeignKeyConstraints, ModifyImplicits}
+import com.websudos.morpheus.query.{AbstractQueryColumn, CreateImplicits}
 
 /**
  * As the implementation of SQL builders may differ depending on the type of SQL database in use, we will provide a series of specific imports for each
@@ -64,8 +64,8 @@ trait DefaultImportsDefinition extends ModifyImplicits with DefaultForeignKeyCon
   type MediumBlobColumn[Owner <: BaseTable[Owner, Record], Record] = com.websudos.morpheus.column.MediumBlobColumn[Owner, Record]
   type LongBlobColumn[Owner <: BaseTable[Owner, Record], Record] = com.websudos.morpheus.column.LongBlobColumn[Owner, Record]
 
-  type Result = com.twitter.finagle.exp.mysql.Result
-  type Row = com.twitter.finagle.exp.mysql.Row
+  type Result = com.websudos.morpheus.Result
+  type Row = com.websudos.morpheus.Row
 
   type ForeignKey[Owner <: BaseTable[Owner, Record], Record, T1 <: BaseTable[T1, _]] = com.websudos.morpheus.column.ForeignKey[Owner, Record, T1]
   type PrimaryKey[ValueType] = com.websudos.morpheus.keys.PrimaryKey[ValueType]

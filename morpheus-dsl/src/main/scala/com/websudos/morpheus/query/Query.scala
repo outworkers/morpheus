@@ -16,11 +16,9 @@
 
 package com.websudos.morpheus.query
 
-import java.util.{List => JList}
-
 import scala.annotation.implicitNotFound
 
-import com.twitter.finagle.exp.mysql.Row
+import com.websudos.morpheus.Row
 import com.websudos.morpheus.column.SelectColumn
 import com.websudos.morpheus.dsl.BaseTable
 

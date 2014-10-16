@@ -16,7 +16,7 @@
 
 package com.websudos.morpheus.query
 
-import com.twitter.finagle.exp.mysql.Row
+import com.websudos.morpheus.Row
 import com.websudos.morpheus.dsl.BaseTable
 
 private[morpheus] class RootCreateSyntaxBlock(query: String, tableName: String) extends AbstractSyntaxBlock {
@@ -87,11 +87,11 @@ object DefaultMySQLEngines {
   val BerkleyDB = "BERKELEYDB"
   val NDBCluster = "NDBCLUSTER"
   val NDB = "NDB"
-  val example = "EXAMPLE"
-  val archive = "ARCHIVE"
-  val csv = "CSV"
-  val federated = "FEDERATED"
-  val blackhole = "BLACKHOLE"
+  val Example = "EXAMPLE"
+  val Archive = "ARCHIVE"
+  val CSV = "CSV"
+  val Federated = "FEDERATED"
+  val BlackHole = "BLACKHOLE"
 }
 
 sealed abstract class SQLEngine(val value: String)
@@ -113,11 +113,11 @@ trait DefaultSQLEngines {
   case object BerkleyDB extends SQLEngine(DefaultMySQLEngines.BerkleyDB)
   case object NDBCluster extends SQLEngine(DefaultMySQLEngines.NDBCluster)
   case object NDB extends SQLEngine(DefaultMySQLEngines.NDB)
-  case object Example extends SQLEngine(DefaultMySQLEngines.example)
-  case object Archive extends SQLEngine(DefaultMySQLEngines.archive)
-  case object CSV extends SQLEngine(DefaultMySQLEngines.csv)
-  case object Federated extends SQLEngine(DefaultMySQLEngines.federated)
-  case object Blackhole extends SQLEngine(DefaultMySQLEngines.blackhole)
+  case object Example extends SQLEngine(DefaultMySQLEngines.Example)
+  case object Archive extends SQLEngine(DefaultMySQLEngines.Archive)
+  case object CSV extends SQLEngine(DefaultMySQLEngines.CSV)
+  case object Federated extends SQLEngine(DefaultMySQLEngines.Federated)
+  case object Blackhole extends SQLEngine(DefaultMySQLEngines.BlackHole)
 
 }
 

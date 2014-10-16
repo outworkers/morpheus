@@ -16,35 +16,10 @@
 
 package com.websudos.morpheus.query
 
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.{Future => ScalaFuture}
-
-import com.twitter.finagle.exp.mysql.{Client, Row}
-import com.twitter.util.Future
-import com.websudos.morpheus.SQLPrimitive
 import com.websudos.morpheus.column.{AbstractColumn, ForeignKeyDefinition}
 import com.websudos.morpheus.dsl.BaseTable
+import com.websudos.morpheus.{Row, SQLPrimitive}
 
-
-trait BaseSelectQuery[T <: BaseTable[T, _], R] extends SQLResultsQuery[T, R] {
-
-  def fetch()(implicit client: Client): ScalaFuture[Seq[R]] = {
-    twitterToScala(client.select(query.queryString)(fromRow))
-  }
-
-  def collect()(implicit client: Client): Future[Seq[R]] = {
-    client.select(query.queryString)(fromRow)
-  }
-
-  def one()(implicit client: Client): ScalaFuture[Option[R]] = {
-    fetch.map(_.headOption)
-  }
-
-  def get()(implicit client: Client): Future[Option[R]] = {
-    collect().map(_.headOption)
-  }
-
-}
 
 private[morpheus] class AbstractSelectSyntaxBlock(
   query: String, tableName: String,
@@ -69,8 +44,6 @@ private[morpheus] class AbstractSelectSyntaxBlock(
 
   override def syntax: AbstractSQLSyntax = DefaultSQLSyntax
 }
-
-
 
 
 /**

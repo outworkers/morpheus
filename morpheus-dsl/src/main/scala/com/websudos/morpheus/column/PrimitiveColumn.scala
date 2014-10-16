@@ -18,10 +18,9 @@ package com.websudos.morpheus.column
 
 import scala.annotation.implicitNotFound
 
-import com.twitter.finagle.exp.mysql.Row
 import com.websudos.morpheus.dsl.BaseTable
 import com.websudos.morpheus.query.SQLBuiltQuery
-import com.websudos.morpheus.{SQLPrimitive, SQLPrimitives}
+import com.websudos.morpheus.{Row, SQLPrimitive, SQLPrimitives}
 
 
 private[morpheus] object KnownTypeLimits {
@@ -42,6 +41,5 @@ private[morpheus] class PrimitiveColumn[T <: BaseTable[T, R], R, @specialized(In
 
   def qb: SQLBuiltQuery = SQLBuiltQuery(name).pad.append(sqlType)
 
-  def optional(r: Row): Option[RR] =
-    implicitly[SQLPrimitive[RR]].fromRow(r, name)
+  def optional(r: Row): Option[RR] = SQLPrimitives[RR].fromRow(r, name)
 }

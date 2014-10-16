@@ -17,7 +17,7 @@ package com.websudos.morpheus.column
 
 import com.websudos.morpheus.dsl.BaseTable
 import com.websudos.morpheus.query._
-import com.websudos.morpheus.SQLPrimitive
+import com.websudos.morpheus.{Row, SQLPrimitive}
 
 private[morpheus] trait ModifyImplicits extends LowPriorityImplicits with JoinImplicits {
 

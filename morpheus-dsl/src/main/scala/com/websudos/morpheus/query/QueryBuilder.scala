@@ -166,6 +166,7 @@ abstract class AbstractSQLDataTypes {
   val int = "INT"
   val decimal = "DECIMAL"
 
+
   val float = "FLOAT"
   val double = "DOUBLE"
   val long = "LONG"
@@ -228,6 +229,8 @@ private[morpheus] trait AbstractQueryBuilder {
 
   def operators: SQLOperatorSet
   def syntax: AbstractSQLSyntax
+
+  def escape(str: String): String = s"'$str'"
 
   def eqs(name: String, value: String): SQLBuiltQuery = {
     SQLBuiltQuery(name)
