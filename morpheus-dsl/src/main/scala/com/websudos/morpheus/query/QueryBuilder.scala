@@ -100,6 +100,8 @@ trait AbstractSQLKeys {
   val index = "INDEX"
   val notNull = "NOT NULL"
   val autoIncrement = "AUTO_INCREMENT"
+  val zeroFill = "ZEROFILL"
+  val unsigned = "UNSIGNED"
 
   val cascade = "CASCADE"
   val restrict = "RESTRICT"
