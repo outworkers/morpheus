@@ -10,7 +10,7 @@ MariaDB. We choose this name as it is the dream DSL for any Scala/SQL user, fine
 used to.
 
 We've taken it up ourselves to produce the highest quality database integration tooling for all Scala users, 
-currently hitting that bar for Cassandra and MongoDB. But why stop there?
+currently hitting that bar for Cassandra, Neo4J and MongoDB. But why stop there?
 
 
 Using morpheus
@@ -136,7 +136,7 @@ Each new database, implemented as a different SBT sub-module, can use the full q
 <a href="#table-of-contents">back to top</a>
 
 Morpheus was developed at websudos as the foundation of our upcoming book, "Learning Scala by example", which covers all aspects of building an enterprise 
-grada Scala framework from scratch.
+grade Scala framework from scratch.
 
 * Flavian Alexandru @alexflav23(Project lead)
 * Benjamin Edwards @benjumanji(Project lead)
@@ -171,7 +171,7 @@ We use GitFlow as a branching model and SemVer for versioning.
 <a href="#table-of-contents">back to top</a>
 
 In spirit, we follow the [Twitter Scala Style Guidelines](http://twitter.github.io/effectivescala/).
-We will reject your pull request if it doesn't meet code standards, but we'll happily give you a hand to get it right. Morpheus is even using ScalaTest to 
+We will reject your pull request if it doesn't meet code standards, but we'll happily give you a hand to get it right. Morpheus is even using ScalaStyle to 
 build, which means your build will also fail if your code doesn't comply with the style rules.
 
 Some of the things that will make us seriously frown:
@@ -182,6 +182,6 @@ Some of the things that will make us seriously frown:
 - Use the common patterns you already see here, we've done a lot of work to make it easy.
 - Don't randomly import stuff. We are very big on alphabetized clean imports.
 - Morpheus uses ScalaStyle during Travis CI runs to guarantee you are complying with our guidelines. Since breaking the rules will result in a failed build, 
-pleaase take the time to read through the guidelines beforehand.
+please take the time to read through the guidelines beforehand.
 
 
