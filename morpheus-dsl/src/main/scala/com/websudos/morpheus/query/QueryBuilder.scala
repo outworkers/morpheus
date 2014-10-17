@@ -131,6 +131,8 @@ abstract class AbstractSQLSyntax extends AbstractSQLKeys {
   val groupBy = "GROUP BY"
   val limit = "LIMIT"
   val and = "AND"
+  val isNull = "IS NULL"
+  val isNotNull = "IS NOT NULL"
   val or = "OR"
   val set = "SET"
   val from = "FROM"
@@ -463,6 +465,14 @@ private[morpheus] trait AbstractQueryBuilder {
 
   def engine(qb: SQLBuiltQuery, value: String): SQLBuiltQuery = {
     qb.pad.append(syntax.engine).forcePad.append(value)
+  }
+
+  def isNull(qb: SQLBuiltQuery): SQLBuiltQuery = {
+    qb.pad.append(syntax.isNull)
+  }
+
+  def isNotNull(qb: SQLBuiltQuery): SQLBuiltQuery = {
+    qb.pad.append(syntax.isNotNull)
   }
 
 }
