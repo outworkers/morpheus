@@ -18,7 +18,7 @@ package com.websudos.morpheus.mysql.db
 
 import org.scalatest.FlatSpec
 
-import com.newzly.util.testing.AsyncAssertionsHelper._
+import com.websudos.util.testing._
 import com.websudos.morpheus.mysql.tables.BasicTable
 
 class CreateQueryDBTest extends FlatSpec with MySQLSuite {

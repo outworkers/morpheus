@@ -7,9 +7,9 @@ import org.scalastyle.sbt.ScalastylePlugin
 
 object morpheus extends Build {
 
-  val newzlyUtilVersion = "0.1.19"
+  val UtilVersion = "0.3.0"
   val scalatestVersion = "2.2.0-M1"
-  val finagleVersion = "6.17.0"
+  val FinagleVersion = "6.20.0"
 
   val publishUrl = "http://maven.websudos.co.uk"
 
@@ -122,11 +122,11 @@ object morpheus extends Build {
   ).settings(
     name := "morpheus-dsl",
     libraryDependencies ++= Seq(
-      "com.chuusai"                  % "shapeless_2.10.4"                   % "2.0.0",
-      "org.scala-lang"               %  "scala-reflect"                     % scalaVersion.value,
-      "joda-time"                    %  "joda-time"                         % "2.3",
-      "org.joda"                     %  "joda-convert"                      % "1.6",
-      "net.liftweb"                  %% "lift-json"                         % "2.6-M4"                  % "test, provided"
+      "com.chuusai"                  % "shapeless_2.10.4"                  % "2.0.0",
+      "org.scala-lang"               % "scala-reflect"                     % scalaVersion.value,
+      "joda-time"                    % "joda-time"                         % "2.3",
+      "org.joda"                     % "joda-convert"                      % "1.6",
+      "net.liftweb"                  %% "lift-json"                        % "2.6-M4"                  % "test, provided"
     )
   ).dependsOn(
     morpheusTesting % "test, provided"
@@ -140,8 +140,8 @@ object morpheus extends Build {
   ).settings(
     name := "morpheus-mysql",
     libraryDependencies ++= Seq(
-      "com.twitter"                  %% "util-core"                         % finagleVersion,
-      "com.twitter"                  %% "finagle-mysql"                     % finagleVersion
+      "com.twitter"                  %% "util-core"                         % FinagleVersion,
+      "com.twitter"                  %% "finagle-mysql"                     % FinagleVersion
     )
   ).dependsOn(
     morpheusDsl,
@@ -171,8 +171,8 @@ object morpheus extends Build {
   ).settings(
     name := "morpheus-zookeeper",
     libraryDependencies ++= Seq(
-      "com.twitter"                  %% "finagle-serversets"                % finagleVersion,
-      "com.twitter"                  %% "finagle-zookeeper"                 % finagleVersion
+      "com.twitter"                  %% "finagle-serversets"                % FinagleVersion,
+      "com.twitter"                  %% "finagle-zookeeper"                 % FinagleVersion
     )
   )
 
@@ -184,8 +184,8 @@ object morpheus extends Build {
     name := "morpheus-testing",
     libraryDependencies ++= Seq(
       "com.h2database"                   % "h2"                        % "1.4.181",
-      "com.twitter"                      %% "util-core"                % finagleVersion,
-      "com.newzly"                       %% "util-testing"             % newzlyUtilVersion,
+      "com.twitter"                      %% "util-core"                % FinagleVersion,
+      "com.websudos"                     %% "util-testing"             % UtilVersion,
       "org.scalatest"                    %% "scalatest"                % scalatestVersion,
       "org.scalacheck"                   %% "scalacheck"               % "1.11.3",
       "org.fluttercode.datafactory"      %  "datafactory"              % "0.8"
