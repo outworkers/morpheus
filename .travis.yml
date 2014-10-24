@@ -12,7 +12,6 @@ scala:
 notifications:
   slack:
     rooms:
-      - newzly:nfmIGqhmrfJb6pIH6I50mnCO
       - websudos:P9QNXx1ZGFnDHp3v3jUqtB8k
 
   email:

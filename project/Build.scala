@@ -1,8 +1,8 @@
-import org.scoverage.coveralls.CoverallsPlugin.coverallsSettings
 
 import sbt.Keys._
 import sbt._
 import scoverage.ScoverageSbtPlugin.instrumentSettings
+import org.scoverage.coveralls.CoverallsPlugin.coverallsSettings
 import org.scalastyle.sbt.ScalastylePlugin
 
 object morpheus extends Build {
