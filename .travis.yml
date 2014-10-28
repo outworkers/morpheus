@@ -27,5 +27,5 @@ jdk:
   - oraclejdk7
   - openjdk7
 
-script: "./scripts/run_tests.sh"
+script: "sbt coveralls"
 
