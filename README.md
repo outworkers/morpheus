@@ -139,7 +139,6 @@ Morpheus was developed at websudos as the foundation of our upcoming book, "Lear
 grade Scala framework from scratch.
 
 * Flavian Alexandru @alexflav23(Project lead)
-* Benjamin Edwards @benjumanji(Project lead)
 
 <a id="copyright">Copyright</a>
 ===============================
