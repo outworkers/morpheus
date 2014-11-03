@@ -64,11 +64,31 @@ trait Autoincrement {
   override protected[this] val autoIncrement = true
 }
 
-trait Zerofill[ValueType] {
+trait Zerofill[ValueType] extends Key[ValueType, Zerofill[ValueType]] {
   self: NumericColumn[_, _, ValueType] =>
+
+  override def qb: SQLBuiltQuery = {
+    SQLBuiltQuery(name).pad.append(sqlType)
+      .forcePad.append(keyToQueryString)
+      .pad.append(unsigned match {
+        case true => DefaultSQLSyntax.unsigned
+        case false => ""
+      })
+      .pad.append(notNull match {
+        case true => DefaultSQLSyntax.notNull
+        case false => ""
+      }).pad.append(autoIncrement match {
+        case true => DefaultSQLSyntax.autoIncrement
+        case false => ""
+      }).trim
+  }
+
+  protected[this] def keyToQueryString = DefaultSQLSyntax.zeroFill
 
 }
 
 trait Unsigned[ValueType] {
   self: NumericColumn[_, _, ValueType] =>
+
+  override def unsigned = true
 }

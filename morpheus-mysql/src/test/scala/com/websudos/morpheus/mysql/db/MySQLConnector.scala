@@ -24,7 +24,7 @@ import com.websudos.morpheus.mysql.{MySQLResult, MySQLRow, MySQLClient}
 
 object MySQLConnector {
   lazy val client = {
-    val c = Mysql.withCredentials("root", "").newRichClient("localhost:3306")
+    val c = Mysql.withCredentials("travis", "").newRichClient("127.0.0.1:3306")
     Await.result(c.ping(), 2.seconds)
     c
   }

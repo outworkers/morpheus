@@ -14,21 +14,21 @@
  * limitations under the License.
  */
 
-package com.websudos.morpheus.mysql.db
+package com.websudos.morpheus.postgres
 
-import org.scalatest.FlatSpec
+import com.websudos.morpheus.query.{AbstractQueryBuilder, AbstractSQLSyntax, SQLOperatorSet }
 
-import com.websudos.util.testing._
-import com.websudos.morpheus.mysql.tables.BasicTable
-
-class CreateQueryDBTest extends FlatSpec with MySQLSuite {
-
-  it should "create a new table in the MySQL database" in {
-    BasicTable.create.temporary.execute.successful {
-      res => {
-        res
-      }
-    }
-  }
+sealed class PostgresOperatorSet extends SQLOperatorSet {
 
 }
+
+object PostgresOperatorSet extends PostgresOperatorSet
+
+
+sealed class PostgresQueryBuilder extends AbstractQueryBuilder {
+  val operators: SQLOperatorSet = PostgresOperatorSet
+
+  val syntax: AbstractSQLSyntax = PostgresSyntax
+}
+
+object PostgresQueryBuilder extends PostgresQueryBuilder

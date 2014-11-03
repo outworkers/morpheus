@@ -16,6 +16,7 @@
 
 package com.websudos.morpheus.tables
 
+import com.websudos.morpheus.keys.Unsigned
 import com.websudos.morpheus.sql._
 
 case class IndexedRecord(id: Int, value: Long)
@@ -138,3 +139,18 @@ class StringsTable extends Table[StringsTable, String] {
 }
 
 object StringsTable extends StringsTable
+
+
+class ZeroFillTable extends Table[ZeroFillTable, Int] {
+
+  object tinyInt extends TinyIntColumn(this) with Zerofill[Int] with Unsigned[Int] with NotNull
+  object tinyIntLimited extends TinyIntColumn(this, 5) with Zerofill[Int] with NotNull
+
+  object smallInt extends SmallIntColumn(this) with Zerofill[Int] with Unsigned[Int]
+  object smallIntLimited extends SmallIntColumn(this, 5)
+
+
+  def fromRow(row: Row): Int = tinyInt(row)
+}
+
+object ZeroFillTable extends ZeroFillTable

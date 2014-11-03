@@ -31,6 +31,8 @@ sealed abstract class NumericColumn[T <: BaseTable[T, R], R, ValueType : Numeric
   override def sqlType: String = if (limit > 0) s"$numericType($limit)" else numericType
 
   override def qb: SQLBuiltQuery = SQLBuiltQuery(name).pad.append(sqlType)
+
+  def unsigned: Boolean = false
 }
 
 class TinyIntColumn[T <: BaseTable[T, R], R](t: BaseTable[T, R], limit: Int = 0) extends NumericColumn[T, R, Int](t, limit) {

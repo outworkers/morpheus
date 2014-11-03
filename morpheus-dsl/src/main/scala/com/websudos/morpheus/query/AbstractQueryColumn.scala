@@ -146,6 +146,14 @@ private[morpheus] abstract class AbstractQueryColumn[T: SQLPrimitive](col: Abstr
     QueryCondition(col.table.queryBuilder.notIn(col.name, values.map(primitive.toSQL)))
   }
 
+  def isNull: QueryCondition = {
+    QueryCondition(col.table.queryBuilder.isNull(SQLBuiltQuery(col.name)))
+  }
+
+  def isNotNull: QueryCondition = {
+    QueryCondition(col.table.queryBuilder.isNotNull(SQLBuiltQuery(col.name)))
+  }
+
   def between(value: T): BetweenClause[T] = {
     BetweenClause(
       col.table.queryBuilder.between(col.name, col.toQueryString(value))

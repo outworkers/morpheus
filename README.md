@@ -10,7 +10,7 @@ MariaDB. We choose this name as it is the dream DSL for any Scala/SQL user, fine
 used to.
 
 We've taken it up ourselves to produce the highest quality database integration tooling for all Scala users, 
-currently hitting that bar for Cassandra and MongoDB. But why stop there?
+currently hitting that bar for Cassandra, Neo4J and MongoDB. But why stop there?
 
 
 Using morpheus
@@ -101,16 +101,44 @@ libraryDependencies ++= Seq(
 )
 ```
 
+<a id="building-blocks">Building blocks</a>
+=====================================
+
+This section outlines the inner building blocks of Morpheus and tries to explain how a database is implemented in the Morpheus DSL, 
+composed from various building blocks. The list of blocks is rather long and each block aims to isolate and deal with a very specific concern. The goal here 
+is to allow existing and new databases to easily define custom behaviour at all levels, let it be syntax, serialisation methods and so forth.
+
+The implementation done via the building block architecture also allows us to maintain the single import "all you can eat" buffet while invisibly enabling 
+and disabling features, options and available methods with the help of a single import. There is a vast series of architecture choices that are combined and 
+designed specifically for the purpose of allowing very simple usage. 
+
+The building blocks of an SQL implementation are:
+
+- SQL Syntax
+- SQL Keys
+- SQL Data Types
+- SQL Primitives
+- SQL Engines
+- SQL QueryBuilder
+- SQL Operator Set
+- SQL Create Block
+- SQL Insert Block
+- SQL Delete Block
+- SQL Update Block
+
+
+Each new database, implemented as a different SBT sub-module, can use the full query power pre-built into the ```morpheus-dsl``` root module while overriding
+ implementation specifics to do with any of the above. Each new database must define it's own set of features for every one of the building blocks. At the 
+ same time, common functionality and a shared trunk is made possible by ```morpheus-dsl```.
 
 <a id="contributors">Contributors</a>
 =====================================
 <a href="#table-of-contents">back to top</a>
 
 Morpheus was developed at websudos as the foundation of our upcoming book, "Learning Scala by example", which covers all aspects of building an enterprise 
-grada Scala framework from scratch.
+grade Scala framework from scratch.
 
 * Flavian Alexandru @alexflav23(Project lead)
-* Benjamin Edwards @benjumanji(Project lead)
 
 <a id="copyright">Copyright</a>
 ===============================
@@ -142,7 +170,7 @@ We use GitFlow as a branching model and SemVer for versioning.
 <a href="#table-of-contents">back to top</a>
 
 In spirit, we follow the [Twitter Scala Style Guidelines](http://twitter.github.io/effectivescala/).
-We will reject your pull request if it doesn't meet code standards, but we'll happily give you a hand to get it right. Morpheus is even using ScalaTest to 
+We will reject your pull request if it doesn't meet code standards, but we'll happily give you a hand to get it right. Morpheus is even using ScalaStyle to 
 build, which means your build will also fail if your code doesn't comply with the style rules.
 
 Some of the things that will make us seriously frown:
@@ -153,6 +181,6 @@ Some of the things that will make us seriously frown:
 - Use the common patterns you already see here, we've done a lot of work to make it easy.
 - Don't randomly import stuff. We are very big on alphabetized clean imports.
 - Morpheus uses ScalaStyle during Travis CI runs to guarantee you are complying with our guidelines. Since breaking the rules will result in a failed build, 
-pleaase take the time to read through the guidelines beforehand.
+please take the time to read through the guidelines beforehand.
 
 
