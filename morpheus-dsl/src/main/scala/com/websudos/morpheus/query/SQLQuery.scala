@@ -16,37 +16,20 @@
 
 package com.websudos.morpheus.query
 
+import com.twitter.util.Future
+import com.websudos.morpheus.builder.SQLBuiltQuery
+import com.websudos.morpheus.dsl.{BaseTable, ResultSetOperations}
+import com.websudos.morpheus.{Client, Result, Row}
+
 import scala.concurrent.{Future => ScalaFuture}
 
-import com.twitter.util.Future
-import com.websudos.morpheus.{Row, Result, Client}
-import com.websudos.morpheus.dsl.{ResultSetOperations, BaseTable}
-
-case class SQLBuiltQuery(queryString: String) {
-  def append(st: String): SQLBuiltQuery = SQLBuiltQuery(queryString + st)
-  def append(st: SQLBuiltQuery): SQLBuiltQuery = append(st.queryString)
-
-  def appendEscape(st: String): SQLBuiltQuery = append(escape(st))
-  def appendEscape(st: SQLBuiltQuery): SQLBuiltQuery = append(escape(st.queryString))
-
-  def prepend(st: String): SQLBuiltQuery = SQLBuiltQuery(st + queryString)
-  def prepend(st: SQLBuiltQuery): SQLBuiltQuery = prepend(st.queryString)
-
-  def escape(st: String): String = "'" + st + "'"
-
-  def spaced: Boolean = queryString.endsWith(" ")
-  def pad: SQLBuiltQuery = if (spaced) this else SQLBuiltQuery(queryString + " ")
-  def forcePad: SQLBuiltQuery = SQLBuiltQuery(queryString + " ")
-  def trim: SQLBuiltQuery = SQLBuiltQuery(queryString.trim)
-
-  def wrap(str: String): SQLBuiltQuery = pad.append(DefaultSQLSyntax.`(`).append(str).append(DefaultSQLSyntax.`)`)
-  def wrap(query: SQLBuiltQuery): SQLBuiltQuery = wrap(query.queryString)
-
-
+object MySQLManager {
 }
 
 
-trait SQLQuery[T <: BaseTable[T, _], R] extends ResultSetOperations {
+
+
+trait SQLQuery[T <: BaseTable[T, _, TableRow], R, TableRow <: Row] extends ResultSetOperations {
   protected[morpheus] val query: SQLBuiltQuery
 
   /**
@@ -70,7 +53,7 @@ trait SQLQuery[T <: BaseTable[T, _], R] extends ResultSetOperations {
    * @return A Scala Future wrapping a default Finagle MySQL query result object.
    */
   def future[DBRow <: Row, DBResult <: Result]()(implicit client: Client[DBRow, DBResult]): ScalaFuture[DBResult] = {
-    queryToScalaFuture[DBRow, DBResult](query.queryString)
+    twitterToScala(execute())
   }
 
   /**
@@ -84,26 +67,35 @@ trait SQLQuery[T <: BaseTable[T, _], R] extends ResultSetOperations {
    * @return A Scala Future wrapping a default Finagle MySQL query result object.
    */
   def execute[DBRow <: Row, DBResult <: Result]()(implicit  client: Client[DBRow, DBResult]): Future[DBResult] = {
-    queryToFuture[DBRow, DBResult](query.queryString)
+    Console.println(s"Executing query $queryString")
+    queryToFuture[DBRow, DBResult](queryString)
   }
 
 }
 
 
-trait SQLResultsQuery[T <: BaseTable[T, _], R, DBRow <: Row, DBResult <: Result] extends SQLQuery[T, R] {
-  def fromRow(r: Row): R
+trait SQLResultsQuery[T <: BaseTable[T, _, DBRow], R, DBRow <: Row, DBResult <: Result, Limit <: LimitBind] extends SQLQuery[T, R, DBRow] {
+  def fromRow(r: DBRow): R
 
   /**
    * Returns the first row from the select ignoring everything else.
    * @param client The MySQL client in use.
    * @return
    */
-  def one()(implicit client: Client[DBRow, DBResult]): ScalaFuture[Option[R]]
+  def one()(implicit client: Client[DBRow, DBResult], ev: Limit =:= Unlimited): ScalaFuture[Option[R]]
 
   /**
    * Get the result of an operation as a Twitter Future.
    * @param client The MySQL client in use.
    * @return A Twitter future wrapping the result.
    */
-  def get()(implicit client: Client[DBRow, DBResult]): Future[Option[R]]
+  def get()(implicit client: Client[DBRow, DBResult], ev: Limit =:= Unlimited): Future[Option[R]]
+
+  def fetch()(implicit client: Client[DBRow, DBResult]): ScalaFuture[Seq[R]] = {
+    twitterToScala(client.select(query.queryString)(fromRow))
+  }
+
+  def collect()(implicit client: Client[DBRow, DBResult]): Future[Seq[R]] = {
+    client.select(query.queryString)(fromRow)
+  }
 }

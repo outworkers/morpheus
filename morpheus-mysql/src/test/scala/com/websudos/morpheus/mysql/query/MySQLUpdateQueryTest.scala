@@ -111,7 +111,7 @@ class MySQLUpdateQueryTest extends FlatSpec with Matchers {
     BasicTable.update
       .lowPriority
       .set(_.name setTo "test2")
-      .and(_.count setTo 15)
+      .andSet(_.count setTo 15)
       .where(_.name eqs "test")
       .queryString shouldEqual "UPDATE LOW_PRIORITY BasicTable SET name = 'test2', count = 15 WHERE name = 'test'"
   }
@@ -120,7 +120,7 @@ class MySQLUpdateQueryTest extends FlatSpec with Matchers {
     BasicTable.update
       .lowPriority
       .set(_.name setTo "test2")
-      .and(_.count setTo 15)
+      .andSet(_.count setTo 15)
       .where(_.name eqs "test")
       .and(_.count eqs 10)
       .queryString shouldEqual "UPDATE LOW_PRIORITY BasicTable SET name = 'test2', count = 15 WHERE name = 'test' AND count = 10"
@@ -241,7 +241,7 @@ class MySQLUpdateQueryTest extends FlatSpec with Matchers {
     BasicTable.update
       .ignore
       .set(_.name setTo "test2")
-      .and(_.count setTo 15)
+      .andSet(_.count setTo 15)
       .where(_.name eqs "test")
       .queryString shouldEqual "UPDATE IGNORE BasicTable SET name = 'test2', count = 15 WHERE name = 'test'"
   }
@@ -250,7 +250,7 @@ class MySQLUpdateQueryTest extends FlatSpec with Matchers {
     BasicTable.update
       .ignore
       .set(_.name setTo "test2")
-      .and(_.count setTo 15)
+      .andSet(_.count setTo 15)
       .where(_.name eqs "test")
       .and(_.count eqs 10)
       .queryString shouldEqual "UPDATE IGNORE BasicTable SET name = 'test2', count = 15 WHERE name = 'test' AND count = 10"

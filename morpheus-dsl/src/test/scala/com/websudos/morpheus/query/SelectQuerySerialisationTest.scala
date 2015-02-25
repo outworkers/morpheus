@@ -284,14 +284,14 @@ class SelectQuerySerialisationTest extends FlatSpec with Matchers {
   it should "serialise a simple in operator query for string columns followed by an AND-IN clause" in {
     BasicTable.select
       .where(_.name in List("name1", "name2", "name3"))
-      .and(_.count in List(5, 10, 15))
+      .and(_.count in List(5L, 10L, 15L))
       .queryString shouldEqual "SELECT * FROM 'BasicTable' WHERE name IN ('name1', 'name2', 'name3') AND count IN (5, 10, 15)"
   }
 
   it should "serialise a in-or operator query for string columns followed by an AND-IN clause" in {
     BasicTable.select
       .where(t => { (t.name in List("name1", "name2", "name3")) or (t.name in List("name4", "name5")) })
-      .and(_.count in List(5, 10, 15))
+      .and(_.count in List(5L, 10L, 15L))
       .queryString shouldEqual "SELECT * FROM 'BasicTable' WHERE (name IN ('name1', 'name2', 'name3') OR name IN ('name4', 'name5')) AND count IN (5, 10, 15)"
   }
 

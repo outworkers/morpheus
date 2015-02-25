@@ -5,11 +5,13 @@ import scoverage.ScoverageSbtPlugin.instrumentSettings
 import org.scoverage.coveralls.CoverallsPlugin.coverallsSettings
 import org.scalastyle.sbt.ScalastylePlugin
 
-object morpheus extends Build {
+object MorpheusBuild extends Build {
 
-  val UtilVersion = "0.3.0"
+  val UtilVersion = "0.5.0"
   val scalatestVersion = "2.2.0-M1"
-  val FinagleVersion = "6.20.0"
+  val FinagleVersion = "6.24.0"
+  val SparkVersion = "1.2.1"
+  val ShapelessVersion = "2.1.0"
 
   val publishUrl = "http://maven.websudos.co.uk"
 
@@ -67,10 +69,24 @@ object morpheus extends Build {
     pomIncludeRepository := { _ => true }
   )
 
+  def liftVersion(scalaVersion: String) = {
+    scalaVersion match {
+      case "2.10.4" => "3.0-M1"
+      case _ => "3.0-M2"
+    }
+  }
+
+  def shapelessVersion(scalaVersion: String) = {
+    scalaVersion match {
+      case "2.10.4" =>
+    }
+  }
+
   val sharedSettings: Seq[Def.Setting[_]] = Seq(
     organization := "com.websudos",
     version := "0.1.2",
     scalaVersion := "2.10.4",
+    crossScalaVersions := Seq("2.10.4", "2.11.4"),
     resolvers ++= Seq(
       "Typesafe repository snapshots" at "http://repo.typesafe.com/typesafe/snapshots/",
       "Typesafe repository releases" at "http://repo.typesafe.com/typesafe/releases/",
@@ -109,7 +125,8 @@ object morpheus extends Build {
     morpheusDsl,
     morpheusMySQL,
     morpheusPostgres,
-    morpheusTesting,
+    morpheusSpark,
+    morpheusTestkit,
     morpheusZookeeper
   )
 
@@ -122,14 +139,14 @@ object morpheus extends Build {
   ).settings(
     name := "morpheus-dsl",
     libraryDependencies ++= Seq(
-      "com.chuusai"                  % "shapeless_2.10.4"                  % "2.0.0",
+      "com.chuusai"                  % "shapeless"                         % ShapelessVersion,
       "org.scala-lang"               % "scala-reflect"                     % scalaVersion.value,
       "joda-time"                    % "joda-time"                         % "2.3",
       "org.joda"                     % "joda-convert"                      % "1.6",
-      "net.liftweb"                  %% "lift-json"                        % "2.6-M4"                  % "test, provided"
+      "net.liftweb"                  %% "lift-json"                        % liftVersion(scalaVersion.value)                 % "test, provided"
     )
   ).dependsOn(
-    morpheusTesting % "test, provided"
+    morpheusTestkit % "test, provided"
   )
 
   lazy val morpheusMySQL = Project(
@@ -140,12 +157,11 @@ object morpheus extends Build {
   ).settings(
     name := "morpheus-mysql",
     libraryDependencies ++= Seq(
-      "com.twitter"                  %% "util-core"                         % FinagleVersion,
       "com.twitter"                  %% "finagle-mysql"                     % FinagleVersion
     )
   ).dependsOn(
     morpheusDsl,
-    morpheusTesting % "test, provided"
+      morpheusTestkit % "test, provided"
   )
 
   lazy val morpheusPostgres = Project(
@@ -160,7 +176,7 @@ object morpheus extends Build {
     )
   ).dependsOn(
     morpheusDsl,
-    morpheusTesting % "test, provided"
+    morpheusTestkit % "test, provided"
   )
 
 
@@ -171,24 +187,34 @@ object morpheus extends Build {
   ).settings(
     name := "morpheus-zookeeper",
     libraryDependencies ++= Seq(
-      "com.twitter"                  %% "finagle-serversets"                % FinagleVersion,
-      "com.twitter"                  %% "finagle-zookeeper"                 % FinagleVersion
+      "com.twitter"                  %% "finagle-zookeeper"                 % FinagleVersion,
+      "com.websudos"                 %% "util-zookeeper"                    % UtilVersion
     )
   )
 
-  lazy val morpheusTesting = Project(
-    id = "morpheus-testing",
-    base = file("morpheus-testing"),
+  lazy val morpheusSpark = Project(
+    id = "morpheus-spark",
+    base = file("morpheus-spark"),
     settings = Defaults.coreDefaultSettings ++ sharedSettings
   ).settings(
-    name := "morpheus-testing",
+    name := "morpheus-spark",
+    libraryDependencies ++= Seq(
+      "org.apache.spark"             %% "spark-sql"                    % SparkVersion
+    )
+  ).dependsOn(
+    morpheusTestkit
+  )
+
+  lazy val morpheusTestkit = Project(
+    id = "morpheus-testkit",
+    base = file("morpheus-testkit"),
+    settings = Defaults.coreDefaultSettings ++ sharedSettings
+  ).settings(
+    name := "morpheus-testkit",
     libraryDependencies ++= Seq(
       "com.h2database"                   % "h2"                        % "1.4.181",
-      "com.twitter"                      %% "util-core"                % FinagleVersion,
       "com.websudos"                     %% "util-testing"             % UtilVersion,
-      "org.scalatest"                    %% "scalatest"                % scalatestVersion,
-      "org.scalacheck"                   %% "scalacheck"               % "1.11.3",
-      "org.fluttercode.datafactory"      %  "datafactory"              % "0.8"
+      "org.scalacheck"                   %% "scalacheck"               % "1.11.3"
     )
   ).dependsOn(
     morpheusZookeeper

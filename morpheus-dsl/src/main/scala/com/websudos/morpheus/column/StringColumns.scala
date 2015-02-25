@@ -16,49 +16,74 @@
 
 package com.websudos.morpheus.column
 
-import com.websudos.morpheus.SQLPrimitives._
+import com.websudos.morpheus.builder.DefaultSQLDataTypes
 import com.websudos.morpheus.dsl.BaseTable
-import com.websudos.morpheus.query.DefaultSQLDataTypes
+import com.websudos.morpheus.{Row, SQLPrimitive}
 
-sealed abstract class LimitedTextColumn[T <: BaseTable[T, R], R](t: BaseTable[T, R], protected[this] val limit: Int) extends PrimitiveColumn[T, R,
-  String](t)(StringPrimitive)
+abstract class LimitedTextColumn[
+  T <: BaseTable[T, R, TableRow],
+  R, TableRow <: Row,
+  RR : SQLPrimitive
+](t: BaseTable[T, R, TableRow], protected[this] val limit: Int) extends PrimitiveColumn[T, R, TableRow, RR](t)
 
-class CharColumn[T <: BaseTable[T, R], R](t: BaseTable[T, R], limit: Int = KnownTypeLimits.charLimit) extends LimitedTextColumn(t, limit) {
+abstract class UnlimitedTextColumn[
+  T <: BaseTable[T, R, TableRow],
+  R, TableRow <: Row,
+  RR : SQLPrimitive
+](t: BaseTable[T, R, TableRow]) extends PrimitiveColumn[T, R, TableRow, RR](t)
+
+
+abstract class AbstractCharColumn[
+  T <: BaseTable[T, R, TableRow],
+  R,
+  TableRow <: Row](t: BaseTable[T, R, TableRow], limit: Int = KnownTypeLimits.charLimit)
+  (implicit ev: SQLPrimitive[String]) extends LimitedTextColumn[T, R, TableRow, String](t, limit) {
+
   override def sqlType: String = s"${DefaultSQLDataTypes.char}($limit)"
 }
 
-class VarcharColumn[T <: BaseTable[T, R], R](t: BaseTable[T, R], limit: Int = KnownTypeLimits.varcharLimit) extends LimitedTextColumn(t, limit) {
+abstract class AbstractVarcharColumn[T <: BaseTable[T, R, TableRow], R, TableRow <: Row](t: BaseTable[T, R, TableRow], limit: Int = KnownTypeLimits
+  .varcharLimit)(implicit ev: SQLPrimitive[String]) extends LimitedTextColumn[T, R, TableRow, String](t, limit) {
   override def sqlType: String = s"${DefaultSQLDataTypes.varchar}($limit)"
 }
 
-class TinyTextColumn[T <: BaseTable[T, R], R](t: BaseTable[T, R]) extends LimitedTextColumn(t, 0) {
+abstract class AbstractTinyTextColumn[T <: BaseTable[T, R, TableRow], R, TableRow <: Row](t: BaseTable[T, R, TableRow], limit: Int = 0)(implicit ev: SQLPrimitive[String])
+  extends LimitedTextColumn[T, R, TableRow, String](t, limit) {
   override def sqlType: String = DefaultSQLDataTypes.tinyText
 }
 
-class TextColumn[T <: BaseTable[T, R], R](t: BaseTable[T, R]) extends LimitedTextColumn(t, 0) {
+abstract class AbstractTextColumn[T <: BaseTable[T, R, TableRow], R, TableRow <: Row](t: BaseTable[T, R, TableRow], limit: Int = 0)(implicit ev: SQLPrimitive[String])
+  extends LimitedTextColumn[T, R, TableRow, String](t, limit) {
   override def sqlType: String = DefaultSQLDataTypes.text
 }
 
-class MediumTextColumn[T <: BaseTable[T, R], R](t: BaseTable[T, R]) extends LimitedTextColumn(t, 0) {
+abstract class AbstractMediumTextColumn[T <: BaseTable[T, R, TableRow], R, TableRow <: Row](t: BaseTable[T, R, TableRow], limit: Int = 0)(implicit ev: SQLPrimitive[String])
+  extends LimitedTextColumn[T, R, TableRow, String](t, limit) {
   override def sqlType: String = DefaultSQLDataTypes.mediumText
 }
 
-class LongTextColumn[T <: BaseTable[T, R], R](t: BaseTable[T, R]) extends LimitedTextColumn(t, 0) {
+abstract class AbstractLongTextColumn[T <: BaseTable[T, R, TableRow], R, TableRow <: Row](t: BaseTable[T, R, TableRow], limit: Int = 0)(implicit ev: SQLPrimitive[String])
+  extends LimitedTextColumn[T, R, TableRow, String](t, limit) {
   override def sqlType: String = DefaultSQLDataTypes.longText
 }
 
-class TinyBlobColumn[T <: BaseTable[T, R], R](t: BaseTable[T, R]) extends LimitedTextColumn(t, 0) {
+abstract class AbstractTinyBlobColumn[T <: BaseTable[T, R, TableRow], R, TableRow <: Row](t: BaseTable[T, R, TableRow], limit: Int = 0)(implicit ev: SQLPrimitive[String])
+  extends LimitedTextColumn[T, R, TableRow, String](t, limit) {
   override def sqlType: String = DefaultSQLDataTypes.tinyBlob
 }
 
-class BlobColumn[T <: BaseTable[T, R], R](t: BaseTable[T, R]) extends LimitedTextColumn(t, 0) {
+abstract class AbstractBlobColumn[T <: BaseTable[T, R, TableRow], R, TableRow <: Row](t: BaseTable[T, R, TableRow], limit: Int = 0)(implicit ev: SQLPrimitive[String])
+  extends LimitedTextColumn[T, R, TableRow, String](t, limit) {
   override def sqlType: String = DefaultSQLDataTypes.blob
 }
 
-class MediumBlobColumn[T <: BaseTable[T, R], R](t: BaseTable[T, R]) extends LimitedTextColumn(t, 0) {
+abstract class AbstractMediumBlobColumn[T <: BaseTable[T, R, TableRow], R, TableRow <: Row](t: BaseTable[T, R, TableRow], limit: Int = 0)(implicit ev: SQLPrimitive[String])
+  extends LimitedTextColumn[T, R, TableRow, String](t, limit) {
   override def sqlType: String = DefaultSQLDataTypes.mediumBlob
 }
 
-class LongBlobColumn[T <: BaseTable[T, R], R](t: BaseTable[T, R]) extends LimitedTextColumn(t, 0) {
+abstract class AbstractLongBlobColumn[T <: BaseTable[T, R, TableRow], R, TableRow <: Row](t: BaseTable[T, R, TableRow], limit: Int = 0)(implicit ev: SQLPrimitive[String])
+  extends LimitedTextColumn[T, R, TableRow, String](t, limit) {
   override def sqlType: String = DefaultSQLDataTypes.longBlob
 }
+

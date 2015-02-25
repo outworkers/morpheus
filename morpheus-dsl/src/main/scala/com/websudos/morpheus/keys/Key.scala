@@ -16,8 +16,8 @@
 
 package com.websudos.morpheus.keys
 
+import com.websudos.morpheus.builder.{SQLBuiltQuery, DefaultSQLSyntax}
 import com.websudos.morpheus.column.{NumericColumn, AbstractColumn}
-import com.websudos.morpheus.query.{DefaultSQLSyntax, SQLBuiltQuery}
 
 private[morpheus] trait Key[ValueType, KeyType <: Key[ValueType, KeyType]] {
   self: AbstractColumn[ValueType] =>
@@ -65,7 +65,7 @@ trait Autoincrement {
 }
 
 trait Zerofill[ValueType] extends Key[ValueType, Zerofill[ValueType]] {
-  self: NumericColumn[_, _, ValueType] =>
+  self: NumericColumn[_, _, _, ValueType] =>
 
   override def qb: SQLBuiltQuery = {
     SQLBuiltQuery(name).pad.append(sqlType)
@@ -88,7 +88,7 @@ trait Zerofill[ValueType] extends Key[ValueType, Zerofill[ValueType]] {
 }
 
 trait Unsigned[ValueType] {
-  self: NumericColumn[_, _, ValueType] =>
+  self: NumericColumn[_, _, _, ValueType] =>
 
   override def unsigned = true
 }

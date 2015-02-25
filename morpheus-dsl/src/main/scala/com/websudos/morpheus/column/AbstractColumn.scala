@@ -17,8 +17,9 @@
 package com.websudos.morpheus.column
 
 import com.websudos.morpheus.Row
+import com.websudos.morpheus.builder.SQLBuiltQuery
 import com.websudos.morpheus.dsl.BaseTable
-import com.websudos.morpheus.query.{QueryAssignment, SQLBuiltQuery}
+import com.websudos.morpheus.query.QueryAssignment
 
 import scala.reflect.runtime.{currentMirror => cm}
 
@@ -26,7 +27,7 @@ private[morpheus] trait SchemaSerializer {
   def qb: SQLBuiltQuery
 }
 
-private[morpheus] trait AbstractColumn[@specialized(Int, Double, Float, Long, Boolean, Short) T] extends SchemaSerializer {
+trait AbstractColumn[@specialized(Int, Double, Float, Long, Boolean, Short) T] extends SchemaSerializer {
 
   type Value = T
 
@@ -36,7 +37,7 @@ private[morpheus] trait AbstractColumn[@specialized(Int, Double, Float, Long, Bo
 
   def sqlType: String
 
-  def table: BaseTable[_, _]
+  def table: BaseTable[_, _, _]
 
   def toQueryString(v: T): String
 
@@ -57,7 +58,8 @@ private[morpheus] abstract class SelectColumn[T](val qb: SQLBuiltQuery) {
   def queryString: String = qb.queryString
 }
 
-private[morpheus] abstract class Column[Owner <: BaseTable[Owner, Record], Record, T](val table: BaseTable[Owner, Record]) extends AbstractColumn[T] {
+private[morpheus] abstract class Column[Owner <: BaseTable[Owner, Record, TableRow], Record, TableRow <: Row, T](val table: BaseTable[Owner, Record, TableRow])
+  extends AbstractColumn[T] {
 
   def optional(r: Row): Option[T]
 

@@ -16,6 +16,9 @@
 
 package com.websudos.morpheus.query
 
+import com.websudos.morpheus.builder.{SQLBuiltQuery, AbstractSyntaxBlock, DefaultSQLSyntax, AbstractSQLSyntax}
+import com.websudos.morpheus.sql.DefaultRow
+
 import scala.annotation.implicitNotFound
 
 import com.websudos.morpheus.Row
@@ -46,14 +49,19 @@ private[morpheus] class RootUpdateSyntaxBlock(query: String, tableName: String) 
  * @tparam T The type of the owning table.
  * @tparam R The type of the record.
  */
-private[morpheus] class RootUpdateQuery[T <: BaseTable[T, _], R](val table: T, val st: RootUpdateSyntaxBlock, val rowFunc: Row => R) {
+private[morpheus] class RootUpdateQuery[T <: BaseTable[T, _, TableRow], R, TableRow <: Row](val table: T, val st: RootUpdateSyntaxBlock, val rowFunc:
+  TableRow => R) {
 
-  protected[this] type BaseUpdateQuery = Query[T, R, UpdateType, Ungroupped, Unordered, Unlimited, Unchainned, AssignUnchainned, Unterminated]
+  protected[this] type BaseUpdateQuery = UpdateQuery[T, R, TableRow, Ungroupped, Unordered, Unlimited, Unchainned, AssignUnchainned, Unterminated]
 
   private[morpheus] def all: BaseUpdateQuery = {
-    new Query(table, st.all, rowFunc)
+    new UpdateQuery(table, st.all, rowFunc)
   }
 }
+
+private[morpheus] class DefaultRootUpdateQuery[T <: BaseTable[T, R, DefaultRow], R](table: T, st: RootUpdateSyntaxBlock, rowFunc:
+  DefaultRow => R) extends RootUpdateQuery[T, R, DefaultRow](table, st, rowFunc) {}
+
 
 trait AssignBind
 sealed abstract class AssignChainned extends AssignBind
@@ -68,50 +76,64 @@ sealed abstract class AssignUnchainned extends AssignBind
  * @tparam T The type of the table owning the record.
  * @tparam R The type of the record held in the table.
  */
-class AssignmentsQuery[T <: BaseTable[T, _],
+class UpdateQuery[T <: BaseTable[T, _, TableRow],
   R,
-  Type <: QueryType,
+  TableRow <: Row,
   Group <: GroupBind,
   Order <: OrderBind,
   Limit <: LimitBind,
   Chain <: ChainBind,
   AssignChain <: AssignBind,
   Status <: StatusBind
-](val query: Query[T, R, Type, Group, Order, Limit, Chain, AssignChain, Status]) {
+](table: T, query: SQLBuiltQuery, rowFunc: TableRow => R) extends Query[T, R, TableRow, Group, Order, Limit, Chain, AssignChain,
+  Status](table, query, rowFunc) {
+
+  @implicitNotFound("You cannot use two where clauses on a single query")
+  def where(condition: T => QueryCondition)(implicit ev: Chain =:= Unchainned): UpdateQuery[T, R, TableRow,  Group, Order, Limit, Chainned, AssignChain,
+    Status] = {
+    new UpdateQuery(table, table.queryBuilder.where(query, condition(table).clause), rowFunc)
+  }
+
+  @implicitNotFound("You cannot use two where clauses on a single query")
+  def where(condition: QueryCondition)(implicit ev: Chain =:= Unchainned): UpdateQuery[T, R, TableRow, Group, Order, Limit, Chainned, AssignChain, Status] = {
+    new UpdateQuery(table, table.queryBuilder.where(query, condition.clause), rowFunc)
+  }
 
   @implicitNotFound("You can't use 2 SET parts on a single UPDATE query")
-  final def set(condition: T => QueryAssignment)(implicit ev: AssignChain =:= AssignUnchainned, ev1: Status =:= Unterminated): AssignmentsQuery[T, R, Type,
-    Group, Order,
-    Limit,
-    Chain,
-    AssignChainned, Status] = {
-    new AssignmentsQuery[T, R, Type, Group, Order, Limit, Chain, AssignChainned, Status](
-      new Query[T, R, Type, Group, Order, Limit, Chain, AssignChainned, Status](
-        query.table,
-        query.table.queryBuilder.set(query.query, condition(query.table).clause),
-        query.rowFunc
-      )
+  def set(condition: T => QueryAssignment)(implicit ev: AssignChain =:= AssignUnchainned, ev1: Status =:= Unterminated): UpdateQuery[T, R,
+    TableRow, Group, Order, Limit, Chain, AssignChainned, Status] = {
+    new UpdateQuery(
+      table,
+      table.queryBuilder.set(query, condition(table).clause),
+      rowFunc
     )
   }
 
   @implicitNotFound("""You need to use the "set" method before using the "and"""")
-  final def and(condition: T => QueryAssignment, signChange: Int = 0)(implicit ev: AssignChain =:= AssignChainned): AssignmentsQuery[T, R, Type, Group, Order,
-    Limit,
-    Chain, AssignChainned, Status] = {
-    new AssignmentsQuery[T, R, Type, Group, Order, Limit, Chain, AssignChainned, Status](
-      new Query[T, R, Type, Group, Order, Limit, Chain, AssignChainned, Status](
-        query.table,
-        query.table.queryBuilder.andSet(query.query, condition(query.table).clause),
-        query.rowFunc
-      )
+  def andSet(condition: T => QueryAssignment, signChange: Int = 0)(implicit ev: AssignChain =:= AssignChainned): UpdateQuery[T, R, TableRow, Group, Order,
+    Limit, Chain, AssignChainned, Status] = {
+    new UpdateQuery(
+      table,
+      table.queryBuilder.andSet(query, condition(table).clause),
+      rowFunc
     )
   }
 
-  private[morpheus] final def terminate: Query[T, R, UpdateType, Group, Order, Limit, Chain, AssignChainned, Terminated] = {
-    new Query(
-      query.table,
-      query.query,
-      query.rowFunc
+  @implicitNotFound("You need to use the where method first")
+  def and(condition: T => QueryCondition)(implicit ev: Chain =:= Chainned): UpdateQuery[T, R, TableRow, Group, Order, Limit, Chain, AssignChainned, Status]  = {
+    new UpdateQuery(table, table.queryBuilder.and(query, condition(table).clause), rowFunc)
+  }
+
+  @implicitNotFound("You need to use the where method first")
+  def and(condition: QueryCondition)(implicit ev: Chain =:= Chainned): UpdateQuery[T, R, TableRow, Group, Order, Limit, Chain, AssignChainned, Status]  = {
+    new UpdateQuery(table, table.queryBuilder.and(query, condition.clause), rowFunc)
+  }
+
+  private[morpheus] def terminate: UpdateQuery[T, R, TableRow, Group, Order, Limit, Chain, AssignChainned, Terminated] = {
+    new UpdateQuery(
+      table,
+      query,
+      rowFunc
     )
   }
 

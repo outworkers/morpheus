@@ -16,10 +16,9 @@
 
 package com.websudos.morpheus.dsl
 
+import com.websudos.morpheus.builder.SQLBuiltQuery
 import org.scalatest.prop.GeneratorDrivenPropertyChecks
 import org.scalatest.{Matchers, FlatSpec}
-
-import com.websudos.morpheus.query.SQLBuiltQuery
 
 class SQLBuiltQueryTest extends FlatSpec with Matchers with GeneratorDrivenPropertyChecks {
 
@@ -40,6 +39,7 @@ class SQLBuiltQueryTest extends FlatSpec with Matchers with GeneratorDrivenPrope
       }
     }
   }
+
 
   it should "serialise and pad an SQLBuiltQuery with a trailing space if the space is missing" in {
     forAll(minSuccessful(300)) { (part1: String) =>

@@ -20,15 +20,22 @@ import org.scalatest.FlatSpec
 
 import com.websudos.util.testing._
 import com.websudos.morpheus.mysql.tables.BasicTable
+import com.websudos.morpheus.mysql._
 
 class CreateQueryDBTest extends FlatSpec with MySQLSuite {
 
   it should "create a new table in the MySQL database" in {
-    BasicTable.create.temporary.execute.successful {
-      res => {
-        res
-      }
+    BasicTable.create.temporary.engine(InnoDB).execute.successful {
+      res =>
     }
+  }
+
+  it should "create a new table in the database if the table doesn't exist" in {
+
+    Console.println(BasicTable.create.ifNotExists.engine(InnoDB).queryString)
+
+
+    BasicTable.create.ifNotExists.engine(InnoDB).execute.successful { _ => }
   }
 
 }

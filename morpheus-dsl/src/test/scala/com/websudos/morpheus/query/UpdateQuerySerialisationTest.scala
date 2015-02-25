@@ -79,7 +79,7 @@ class UpdateQuerySerialisationTest extends FlatSpec with Matchers {
   it should "serialise a multiple assignments query with a single where clause" in {
     BasicTable.update
       .set(_.name setTo "test2")
-      .and(_.count setTo 15)
+      .andSet(_.count setTo 15)
       .where(_.name eqs "test")
       .queryString shouldEqual "UPDATE 'BasicTable' SET name = 'test2', count = 15 WHERE name = 'test'"
   }
@@ -87,7 +87,7 @@ class UpdateQuerySerialisationTest extends FlatSpec with Matchers {
   it should "serialise a multiple assignments query with a multiple where clause" in {
     BasicTable.update
       .set(_.name setTo "test2")
-      .and(_.count setTo 15)
+      .andSet(_.count setTo 15)
       .where(_.name eqs "test")
       .and(_.count eqs 10)
       .queryString shouldEqual "UPDATE 'BasicTable' SET name = 'test2', count = 15 WHERE name = 'test' AND count = 10"

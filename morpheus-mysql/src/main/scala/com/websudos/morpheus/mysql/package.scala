@@ -16,31 +16,31 @@
 
 package com.websudos.morpheus
 
-import com.websudos.morpheus.query.Unterminated
-import com.websudos.morpheus.query.AssignUnchainned
-import com.websudos.morpheus.query.Unchainned
-import com.websudos.morpheus.query.Unlimited
-import com.websudos.morpheus.query.Unordered
-import com.websudos.morpheus.query.Ungroupped
-import com.websudos.morpheus.query.SelectType
-import com.websudos.morpheus.query.Query
-import com.websudos.morpheus.column.AbstractColumn
-import com.websudos.morpheus.operators.MySQLOperatorSet
+import com.websudos.morpheus.column.{DefaultForeignKeyConstraints, AbstractColumn}
 import com.websudos.morpheus.dsl.DefaultImportsDefinition
+import com.websudos.morpheus.mysql.query.{MySQLRootSelectQuery, MySQLSelectQuery}
+import com.websudos.morpheus.operators.MySQLOperatorSet
+import com.websudos.morpheus.query.{AssignUnchainned, Unchainned, Ungroupped, Unlimited, Unordered, Unterminated}
 
 
-package object mysql extends DefaultImportsDefinition with MySQLPrimitives with MySQLOperatorSet {
+package object mysql extends DefaultImportsDefinition
+  with MySQLImplicits
+  with MySQLPrimitives
+  with MySQLOperatorSet
+  with MySQLColumns
+  with MySQLKeys
+  with MySQLPrimitiveColumns
+  with DefaultForeignKeyConstraints {
 
   override implicit def columnToQueryColumn[T : SQLPrimitive](col: AbstractColumn[T]): MySQLQueryColumn[T] = new MySQLQueryColumn[T](col)
 
-  implicit def rootSelectQueryToQuery[T <: Table[T, _], R](root: MySQLRootSelectQuery[T, R]): Query[T, R, SelectType, Ungroupped, Unordered, Unlimited,
-    Unchainned, AssignUnchainned, Unterminated] = {
-    new Query(
+  implicit def rootSelectQueryToQuery[T <: Table[T, _], R](root: MySQLRootSelectQuery[T, R]): MySQLSelectQuery[T, R, Ungroupped, Unordered, Unlimited, Unchainned, AssignUnchainned, Unterminated] = {
+    new MySQLSelectQuery(
       root.table,
       root.st.*,
       root.rowFunc
     )
   }
 
-  type Table[Owner <: BaseTable[Owner, Record], Record] = com.websudos.morpheus.mysql.MySQLTable[Owner, Record]
+  type Table[Owner <: BaseTable[Owner, Record, MySQLRow], Record] = com.websudos.morpheus.mysql.MySQLTable[Owner, Record]
 }

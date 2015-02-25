@@ -14,8 +14,10 @@
  * limitations under the License.
  */
 
-package com.websudos.morpheus.mysql
+package com.websudos.morpheus.mysql.query
 
+import com.websudos.morpheus.builder.{SQLBuiltQuery, DefaultSQLSyntax}
+import com.websudos.morpheus.mysql._
 import com.websudos.morpheus.query._
 
 case class MySQLDeleteSyntaxBlock(query: String, tableName: String) extends RootDeleteSyntaxBlock(query, tableName) {
@@ -41,16 +43,27 @@ case class MySQLDeleteSyntaxBlock(query: String, tableName: String) extends Root
   }
 }
 
-private[morpheus] class MySQLRootDeleteQuery[T <: BaseTable[T, _], R](table: T, st: MySQLDeleteSyntaxBlock, rowFunc: Row => R)  extends RootDeleteQuery(table, st,
+private[morpheus] class MySQLRootDeleteQuery[T <: BaseTable[T, _, MySQLRow], R](table: T, st: MySQLDeleteSyntaxBlock, rowFunc: MySQLRow => R)
+  extends RootDeleteQuery[T, R, MySQLRow](table, st, rowFunc) {
+
+  def lowPriority: MySQLDeleteQuery[T, R, Ungroupped, Unordered, Unlimited, Unchainned, AssignUnchainned, Unterminated] = {
+    new MySQLDeleteQuery(table, st.lowPriority, rowFunc)
+  }
+
+  def ignore: MySQLDeleteQuery[T, R, Ungroupped, Unordered, Unlimited, Unchainned, AssignUnchainned, Unterminated] = {
+    new MySQLDeleteQuery(table, st.ignore, rowFunc)
+  }
+}
+
+class MySQLDeleteQuery[T <: BaseTable[T, _, MySQLRow],
+  R,
+  Group <: GroupBind,
+  Order <: OrderBind,
+  Limit <: LimitBind,
+  Chain <: ChainBind,
+  AssignChain <: AssignBind,
+  Status <: StatusBind
+](table: T, query: SQLBuiltQuery, rowFunc: MySQLRow => R) extends DeleteQuery[T, R, MySQLRow, Group, Order, Limit, Chain, AssignChain, Status](table, query,
   rowFunc) {
-
-  def lowPriority: BaseDeleteQuery = {
-    new Query(table, st.lowPriority, rowFunc)
-  }
-
-  def ignore: BaseDeleteQuery = {
-    new Query(table, st.ignore, rowFunc)
-  }
-
 
 }

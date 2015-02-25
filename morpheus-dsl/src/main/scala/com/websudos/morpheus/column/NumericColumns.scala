@@ -16,15 +16,12 @@
 
 package com.websudos.morpheus.column
 
-import com.websudos.morpheus.SQLPrimitives.IntPrimitive
-import com.websudos.morpheus.SQLPrimitive
+import com.websudos.morpheus.builder.{SQLBuiltQuery, DefaultSQLDataTypes}
+import com.websudos.morpheus.{Row, SQLPrimitive}
 import com.websudos.morpheus.dsl.BaseTable
-import com.websudos.morpheus.query.{SQLBuiltQuery, DefaultSQLDataTypes}
 
-sealed abstract class NumericColumn[T <: BaseTable[T, R], R, ValueType : Numeric : SQLPrimitive](t: BaseTable[T, R], limit: Int = 0) extends PrimitiveColumn[T, R,
-  ValueType](t) {
-
-  val int = IntPrimitive
+sealed abstract class NumericColumn[T <: BaseTable[T, R, TableRow], R, TableRow <: Row, ValueType : Numeric : SQLPrimitive](t: BaseTable[T, R, TableRow], limit: Int =
+0) extends PrimitiveColumn[T, R, TableRow, ValueType](t) {
 
   protected[this] def numericType: String
 
@@ -35,24 +32,35 @@ sealed abstract class NumericColumn[T <: BaseTable[T, R], R, ValueType : Numeric
   def unsigned: Boolean = false
 }
 
-class TinyIntColumn[T <: BaseTable[T, R], R](t: BaseTable[T, R], limit: Int = 0) extends NumericColumn[T, R, Int](t, limit) {
+abstract class AbstractTinyIntColumn[T <: BaseTable[T, R, TableRow], R, TableRow <: Row](t: BaseTable[T, R, TableRow], limit: Int = 0)(implicit ev:
+SQLPrimitive[Int])
+  extends NumericColumn[T, R, TableRow, Int](t, limit) {
+
   override protected[this] val numericType: String = DefaultSQLDataTypes.tinyInt
 }
 
-class SmallIntColumn[T <: BaseTable[T, R], R](t: BaseTable[T, R], limit: Int = 0) extends NumericColumn[T, R, Int](t, limit) {
+abstract class AbstractSmallIntColumn[T <: BaseTable[T, R, TableRow], R, TableRow <: Row](t: BaseTable[T, R, TableRow], limit: Int = 0)(implicit ev:
+SQLPrimitive[Int])
+extends NumericColumn[T, R, TableRow, Int](t, limit) {
+
   override protected[this] val numericType: String = DefaultSQLDataTypes.smallInt
 }
 
-class MediumIntColumn[T <: BaseTable[T, R], R](t: BaseTable[T, R], limit: Int = 0) extends NumericColumn[T, R, Int](t, limit) {
+abstract class AbstractMediumIntColumn[T <: BaseTable[T, R, TableRow], R, TableRow <: Row](t: BaseTable[T, R, TableRow], limit: Int = 0)(implicit ev:
+SQLPrimitive[Int])
+  extends NumericColumn[T, R, TableRow, Int](t, limit) {
 
   override protected[this] val numericType: String = DefaultSQLDataTypes.mediumInt
 }
 
-class IntColumn[T <: BaseTable[T, R], R](t: BaseTable[T, R], limit: Int = 0) extends NumericColumn[T, R, Int](t, limit) {
+abstract class AbstractIntColumn[T <: BaseTable[T, R, TableRow], R, TableRow <: Row](t: BaseTable[T, R, TableRow], limit: Int = 0)(implicit ev:
+SQLPrimitive[Int])
+  extends NumericColumn[T, R, TableRow, Int](t, limit) {
   override protected[this] val numericType: String = DefaultSQLDataTypes.int
 }
 
-class YearColumn[T <: BaseTable[T, R], R](t: BaseTable[T, R]) extends PrimitiveColumn[T, R, Int](t) {
+abstract class AbstractYearColumn[T <: BaseTable[T, R, TableRow], R, TableRow <: Row](t: BaseTable[T, R, TableRow])(implicit ev: SQLPrimitive[Int])
+  extends PrimitiveColumn[T, R, TableRow, Int](t) {
   override val sqlType = DefaultSQLDataTypes.year
 }
 

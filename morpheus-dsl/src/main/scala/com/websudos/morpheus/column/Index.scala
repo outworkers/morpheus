@@ -17,13 +17,13 @@
 package com.websudos.morpheus.column
 
 import com.websudos.morpheus.Row
+import com.websudos.morpheus.builder.{SQLBuiltQuery, DefaultSQLSyntax}
 import com.websudos.morpheus.dsl.BaseTable
-import com.websudos.morpheus.query.{DefaultSQLSyntax, SQLBuiltQuery}
 import shapeless.<:!<
 
 private[morpheus] trait IndexColumn {
 
-  type NonIndexColumn[Owner <: BaseTable[Owner, _]] = Column[Owner, _, _]
+  type NonIndexColumn[Owner <: BaseTable[Owner, _, _]] = Column[Owner, _, _, _]
 
   def apply(r: Row): String = throw new Exception(s"Index column is not a value column. This apply method cannot extract anything from it.")
 }
@@ -39,8 +39,8 @@ private[morpheus] trait IndexColumn {
  * @tparam T The table owning the Record.
  * @tparam R The record of the table.
  */
-class Index[T <: BaseTable[T, R], R](columns: IndexColumn#NonIndexColumn[_]*)(implicit ev: IndexColumn#NonIndexColumn[_] <:!< IndexColumn)
-  extends AbstractColumn[String] with IndexColumn {
+abstract class AbstractIndex[T <: BaseTable[T, R, TableRow], R, TableRow <: Row](columns: IndexColumn#NonIndexColumn[_]*)(implicit ev:
+  IndexColumn#NonIndexColumn[_] <:!< IndexColumn) extends AbstractColumn[String] with IndexColumn {
 
   def qb: SQLBuiltQuery = {
     SQLBuiltQuery(DefaultSQLSyntax.index)
@@ -53,5 +53,5 @@ class Index[T <: BaseTable[T, R], R](columns: IndexColumn#NonIndexColumn[_]*)(im
 
   override def toQueryString(v: String): String = v
 
-  override def table: BaseTable[_, _] = columns.head.table
+  override def table: BaseTable[_, _, _] = columns.head.table
 }

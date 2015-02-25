@@ -2,7 +2,6 @@ package com.websudos.morpheus.query
 
 import org.scalatest.{FlatSpec, Matchers}
 
-import com.websudos.morpheus.column.ForeignKey
 import com.websudos.morpheus.dsl.{BasicRecord, BasicTable}
 import com.websudos.morpheus.sql._
 import com.websudos.morpheus.tables.{KeysRecord, KeysTable, IndexTable}

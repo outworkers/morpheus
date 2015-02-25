@@ -28,12 +28,14 @@ import com.websudos.morpheus.query._
  * @tparam Owner The table owning the record.
  * @tparam Record The record type.
  */
-private[morpheus] trait SelectTable[Owner <: BaseTable[Owner, Record],
+private[morpheus] trait SelectTable[
+  Owner <: BaseTable[Owner, Record, TableRow],
   Record,
-  RootSelectQuery[A <: BaseTable[A, _], B] <: AbstractRootSelectQuery[A, B],
+  TableRow <: Row,
+  RootSelectQuery[A <: BaseTable[A, _, TableRow], B] <: AbstractRootSelectQuery[A, B, TableRow],
   Block <: AbstractSelectSyntaxBlock
 ] {
-  self: BaseTable[Owner, Record] =>
+  self: BaseTable[Owner, Record, TableRow] =>
 
   /**
    * This allows a table implementation targeting a specific database to specify it's own root select query.
@@ -48,7 +50,7 @@ private[morpheus] trait SelectTable[Owner <: BaseTable[Owner, Record],
    * @tparam B The type of the record.
    * @return A root select query implementation.
    */
-  protected[this] def createRootSelect[A <: BaseTable[A, _], B](table: A, block: Block, rowFunc: Row => B): RootSelectQuery[A, B]
+  protected[this] def createRootSelect[A <: BaseTable[A, _, TableRow], B](table: A, block: Block, rowFunc: TableRow => B): RootSelectQuery[A, B]
 
   protected[this] def createSelectSyntaxBlock(query: String, tableName: String, cols: List[String] = List("*")): Block
 
@@ -118,7 +120,8 @@ private[morpheus] trait SelectTable[Owner <: BaseTable[Owner, Record],
    * This is the SELECT column1 column2 column3 query, where 3 columns are specified to be partially selected.
    * @return An instance of a RootSelectQuery.
    */
-  def select[T1, T2, T3](f1: Owner => SelectColumn[T1], f2: Owner => SelectColumn[T2], f3: Owner => SelectColumn[T3]): RootSelectQuery[Owner, (T1, T2, T3)] = {
+  def select[T1, T2, T3](f1: Owner => SelectColumn[T1], f2: Owner => SelectColumn[T2], f3: Owner => SelectColumn[T3]): RootSelectQuery[Owner, (T1, T2, T3)]
+  = {
 
     val t = this.asInstanceOf[Owner]
     val c1: SelectColumn[T1] = f1(t)

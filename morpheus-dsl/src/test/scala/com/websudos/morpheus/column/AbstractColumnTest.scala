@@ -1,7 +1,7 @@
 package com.websudos.morpheus.column
 
+import com.websudos.morpheus.builder.SQLBuiltQuery
 import com.websudos.morpheus.dsl.BaseTable
-import com.websudos.morpheus.query.SQLBuiltQuery
 import org.scalatest.{Matchers, FlatSpec}
 
 class TestColumn extends AbstractColumn[Int] {
@@ -11,7 +11,7 @@ class TestColumn extends AbstractColumn[Int] {
 
   override def sqlType: String = ???
 
-  override def table: BaseTable[_, _] = ???
+  override def table: BaseTable[_, _, _] = ???
 }
 
 class AbstractColumnTest extends FlatSpec with Matchers {

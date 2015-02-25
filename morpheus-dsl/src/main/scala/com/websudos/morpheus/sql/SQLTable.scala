@@ -17,44 +17,52 @@
 package com.websudos.morpheus.sql
 
 
-import com.websudos.morpheus.dsl.{ SelectTable }
+import com.websudos.morpheus.builder.{DefaultQueryBuilder, DefaultSQLSyntax}
+import com.websudos.morpheus.dsl.SelectTable
 import com.websudos.morpheus.query._
+import com.websudos.morpheus.{ Row => MorpheusRow }
 
-abstract class SQLTable[Owner <: BaseTable[Owner, Record], Record] extends BaseTable[Owner, Record] with SelectTable[Owner, Record,
-  AbstractRootSelectQuery, AbstractSelectSyntaxBlock] {
+trait DefaultRow extends MorpheusRow {}
+
+private[morpheus] class MySQLRootSelectQuery[T <: BaseTable[T, _, DefaultRow], R](table: T, st: AbstractSelectSyntaxBlock, rowFunc: DefaultRow => R)
+  extends AbstractRootSelectQuery[T, R, DefaultRow](table, st, rowFunc) {
+}
+
+abstract class SQLTable[Owner <: BaseTable[Owner, Record, DefaultRow], Record] extends BaseTable[Owner, Record, DefaultRow] with SelectTable[Owner,
+  Record, DefaultRow, DefaultRootSelectQuery, AbstractSelectSyntaxBlock] {
 
   val queryBuilder = DefaultQueryBuilder
 
   val syntax = DefaultSQLSyntax
 
-  protected[this] def createRootSelect[A <: BaseTable[A, _], B](table: A, block: AbstractSelectSyntaxBlock, rowFunc: Row => B): AbstractRootSelectQuery[A,
-    B] = {
-    new AbstractRootSelectQuery[A, B](table, block, rowFunc)
+  protected[this] def createRootSelect[A <: BaseTable[A, _, DefaultRow], B](table: A, block: AbstractSelectSyntaxBlock, rowFunc: DefaultRow => B):
+  DefaultRootSelectQuery[A, B] = {
+    new DefaultRootSelectQuery[A, B](table, block, rowFunc)
   }
 
   protected[this] def createSelectSyntaxBlock(query: String, tableName: String, cols: List[String] = List("*")): AbstractSelectSyntaxBlock = {
     new AbstractSelectSyntaxBlock(query, tableName, cols)
   }
 
-  def update: RootUpdateQuery[Owner, Record] = new RootUpdateQuery(
+  def update: DefaultRootUpdateQuery[Owner, Record] = new DefaultRootUpdateQuery(
     this.asInstanceOf[Owner],
     new RootUpdateSyntaxBlock(syntax.update, tableName),
     fromRow
   )
 
-  def delete: RootDeleteQuery[Owner, Record] = new RootDeleteQuery(
+  def delete: DefaultRootDeleteQuery[Owner, Record] = new DefaultRootDeleteQuery(
     this.asInstanceOf[Owner],
     new RootDeleteSyntaxBlock(syntax.delete, tableName),
     fromRow
   )
 
-  def insert: RootInsertQuery[Owner, Record] = new RootInsertQuery(
+  def insert: DefaultRootInsertQuery[Owner, Record] = new DefaultRootInsertQuery(
     this.asInstanceOf[Owner],
     new RootInsertSyntaxBlock(syntax.insert, tableName),
     fromRow
   )
 
-  def create: RootCreateQuery[Owner, Record] = new RootCreateQuery(
+  def create: DefaultRootCreateQuery[Owner, Record] = new DefaultRootCreateQuery(
     this.asInstanceOf[Owner],
     new RootCreateSyntaxBlock(syntax.create, tableName),
     fromRow

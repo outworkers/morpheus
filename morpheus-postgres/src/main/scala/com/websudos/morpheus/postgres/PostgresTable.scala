@@ -16,21 +16,26 @@
 
 package com.websudos.morpheus.postgres
 
+import com.websudos.morpheus.Row
+import com.websudos.morpheus.builder.{AbstractQueryBuilder, AbstractSQLSyntax}
 import com.websudos.morpheus.dsl.BaseTable
 import com.websudos.morpheus.query._
 
-abstract class PostgresTable[Owner <: PostgresTable[Owner, Record], Record] extends BaseTable[Owner, Record] {
+
+trait PostgresRow extends Row
+
+abstract class PostgresTable[Owner <: PostgresTable[Owner, Record], Record] extends BaseTable[Owner, Record, PostgresRow] {
 
   val queryBuilder: AbstractQueryBuilder = PostgresQueryBuilder
 
   override protected[this] def syntax: AbstractSQLSyntax = PostgresSyntax
 
-  override def update: RootUpdateQuery[Owner, Record] = ???
+  override def update: RootUpdateQuery[Owner, Record, PostgresRow] = ???
 
-  override def insert: RootInsertQuery[Owner, Record] = ???
+  override def insert: RootInsertQuery[Owner, Record, PostgresRow] = ???
 
-  override def delete: RootDeleteQuery[Owner, Record] = ???
+  override def delete: RootDeleteQuery[Owner, Record, PostgresRow] = ???
 
-  override def create: RootCreateQuery[Owner, Record] = ???
+  override def create: RootCreateQuery[Owner, Record, PostgresRow] = ???
 
 }

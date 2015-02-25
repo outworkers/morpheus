@@ -4,10 +4,12 @@ morpheus [NOT PRODUCTION READY][![Build Status](https://travis-ci.org/websudos/m
 
 ![Morpheus](http://websudos.com/images/work/morpheus.png "Morpheus")
 
+To stay up-to-date with our latest releases and news, follow us on Twitter: @websudos.
 
-Named after the Greek God of Dreams, morpheus is an Asynchronous type-safe Scala DSL for MySQL, Postgres, MSSQL, 
-MariaDB. We choose this name as it is the dream DSL for any Scala/SQL user, finessed to perfection up to the Websudos quality standard you've gotten 
-used to.
+Named after the Greek God of Dreams, morpheus is a reactive type-safe Scala DSL for MySQL, Postgres, MSSQL,
+MariaDB, Oracle and Sybase. We choose this name as it is the dream DSL for any Scala/SQL user, finessed to perfection up to the Websudos quality standard
+you've gotten used to. Also, morpheus stands for morphing. With the single switch of an import, morpheus will perform a full feature swap from MySQL to
+OracleSQL for example. It doesn't have a query compiler, instead it entirely mimics the functionality the database has.
 
 We've taken it up ourselves to produce the highest quality database integration tooling for all Scala users, 
 currently hitting that bar for Cassandra, Neo4J and MongoDB. But why stop there?

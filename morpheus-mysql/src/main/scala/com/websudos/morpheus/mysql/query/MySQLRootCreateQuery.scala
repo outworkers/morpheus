@@ -13,16 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.websudos.morpheus.mysql
+package com.websudos.morpheus.mysql.query
 
-import com.websudos.morpheus.query.{AbstractSQLSyntax, RootCreateQuery, RootCreateSyntaxBlock}
+import com.websudos.morpheus.builder.AbstractSQLSyntax
+import com.websudos.morpheus.mysql._
+import com.websudos.morpheus.query.{RootCreateQuery, RootCreateSyntaxBlock}
 
 
 class MySQLCreateSyntaxBLock(query: String, tableName: String) extends RootCreateSyntaxBlock(query, tableName) {
   override def syntax: AbstractSQLSyntax = MySQLSyntax
 }
 
-class MySQLRootCreateQuery[T <: BaseTable[T, _], R](table: T, st: RootCreateSyntaxBlock, rowFunc: Row => R) extends RootCreateQuery[T, R](table, st,
-  rowFunc){
+class MySQLRootCreateQuery[T <: BaseTable[T, _, MySQLRow], R](table: T, st: RootCreateSyntaxBlock, rowFunc: MySQLRow => R)
+  extends RootCreateQuery[T, R, MySQLRow](table, st, rowFunc){
 
 }
