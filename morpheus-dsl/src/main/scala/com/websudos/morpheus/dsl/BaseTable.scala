@@ -17,6 +17,7 @@
 package com.websudos.morpheus.dsl
 
 import com.websudos.morpheus.Row
+import com.websudos.morpheus.builder.{AbstractQueryBuilder, AbstractSQLSyntax}
 import com.websudos.morpheus.column.AbstractColumn
 import com.websudos.morpheus.query._
 
@@ -40,7 +41,7 @@ import scala.reflect.runtime.{currentMirror => cm, universe => ru}
  * @tparam Record The user defined Scala class, usually a case class, holding a type safe data model definition. This allows for type safe querying of
  *                records, as all select all queries will return an instance of Record.
  */
-abstract class BaseTable[Owner <: BaseTable[Owner, Record], Record] {
+abstract class BaseTable[Owner <: BaseTable[Owner, _, TableRow], Record, TableRow <: Row] {
 
   val queryBuilder: AbstractQueryBuilder
 
@@ -84,17 +85,17 @@ abstract class BaseTable[Owner <: BaseTable[Owner, Record], Record] {
    * @param row The row incoming as a result from a MySQL query.
    * @return A Record instance.
    */
-  def fromRow(row: Row): Record
+  def fromRow(row: TableRow): Record
 
   def tableName: String = _name
 
-  def create: RootCreateQuery[Owner, Record]
+  def create: RootCreateQuery[Owner, Record, TableRow]
 
-  def update: RootUpdateQuery[Owner, Record]
+  def update: RootUpdateQuery[Owner, Record, TableRow]
 
-  def delete: RootDeleteQuery[Owner, Record]
+  def delete: RootDeleteQuery[Owner, Record, TableRow]
 
-  def insert: RootInsertQuery[Owner, Record]
+  def insert: RootInsertQuery[Owner, Record, TableRow]
 
   def columns: List[AbstractColumn[_]] = _columns.toList
 

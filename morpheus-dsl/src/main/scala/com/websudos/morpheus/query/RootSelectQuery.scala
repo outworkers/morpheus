@@ -16,9 +16,13 @@
 
 package com.websudos.morpheus.query
 
+import com.websudos.morpheus.builder.{SQLBuiltQuery, AbstractSyntaxBlock, DefaultSQLSyntax, AbstractSQLSyntax}
 import com.websudos.morpheus.column.{AbstractColumn, ForeignKeyDefinition}
 import com.websudos.morpheus.dsl.BaseTable
+import com.websudos.morpheus.sql.DefaultRow
 import com.websudos.morpheus.{Row, SQLPrimitive}
+
+import scala.annotation.implicitNotFound
 
 
 private[morpheus] class AbstractSelectSyntaxBlock(
@@ -59,20 +63,24 @@ private[morpheus] class AbstractSelectSyntaxBlock(
  * @tparam T The type of the owning table.
  * @tparam R The type of the record.
  */
-private[morpheus] class AbstractRootSelectQuery[T <: BaseTable[T, _], R](val table: T, val st: AbstractSelectSyntaxBlock, val rowFunc: Row => R) {
+private[morpheus] class AbstractRootSelectQuery[T <: BaseTable[T, _, TableRow], R, TableRow <: Row](val table: T, val st: AbstractSelectSyntaxBlock, val
+rowFunc: TableRow => R) {
 
-  def fromRow(r: Row): R = rowFunc(r)
+  def fromRow(r: TableRow): R = rowFunc(r)
 
-  def distinct: Query[T, R, SelectType, Ungroupped, Unordered, Unlimited, Unchainned, AssignUnchainned, Unterminated] = {
-    new Query(table, st.distinct, rowFunc)
+  def distinct: SelectQuery[T, R, TableRow, Ungroupped, Unordered, Unlimited, Unchainned, AssignUnchainned, Unterminated] = {
+    new SelectQuery(table, st.distinct, rowFunc)
   }
 
-  def all: Query[T, R, SelectType, Ungroupped, Unordered, Unlimited, Unchainned, AssignUnchainned, Unterminated] = {
-    new Query(table, st.*, rowFunc)
+  def all: SelectQuery[T, R, TableRow, Ungroupped, Unordered, Unlimited, Unchainned, AssignUnchainned, Unterminated] = {
+    new SelectQuery(table, st.*, rowFunc)
   }
 }
 
+private[morpheus] class DefaultRootSelectQuery[T <: BaseTable[T, _, DefaultRow], R](table: T, st: AbstractSelectSyntaxBlock,
+  rowFunc: DefaultRow => R) extends AbstractRootSelectQuery[T, R, DefaultRow](table, st, rowFunc) {
 
+}
 
 /**
  * This bit of magic allows all extending sub-classes to implement the "set" and "and" SQL clauses with all the necessary operators,
@@ -82,70 +90,85 @@ private[morpheus] class AbstractRootSelectQuery[T <: BaseTable[T, _], R](val tab
  * @tparam T The type of the table owning the record.
  * @tparam R The type of the record held in the table.
  */
-class SelectQuery[T <: BaseTable[T, _],
+class SelectQuery[T <: BaseTable[T, _, TableRow],
   R,
-  Type <: QueryType,
+  TableRow <: Row,
   Group <: GroupBind,
   Order <: OrderBind,
   Limit <: LimitBind,
   Chain <: ChainBind,
   AssignChain <: AssignBind,
   Status <: StatusBind
-](val query: Query[T, R, Type, Group, Order, Limit, Chain, AssignChain, Status]) {
+](table: T, query: SQLBuiltQuery, rowFunc: TableRow => R) extends Query[T, R, TableRow, Group, Order, Limit, Chain, AssignChain, Status](table, query,
+  rowFunc) {
 
+  @implicitNotFound("You cannot use two where clauses on a single query")
+  def where(condition: T => QueryCondition)(implicit ev: Chain =:= Unchainned): SelectQuery[T, R, TableRow, Group, Order, Limit, Chainned, AssignChain,
+    Status] = {
+    new SelectQuery(table, table.queryBuilder.where(query, condition(table).clause), rowFunc)
+  }
 
-  final def having(condition: T => QueryCondition)(implicit tp: Type =:= SelectType): SelectQuery[T, R, Type, Group,
+  @implicitNotFound("You cannot use two where clauses on a single query")
+  def where(condition: QueryCondition)(implicit ev: Chain =:= Unchainned): SelectQuery[T, R, TableRow, Group, Order, Limit, Chainned, AssignChain, Status] = {
+    new SelectQuery(table, table.queryBuilder.where(query, condition.clause), rowFunc)
+  }
+
+  @implicitNotFound("You need to use the where method first")
+  def and(condition: T => QueryCondition)(implicit ev: Chain =:= Chainned): SelectQuery[T, R, TableRow, Group, Order, Limit, Chain, AssignChainned, Status]  = {
+    new SelectQuery(table, table.queryBuilder.and(query, condition(table).clause), rowFunc)
+  }
+
+  @implicitNotFound("You need to use the where method first")
+  def and(condition: QueryCondition)(implicit ev: Chain =:= Chainned): SelectQuery[T, R, TableRow, Group, Order, Limit, Chain, AssignChainned, Status] = {
+    new SelectQuery(table, table.queryBuilder.and(query, condition.clause), rowFunc)
+  }
+
+  final def having(condition: T => QueryCondition): SelectQuery[T, R, TableRow, Group,
     Order,
     Limit,
     Chain,
     AssignChainned, Status] = {
-    new SelectQuery[T, R, Type, Group, Order, Limit, Chain, AssignChainned, Status](
-      new Query(
-        query.table,
-        query.table.queryBuilder.having(query.query, condition(query.table).clause),
-        query.rowFunc
-      )
+    new SelectQuery[T, R, TableRow, Group, Order, Limit, Chain, AssignChainned, Status](
+      table,
+      table.queryBuilder.having(query, condition(table).clause),
+      rowFunc
     )
   }
 
   @inline
-  private[this] def joinBuilder[Owner <: BaseTable[Owner, Record], Record](
+  private[this] def joinBuilder[Owner <: BaseTable[Owner, Record, TableRow], Record](
       joiner: (SQLBuiltQuery, String) => SQLBuiltQuery,
-      join: BaseTable[Owner, Record]): OnJoinQuery[T, (R, Record), SelectType, Group, Order, Limit, Chain, AssignChain, Unterminated] = {
+      join: BaseTable[Owner, Record, TableRow]): OnJoinQuery[T, (R, Record), TableRow, Group, Order, Limit, Chain, AssignChain, Unterminated] = {
 
-    def fromRow(row: Row): (R, Record) = (query.fromRow(row), join.fromRow(row))
+    def fromRow(row: Row): (R, Record) = fromRow(row)
 
-    new OnJoinQuery(
-      new Query(
-        query.table,
-        joiner(query.query, join.tableName),
+    new OnJoinQuery[T, (R, Record), TableRow, Group, Order, Limit, Chain, AssignChain, Unterminated](
+      new SelectQuery[T, (R, Record), TableRow, Group, Order, Limit, Chain, AssignChain, Unterminated](
+        table,
+        joiner(query, join.tableName),
         fromRow
       )
     )
   }
 
-  def innerJoin[Owner <: BaseTable[Owner, Record], Record](join: BaseTable[Owner, Record])
-      : OnJoinQuery[T, (R, Record), SelectType, Group, Order, Limit, Chain, AssignChain, Unterminated] =
-    joinBuilder(query.table.queryBuilder.innerJoin, join)
+  def innerJoin[Owner <: BaseTable[Owner, Record, TableRow], Record](join: BaseTable[Owner, Record, TableRow])
+      : OnJoinQuery[T, (R, Record), TableRow, Group, Order, Limit, Chain, AssignChain, Unterminated] =
+    joinBuilder(table.queryBuilder.innerJoin, join)
 
-  def leftJoin[Owner <: BaseTable[Owner, Record], Record](join: BaseTable[Owner, Record])
-      : OnJoinQuery[T, (R, Record), SelectType, Group, Order, Limit, Chain, AssignChain, Unterminated] =
-    joinBuilder(query.table.queryBuilder.leftJoin, join)
+  def leftJoin[Owner <: BaseTable[Owner, Record, TableRow], Record](join: BaseTable[Owner, Record, TableRow])
+      : OnJoinQuery[T, (R, Record), TableRow, Group, Order, Limit, Chain, AssignChain, Unterminated] =
+    joinBuilder(table.queryBuilder.leftJoin, join)
 
-  def rightJoin[Owner <: BaseTable[Owner, Record], Record](join: BaseTable[Owner, Record])
-      : OnJoinQuery[T, (R, Record), SelectType, Group, Order, Limit, Chain, AssignChain, Unterminated] =
-    joinBuilder(query.table.queryBuilder.rightJoin, join)
+  def rightJoin[Owner <: BaseTable[Owner, Record, TableRow], Record](join: BaseTable[Owner, Record, TableRow])
+      : OnJoinQuery[T, (R, Record), TableRow, Group, Order, Limit, Chain, AssignChain, Unterminated] =
+    joinBuilder(table.queryBuilder.rightJoin, join)
 
-  private[morpheus] final def terminate: Query[T, R, SelectType, Group, Order, Limit, Chain, AssignChain, Terminated] = {
-    new Query(
-      query.table,
-      query.query,
-      query.fromRow
-    )
+  private[morpheus] final def terminate: SelectQuery[T, R, TableRow, Group, Order, Limit, Chain, AssignChain, Terminated] = {
+    new SelectQuery(table, query, fromRow)
   }
 }
 
-case class JoinClause(clause: SQLBuiltQuery)
+sealed case class JoinClause(clause: SQLBuiltQuery)
 
 /**
  * This bit of magic allows all extending sub-classes to implement the "set" and "and" SQL clauses with all the necessary operators,
@@ -155,19 +178,19 @@ case class JoinClause(clause: SQLBuiltQuery)
  * @tparam T The type of the table owning the record.
  * @tparam R The type of the record held in the table.
  */
-class OnJoinQuery[T <: BaseTable[T, _],
+class OnJoinQuery[T <: BaseTable[T, _, TableRow],
   R,
-  Type <: QueryType,
+  TableRow <: Row,
   Group <: GroupBind,
   Order <: OrderBind,
   Limit <: LimitBind,
   Chain <: ChainBind,
   AssignChain <: AssignBind,
   Status <: StatusBind
-](val query: Query[T, R, Type, Group, Order, Limit, Chain, AssignChain, Status]) {
+](val query: SelectQuery[T, R, TableRow, Group, Order, Limit, Chain, AssignChain, Status]) {
 
-  def on(condition: T => JoinClause): Query[T, R, Type, Group, Order, Limit, Chain, AssignChain, Status] = {
-    new Query(
+  def on(condition: T => JoinClause): SelectQuery[T, R, TableRow, Group, Order, Limit, Chain, AssignChain, Status] = {
+    new SelectQuery(
       query.table,
       query.table.queryBuilder.on(query.query, condition(query.table).clause),
       query.fromRow
@@ -177,7 +200,7 @@ class OnJoinQuery[T <: BaseTable[T, _],
 
 private[morpheus] trait JoinImplicits {
 
-  implicit class JoinColumn[T: SQLPrimitive](val origin: AbstractColumn[T] with ForeignKeyDefinition) {
+  implicit class JoinColumn[T : SQLPrimitive](val origin: AbstractColumn[T] with ForeignKeyDefinition) {
 
     final def eqs(col: AbstractColumn[_]): JoinClause = {
       JoinClause(

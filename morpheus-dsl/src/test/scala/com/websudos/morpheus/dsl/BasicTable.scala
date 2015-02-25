@@ -25,7 +25,7 @@ class BasicTable extends Table[BasicTable, BasicRecord] {
   object name extends TextColumn(this)
   object count extends LongColumn(this)
 
-  def fromRow(row: Row): BasicRecord = {
+  def fromRow(row: DefaultRow): BasicRecord = {
     BasicRecord(name(row), count(row))
   }
 

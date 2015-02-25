@@ -32,7 +32,7 @@ class RaceConditionTest extends FunSuite {
     object id extends LongColumn(this)
     object name extends TextColumn(this)
 
-    def fromRow(row: Row) = Group(id(row), name(row))
+    def fromRow(row: DefaultRow) = Group(id(row), name(row))
   }
 
   case class User(id: Long, name: String)
@@ -41,7 +41,7 @@ class RaceConditionTest extends FunSuite {
     object id extends LongColumn(this)
     object name extends TextColumn(this)
 
-    def fromRow(row: Row) = User(id(row), name(row))
+    def fromRow(row: DefaultRow) = User(id(row), name(row))
   }
 
   test("parallel tables instantiation") {

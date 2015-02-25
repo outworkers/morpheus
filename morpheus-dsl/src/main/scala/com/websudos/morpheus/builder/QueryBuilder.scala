@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.websudos.morpheus.query
+package com.websudos.morpheus.builder
 
 /**
  * The hierarchical implementation of operators is designed to account for potential variations between SQL databases.
@@ -152,6 +152,12 @@ abstract class AbstractSQLSyntax extends AbstractSQLKeys {
   val notBetween = "NOT BETWEEN"
   val exists = "EXISTS"
   val notExists = "NOT EXISTS"
+  val interval = "INTERVAL"
+
+
+  val greatest = "GREATEST"
+  val coalesce = "COALESCE"
+  val least = "LEAST"
   val on = "ON"
 
   val engine = "ENGINE"
@@ -284,12 +290,36 @@ private[morpheus] trait AbstractQueryBuilder {
       .forcePad.append(value)
   }
 
-  def in(name: String, values: List[String]): SQLBuiltQuery = {
-    SQLBuiltQuery(name).pad.append(operators.in).wrap(values.mkString(", "))
+  /**
+   * This is the "SELECT WHERE column IN (5, 10, 5)" query builder block.
+   * It allows for any traversable of strings to be passed as an argument for the values.
+   *
+   * This is done to enable a dual API, "table.select.where(_.column in List(5, 10, 5))".
+   * and alternatively "table.select.where(_.column in (10, 5, 10))"
+   *
+   * @param name The name of the column to match inside the "IN" operator list.
+   * @param values The collection of values to pass as an argument to the list of values.
+   * @tparam T A type argument requiring a view bound to a traversable.
+   * @return An SQL query.
+   */
+  def in[T <: TraversableOnce[String]](name: String, values: T): SQLBuiltQuery = {
+    SQLBuiltQuery(name).pad.append(operators.in).wrap(values)
   }
 
-  def notIn(name: String, values: List[String]): SQLBuiltQuery = {
-    SQLBuiltQuery(name).pad.append(operators.notIn).wrap(values.mkString(", "))
+  /**
+   * This is the "SELECT WHERE column NOT IN (5, 10, 5)" query builder block.
+   * It allows for any traversable of strings to be passed as an argument for the values.
+   *
+   * This is done to enable a dual API, "table.select.where(_.column notIn List(5, 10, 5))".
+   * and alternatively "table.select.where(_.column notIn (10, 5, 10))"
+   *
+   * @param name The name of the column to match inside the "NOT IN" operator list.
+   * @param values The collection of values to pass as an argument to the list of values.
+   * @tparam T A type argument requiring a view bound to a traversable.
+   * @return An SQL query.
+   */
+  def notIn[T <: TraversableOnce[String]](name: String, values: T): SQLBuiltQuery = {
+    SQLBuiltQuery(name).pad.append(operators.notIn).wrap(values)
   }
 
 
@@ -302,7 +332,7 @@ private[morpheus] trait AbstractQueryBuilder {
 
   def select(tableName: String, names: String*): SQLBuiltQuery = {
     SQLBuiltQuery(syntax.select)
-      .pad.append(names.mkString(" "))
+      .pad.append(names)
       .forcePad.append(syntax.from)
       .forcePad.appendEscape(tableName)
   }
@@ -378,9 +408,9 @@ private[morpheus] trait AbstractQueryBuilder {
   }
 
   def insert(qb: SQLBuiltQuery, columns: List[String], values: List[String]): SQLBuiltQuery = {
-    qb.wrap(columns.mkString(", "))
+    qb.wrapEscape(columns)
       .forcePad.append(syntax.values)
-      .wrap(values.mkString(", "))
+      .wrap(values)
   }
 
   def leftJoin(qb: SQLBuiltQuery, tableName: String): SQLBuiltQuery = {
@@ -427,12 +457,52 @@ private[morpheus] trait AbstractQueryBuilder {
     qb.pad.append(syntax.on).forcePad.append(clause)
   }
 
-  def exists(select: SQLBuiltQuery) = {
+  def exists(select: SQLBuiltQuery): SQLBuiltQuery = {
     SQLBuiltQuery(syntax.exists).wrap(select)
   }
 
-  def notExists(select: SQLBuiltQuery) = {
+  def notExists(select: SQLBuiltQuery): SQLBuiltQuery = {
     SQLBuiltQuery(syntax.notExists).wrap(select)
+  }
+
+  /**
+   * This will create a "SELECT INTERVAL (x1, x2, ..)" query.
+   * When this method is invoked, the arguments would've been already serialised and escaped.
+   * @param values The list of parameters to which to apply the "INTERVAL" operator to.
+   * @return An SQL query.
+   */
+  def interval(values: List[String]): SQLBuiltQuery = {
+    SQLBuiltQuery(syntax.interval).wrap(values)
+  }
+
+  /**
+   * This will create a "SELECT LEAST (x1, x2, ..)" query.
+   * When this method is invoked, the arguments would've been already serialised and escaped.
+   * @param values The list of parameters to which to apply the "LEAST" operator to.
+   * @return An SQL query.
+   */
+  def least(values: List[String]): SQLBuiltQuery = {
+    SQLBuiltQuery(syntax.least).wrap(values)
+  }
+
+  /**
+   * This will create a "SELECT GREATEST (x1, x2, ..)" query.
+   * When this method is invoked, the arguments would've been already serialised and escaped.
+   * @param values The list of parameters to which to apply the "GREATEST" operator to.
+   * @return An SQL query.
+   */
+  def greatest(values: List[String]): SQLBuiltQuery = {
+    SQLBuiltQuery(syntax.greatest).wrap(values)
+  }
+
+  /**
+   * This will create a "SELECT COALESCE (null, null, ..)" query.
+   * When this method is invoked, the arguments would've been already serialised and escaped.
+   * @param values The list of parameters to which to apply the "COALESCE" operator to.
+   * @return An SQL query.
+   */
+  def coalesce(values: List[String]): SQLBuiltQuery = {
+    SQLBuiltQuery(syntax.coalesce).wrap(values)
   }
 
   def ascii(value: String): SQLBuiltQuery = {
@@ -452,11 +522,11 @@ private[morpheus] trait AbstractQueryBuilder {
   }
 
   def concat(values: List[String]): SQLBuiltQuery = {
-    SQLBuiltQuery(operators.concat).wrap(values.mkString(", "))
+    SQLBuiltQuery(operators.concat).wrap(values)
   }
 
   def concatWs(values: List[String]): SQLBuiltQuery = {
-    SQLBuiltQuery(operators.concatWs).wrap(values.mkString(", "))
+    SQLBuiltQuery(operators.concatWs).wrap(values)
   }
 
   def bin(value: String): SQLBuiltQuery = {

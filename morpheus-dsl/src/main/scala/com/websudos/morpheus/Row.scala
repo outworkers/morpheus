@@ -17,37 +17,43 @@
 package com.websudos.morpheus
 
 import java.nio.ByteBuffer
+import java.util.Date
 
 import com.twitter.util.Future
+import org.joda.time.DateTime
 
 trait Row {
 
-  def get[A](name: String): A
+  def bool(name: String): Boolean = ???
 
-  def bool(name: String): Boolean = get[Boolean](name)
+  def byte(name: String): Byte = ???
 
-  def string(name: String): String = get[String](name)
+  def string(name: String): String = ???
 
-  def byteBuffer(name: String): ByteBuffer = get[ByteBuffer](name)
+  def byteBuffer(name: String): ByteBuffer = ???
 
-  def int(name: String): Int = get[Int](name)
+  def int(name: String): Int = ???
 
-  def double(name: String): Double = get[Double](name)
+  def double(name: String): Double = ???
 
-  def float(name: String): Float = get[Float](name)
+  def short(name: String): Short = ???
 
-  def long(name: String): Long = get[Long](name)
+  def date(name: String): Date = ???
 
-  def bigInt(name: String): BigInt = get[BigInt](name)
+  def datetime(name: String): DateTime = new DateTime(date(name))
 
-  def bigDecimal(name: String): BigDecimal = get[BigDecimal](name)
+  def float(name: String): Float = ???
+
+  def long(name: String): Long = ???
+
+  def bigDecimal(name: String): BigDecimal = ???
 }
 
 trait Result {}
 
-trait Client[+Row, Result] {
+trait Client[+DBRow, DBResult] {
 
-  def select[T](query: String)(f: Row => T): Future[Seq[T]]
+  def select[T](query: String)(f: DBRow => T): Future[Seq[T]]
 
-  def query(query: String): Future[Result]
+  def query(query: String): Future[DBResult]
 }

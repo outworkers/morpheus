@@ -16,7 +16,7 @@
 
 package com.websudos.morpheus.postgres
 
-import com.websudos.morpheus.query.{AbstractQueryBuilder, AbstractSQLSyntax, SQLOperatorSet }
+import com.websudos.morpheus.builder.{AbstractQueryBuilder, AbstractSQLSyntax, SQLOperatorSet}
 
 sealed class PostgresOperatorSet extends SQLOperatorSet {
 

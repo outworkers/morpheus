@@ -16,6 +16,7 @@
 
 package com.websudos.morpheus.query
 
+import com.websudos.morpheus.builder.{SQLBuiltQuery, DefaultQueryBuilder, DefaultSQLSyntax}
 import com.websudos.morpheus.{Row, SQLPrimitive}
 import com.websudos.morpheus.column.AbstractColumn
 
@@ -141,7 +142,17 @@ private[morpheus] abstract class AbstractQueryColumn[T: SQLPrimitive](col: Abstr
     QueryCondition(col.table.queryBuilder.in(col.name, values.map(primitive.toSQL)))
   }
 
+  def in(values: T*): QueryCondition = {
+    val primitive = implicitly[SQLPrimitive[T]]
+    QueryCondition(col.table.queryBuilder.in(col.name, values.map(primitive.toSQL)))
+  }
+
   def notIn(values: List[T]) : QueryCondition = {
+    val primitive = implicitly[SQLPrimitive[T]]
+    QueryCondition(col.table.queryBuilder.notIn(col.name, values.map(primitive.toSQL)))
+  }
+
+  def notIn(values: T*) : QueryCondition = {
     val primitive = implicitly[SQLPrimitive[T]]
     QueryCondition(col.table.queryBuilder.notIn(col.name, values.map(primitive.toSQL)))
   }

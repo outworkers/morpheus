@@ -16,12 +16,14 @@
 
 package com.websudos.morpheus.column
 
-import scala.annotation.implicitNotFound
+import java.util.Date
 
+import com.websudos.morpheus.builder.SQLBuiltQuery
 import com.websudos.morpheus.dsl.BaseTable
-import com.websudos.morpheus.query.SQLBuiltQuery
-import com.websudos.morpheus.{Row, SQLPrimitive, SQLPrimitives}
+import com.websudos.morpheus.{Row, SQLPrimitive}
+import org.joda.time.DateTime
 
+import scala.annotation.implicitNotFound
 
 private[morpheus] object KnownTypeLimits {
   val varcharLimit = 65536
@@ -31,15 +33,50 @@ private[morpheus] object KnownTypeLimits {
   val longTextLimit = 65536
 }
 
-
 @implicitNotFound(msg = "Type ${RR} must be a MySQL primitive")
-private[morpheus] class PrimitiveColumn[T <: BaseTable[T, R], R, @specialized(Int, Double, Float, Long) RR : SQLPrimitive](t: BaseTable[T, R])
-  extends Column[T, R, RR](t) {
+private[morpheus] class PrimitiveColumn[T <: BaseTable[T, R, TableRow], R, TableRow <: Row, @specialized(Int, Double, Float, Long) RR : SQLPrimitive](t: BaseTable[T,
+  R, TableRow]) extends Column[T, R, TableRow, RR](t) {
 
-  def sqlType: String = SQLPrimitives[RR].sqlType
-  def toQueryString(v: RR): String = SQLPrimitives[RR].toSQL(v)
+  def sqlType: String = implicitly[SQLPrimitive[RR]].sqlType
+
+  def toQueryString(v: RR): String = implicitly[SQLPrimitive[RR]].toSQL(v)
 
   def qb: SQLBuiltQuery = SQLBuiltQuery(name).pad.append(sqlType)
 
-  def optional(r: Row): Option[RR] = SQLPrimitives[RR].fromRow(r, name)
+  def optional(r: Row): Option[RR] = implicitly[SQLPrimitive[RR]].fromRow(r, name)
 }
+
+class AbstractLongColumn[
+  Owner <: BaseTable[Owner, Record, TableRow],
+  Record,
+  TableRow <: Row
+](table: BaseTable[Owner, Record, TableRow])(implicit ev: SQLPrimitive[Long])
+  extends PrimitiveColumn[Owner, Record, TableRow, Long](table)
+
+class AbstractDateColumn[
+  Owner <: BaseTable[Owner, Record, TableRow],
+  Record,
+  TableRow <: Row
+](table: BaseTable[Owner, Record, TableRow])(implicit ev: SQLPrimitive[Date])
+  extends PrimitiveColumn[Owner, Record, TableRow, Date](table)
+
+class AbstractDateTimeColumn[
+  Owner <: BaseTable[Owner, Record, TableRow],
+  Record,
+  TableRow <: Row
+](table: BaseTable[Owner, Record, TableRow])(implicit ev: SQLPrimitive[DateTime])
+  extends PrimitiveColumn[Owner, Record, TableRow, DateTime](table)
+
+class AbstractDoubleTimeColumn[
+  Owner <: BaseTable[Owner, Record, TableRow],
+  Record,
+  TableRow <: Row
+](table: BaseTable[Owner, Record, TableRow])(implicit ev: SQLPrimitive[Double])
+  extends PrimitiveColumn[Owner, Record, TableRow, Double](table)
+
+class AbstractFloatTimeColumn[
+  Owner <: BaseTable[Owner, Record, TableRow],
+  Record,
+  TableRow <: Row
+](table: BaseTable[Owner, Record, TableRow])(implicit ev: SQLPrimitive[Float])
+  extends PrimitiveColumn[Owner, Record, TableRow, Float](table)

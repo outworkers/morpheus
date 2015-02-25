@@ -16,7 +16,7 @@
 
 package com.websudos.morpheus.postgres
 
-import com.websudos.morpheus.query.AbstractSQLSyntax
+import com.websudos.morpheus.builder.AbstractSQLSyntax
 
 sealed trait PostgresSyntax extends AbstractSQLSyntax {}
 

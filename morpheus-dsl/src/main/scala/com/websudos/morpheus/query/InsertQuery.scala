@@ -15,11 +15,13 @@
  */
 package com.websudos.morpheus.query
 
-import scala.annotation.implicitNotFound
-
-import com.websudos.morpheus.{Row, SQLPrimitive}
+import com.websudos.morpheus.builder.{SQLBuiltQuery, AbstractSyntaxBlock, DefaultSQLSyntax, AbstractSQLSyntax}
 import com.websudos.morpheus.column.AbstractColumn
 import com.websudos.morpheus.dsl.BaseTable
+import com.websudos.morpheus.sql.DefaultRow
+import com.websudos.morpheus.{Row, SQLPrimitive}
+
+import scala.annotation.implicitNotFound
 
 private[morpheus] class RootInsertSyntaxBlock(query: String, tableName: String) extends AbstractSyntaxBlock {
 
@@ -27,14 +29,11 @@ private[morpheus] class RootInsertSyntaxBlock(query: String, tableName: String) 
 
   def into: SQLBuiltQuery = {
     qb.forcePad.append(syntax.into)
-      .forcePad.append(tableName)
+      .forcePad.appendEscape(tableName)
   }
 
   override def syntax: AbstractSQLSyntax = DefaultSQLSyntax
 }
-
-
-
 
 /**
  * This is the implementation of a root UPDATE query, a wrapper around an abstract syntax block.
@@ -48,28 +47,33 @@ private[morpheus] class RootInsertSyntaxBlock(query: String, tableName: String) 
  * @tparam T The type of the owning table.
  * @tparam R The type of the record.
  */
-private[morpheus] class RootInsertQuery[T <: BaseTable[T, _], R](val table: T, val st: RootInsertSyntaxBlock, val rowFunc: Row => R) {
+private[morpheus] class RootInsertQuery[T <: BaseTable[T, _, TableRow], R, TableRow <: Row](val table: T, val st: RootInsertSyntaxBlock, val rowFunc:
+TableRow => R) {
 
-  def fromRow(r: Row): R = rowFunc(r)
+  def fromRow(r: TableRow): R = rowFunc(r)
 
-  private[morpheus] def into: Query[T, R, InsertType, Ungroupped, Unordered, Unlimited, Unchainned, AssignUnchainned, Unterminated] = {
-    new Query(table, st.into, rowFunc)
+  private[morpheus] def into: InsertQuery[T, R, TableRow, Ungroupped, Unordered, Unlimited, Unchainned, AssignUnchainned, Unterminated] = {
+    new InsertQuery(table, st.into, rowFunc)
   }
 }
 
+private[morpheus] class DefaultRootInsertQuery[T <: BaseTable[T, _, DefaultRow], R]
+(table: T, st: RootInsertSyntaxBlock, rowFunc: DefaultRow => R)
+  extends RootInsertQuery[T, R, DefaultRow](table, st, rowFunc) {}
 
 
 
-class InsertQuery[T <: BaseTable[T, _],
+class InsertQuery[T <: BaseTable[T, _, TableRow],
   R,
-  Type <: QueryType,
+  TableRow <: Row,
   Group <: GroupBind,
   Order <: OrderBind,
   Limit <: LimitBind,
   Chain <: ChainBind,
   AssignChain <: AssignBind,
   Status <: StatusBind
-  ](val query: Query[T, R, Type, Group, Order, Limit, Chain, AssignChain, Status], val statements: List[(String, String)] = Nil) {
+](table: T, query: SQLBuiltQuery, rowFunc: TableRow => R, val statements: List[(String, String)] = Nil, private[this] val added: Boolean = false) extends Query[T, R,
+  TableRow, Group, Order, Limit, Chain, AssignChain, Status](table, query, rowFunc) {
 
 
   /**
@@ -83,9 +87,6 @@ class InsertQuery[T <: BaseTable[T, _],
    * @param obj The object is the value to use for the column.
    * @param primitive The primitive is the SQL primitive that converts the object into an SQL Primitive. Since the user cannot deal with types that are not
    *                  "marked" as SQL primitives for the particular database in use, we use a simple context bound to enforce this constraint.
-   * @param ev The first evidence parameter is a restriction upon the Type phantom type and it tests if the Query is an Insert query. This prevents the user
-   *           from jumping around with the implicit conversion mechanism and converting an Update query to an implicit and so on. It also allows us to
-   *           guarantee the MySQL syntax is followed with respect to what methods are available on certain types of queries, all with a single Query class.
    * @param ev1 The second evidence parameter is a restriction upon the status of a Query. Certain "exit" points mark the serialisation as Terminated with
    *            respect to the SQL syntax in use. It's a way of saying: there are no further options possible according to the DB you are using.
    * @tparam RR The SQL primitive or rather it's Scala correspondent to use at this time.
@@ -95,19 +96,22 @@ class InsertQuery[T <: BaseTable[T, _],
     "value calls than columns in your table, which would result in an invalid MySQL query.")
   final def value[RR](insertion: T => AbstractColumn[RR], obj: RR)(
     implicit primitive: SQLPrimitive[RR],
-    ev: Type =:= InsertType,
     ev1: Status =:= Unterminated
-    ): InsertQuery[T, R, Type, Group, Order, Limit, Chain, AssignChain, Unterminated] = {
+    ): InsertQuery[T, R, TableRow, Group, Order, Limit, Chain, AssignChain, Unterminated] = {
 
-    new InsertQuery[T, R, Type, Group, Order, Limit, Chain, AssignChain, Unterminated](
-      new Query[T, R, Type, Group, Order, Limit, Chain, AssignChain, Unterminated](
-        query.table,
-        query.query,
-        query.fromRow
-      ), Tuple2(insertion(query.table).name,
-        primitive.toSQL(obj)) :: statements
+    new InsertQuery[T, R, TableRow, Group, Order, Limit, Chain, AssignChain, Unterminated](
+        table, query, fromRow, Tuple2(insertion(table).name, primitive.toSQL(obj)) :: statements
     )
+  }
 
+  override def queryString: String = {
+    if (added) {
+      queryString
+    } else {
+      val columns = statements.reverse.map(_._1)
+      val values = statements.reverse.map(_._2)
+      table.queryBuilder.insert(query, columns, values).queryString
+    }
   }
 
   /**
@@ -119,12 +123,10 @@ class InsertQuery[T <: BaseTable[T, _],
    * illegal programming states unrepresentable.
    * @return A terminat Query, ready for execution.
    */
-  private[morpheus] def toQuery: Query[T, R, Type, Group, Order, Limit, Chain, AssignChain, Terminated] = {
-
+  private[morpheus] def toQuery: InsertQuery[T, R, TableRow, Group, Order, Limit, Chain, AssignChain, Terminated] = {
     val columns = statements.reverse.map(_._1)
     val values = statements.reverse.map(_._2)
-
-    new Query(query.table, query.table.queryBuilder.insert(query.query, columns, values), query.fromRow)
+    new InsertQuery(table, table.queryBuilder.insert(query, columns, values), fromRow, statements, true)
   }
 
 

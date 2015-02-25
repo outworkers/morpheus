@@ -52,6 +52,11 @@ class InFlightOperatorsTest extends FlatSpec with Matchers {
   }
 
   it should "serialise a CONCAT clause to the appropiate select query" in {
-    BasicTable.select(_ => concat("A", "B", "C", "D")).queryString shouldEqual "SELECT CONCAT ('A', 'B', 'C', 'D') FROM 'BasicTable'"
+    rootSelectQueryToSelectQuery(BasicTable.select(_ => concat("A", "B", "C", "D"))).queryString shouldEqual "SELECT CONCAT ('A', 'B', 'C', 'D') FROM " +
+      "'BasicTable'"
+  }
+
+  it should "serialise an INTERVAL operator clause to a select query" in {
+    rootSelectQueryToSelectQuery(BasicTable.select(_ => interval(5, 5, 10))).queryString shouldEqual "SELECT INTERVAL (5, 5, 10) FROM 'BasicTable'"
   }
 }

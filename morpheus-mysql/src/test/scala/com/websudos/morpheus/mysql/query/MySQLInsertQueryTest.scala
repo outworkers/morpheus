@@ -20,7 +20,7 @@ import org.scalatest.{FlatSpec, Matchers}
 
 import com.websudos.morpheus.mysql.tables.BasicTable
 
-class MySQLInsertQueryTest extends FlatSpec with Matchers {
+class  MySQLInsertQueryTest extends FlatSpec with Matchers {
   it should "serialise an INSERT IGNORE INTO query to the correct query" in {
     BasicTable.insert.ignore.queryString shouldEqual "INSERT IGNORE INTO BasicTable"
   }

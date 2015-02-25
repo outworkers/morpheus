@@ -17,11 +17,9 @@
 package com.websudos.morpheus
 
 import java.util.Date
-
 import org.joda.time.DateTime
 
-import com.websudos.morpheus.query.{DefaultQueryBuilder, DefaultSQLDataTypes}
-import com.twitter.util.Try
+import com.websudos.morpheus.builder.{DefaultQueryBuilder, DefaultSQLDataTypes}
 
 case class InvalidTypeDefinitionException(msg: String = "Invalid SQL type declared for column") extends RuntimeException(msg)
 
@@ -59,9 +57,11 @@ trait SQLPrimitive[T] {
 class DefaultIntPrimitive extends SQLPrimitive[Int] {
   override def sqlType: String = DefaultSQLDataTypes.int
 
-  override def toSQL(value: Int): String = value.toString
+  override def toSQL(value: Int): String = {
+    value.toString
+  }
 
-  def fromRow(row: Row, name: String): Option[Int] = Try(row.int(name)).toOption
+  def fromRow(row: Row, name: String): Option[Int] = Some(row.int(name))
 }
 
 class DefaultFloatPrimitive extends SQLPrimitive[Float] {
@@ -69,7 +69,7 @@ class DefaultFloatPrimitive extends SQLPrimitive[Float] {
 
   override def toSQL(value: Float): String = value.toString
 
-  def fromRow(row: Row, name: String): Option[Float] = Try(row.float(name)).toOption
+  def fromRow(row: Row, name: String): Option[Float] = Some(row.float(name))
 }
 
 class DefaultDoublePrimitive extends SQLPrimitive[Double] {
@@ -77,7 +77,7 @@ class DefaultDoublePrimitive extends SQLPrimitive[Double] {
 
   override def toSQL(value: Double): String = value.toString
 
-  def fromRow(row: Row, name: String): Option[Double] = Try(row.double(name)).toOption
+  def fromRow(row: Row, name: String): Option[Double] = Some(row.double(name))
 }
 
 class DefaultLongPrimitive extends SQLPrimitive[Long] {
@@ -85,7 +85,7 @@ class DefaultLongPrimitive extends SQLPrimitive[Long] {
 
   override def toSQL(value: Long): String = value.toString
 
-  def fromRow(row: Row, name: String): Option[Long] = Try(row.long(name)).toOption
+  def fromRow(row: Row, name: String): Option[Long] = Some(row.long(name))
 }
 
 class DefaultDatePrimitive extends SQLPrimitive[Date] {
@@ -93,7 +93,7 @@ class DefaultDatePrimitive extends SQLPrimitive[Date] {
 
   def toSQL(value: Date): String = value.toString
 
-  def fromRow(row: Row, name: String): Option[Date] = Try(new Date(row.long(name))).toOption
+  def fromRow(row: Row, name: String): Option[Date] = Some(row.date(name))
 }
 
 class DefaultDateTimePrimitive extends SQLPrimitive[DateTime] {
@@ -101,7 +101,7 @@ class DefaultDateTimePrimitive extends SQLPrimitive[DateTime] {
 
   def toSQL(value: DateTime): String = value.toString
 
-  def fromRow(row: Row, name: String): Option[DateTime] = Try(new DateTime(row.long(name))).toOption
+  def fromRow(row: Row, name: String): Option[DateTime] = Some(row.datetime(name))
 }
 
 class DefaultStringPrimitive extends SQLPrimitive[String] {
@@ -110,42 +110,23 @@ class DefaultStringPrimitive extends SQLPrimitive[String] {
 
   override def toSQL(value: String): String = DefaultQueryBuilder.escape(value)
 
-  def fromRow(row: Row, name: String): Option[String] = Try(row.string(name)).toOption
-}
-
-trait DefaultSQLPrimitives {
-
-  implicit def IntPrimitive: SQLPrimitive[Int]
-
-  implicit def StringPrimitive: SQLPrimitive[String]
-
-  implicit def FloatPrimitive: SQLPrimitive[Float]
-
-  implicit def DatePrimitive: SQLPrimitive[Date]
-
-  implicit def DateTimePrimitive: SQLPrimitive[DateTime]
-
-  implicit def DoublePrimitive: SQLPrimitive[Double]
-
-  implicit def LongPrimitive: SQLPrimitive[Long]
+  def fromRow(row: Row, name: String): Option[String] = {
+    Some(row.string(name))
+  }
 }
 
 trait MaterialisedPrimitives {
-  implicit object IntPrimitive extends DefaultIntPrimitive
+  implicit case object IntPrimitive extends DefaultIntPrimitive
 
-  implicit object StringPrimitive extends DefaultStringPrimitive
+  implicit case object StringPrimitive extends DefaultStringPrimitive
 
-  implicit object FloatPrimitive extends DefaultFloatPrimitive
+  implicit case object FloatPrimitive extends DefaultFloatPrimitive
 
-  implicit object DatePrimitive extends DefaultDatePrimitive
+  implicit case object DatePrimitive extends DefaultDatePrimitive
 
-  implicit object DateTimePrimitive extends DefaultDateTimePrimitive
+  implicit case object DateTimePrimitive extends DefaultDateTimePrimitive
 
-  implicit object DoublePrimitive extends DefaultDoublePrimitive
+  implicit case object DoublePrimitive extends DefaultDoublePrimitive
 
-  implicit object LongPrimitive extends DefaultLongPrimitive
-}
-
-object SQLPrimitives extends MaterialisedPrimitives {
-  def apply[T : SQLPrimitive]: SQLPrimitive[T] = implicitly[SQLPrimitive[T]]
+  implicit case object LongPrimitive extends DefaultLongPrimitive
 }
