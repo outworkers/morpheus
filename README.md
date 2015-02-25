@@ -2,9 +2,9 @@ morpheus [NOT PRODUCTION READY][![Build Status](https://travis-ci.org/websudos/m
 
 ========================================================================================================================================================================================================================
 
-![Morpheus](http://websudos.com/images/work/morpheus.png "Morpheus")
+![morpheus](https://s3-eu-west-1.amazonaws.com/websudos/oss/logos/morpheus.png "Websudos Morpheus")
 
-To stay up-to-date with our latest releases and news, follow us on Twitter: @websudos.
+To stay up-to-date with our latest releases and news, follow us on Twitter: (@websudos)[https://twitter.com/websudos].
 
 Named after the Greek God of Dreams, morpheus is a reactive type-safe Scala DSL for MySQL, Postgres, MSSQL,
 MariaDB, Oracle and Sybase. We choose this name as it is the dream DSL for any Scala/SQL user, finessed to perfection up to the Websudos quality standard
