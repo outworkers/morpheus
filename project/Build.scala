@@ -11,18 +11,20 @@ object Build extends Build {
   val FinaglePostgres = "0.1.0-SNAPSHOT"
   val FinagleZkVersion = "6.24.0"
   val ShapelessVersion = "2.2.0-RC4"
-  val DieselEngineVersion = "0.2.1"
+  val DieselEngineVersion = "0.2.2"
 
   val bintrayPublishing: Seq[Def.Setting[_]] = Seq(
     publishMavenStyle := true,
     bintray.BintrayKeys.bintrayOrganization := Some("websudos"),
     bintray.BintrayKeys.bintrayRepository := "oss-releases",
     bintray.BintrayKeys.bintrayReleaseOnPublish := true,
+    publishArtifact in (Compile, packageSrc) := false,
+    publishArtifact in (Test, packageSrc) := false,
     publishArtifact in Test := false,
     pomIncludeRepository := { _ => true},
     licenses += ("Apache-2.0", url("https://www.apache.org/licenses/LICENSE-2.0"))
   )
-
+§
   val mavenPublishSettings : Seq[Def.Setting[_]] = Seq(
     credentials += Credentials(Path.userHome / ".ivy2" / ".credentials"),
     publishMavenStyle := true,
@@ -68,7 +70,7 @@ object Build extends Build {
   val sharedSettings: Seq[Def.Setting[_]] = Seq(
     organization := "com.websudos",
     version := "0.2.0",
-    scalaVersion := "2.11.6",
+    scalaVersion := "2.10.5",
     crossScalaVersions := Seq("2.10.5", "2.11.6"),
     resolvers ++= Seq(
       "Typesafe repository snapshots" at "http://repo.typesafe.com/typesafe/snapshots/",
@@ -134,8 +136,7 @@ object Build extends Build {
   lazy val morpheusMySQL = Project(
     id = "morpheus-mysql",
     base = file("morpheus-mysql"),
-    settings = Defaults.coreDefaultSettings ++
-      sharedSettings
+    settings = Defaults.coreDefaultSettings ++ sharedSettings
   ).settings(
     name := "morpheus-mysql",
     libraryDependencies ++= Seq(
@@ -143,7 +144,7 @@ object Build extends Build {
     )
   ).dependsOn(
     morpheusDsl,
-      morpheusTestkit % "test, provided"
+    morpheusTestkit % "test, provided"
   )
 
   lazy val morpheusPostgres = Project(
