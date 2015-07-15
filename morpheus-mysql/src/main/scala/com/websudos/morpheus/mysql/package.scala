@@ -42,5 +42,8 @@ package object mysql extends DefaultImportsDefinition
     )
   }
 
+  type Row = com.websudos.morpheus.mysql.MySQLRow
+  type Result = com.websudos.morpheus.mysql.MySQLResult
+
   type Table[Owner <: BaseTable[Owner, Record, MySQLRow], Record] = com.websudos.morpheus.mysql.MySQLTable[Owner, Record]
 }

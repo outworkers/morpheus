@@ -32,8 +32,6 @@ trait MySQLKeys {
 }
 
 trait MySQLPrimitiveColumns {
-  class LongColumn[T <: BaseTable[T, R, MySQLRow], R](t: BaseTable[T, R, MySQLRow])(implicit ev: SQLPrimitive[Long])
-    extends AbstractLongColumn[T, R, MySQLRow](t)
 
   class IntColumn[T <: BaseTable[T, R, MySQLRow], R](t: BaseTable[T, R, MySQLRow], limit: Int = 0)(implicit ev: SQLPrimitive[Int])
     extends AbstractIntColumn[T, R, MySQLRow](t, limit)

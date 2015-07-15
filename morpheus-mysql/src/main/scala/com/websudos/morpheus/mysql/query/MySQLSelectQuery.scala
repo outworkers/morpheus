@@ -31,67 +31,47 @@ private[morpheus] class MySQLSelectSyntaxBlock(
   columns: List[String] = List("*")) extends AbstractSelectSyntaxBlock(query, tableName, columns) {
   override val syntax = MySQLSyntax
 
-  def distinctRow: SQLBuiltQuery = {
-    qb.pad.append(syntax.distinctRow)
+  private[this] def selector(quantifier: String, columns: List[String], table: String): SQLBuiltQuery = {
+    qb.pad.append(quantifier)
       .pad.append(columns.mkString(", "))
       .pad.append(syntax.from)
       .pad.appendEscape(tableName)
+  }
+
+  def distinctRow: SQLBuiltQuery = {
+    selector(syntax.SelectOptions.distinctRow, columns, tableName)
   }
 
   def highPriority: SQLBuiltQuery = {
-    qb.pad.append(syntax.highPriority)
-      .pad.append(columns.mkString(", "))
-      .pad.append(syntax.from)
-      .pad.appendEscape(tableName)
+    selector(syntax.Priorities.highPriority, columns, tableName)
   }
 
   def straightJoin: SQLBuiltQuery = {
-    qb.pad.append(syntax.straightJoin)
-      .pad.append(columns.mkString(", "))
-      .pad.append(syntax.from)
-      .pad.appendEscape(tableName)
+    selector(syntax.SelectOptions.straightJoin, columns, tableName)
   }
 
   def sqlSmallResult: SQLBuiltQuery = {
-    qb.pad.append(syntax.sqlSmallResult)
-      .pad.append(columns.mkString(", "))
-      .pad.append(syntax.from)
-      .pad.appendEscape(tableName)
+    selector(syntax.SelectOptions.sqlSmallResult, columns, tableName)
   }
 
   def sqlBigResult: SQLBuiltQuery = {
-    qb.pad.append(syntax.sqlBigResult)
-      .pad.append(columns.mkString(", "))
-      .pad.append(syntax.from)
-      .pad.appendEscape(tableName)
+    selector(syntax.SelectOptions.sqlBigResult, columns, tableName)
   }
 
   def sqlBufferResult: SQLBuiltQuery = {
-    qb.pad.append(syntax.sqlBufferResult)
-      .pad.append(columns.mkString(", "))
-      .pad.append(syntax.from)
-      .pad.appendEscape(tableName)
+    selector(syntax.SelectOptions.sqlBufferResult, columns, tableName)
   }
 
   def sqlCache: SQLBuiltQuery = {
-    qb.pad.append(syntax.sqlCache)
-      .pad.append(columns.mkString(", "))
-      .pad.append(syntax.from)
-      .pad.appendEscape(tableName)
+    selector(syntax.SelectOptions.sqlCache, columns, tableName)
   }
 
   def sqlNoCache: SQLBuiltQuery = {
-    qb.pad.append(syntax.sqlNoCache)
-      .pad.append(columns.mkString(", "))
-      .pad.append(syntax.from)
-      .pad.appendEscape(tableName)
+    selector(syntax.SelectOptions.sqlNoCache, columns, tableName)
   }
 
   def sqlCalcFoundRows: SQLBuiltQuery = {
-    qb.pad.append(syntax.sqlCalcFoundRows)
-      .pad.append(columns.mkString(", "))
-      .pad.append(syntax.from)
-      .pad.appendEscape(tableName)
+    selector(syntax.SelectOptions.sqlCalcFoundRows, columns, tableName)
   }
 }
 

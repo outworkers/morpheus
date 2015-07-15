@@ -20,11 +20,12 @@ import com.websudos.morpheus.mysql.tables.BasicRecord
 import com.websudos.util.testing._
 
 package object db {
+
   implicit object BasicRecordSample extends Sample[BasicRecord] {
     def sample: BasicRecord = {
       BasicRecord(
         gen[String],
-        gen[Long]
+        gen[Int]
       )
     }
   }

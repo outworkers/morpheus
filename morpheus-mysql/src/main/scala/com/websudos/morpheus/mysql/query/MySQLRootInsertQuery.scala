@@ -19,32 +19,32 @@ package com.websudos.morpheus.mysql.query
 import com.websudos.morpheus.builder.SQLBuiltQuery
 import com.websudos.morpheus.mysql._
 import com.websudos.morpheus.query._
+import com.websudos.morpheus.query.parts.{LightweightPart, ValuePart, Defaults, ColumnsPart}
 
 private[morpheus] class MySQLInsertSyntaxBlock(query: String, tableName: String) extends RootInsertSyntaxBlock(query, tableName) {
   override val syntax = MySQLSyntax
 
-  def delayed: SQLBuiltQuery = {
-    qb.pad.append(syntax.delayed)
+  private[this] def insertOption(option: String, table: String): SQLBuiltQuery = {
+    qb.pad.append(option)
       .forcePad.append(syntax.into)
-      .forcePad.append(tableName)
+      .forcePad.append(table)
+  }
+
+
+  def delayed: SQLBuiltQuery = {
+    insertOption(syntax.InsertOptions.delayed, tableName)
   }
 
   def lowPriority: SQLBuiltQuery = {
-    qb.pad.append(syntax.lowPriority)
-      .forcePad.append(syntax.into)
-      .forcePad.append(tableName)
+    insertOption(syntax.Priorities.lowPriority, tableName)
   }
 
   def highPriority: SQLBuiltQuery = {
-    qb.pad.append(syntax.highPriority)
-      .forcePad.append(syntax.into)
-      .forcePad.append(tableName)
+    insertOption(syntax.Priorities.highPriority, tableName)
   }
 
   def ignore: SQLBuiltQuery = {
-    qb.pad.append(syntax.ignore)
-      .forcePad.append(syntax.into)
-      .forcePad.append(tableName)
+    insertOption(syntax.InsertOptions.ignore, tableName)
   }
 }
 
@@ -78,7 +78,10 @@ class MySQLInsertQuery[T <: BaseTable[T, _, MySQLRow],
   Chain <: ChainBind,
   AssignChain <: AssignBind,
   Status <: StatusBind
-](table: T, query: SQLBuiltQuery, rowFunc: MySQLRow => R)
-  extends InsertQuery[T, R, MySQLRow, Group, Order, Limit, Chain, AssignChain, Status](table: T, query, rowFunc) {
-
-}
+](table: T,
+  override val init: SQLBuiltQuery,
+  rowFunc: MySQLRow => R,
+  columnsPart: ColumnsPart = Defaults.EmptyColumnsPart,
+  valuePart: ValuePart = Defaults.EmptyValuePart,
+  lightweightPart: LightweightPart = Defaults.EmptyLightweightPart
+) extends InsertQuery[T, R, MySQLRow, Group, Order, Limit, Chain, AssignChain, Status](table: T, init, rowFunc) {}

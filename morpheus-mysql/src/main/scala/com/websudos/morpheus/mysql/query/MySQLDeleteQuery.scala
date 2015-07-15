@@ -24,22 +24,23 @@ case class MySQLDeleteSyntaxBlock(query: String, tableName: String) extends Root
 
   override val syntax = MySQLSyntax
 
-  def lowPriority: SQLBuiltQuery = {
-    qb.pad.append(syntax.lowPriority)
+  private[this] def deleteOption(option: String, table: String): SQLBuiltQuery = {
+    qb.pad.append(option)
       .forcePad.append(DefaultSQLSyntax.from)
-      .forcePad.append(tableName)
+      .forcePad.append(table)
+  }
+
+
+  def lowPriority: SQLBuiltQuery = {
+    deleteOption(syntax.Priorities.lowPriority, tableName)
   }
 
   def ignore: SQLBuiltQuery = {
-    qb.pad.append(syntax.ignore)
-      .forcePad.append(DefaultSQLSyntax.from)
-      .forcePad.append(tableName)
+    deleteOption(syntax.DeleteOptions.ignore, tableName)
   }
 
   def quick: SQLBuiltQuery = {
-    qb.pad.append(syntax.quick)
-      .forcePad.append(DefaultSQLSyntax.from)
-      .forcePad.append(tableName)
+    deleteOption(syntax.DeleteOptions.quick, tableName)
   }
 }
 
