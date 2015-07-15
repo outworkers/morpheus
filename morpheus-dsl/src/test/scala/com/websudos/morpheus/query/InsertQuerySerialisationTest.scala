@@ -24,31 +24,23 @@ import com.websudos.morpheus.sql._
 class InsertQuerySerialisationTest extends FlatSpec with Matchers {
 
   it should "serialise an INSERT INTO query to the correct query and convert using an implicit" in {
-    BasicTable.insert.queryString shouldEqual "INSERT INTO BasicTable"
+    BasicTable.insert.queryString shouldEqual "INSERT INTO `BasicTable`;"
   }
 
   it should "serialise an INSERT INTO query to the correct query" in {
-    BasicTable.insert.into.queryString shouldEqual "INSERT INTO BasicTable"
-  }
-
-  it should "count statements correctly" in {
-    BasicTable.insert
-      .value(_.count, 5L)
-      .statements.size shouldEqual 1
-
-    BasicTable.columns.size shouldEqual 2
+    BasicTable.insert.into.queryString shouldEqual "INSERT INTO `BasicTable`;"
   }
 
   it should "serialise an INSERT query with a single value defined" in {
     BasicTable.insert
       .value(_.count, 5L)
-      .queryString shouldEqual "INSERT INTO BasicTable (count) VALUES (5)"
+      .queryString shouldEqual "INSERT INTO `BasicTable` (count) VALUES(5);"
   }
 
   it should "serialise an INSERT query with multiple values defined" in {
     BasicTable.insert
       .value(_.count, 5L)
       .value(_.name, "test")
-      .queryString shouldEqual "INSERT INTO BasicTable (count, name) VALUES (5, 'test')"
+      .queryString shouldEqual "INSERT INTO `BasicTable` (count, name) VALUES(5, 'test');"
   }
 }

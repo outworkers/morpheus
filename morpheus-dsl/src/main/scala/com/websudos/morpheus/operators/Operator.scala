@@ -164,7 +164,7 @@ sealed class IntervalOperator extends Operator {
   }
 
   final def apply[T](values: T*)(implicit ev: SQLPrimitive[T], ev2: SQLPrimitive[String]): SelectOperatorClause[String] = {
-    apply(values.toList.map(implicitly[SQLPrimitive[T]].toSQL))
+    apply(values.toList)
   }
 }
 

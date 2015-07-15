@@ -25,87 +25,87 @@ class MySQLDeleteQueryTest extends FlatSpec with Matchers {
 
   it should "serialise a simple DELETE LOW_PRIORITY query" in {
     BasicTable.delete
-      .lowPriority.queryString shouldEqual "DELETE LOW_PRIORITY FROM BasicTable"
+      .lowPriority.queryString shouldEqual "DELETE LOW_PRIORITY FROM BasicTable;"
   }
 
   it should  "serialise a simple DELETE LOW_PRIORITY where query" in {
     BasicTable.delete
       .lowPriority
-      .where(_.name eqs "test").queryString shouldEqual "DELETE LOW_PRIORITY FROM BasicTable WHERE name = 'test'"
+      .where(_.name eqs "test").queryString shouldEqual "DELETE LOW_PRIORITY FROM BasicTable WHERE name = 'test';"
   }
 
   it should "serialise an DELETE LOW_PRIORITY query with an < operator" in {
     BasicTable.delete
       .lowPriority
-      .where(_.count < 5).queryString shouldEqual "DELETE LOW_PRIORITY FROM BasicTable WHERE count < 5"
+      .where(_.count < 5).queryString shouldEqual "DELETE LOW_PRIORITY FROM BasicTable WHERE count < 5;"
   }
 
   it should "serialise an DELETE LOW_PRIORITY query with an lt operator" in {
     BasicTable.delete
       .lowPriority
-      .where(_.count lt 5).queryString shouldEqual "DELETE LOW_PRIORITY FROM BasicTable WHERE count < 5"
+      .where(_.count lt 5).queryString shouldEqual "DELETE LOW_PRIORITY FROM BasicTable WHERE count < 5;"
   }
 
   it should "serialise an DELETE LOW_PRIORITY query with an <= operator" in {
     BasicTable.delete
       .lowPriority
-      .where(_.count <= 5).queryString shouldEqual "DELETE LOW_PRIORITY FROM BasicTable WHERE count <= 5"
+      .where(_.count <= 5).queryString shouldEqual "DELETE LOW_PRIORITY FROM BasicTable WHERE count <= 5;"
   }
 
   it should "serialise an DELETE LOW_PRIORITY query with an lte operator" in {
     BasicTable.delete
       .lowPriority
-      .where(_.count lte 5).queryString shouldEqual "DELETE LOW_PRIORITY FROM BasicTable WHERE count <= 5"
+      .where(_.count lte 5).queryString shouldEqual "DELETE LOW_PRIORITY FROM BasicTable WHERE count <= 5;"
   }
 
   it should "serialise an DELETE LOW_PRIORITY query with a gt operator" in {
     BasicTable.delete
       .lowPriority
-      .where(_.count gt 5).queryString shouldEqual "DELETE LOW_PRIORITY FROM BasicTable WHERE count > 5"
+      .where(_.count gt 5).queryString shouldEqual "DELETE LOW_PRIORITY FROM BasicTable WHERE count > 5;"
   }
 
   it should "serialise an DELETE LOW_PRIORITY query with a > operator" in {
     BasicTable.delete
       .lowPriority
-      .where(_.count > 5).queryString shouldEqual "DELETE LOW_PRIORITY FROM BasicTable WHERE count > 5"
+      .where(_.count > 5).queryString shouldEqual "DELETE LOW_PRIORITY FROM BasicTable WHERE count > 5;"
   }
 
   it should "serialise an DELETE LOW_PRIORITY query with a gte operator" in {
     BasicTable.delete
       .lowPriority
-      .where(_.count gte 5).queryString shouldEqual "DELETE LOW_PRIORITY FROM BasicTable WHERE count >= 5"
+      .where(_.count gte 5).queryString shouldEqual "DELETE LOW_PRIORITY FROM BasicTable WHERE count >= 5;"
   }
 
   it should "serialise an DELETE LOW_PRIORITY query with a >= operator" in {
     BasicTable.delete
       .lowPriority
-      .where(_.count >= 5).queryString shouldEqual "DELETE LOW_PRIORITY FROM BasicTable WHERE count >= 5"
+      .where(_.count >= 5).queryString shouldEqual "DELETE LOW_PRIORITY FROM BasicTable WHERE count >= 5;"
   }
 
   it should "serialise a simple DELETE LOW_PRIORITY assignments query" in {
     BasicTable.delete
       .lowPriority
-      .queryString shouldEqual "DELETE LOW_PRIORITY FROM BasicTable"
+      .queryString shouldEqual "DELETE LOW_PRIORITY FROM BasicTable;"
   }
 
   it should "serialise a simple DELETE LOW_PRIORITY assignments query with a single where clause" in {
     BasicTable.delete
       .lowPriority
-      .where(_.count eqs 15).queryString shouldEqual "DELETE LOW_PRIORITY FROM BasicTable WHERE count = 15"
+      .where(_.count eqs 15).queryString shouldEqual "DELETE LOW_PRIORITY FROM BasicTable WHERE count = 15;"
   }
 
   it should "serialise a multiple assignments DELETE LOW_PRIORITY  query with a single where clause" in {
     BasicTable.delete
       .lowPriority
       .where(_.name eqs "test")
-      .queryString shouldEqual "DELETE LOW_PRIORITY FROM BasicTable WHERE name = 'test'"
+      .queryString shouldEqual "DELETE LOW_PRIORITY FROM BasicTable WHERE name = 'test';"
   }
 
   it should  "serialise a simple DELETE LOW_PRIORITY where-and query" in {
     BasicTable.delete
       .lowPriority
       .where(_.name eqs "test")
-      .and(_.count eqs 5).queryString shouldEqual "DELETE LOW_PRIORITY FROM BasicTable WHERE name = 'test' AND count = 5"
+      .and(_.count eqs 5).queryString shouldEqual "DELETE LOW_PRIORITY FROM BasicTable WHERE name = 'test' AND count = 5;"
   }
 
   it should "serialise a conditional DELETE LOW_PRIORITY clause with an OR operator" in {
@@ -113,7 +113,7 @@ class MySQLDeleteQueryTest extends FlatSpec with Matchers {
       .lowPriority
       .where(_.name eqs "test")
       .and(t => { (t.count eqs 5) or (t.name eqs "test") })
-      .queryString shouldEqual "DELETE LOW_PRIORITY FROM BasicTable WHERE name = 'test' AND (count = 5 OR name = 'test')"
+      .queryString shouldEqual "DELETE LOW_PRIORITY FROM BasicTable WHERE name = 'test' AND (count = 5 OR name = 'test');"
   }
 
   it should "serialise a conditional DELETE LOW_PRIORITY clause with an a double WHERE-OR operator" in {
@@ -121,92 +121,92 @@ class MySQLDeleteQueryTest extends FlatSpec with Matchers {
       .lowPriority
       .where(t => { (t.count eqs 15) or (t.name eqs "test5") })
       .and(t => { (t.count eqs 5) or (t.name eqs "test") })
-      .queryString shouldEqual "DELETE LOW_PRIORITY FROM BasicTable WHERE (count = 15 OR name = 'test5') AND (count = 5 OR name = 'test')"
+      .queryString shouldEqual "DELETE LOW_PRIORITY FROM BasicTable WHERE (count = 15 OR name = 'test5') AND (count = 5 OR name = 'test');"
   }
 
   it should "serialise a simple DELETE IGNORE query" in {
     BasicTable.delete
-      .ignore.queryString shouldEqual "DELETE IGNORE FROM BasicTable"
+      .ignore.queryString shouldEqual "DELETE IGNORE FROM BasicTable;"
   }
 
   it should  "serialise a simple DELETE IGNORE where query" in {
     BasicTable.delete
       .ignore
-      .where(_.name eqs "test").queryString shouldEqual "DELETE IGNORE FROM BasicTable WHERE name = 'test'"
+      .where(_.name eqs "test").queryString shouldEqual "DELETE IGNORE FROM BasicTable WHERE name = 'test';"
   }
 
   it should "serialise an DELETE IGNORE query with an < operator" in {
     BasicTable.delete
       .ignore
-      .where(_.count < 5).queryString shouldEqual "DELETE IGNORE FROM BasicTable WHERE count < 5"
+      .where(_.count < 5).queryString shouldEqual "DELETE IGNORE FROM BasicTable WHERE count < 5;"
   }
 
   it should "serialise an DELETE IGNORE query with an lt operator" in {
     BasicTable.delete
       .ignore
-      .where(_.count lt 5).queryString shouldEqual "DELETE IGNORE FROM BasicTable WHERE count < 5"
+      .where(_.count lt 5).queryString shouldEqual "DELETE IGNORE FROM BasicTable WHERE count < 5;"
   }
 
   it should "serialise an DELETE IGNORE query with an <= operator" in {
     BasicTable.delete
       .ignore
-      .where(_.count <= 5).queryString shouldEqual "DELETE IGNORE FROM BasicTable WHERE count <= 5"
+      .where(_.count <= 5).queryString shouldEqual "DELETE IGNORE FROM BasicTable WHERE count <= 5;"
   }
 
   it should "serialise an DELETE IGNORE query with an lte operator" in {
     BasicTable.delete
       .ignore
-      .where(_.count lte 5).queryString shouldEqual "DELETE IGNORE FROM BasicTable WHERE count <= 5"
+      .where(_.count lte 5).queryString shouldEqual "DELETE IGNORE FROM BasicTable WHERE count <= 5;"
   }
 
   it should "serialise an DELETE IGNORE query with a gt operator" in {
     BasicTable.delete
       .ignore
-      .where(_.count gt 5).queryString shouldEqual "DELETE IGNORE FROM BasicTable WHERE count > 5"
+      .where(_.count gt 5).queryString shouldEqual "DELETE IGNORE FROM BasicTable WHERE count > 5;"
   }
 
   it should "serialise an DELETE IGNORE query with a > operator" in {
     BasicTable.delete
       .ignore
-      .where(_.count > 5).queryString shouldEqual "DELETE IGNORE FROM BasicTable WHERE count > 5"
+      .where(_.count > 5).queryString shouldEqual "DELETE IGNORE FROM BasicTable WHERE count > 5;"
   }
 
   it should "serialise an DELETE IGNORE query with a gte operator" in {
     BasicTable.delete
       .ignore
-      .where(_.count gte 5).queryString shouldEqual "DELETE IGNORE FROM BasicTable WHERE count >= 5"
+      .where(_.count gte 5).queryString shouldEqual "DELETE IGNORE FROM BasicTable WHERE count >= 5;"
   }
 
   it should "serialise an DELETE IGNORE query with a >= operator" in {
     BasicTable.delete
       .ignore
-      .where(_.count >= 5).queryString shouldEqual "DELETE IGNORE FROM BasicTable WHERE count >= 5"
+      .where(_.count >= 5).queryString shouldEqual "DELETE IGNORE FROM BasicTable WHERE count >= 5;"
   }
 
   it should "serialise a simple DELETE IGNORE assignments query" in {
     BasicTable.delete
       .ignore
-      .queryString shouldEqual "DELETE IGNORE FROM BasicTable"
+      .queryString shouldEqual "DELETE IGNORE FROM BasicTable;"
   }
 
   it should "serialise a simple DELETE IGNORE assignments query with a single where clause" in {
     BasicTable.delete
       .ignore
-      .where(_.count eqs 15).queryString shouldEqual "DELETE IGNORE FROM BasicTable WHERE count = 15"
+      .where(_.count eqs 15).queryString shouldEqual "DELETE IGNORE FROM BasicTable WHERE count = 15;"
   }
 
   it should "serialise a multiple assignments DELETE IGNORE  query with a single where clause" in {
     BasicTable.delete
       .ignore
       .where(_.name eqs "test")
-      .queryString shouldEqual "DELETE IGNORE FROM BasicTable WHERE name = 'test'"
+      .queryString shouldEqual "DELETE IGNORE FROM BasicTable WHERE name = 'test';"
   }
 
   it should  "serialise a simple DELETE IGNORE where-and query" in {
     BasicTable.delete
       .ignore
       .where(_.name eqs "test")
-      .and(_.count eqs 5).queryString shouldEqual "DELETE IGNORE FROM BasicTable WHERE name = 'test' AND count = 5"
+      .and(_.count eqs 5).queryString shouldEqual "DELETE IGNORE FROM BasicTable WHERE name = 'test' AND count = 5;"
   }
 
   it should "serialise a conditional DELETE IGNORE clause with an OR operator" in {
@@ -214,7 +214,7 @@ class MySQLDeleteQueryTest extends FlatSpec with Matchers {
       .ignore
       .where(_.name eqs "test")
       .and(t => { (t.count eqs 5) or (t.name eqs "test") })
-      .queryString shouldEqual "DELETE IGNORE FROM BasicTable WHERE name = 'test' AND (count = 5 OR name = 'test')"
+      .queryString shouldEqual "DELETE IGNORE FROM BasicTable WHERE name = 'test' AND (count = 5 OR name = 'test');"
   }
 
   it should "serialise a conditional DELETE IGNORE clause with an a double WHERE-OR operator" in {
@@ -222,6 +222,6 @@ class MySQLDeleteQueryTest extends FlatSpec with Matchers {
       .ignore
       .where(t => { (t.count eqs 15) or (t.name eqs "test5") })
       .and(t => { (t.count eqs 5) or (t.name eqs "test") })
-      .queryString shouldEqual "DELETE IGNORE FROM BasicTable WHERE (count = 15 OR name = 'test5') AND (count = 5 OR name = 'test')"
+      .queryString shouldEqual "DELETE IGNORE FROM BasicTable WHERE (count = 15 OR name = 'test5') AND (count = 5 OR name = 'test');"
   }
 }

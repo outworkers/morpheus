@@ -23,10 +23,7 @@ import com.websudos.morpheus.{Client, Result, Row}
 
 import scala.concurrent.{Future => ScalaFuture}
 
-object MySQLManager {
-}
-
-
+object MySQLManager
 
 
 trait SQLQuery[T <: BaseTable[T, _, TableRow], R, TableRow <: Row] extends ResultSetOperations {
@@ -37,7 +34,7 @@ trait SQLQuery[T <: BaseTable[T, _, TableRow], R, TableRow <: Row] extends Resul
    * This will serialise an existing query to the relevant SQL string.
    * @return A string representing the query encoded in SQL.
    */
-  def queryString: String = query.queryString
+  def queryString: String = query.appendIfAbsent(";").queryString
 
   /**
    * This method is used when the query is not returning a data result, such as an UPDATE query.
@@ -68,6 +65,7 @@ trait SQLQuery[T <: BaseTable[T, _, TableRow], R, TableRow <: Row] extends Resul
    */
   def execute[DBRow <: Row, DBResult <: Result]()(implicit  client: Client[DBRow, DBResult]): Future[DBResult] = {
     Console.println(s"Executing query $queryString")
+
     queryToFuture[DBRow, DBResult](queryString)
   }
 
@@ -75,6 +73,7 @@ trait SQLQuery[T <: BaseTable[T, _, TableRow], R, TableRow <: Row] extends Resul
 
 
 trait SQLResultsQuery[T <: BaseTable[T, _, DBRow], R, DBRow <: Row, DBResult <: Result, Limit <: LimitBind] extends SQLQuery[T, R, DBRow] {
+
   def fromRow(r: DBRow): R
 
   /**

@@ -25,20 +25,15 @@ import com.websudos.morpheus.mysql._
 import com.websudos.morpheus.mysql.tables.{BasicRecord, BasicTable}
 import com.websudos.util.testing._
 
-
 class InsertQueryDBTest extends FlatSpec with MySQLSuite with BeforeAndAfterAll with Matchers {
 
   override def beforeAll(): Unit = {
     super.beforeAll()
-    Console.println(BasicTable.create.ifNotExists.engine(InnoDB).queryString)
     Await.ready(BasicTable.create.ifNotExists.engine(InnoDB).future(), 3.seconds)
   }
 
   it should "store a record in the database and retrieve it by id" in {
     val sample = gen[BasicRecord]
-
-    Console.println(BasicTable.select.where(_.name eqs sample.name).queryString)
-    Console.println(BasicTable.insert.value(_.name, sample.name).value(_.count, sample.count).queryString)
 
     val chain = for {
       store <- BasicTable.insert.value(_.name, sample.name).value(_.count, sample.count).future()
