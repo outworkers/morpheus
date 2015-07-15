@@ -23,6 +23,8 @@ branches:
     - master
     - develop
 
+sudo: false
+
 jdk:
   - oraclejdk7
   - openjdk7
