@@ -20,7 +20,9 @@ import com.twitter.conversions.time._
 import com.twitter.finagle.exp.Mysql
 import com.twitter.util.Await
 import com.websudos.morpheus.Client
-import com.websudos.morpheus.mysql.{MySQLResult, MySQLRow, MySQLClient}
+import com.websudos.morpheus.mysql.{MySQLClient, MySQLResult, MySQLRow}
+import org.scalatest.concurrent.{AsyncAssertions, PatienceConfiguration, ScalaFutures}
+import org.scalatest.time.{Seconds, Span}
 
 object MySQLConnector {
 
@@ -38,8 +40,12 @@ object MySQLConnector {
 }
 
 
-trait MySQLSuite {
+trait MySQLSuite extends AsyncAssertions with ScalaFutures {
+
   implicit lazy val client: Client[MySQLRow, MySQLResult] = new MySQLClient(MySQLConnector.client)
+
+  implicit def patience: PatienceConfiguration.Timeout = timeout(Span(5L, Seconds))
 }
+
 // CREATE USER 'morpheus'@'localhost' IDENTIFIED BY 'morpheus23!';
 // GRANT ALL PRIVILEGES ON * . * TO 'morpheus'@'localhost';

@@ -22,18 +22,18 @@ import com.websudos.morpheus.mysql.tables.BasicTable
 
 class  MySQLInsertQueryTest extends FlatSpec with Matchers {
   it should "serialise an INSERT IGNORE INTO query to the correct query" in {
-    BasicTable.insert.ignore.queryString shouldEqual "INSERT IGNORE INTO BasicTable"
+    BasicTable.insert.ignore.queryString shouldEqual "INSERT IGNORE INTO BasicTable;"
   }
 
   it should "serialise an INSERT HIGH_PRIORITY INTO query to the correct query" in {
-    BasicTable.insert.highPriority.queryString shouldEqual "INSERT HIGH_PRIORITY INTO BasicTable"
+    BasicTable.insert.highPriority.queryString shouldEqual "INSERT HIGH_PRIORITY INTO BasicTable;"
   }
 
   it should "serialise an INSERT LOW_PRIORITY INTO query to the correct query" in {
-    BasicTable.insert.lowPriority.queryString shouldEqual "INSERT LOW_PRIORITY INTO BasicTable"
+    BasicTable.insert.lowPriority.queryString shouldEqual "INSERT LOW_PRIORITY INTO BasicTable;"
   }
 
   it should "serialise an INSERT DELAYED INTO query to the correct query" in {
-    BasicTable.insert.delayed.queryString shouldEqual "INSERT DELAYED INTO BasicTable"
+    BasicTable.insert.delayed.queryString shouldEqual "INSERT DELAYED INTO BasicTable;"
   }
 }

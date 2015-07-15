@@ -15,7 +15,7 @@ notifications:
       - websudos:P9QNXx1ZGFnDHp3v3jUqtB8k
 
   email:
-  - dev@newzly.com
+  - dev@websudos.com
 
 # Branches to build.
 branches:
@@ -31,5 +31,5 @@ jdk:
 before_script:
   - mysql -e 'create database morpheus;'
 
-script: "sbt coveralls"
+script: "sbt clean coverage test"
 

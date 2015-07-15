@@ -56,7 +56,7 @@ abstract class BaseTable[Owner <: BaseTable[Owner, _, TableRow], Record, TableRo
    * The reading of columns doesn't used the same lock acquired by the initialisation of columns to guarantee columns are never read before initialisation
    * because this is made impossible at an API level later on.
    */
-  private[this] lazy val _columns: MutableArrayBuffer[AbstractColumn[_]] = new MutableArrayBuffer[AbstractColumn[_]] with MutableSyncBuffer[AbstractColumn[_]]
+  private[this] lazy val _columns: MutableArrayBuffer[AbstractColumn[_]] = new MutableArrayBuffer[AbstractColumn[_]]
 
   /**
    * It allows DSL users to obtain good "default" values for their table names.
@@ -72,7 +72,7 @@ abstract class BaseTable[Owner <: BaseTable[Owner, _, TableRow], Record, TableRo
    * The default name in the above case would have been "MyTable".
    */
   private[this] lazy val _name: String = {
-    cm.reflect(this).symbol.name.toTypeName.decoded
+    cm.reflect(this).symbol.name.toTypeName.decodedName.toString
   }
 
   /**

@@ -18,6 +18,7 @@ package com.websudos.morpheus.query
 import com.websudos.morpheus.builder.{SQLBuiltQuery, AbstractSyntaxBlock, DefaultSQLSyntax, AbstractSQLSyntax}
 import com.websudos.morpheus.column.AbstractColumn
 import com.websudos.morpheus.dsl.BaseTable
+import com.websudos.morpheus.query.parts.{Defaults, LightweightPart, ValuePart, ColumnsPart}
 import com.websudos.morpheus.sql.DefaultRow
 import com.websudos.morpheus.{Row, SQLPrimitive}
 
@@ -72,8 +73,14 @@ class InsertQuery[T <: BaseTable[T, _, TableRow],
   Chain <: ChainBind,
   AssignChain <: AssignBind,
   Status <: StatusBind
-](table: T, query: SQLBuiltQuery, rowFunc: TableRow => R, val statements: List[(String, String)] = Nil, private[this] val added: Boolean = false) extends Query[T, R,
-  TableRow, Group, Order, Limit, Chain, AssignChain, Status](table, query, rowFunc) {
+](table: T,
+  val init: SQLBuiltQuery,
+  rowFunc: TableRow => R,
+  columnsPart: ColumnsPart = Defaults.EmptyColumnsPart,
+  valuePart: ValuePart = Defaults.EmptyValuePart,
+  lightweightPart: LightweightPart = Defaults.EmptyLightweightPart
+) extends Query[T, R,
+  TableRow, Group, Order, Limit, Chain, AssignChain, Status](table, init, rowFunc) {
 
 
   /**
@@ -100,34 +107,16 @@ class InsertQuery[T <: BaseTable[T, _, TableRow],
     ): InsertQuery[T, R, TableRow, Group, Order, Limit, Chain, AssignChain, Unterminated] = {
 
     new InsertQuery[T, R, TableRow, Group, Order, Limit, Chain, AssignChain, Unterminated](
-        table, query, fromRow, Tuple2(insertion(table).name, primitive.toSQL(obj)) :: statements
+      table,
+      init,
+      fromRow,
+      columnsPart append SQLBuiltQuery(insertion(table).name),
+      valuePart append SQLBuiltQuery(implicitly[SQLPrimitive[RR]].toSQL(obj)),
+      lightweightPart
     )
   }
 
-  override def queryString: String = {
-    if (added) {
-      queryString
-    } else {
-      val columns = statements.reverse.map(_._1)
-      val values = statements.reverse.map(_._2)
-      table.queryBuilder.insert(query, columns, values).queryString
-    }
+  override val query = {
+    (columnsPart merge valuePart merge lightweightPart) build init
   }
-
-  /**
-   * This is the final end point of an insert query, where through an implicit conversion in ModifyImplicts, the query is converted back to a normal Query
-   * for execution or serialisation. Before any of that however, this method will carefully Terminate the query so that no further implicit conversions are
-   * possible.
-   *
-   * E.g the user cannot go back and re-add value methods or any more things after the query is complete with respect to the MySQL syntax. Talk about making
-   * illegal programming states unrepresentable.
-   * @return A terminat Query, ready for execution.
-   */
-  private[morpheus] def toQuery: InsertQuery[T, R, TableRow, Group, Order, Limit, Chain, AssignChain, Terminated] = {
-    val columns = statements.reverse.map(_._1)
-    val values = statements.reverse.map(_._2)
-    new InsertQuery(table, table.queryBuilder.insert(query, columns, values), fromRow, statements, true)
-  }
-
-
 }

@@ -24,7 +24,7 @@ sealed class IndexTable extends Table[IndexTable, IndexedRecord] {
 
   object id extends SmallIntColumn(this) with PrimaryKey[Int] with NotNull with Autoincrement
 
-  object value extends LongColumn(this)
+  object value extends IntColumn(this)
 
   object index extends Index(id, value)
 
@@ -78,8 +78,6 @@ sealed class KeysTable extends Table[KeysTable, KeysRecord] {
   object uniqueIndex extends TextColumn(this) with UniqueKey[String]
   object uniqueIndexNotNull extends TextColumn(this) with UniqueKey[String] with NotNull
 
-
-
   /**
    * The most notable and honorable of functions in this file, this is what allows our DSL to provide type-safety.
    * It works by requiring a user to define a type-safe mapping between a buffered Result and the above refined Record.
@@ -110,7 +108,7 @@ class NumericsTable extends Table[NumericsTable, Int] {
   object int extends IntColumn(this)
   object intLimited extends IntColumn(this, 100)
 
-  def fromRow(row: MySQLRow): Int = int(row)
+  def fromRow(row: Row): Int = int(row)
 }
 
 object NumericsTable extends NumericsTable
@@ -139,12 +137,12 @@ class StringsTable extends Table[StringsTable, String] {
 
 object StringsTable extends StringsTable
 
-case class BasicRecord(name: String, count: Long)
+case class BasicRecord(name: String, count: Int)
 
 class BasicTable extends Table[BasicTable, BasicRecord] {
 
   object name extends TextColumn(this)
-  object count extends LongColumn(this)
+  object count extends IntColumn(this)
 
   def fromRow(row: MySQLRow): BasicRecord = {
     BasicRecord(name(row), count(row))

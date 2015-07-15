@@ -216,6 +216,24 @@ object DefaultSQLSyntax extends AbstractSQLSyntax
 private[morpheus] object DefaultQueryBuilder extends AbstractQueryBuilder {
   val syntax = DefaultSQLSyntax
   val operators: SQLOperatorSet = DefaultSQLOperatorSet
+
+  def clauses(clauses: List[SQLBuiltQuery], sep: String = " "): SQLBuiltQuery = {
+    SQLBuiltQuery.empty.append(clauses.map(_.queryString).mkString(sep))
+  }
+
+  def columns(list: List[SQLBuiltQuery]) = {
+    list match {
+      case head :: tail => SQLBuiltQuery.empty.wrapn(list.map(_.queryString))
+      case Nil => SQLBuiltQuery.empty
+    }
+  }
+
+  def values(list: List[SQLBuiltQuery]) = {
+    list match {
+      case head :: tail => SQLBuiltQuery(DefaultSQLSyntax.values).wrapn(list.map(_.queryString))
+      case Nil => SQLBuiltQuery.empty
+    }
+  }
 }
 
 
@@ -332,7 +350,7 @@ private[morpheus] trait AbstractQueryBuilder {
 
   def select(tableName: String, names: String*): SQLBuiltQuery = {
     SQLBuiltQuery(syntax.select)
-      .pad.append(names)
+      .pad.append(names, " ")
       .forcePad.append(syntax.from)
       .forcePad.appendEscape(tableName)
   }
@@ -458,7 +476,7 @@ private[morpheus] trait AbstractQueryBuilder {
   }
 
   def exists(select: SQLBuiltQuery): SQLBuiltQuery = {
-    SQLBuiltQuery(syntax.exists).wrap(select)
+    SQLBuiltQuery(syntax.exists).pad.wrap(select)
   }
 
   def notExists(select: SQLBuiltQuery): SQLBuiltQuery = {

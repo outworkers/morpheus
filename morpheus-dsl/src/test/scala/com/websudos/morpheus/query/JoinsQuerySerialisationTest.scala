@@ -31,7 +31,7 @@ class JoinsQuerySerialisationTest extends FlatSpec with Matchers {
       .on(_.foreignKey eqs IndexTable.value)
       .queryString
 
-    qb shouldEqual "SELECT * FROM 'KeysTable' WHERE id = 10 LEFT JOIN 'IndexTable' ON KeysTable.foreignKey = IndexTable.value"
+    qb shouldEqual "SELECT * FROM `KeysTable` WHERE id = 10 LEFT JOIN `IndexTable` ON KeysTable.foreignKey = IndexTable.value;"
   }
 
   it should "serialise a simple INNER JOIN query" in {
@@ -42,7 +42,7 @@ class JoinsQuerySerialisationTest extends FlatSpec with Matchers {
       .on(_.foreignKey eqs IndexTable.value)
       .queryString
 
-    qb shouldEqual "SELECT * FROM 'KeysTable' WHERE id = 10 INNER JOIN 'IndexTable' ON KeysTable.foreignKey = IndexTable.value"
+    qb shouldEqual "SELECT * FROM `KeysTable` WHERE id = 10 INNER JOIN `IndexTable` ON KeysTable.foreignKey = IndexTable.value;"
   }
 
 }

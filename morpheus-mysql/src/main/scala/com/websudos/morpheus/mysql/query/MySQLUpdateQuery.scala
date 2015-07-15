@@ -28,7 +28,7 @@ case class MySQLUpdateSyntaxBlock(query: String, tableName: String) extends Root
   override val syntax = MySQLSyntax
 
   def lowPriority: SQLBuiltQuery = {
-    qb.pad.append(syntax.lowPriority)
+    qb.pad.append(syntax.Priorities.lowPriority)
       .pad.append(tableName)
   }
 
