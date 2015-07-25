@@ -5,7 +5,7 @@ import com.websudos.morpheus.dsl.BaseTable
 import org.scalatest.{Matchers, FlatSpec}
 
 class TestColumn extends AbstractColumn[Int] {
-  override def qb: SQLBuiltQuery = ???
+  override def qb: SQLBuiltQuery = SQLBuiltQuery("integer")
 
   override def toQueryString(v: Int): String = ???
 

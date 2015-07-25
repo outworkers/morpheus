@@ -10,8 +10,8 @@ object Build extends Build {
   val SparkVersion = "1.2.1"
   val FinaglePostgres = "0.1.0-SNAPSHOT"
   val FinagleZkVersion = "6.24.0"
-  val ShapelessVersion = "2.2.0-RC4"
-  val DieselEngineVersion = "0.2.2"
+  val ShapelessVersion = "2.2.4"
+  val DieselEngineVersion = "0.2.3"
 
   val bintrayPublishing: Seq[Def.Setting[_]] = Seq(
     publishMavenStyle := true,
@@ -24,7 +24,7 @@ object Build extends Build {
     pomIncludeRepository := { _ => true},
     licenses += ("Apache-2.0", url("https://www.apache.org/licenses/LICENSE-2.0"))
   )
-§
+
   val mavenPublishSettings : Seq[Def.Setting[_]] = Seq(
     credentials += Credentials(Path.userHome / ".ivy2" / ".credentials"),
     publishMavenStyle := true,
@@ -84,6 +84,7 @@ object Build extends Build {
       Resolver.bintrayRepo("websudos", "oss-releases")
     ),
     scalacOptions ++= Seq(
+      "-Ylog-classpath",
       "-language:postfixOps",
       "-language:implicitConversions",
       "-language:reflectiveCalls",
@@ -117,13 +118,12 @@ object Build extends Build {
   lazy val morpheusDsl = Project(
     id = "morpheus-dsl",
     base = file("morpheus-dsl"),
-    settings = Defaults.coreDefaultSettings ++
-      sharedSettings
+    settings = Defaults.coreDefaultSettings ++ sharedSettings
   ).settings(
     name := "morpheus-dsl",
     libraryDependencies ++= Seq(
       "com.websudos"                 %% "diesel-engine"                    % DieselEngineVersion,
-      "com.chuusai"                  %% "shapeless"                        % ShapelessVersion,
+      "com.chuusai"                  %% "shapeless"                        % "2.2.4",
       "org.scala-lang"               % "scala-reflect"                     % scalaVersion.value,
       "joda-time"                    % "joda-time"                         % "2.3",
       "org.joda"                     % "joda-convert"                      % "1.6",
@@ -140,7 +140,9 @@ object Build extends Build {
   ).settings(
     name := "morpheus-mysql",
     libraryDependencies ++= Seq(
-      "com.twitter"                  %% "finagle-mysql"                     % FinagleVersion
+      "com.twitter"                  %% "finagle-mysql"                     % FinagleVersion excludeAll (
+        ExclusionRule("org.scala-lang", "scala-reflect")
+      )
     )
   ).dependsOn(
     morpheusDsl,
@@ -150,8 +152,7 @@ object Build extends Build {
   lazy val morpheusPostgres = Project(
     id = "morpheus-postgres",
     base = file("morpheus-postgres"),
-    settings = Defaults.coreDefaultSettings ++
-      sharedSettings
+    settings = Defaults.coreDefaultSettings ++ sharedSettings
   ).settings(
     name := "morpheus-postgres",
     libraryDependencies ++= Seq(
@@ -196,10 +197,11 @@ object Build extends Build {
     name := "morpheus-testkit",
     libraryDependencies ++= Seq(
       "com.h2database"                   % "h2"                        % "1.4.181",
-      "com.websudos"                     %% "util-testing"             % UtilVersion,
-      "org.scalacheck"                   %% "scalacheck"               % "1.11.3"
+      "com.websudos"                     %% "util-testing"             % UtilVersion excludeAll(
+        ExclusionRule("org.scala-lang", "scala-reflect")
+      )
     )
   ).dependsOn(
-    morpheusZookeeper
+    // morpheusZookeeper
   )
 }
