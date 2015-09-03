@@ -36,6 +36,7 @@ import com.websudos.morpheus.dsl.BaseTable
 import com.websudos.morpheus.query.QueryAssignment
 
 import scala.reflect.runtime.{currentMirror => cm}
+import scala.util.{Failure, Success, Try}
 
 private[morpheus] trait SchemaSerializer {
   def qb: SQLBuiltQuery
@@ -75,13 +76,28 @@ private[morpheus] abstract class SelectColumn[T](val qb: SQLBuiltQuery) {
 private[morpheus] abstract class Column[Owner <: BaseTable[Owner, Record, TableRow], Record, TableRow <: Row, T](val table: BaseTable[Owner, Record, TableRow])
   extends AbstractColumn[T] {
 
-  def optional(r: Row): Option[T]
+  def optional(r: Row): Try[T]
 
-  def apply(r: Row): T = optional(r).getOrElse(throw new Exception(s"can't extract required value for column '$name'"))
+  def apply(r: Row): T = optional(r) match {
+    case Success(value) => value
+    case Failure(ex) => {
+      table.logger.error(ex.getMessage)
+      throw ex
+    }
+  }
 }
 
+private[morpheus] abstract class OptionalColumn[Owner <: BaseTable[Owner, Record, TableRow], Record, TableRow <: Row, T](val table: BaseTable[Owner, Record, TableRow])
+  extends AbstractColumn[Option[T]] {
+
+  def optional(r: Row): Try[T]
+
+  def apply(r: Row): Option[T] = optional(r).toOption
+}
 
 private[morpheus] abstract class AbstractModifyColumn[RR](col: AbstractColumn[RR]) {
 
-  def setTo(value: RR): QueryAssignment = QueryAssignment(col.table.queryBuilder.setTo(col.name, col.toQueryString(value)))
+  def setTo(value: RR): QueryAssignment = {
+    QueryAssignment(col.table.queryBuilder.setTo(col.name, col.toQueryString(value)))
+  }
 }

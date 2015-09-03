@@ -1,17 +1,31 @@
 /*
- * Copyright 2014 websudos ltd.
+ * Copyright 2013-2015 Websudos, Limited.
  *
- *  Licensed under the Apache License, Version 2.0 (the "License");
- *  you may not use this file except in compliance with the License.
- *  You may obtain a copy of the License at
+ * All rights reserved.
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
  *
- *  Unless required by applicable law or agreed to in writing, software
- *  distributed under the License is distributed on an "AS IS" BASIS,
- *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *  See the License for the specific language governing permissions and
- * limitations under the License.
+ * - Redistributions of source code must retain the above copyright notice,
+ * this list of conditions and the following disclaimer.
+ *
+ * - Redistributions in binary form must reproduce the above copyright
+ * notice, this list of conditions and the following disclaimer in the
+ * documentation and/or other materials provided with the distribution.
+ *
+ * - Explicit consent must be obtained from the copyright owner, Websudos Limited before any redistribution is made.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ * POSSIBILITY OF SUCH DAMAGE.
  */
 
 package com.websudos.morpheus.mysql.db
@@ -21,18 +35,26 @@ import com.twitter.finagle.exp.Mysql
 import com.twitter.util.Await
 import com.websudos.morpheus.Client
 import com.websudos.morpheus.mysql.{MySQLClient, MySQLResult, MySQLRow}
+import org.scalatest.{Suite, BeforeAndAfterAll, Matchers, OptionValues}
 import org.scalatest.concurrent.{AsyncAssertions, PatienceConfiguration, ScalaFutures}
 import org.scalatest.time.{Seconds, Span}
 
 object MySQLConnector {
+
+  def isRunningUnderTravis: Boolean = {
+    System.getenv.containsKey("TRAVIS")
+  }
+
+  val user = if (isRunningUnderTravis) "travis" else "morpheus"
+  val pwd = "morpheus23!"
 
   /**
    * This client is meant to connect to the Travis CI default MySQL service.
    */
   lazy val client = {
     val c = Mysql.client
-      .withCredentials("morpheus", "morpheus23!")
-      .withDatabase("morpheus-test")
+      .withCredentials(user, pwd)
+      .withDatabase("morpheus_test")
       .newRichClient("127.0.0.1:3306")
     Await.result(c.ping(), 2.seconds)
     c
@@ -40,7 +62,13 @@ object MySQLConnector {
 }
 
 
-trait MySQLSuite extends AsyncAssertions with ScalaFutures {
+trait MySQLSuite extends AsyncAssertions
+  with ScalaFutures
+  with OptionValues
+  with Matchers
+  with BeforeAndAfterAll {
+
+  this: Suite =>
 
   implicit lazy val client: Client[MySQLRow, MySQLResult] = new MySQLClient(MySQLConnector.client)
 

@@ -1,25 +1,40 @@
 /*
- * Copyright 2014 websudos ltd.
+ * Copyright 2013-2015 Websudos, Limited.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * All rights reserved.
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * - Redistributions of source code must retain the above copyright notice,
+ * this list of conditions and the following disclaimer.
+ *
+ * - Redistributions in binary form must reproduce the above copyright
+ * notice, this list of conditions and the following disclaimer in the
+ * documentation and/or other materials provided with the distribution.
+ *
+ * - Explicit consent must be obtained from the copyright owner, Websudos Limited before any redistribution is made.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ * POSSIBILITY OF SUCH DAMAGE.
  */
-
 package com.websudos.morpheus
 
 import java.util.Date
 import org.joda.time.DateTime
 
 import com.websudos.morpheus.builder.{DefaultQueryBuilder, DefaultSQLDataTypes}
+
+import scala.util.Try
 
 case class InvalidTypeDefinitionException(msg: String = "Invalid SQL type declared for column") extends RuntimeException(msg)
 
@@ -51,7 +66,7 @@ trait SQLPrimitive[T] {
 
   def toSQL(value: T): String
 
-  def fromRow(row: Row, name: String): Option[T]
+  def fromRow(row: Row, name: String): Try[T]
 }
 
 class DefaultIntPrimitive extends SQLPrimitive[Int] {
@@ -61,7 +76,7 @@ class DefaultIntPrimitive extends SQLPrimitive[Int] {
     value.toString
   }
 
-  def fromRow(row: Row, name: String): Option[Int] = Some(row.int(name))
+  def fromRow(row: Row, name: String): Try[Int] = Try(row.int(name))
 }
 
 class DefaultFloatPrimitive extends SQLPrimitive[Float] {
@@ -69,7 +84,7 @@ class DefaultFloatPrimitive extends SQLPrimitive[Float] {
 
   override def toSQL(value: Float): String = value.toString
 
-  def fromRow(row: Row, name: String): Option[Float] = Some(row.float(name))
+  def fromRow(row: Row, name: String): Try[Float] = Try(row.float(name))
 }
 
 class DefaultDoublePrimitive extends SQLPrimitive[Double] {
@@ -77,7 +92,7 @@ class DefaultDoublePrimitive extends SQLPrimitive[Double] {
 
   override def toSQL(value: Double): String = value.toString
 
-  def fromRow(row: Row, name: String): Option[Double] = Some(row.double(name))
+  def fromRow(row: Row, name: String): Try[Double] = Try(row.double(name))
 }
 
 class DefaultLongPrimitive extends SQLPrimitive[Long] {
@@ -85,7 +100,7 @@ class DefaultLongPrimitive extends SQLPrimitive[Long] {
 
   override def toSQL(value: Long): String = value.toString
 
-  def fromRow(row: Row, name: String): Option[Long] = Some(row.long(name))
+  def fromRow(row: Row, name: String): Try[Long] = Try(row.long(name))
 }
 
 class DefaultDatePrimitive extends SQLPrimitive[Date] {
@@ -93,7 +108,7 @@ class DefaultDatePrimitive extends SQLPrimitive[Date] {
 
   def toSQL(value: Date): String = value.toString
 
-  def fromRow(row: Row, name: String): Option[Date] = Some(row.date(name))
+  def fromRow(row: Row, name: String): Try[Date] = Try(row.date(name))
 }
 
 class DefaultDateTimePrimitive extends SQLPrimitive[DateTime] {
@@ -101,7 +116,7 @@ class DefaultDateTimePrimitive extends SQLPrimitive[DateTime] {
 
   def toSQL(value: DateTime): String = value.toString
 
-  def fromRow(row: Row, name: String): Option[DateTime] = Some(row.datetime(name))
+  def fromRow(row: Row, name: String): Try[DateTime] = Try(row.datetime(name))
 }
 
 class DefaultStringPrimitive extends SQLPrimitive[String] {
@@ -110,8 +125,8 @@ class DefaultStringPrimitive extends SQLPrimitive[String] {
 
   override def toSQL(value: String): String = DefaultQueryBuilder.escape(value)
 
-  def fromRow(row: Row, name: String): Option[String] = {
-    Some(row.string(name))
+  def fromRow(row: Row, name: String): Try[String] = {
+    Try(row.string(name))
   }
 }
 

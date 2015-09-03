@@ -5,21 +5,19 @@ import sbt._
 
 object Build extends Build {
 
-  val UtilVersion = "0.9.8"
+  val UtilVersion = "0.9.11"
   val FinagleVersion = "6.25.0"
   val SparkVersion = "1.2.1"
   val FinaglePostgres = "0.1.0-SNAPSHOT"
-  val FinagleZkVersion = "6.24.0"
+  val FinagleZkVersion = "6.28.0"
   val ShapelessVersion = "2.2.4"
-  val DieselEngineVersion = "0.2.3"
+  val DieselEngineVersion = "0.2.4"
 
   val bintrayPublishing: Seq[Def.Setting[_]] = Seq(
     publishMavenStyle := true,
     bintray.BintrayKeys.bintrayOrganization := Some("websudos"),
     bintray.BintrayKeys.bintrayRepository := "oss-releases",
     bintray.BintrayKeys.bintrayReleaseOnPublish := true,
-    publishArtifact in (Compile, packageSrc) := false,
-    publishArtifact in (Test, packageSrc) := false,
     publishArtifact in Test := false,
     pomIncludeRepository := { _ => true},
     licenses += ("Apache-2.0", url("https://www.apache.org/licenses/LICENSE-2.0"))
@@ -69,9 +67,9 @@ object Build extends Build {
 
   val sharedSettings: Seq[Def.Setting[_]] = Seq(
     organization := "com.websudos",
-    version := "0.2.0",
-    scalaVersion := "2.10.5",
-    crossScalaVersions := Seq("2.10.5", "2.11.6"),
+    version := "0.2.2",
+    scalaVersion := "2.11.7",
+    crossScalaVersions := Seq("2.10.5", "2.11.7"),
     resolvers ++= Seq(
       "Typesafe repository snapshots" at "http://repo.typesafe.com/typesafe/snapshots/",
       "Typesafe repository releases" at "http://repo.typesafe.com/typesafe/releases/",
@@ -84,7 +82,6 @@ object Build extends Build {
       Resolver.bintrayRepo("websudos", "oss-releases")
     ),
     scalacOptions ++= Seq(
-      "-Ylog-classpath",
       "-language:postfixOps",
       "-language:implicitConversions",
       "-language:reflectiveCalls",
@@ -122,6 +119,7 @@ object Build extends Build {
   ).settings(
     name := "morpheus-dsl",
     libraryDependencies ++= Seq(
+      "org.slf4j"                    % "slf4j-api"                         % "1.7.12",
       "com.websudos"                 %% "diesel-engine"                    % DieselEngineVersion,
       "com.chuusai"                  %% "shapeless"                        % "2.2.4",
       "org.scala-lang"               % "scala-reflect"                     % scalaVersion.value,
@@ -140,9 +138,7 @@ object Build extends Build {
   ).settings(
     name := "morpheus-mysql",
     libraryDependencies ++= Seq(
-      "com.twitter"                  %% "finagle-mysql"                     % FinagleVersion excludeAll (
-        ExclusionRule("org.scala-lang", "scala-reflect")
-      )
+      "com.twitter"                  %% "finagle-mysql"                     % FinagleVersion % "test, compile"
     )
   ).dependsOn(
     morpheusDsl,
@@ -164,6 +160,7 @@ object Build extends Build {
   )
 
 
+/*
   lazy val morpheusZookeeper = Project(
     id = "morpheus-zookeeper",
     base = file("morpheus-zookeeper"),
@@ -187,7 +184,7 @@ object Build extends Build {
     )
   ).dependsOn(
     morpheusTestkit
-  )
+  )*/
 
   lazy val morpheusTestkit = Project(
     id = "morpheus-testkit",
