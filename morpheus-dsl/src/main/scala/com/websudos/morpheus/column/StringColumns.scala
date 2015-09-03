@@ -1,24 +1,40 @@
 /*
- * Copyright 2014 websudos ltd.
+ * Copyright 2013-2015 Websudos, Limited.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * All rights reserved.
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * - Redistributions of source code must retain the above copyright notice,
+ * this list of conditions and the following disclaimer.
+ *
+ * - Redistributions in binary form must reproduce the above copyright
+ * notice, this list of conditions and the following disclaimer in the
+ * documentation and/or other materials provided with the distribution.
+ *
+ * - Explicit consent must be obtained from the copyright owner, Websudos Limited before any redistribution is made.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ * POSSIBILITY OF SUCH DAMAGE.
  */
 
 package com.websudos.morpheus.column
 
-import com.websudos.morpheus.builder.DefaultSQLDataTypes
+import com.websudos.morpheus.builder.{DefaultQueryBuilder, DefaultSQLDataTypes, SQLBuiltQuery}
 import com.websudos.morpheus.dsl.BaseTable
 import com.websudos.morpheus.{Row, SQLPrimitive}
+
+import scala.util.{Failure, Success, Try}
 
 abstract class LimitedTextColumn[
   T <: BaseTable[T, R, TableRow],
@@ -87,3 +103,30 @@ abstract class AbstractLongBlobColumn[T <: BaseTable[T, R, TableRow], R, TableRo
   override def sqlType: String = DefaultSQLDataTypes.longBlob
 }
 
+
+
+
+abstract class AbstractEnumColumn[Owner <: BaseTable[Owner, Record, TableRow], Record, TableRow <: Row, EnumType <: Enumeration](table: BaseTable[Owner, Record, TableRow], enum: EnumType)
+  extends Column[Owner, Record, TableRow, EnumType#Value](table) {
+
+  override def optional(r: Row): Try[EnumType#Value] = {
+    val enumConstant = r.string(name)
+
+    enum.values.find(_.toString == enumConstant) match {
+      case Some(value) => Success(value)
+      case None => Failure(new Exception(s"Enumeration ${enum.toString()} doesn't contain value $enumConstant"))
+    }
+  }
+
+  override def toQueryString(v: EnumType#Value): String = DefaultQueryBuilder.escape(v.toString)
+
+  override def qb: SQLBuiltQuery = SQLBuiltQuery(name).pad.append(sqlType)
+
+  override def sqlType: String = DefaultSQLDataTypes.varchar
+}
+
+abstract class AbstractOptionalEnumColumn[Owner <: BaseTable[Owner, Record, TableRow], Record, TableRow <: Row, EnumType <: Enumeration](table: BaseTable[Owner, Record, TableRow], enum: EnumType)
+  extends OptionalColumn[Owner, Record, TableRow, String](table) {
+
+  override def sqlType: String = DefaultSQLDataTypes.varchar
+}

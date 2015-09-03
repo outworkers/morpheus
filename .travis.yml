@@ -5,14 +5,22 @@ language: scala
 services:
     - mysql
 
+cache:
+  directories:
+   - $HOME/.ivy2/cache
+   - $HOME/.sbt/boot/scala-$TRAVIS_SCALA_VERSION
+
+sudo: false
+
 scala:
- - "2.10.4"
+ - "2.10.5"
+ - "2.11.7"
 
 # Emails to notify
 notifications:
   slack:
     rooms:
-      - websudos:P9QNXx1ZGFnDHp3v3jUqtB8k
+      - websudos: P9QNXx1ZGFnDHp3v3jUqtB8k
 
   email:
   - dev@websudos.com
@@ -31,7 +39,13 @@ jdk:
 
 
 before_script:
-  - mysql -e 'create database morpheus;'
+  - travis_retry sbt ++$TRAVIS_SCALA_VERSION update
+  - mysql -e "CREATE DATABASE morpheus_test;"
+  - mysql -e "CREATE USER 'morpheus'@'localhost' IDENTIFIED BY 'morpheus23!';"
+  - mysql -e "SET PASSWORD FOR 'travis'@'localhost' = PASSWORD('morpheus23!')"
 
-script: "sbt clean coverage test"
+script:
+  - sbt ++$TRAVIS_SCALA_VERSION clean coverage test && sbt ++$TRAVIS_SCALA_VERSION coverageAggregate
 
+after_success:
+  - sbt ++$TRAVIS_SCALA_VERSION coveralls

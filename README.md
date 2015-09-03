@@ -18,9 +18,13 @@ currently hitting that bar for Cassandra, Neo4J and MongoDB. But why stop there?
 Using morpheus
 ==============
 
-The current version is: ```val morpheusVersion = 0.1.0```.
-Morpheus is published to the Websudos Maven repository at ```http://maven.websudos.co.uk/ext-release-local``` and it's actively and avidly developed. It is 
-not yet production ready.
+The current version is: ```val morpheusVersion = 0.2.3```.
+
+Morpheus is actively and avidly developed. It is not yet production ready, so trial at your own risk.
+
+- The stable release is always available on Maven Central and will be indicated by the badge at the top of this readme. The Maven Central badge is pointing at the latest version
+
+- Intermediary releases are available through our managed Bintray repository available at `https://dl.bintray.com/websudos/oss-releases/`. The latest version available on our Bintray repository is indicated by the Bintray badge at the top of this readme.
 
 <a id="table-of-contents">Table of contents</a>
 ===============================================
@@ -31,11 +35,12 @@ not yet production ready.
     <p>Supported databases and documentation</p>
     <ul>
       <li><a href="./docs/MySQL.md">MySQL</a></li>
-      <li>MariaDB</li>
-      <li>Oracle</li>
-      <li>Postgres</li>
-      <li>MSSQL</li>
+      <li><a href="./docs/MySQL.md">MariaDB</a></li>
+      <li><a href="./docs/Postgres.md">Postgres</a></li>
+      <li><a href="./docs/Oracle.md">Oracle(Morpheus Enterprise)</a></li>
+      <li><a href="./docs/MSSQL.md">MS SQL(Morpheus Enterprise)</a></li>
   </li>
+  <li><a href="#support">Support</a></li>
   <li><a href="#copyright">Copyright</a></li>
 </ol>
 
@@ -69,7 +74,7 @@ don't have to care. Slick makes it easy to move from one SQL database to the oth
 know and love, it may be counter productive to have to learn about a framework when you could use Morpheus and all you need is IDE auto-completes to get 
 lightning fast development productivity. 
 
-Oh, and did we mention it's entirely asynchronous and reactive, build on Finagle and of course the underlying Netty?
+Oh, and did we mention it's entirely asynchronous and reactive? No JDBC.
 
 
 <a id="integrating-morpheus">Integrating Morpheus</a>
@@ -91,6 +96,7 @@ And then you can: ```import com.websudos.morpheus.mysql._```, which will give yo
 unsupported operations. Morpheus guarantees you can almost never write an invalid SQL query unless you try really really hard.
 
 
+
 ### Available modules ###
 
 The full list of available modules is:
@@ -103,86 +109,47 @@ libraryDependencies ++= Seq(
 )
 ```
 
-<a id="building-blocks">Building blocks</a>
-=====================================
-
-This section outlines the inner building blocks of Morpheus and tries to explain how a database is implemented in the Morpheus DSL, 
-composed from various building blocks. The list of blocks is rather long and each block aims to isolate and deal with a very specific concern. The goal here 
-is to allow existing and new databases to easily define custom behaviour at all levels, let it be syntax, serialisation methods and so forth.
-
-The implementation done via the building block architecture also allows us to maintain the single import "all you can eat" buffet while invisibly enabling 
-and disabling features, options and available methods with the help of a single import. There is a vast series of architecture choices that are combined and 
-designed specifically for the purpose of allowing very simple usage. 
-
-The building blocks of an SQL implementation are:
-
-- SQL Syntax
-- SQL Keys
-- SQL Data Types
-- SQL Primitives
-- SQL Engines
-- SQL QueryBuilder
-- SQL Operator Set
-- SQL Create Block
-- SQL Insert Block
-- SQL Delete Block
-- SQL Update Block
-
-
-Each new database, implemented as a different SBT sub-module, can use the full query power pre-built into the ```morpheus-dsl``` root module while overriding
- implementation specifics to do with any of the above. Each new database must define it's own set of features for every one of the building blocks. At the 
- same time, common functionality and a shared trunk is made possible by ```morpheus-dsl```.
-
 <a id="contributors">Contributors</a>
 =====================================
 <a href="#table-of-contents">back to top</a>
 
-Morpheus was developed at websudos as the foundation of our upcoming book, "Learning Scala by example", which covers all aspects of building an enterprise 
-grade Scala framework from scratch.
+Morpheus was developed by us from scratch in an attempt to evolve the SQL tooling in the Scala ecosystem
+ to the new level and bring in fully reactive database access while preserving the complete SQL syntax you are used to.
 
-* Flavian Alexandru @alexflav23(Project lead)
+* Flavian Alexandru @alexflav23
+* Benjamin Edwards @benjumanji
+
+
+
+<a id="support">Commercial support</a>
+======================================
+<a href="#table-of-contents">back to top</a>
+
+We, the people behind phantom run a software development house specialised in Scala and NoSQL. If you are after enterprise grade
+training or support for using phantom, [Websudos](http://websudos.com) is here to help!
+
+We offer a comprehensive range of elite Scala development services, including but not limited to:
+
+- Software development
+- Remote Scala contractors for hire
+- Advanced Scala and Morpheus training
+
+
+We are big fans of open source and we will open source every project we can! To read more about our OSS efforts, click [here](http://www.websudos.com/#/work).
+
+### morpheus-enterprise
+
+Morpheus Enterprise is an upgraded version of Morpheus which includes several extremely powerful features that will not be available in the open source version, including and not limited to:
+
+- Full online access to a complete set of phantom tutorials, accompanied by our direct support.
+- Advanced support for integrating morpheus with Apache Spark and especially SparkSQL.
+- A very powerful schema management framework called `morpheus-migrations` which allows you not only to completely automate schema management and do it all in Scala, but also to let phantom automatically handle most use cases for you.
+- `morpheus-autotables`, an advanced macro based framework which will auto-generate, auto-manage, and auto-migrate all your queries from case classes.
+- Full support for Oracle, Oracle Exadata and SQL Server
+
 
 <a id="copyright">Copyright</a>
 ===============================
 <a href="#table-of-contents">back to top</a>
 
-Copyright (c) 2014 websudos.
-
-
-Contributing to morpheus
-=======================
-<a href="#table-of-contents">back to top</a>
-
-Contributions are most welcome! Don't forget to add your name and GitHub handle to the list of contributors.
-
-<a id="git-flow">Using GitFlow</a>
-==================================
-<a href="#table-of-contents">back to top</a>
-
-To contribute, simply submit a "Pull request" via GitHub.
-
-We use GitFlow as a branching model and SemVer for versioning.
-
-- When you submit a "Pull request" we require all changes to be squashed.
-- We never merge more than one commit at a time. All the n commits on your feature branch must be squashed.
-- We won't look at the pull request until Travis CI says the tests pass, make sure tests go well.
-
-<a id="style-guidelines">Scala Style Guidelines</a>
-===================================================
-<a href="#table-of-contents">back to top</a>
-
-In spirit, we follow the [Twitter Scala Style Guidelines](http://twitter.github.io/effectivescala/).
-We will reject your pull request if it doesn't meet code standards, but we'll happily give you a hand to get it right. Morpheus is even using ScalaStyle to 
-build, which means your build will also fail if your code doesn't comply with the style rules.
-
-Some of the things that will make us seriously frown:
-
-- Blocking when you don't have to. It just makes our eyes hurt when we see useless blocking.
-- Testing should be thread safe and fully async, use ```ParallelTestExecution``` if you want to show off.
-- Writing tests should use the pre-existing tools.
-- Use the common patterns you already see here, we've done a lot of work to make it easy.
-- Don't randomly import stuff. We are very big on alphabetized clean imports.
-- Morpheus uses ScalaStyle during Travis CI runs to guarantee you are complying with our guidelines. Since breaking the rules will result in a failed build, 
-please take the time to read through the guidelines beforehand.
-
-
+Copyright (c) 2012 - 2015 websudos.
