@@ -1,4 +1,4 @@
-morpheus [NOT PRODUCTION READY][![Build Status](https://travis-ci.org/websudos/morpheus.svg)](https://travis-ci.org/websudos/morpheus)[![Coverage Status](https://coveralls.io/repos/websudosuk/morpheus/badge.png?branch=develop)](https://coveralls.io/r/websudosuk/morpheus?branch=develop)
+morpheus [![Build Status](https://travis-ci.org/websudos/morpheus.svg)](https://travis-ci.org/websudos/morpheus) [![Coverage Status](https://coveralls.io/repos/websudos/morpheus/badge.svg?branch=develop&service=github)](https://coveralls.io/github/websudos/morpheus?branch=develop)
 
 ========================================================================================================================================================================================================================
 
