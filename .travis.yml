@@ -45,10 +45,10 @@ before_script:
   - mysql -e "SET PASSWORD FOR 'travis'@'localhost' = PASSWORD('morpheus23!')"
 
 script:
-  - sbt ++$TRAVIS_SCALA_VERSION project morpheus-dsl clean coverage test coverageReport
-  - sbt ++$TRAVIS_SCALA_VERSION project morpheus-mysql clean coverage test coverageReport
-  - sbt ++$TRAVIS_SCALA_VERSION project morpheus-testkit clean coverage test coverageReport
-  - sbt ++$TRAVIS_SCALA_VERSION project morpheus coverageAggregate
+  - sbt ++$TRAVIS_SCALA_VERSION "project morpheus-dsl" clean coverage test coverageReport
+  - sbt ++$TRAVIS_SCALA_VERSION "project morpheus-mysql" clean coverage test coverageReport
+  - sbt ++$TRAVIS_SCALA_VERSION "project morpheus-testkit" clean coverage test coverageReport
+  - sbt ++$TRAVIS_SCALA_VERSION "project morpheus" coverageAggregate
 
 after_success:
   - sbt ++$TRAVIS_SCALA_VERSION coveralls
