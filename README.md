@@ -1,4 +1,4 @@
-morpheus [![Build Status](https://travis-ci.org/websudos/morpheus.svg)](https://travis-ci.org/websudos/morpheus) [![Coverage Status](https://coveralls.io/repos/websudos/morpheus/badge.svg?branch=develop&service=github)](https://coveralls.io/github/websudos/morpheus?branch=develop)
+morpheus [![Build Status](https://travis-ci.org/websudos/morpheus.svg)](https://travis-ci.org/websudos/morpheus) [![Coverage Status](https://coveralls.io/repos/websudos/morpheus/badge.svg?branch=develop&service=github)](https://coveralls.io/github/websudos/morpheus?branch=develop) [ ![Download](https://api.bintray.com/packages/websudos/oss-releases/morpheus-mysql/images/download.svg) ](https://bintray.com/websudos/oss-releases/morpheus-mysql/_latestVersion)
 
 ========================================================================================================================================================================================================================
 
@@ -12,7 +12,7 @@ you've gotten used to. Also, morpheus stands for morphing. With the single switc
 OracleSQL for example. It doesn't have a query compiler, instead it entirely mimics the functionality the database has.
 
 We've taken it up ourselves to produce the highest quality database integration tooling for all Scala users, 
-currently hitting that bar for Cassandra, Neo4J and MongoDB. But why stop there?
+currently hitting that bar for Cassandra and Neo4J. But why stop there?
 
 
 Using morpheus
