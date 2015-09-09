@@ -12,7 +12,7 @@ addSbtPlugin("net.virtual-void" % "sbt-dependency-graph" % "0.7.5")
 
 // addSbtPlugin("com.twitter" %% "scrooge-sbt-plugin" % "3.18.1")
 
-addSbtPlugin("org.scoverage" % "sbt-scoverage" % "1.3.1")
+addSbtPlugin("org.websudos" % "sbt-scoverage" % "1.3.2")
 
 addSbtPlugin("org.scoverage" %% "sbt-coveralls" % "1.0.0")
 
