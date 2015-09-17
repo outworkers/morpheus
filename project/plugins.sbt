@@ -4,7 +4,7 @@ resolvers ++= Seq(
   "Twitter Repo"                                       at "http://maven.twttr.com/",
   "sonatype-releases"                                  at "https://oss.sonatype.org/content/repositories/releases/",
   Resolver.url("scoverage-bintray", url("https://dl.bintray.com/sksamuel/sbt-plugins/"))(Resolver.ivyStylePatterns),
-  Resolver.bintrayRepo("websudos", "oss-releases"),
+  Resolver.url("Websudos OSS", url("http://dl.bintray.com/websudos/oss-releases"))(Resolver.ivyStylePatterns),
   Classpaths.sbtPluginReleases
 )
 
@@ -12,7 +12,7 @@ addSbtPlugin("net.virtual-void" % "sbt-dependency-graph" % "0.7.5")
 
 // addSbtPlugin("com.twitter" %% "scrooge-sbt-plugin" % "3.18.1")
 
-addSbtPlugin("org.scoverage" % "sbt-scoverage" % "1.3.1")
+addSbtPlugin("com.websudos" % "sbt-scoverage" % "1.3.2")
 
 addSbtPlugin("org.scoverage" %% "sbt-coveralls" % "1.0.0")
 
