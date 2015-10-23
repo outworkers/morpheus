@@ -66,6 +66,7 @@ trait MySQLSuite extends AsyncAssertions
   with ScalaFutures
   with OptionValues
   with Matchers
+  with Generators
   with BeforeAndAfterAll {
 
   this: Suite =>

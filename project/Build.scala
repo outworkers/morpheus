@@ -24,7 +24,10 @@ object Build extends Build {
   )
 
   val mavenPublishSettings : Seq[Def.Setting[_]] = Seq(
-    credentials += Credentials(Path.userHome / ".ivy2" / ".credentials"),
+    credentials ++= Seq(
+      Credentials(Path.userHome / ".ivy2" / ".credentials"),
+      Credentials(Path.userHome / ".bintray" / ".credentials")
+    ),
     publishMavenStyle := true,
     publishTo <<= version.apply {
       v =>
