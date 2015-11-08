@@ -33,6 +33,7 @@ import com.websudos.morpheus.Row
 import com.websudos.morpheus.builder.{SQLBuiltQuery, AbstractSyntaxBlock, DefaultSQLSyntax, AbstractSQLSyntax}
 import com.websudos.morpheus.dsl.BaseTable
 import com.websudos.morpheus.sql.DefaultRow
+import shapeless.{HNil, HList}
 
 import scala.annotation.implicitNotFound
 
@@ -67,7 +68,7 @@ private[morpheus] class RootDeleteQuery[
 
   def fromRow(r: TableRow): R = rowFunc(r)
 
-  protected[this] type BaseDeleteQuery = DeleteQuery[T, R, TableRow, Ungroupped, Unordered, Unlimited, Unchainned, AssignUnchainned, Unterminated]
+  protected[this] type BaseDeleteQuery = DeleteQuery[T, R, TableRow, Ungroupped, Unordered, Unlimited, Unchainned, AssignUnchainned, HNil]
 
   private[morpheus] final def all: BaseDeleteQuery = {
     new DeleteQuery(table, st.all, rowFunc)
@@ -95,7 +96,7 @@ class DeleteQuery[T <: BaseTable[T, _, TableRow],
   Limit <: LimitBind,
   Chain <: ChainBind,
   AssignChain <: AssignBind,
-  Status <: StatusBind
+  Status <: HList
 ](table: T, query: SQLBuiltQuery, rowFunc: TableRow => R) extends Query[T, R, TableRow, Group, Order, Limit, Chain, AssignChain, Status](table, query,
   rowFunc) {
 

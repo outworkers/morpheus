@@ -34,6 +34,7 @@ import com.websudos.morpheus.builder.SQLBuiltQuery
 import com.websudos.morpheus.mysql._
 import com.websudos.morpheus.query._
 import com.websudos.morpheus.query.parts.{LightweightPart, ValuePart, Defaults, ColumnsPart}
+import shapeless.{HNil, HList}
 
 private[morpheus] class MySQLInsertSyntaxBlock(query: String, tableName: String) extends RootInsertSyntaxBlock(query, tableName) {
   override val syntax = MySQLSyntax
@@ -91,7 +92,7 @@ class MySQLInsertQuery[T <: BaseTable[T, _, MySQLRow],
   Limit <: LimitBind,
   Chain <: ChainBind,
   AssignChain <: AssignBind,
-  Status <: StatusBind
+  Status <: HList
 ](table: T,
   override val init: SQLBuiltQuery,
   rowFunc: MySQLRow => R,
@@ -101,5 +102,5 @@ class MySQLInsertQuery[T <: BaseTable[T, _, MySQLRow],
 ) extends InsertQuery[T, R, MySQLRow, Group, Order, Limit, Chain, AssignChain, Status](table: T, init, rowFunc) {}
 
 object MySQLInsertQuery {
-  type Default[T <: BaseTable[T, _, MySQLRow], R] = MySQLInsertQuery[T, R, Ungroupped, Unordered, Unlimited, Unchainned, AssignUnchainned, Unterminated]
+  type Default[T <: BaseTable[T, _, MySQLRow], R] = MySQLInsertQuery[T, R, Ungroupped, Unordered, Unlimited, Unchainned, AssignUnchainned, HNil]
 }

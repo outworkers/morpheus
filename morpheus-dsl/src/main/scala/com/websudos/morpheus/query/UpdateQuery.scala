@@ -31,6 +31,7 @@ package com.websudos.morpheus.query
 
 import com.websudos.morpheus.builder.{SQLBuiltQuery, AbstractSyntaxBlock, DefaultSQLSyntax, AbstractSQLSyntax}
 import com.websudos.morpheus.sql.DefaultRow
+import shapeless.{HNil, HList}
 
 import scala.annotation.implicitNotFound
 
@@ -65,7 +66,7 @@ private[morpheus] class RootUpdateSyntaxBlock(query: String, tableName: String) 
 private[morpheus] class RootUpdateQuery[T <: BaseTable[T, _, TableRow], R, TableRow <: Row](val table: T, val st: RootUpdateSyntaxBlock, val rowFunc:
   TableRow => R) {
 
-  protected[this] type BaseUpdateQuery = UpdateQuery[T, R, TableRow, Ungroupped, Unordered, Unlimited, Unchainned, AssignUnchainned, Unterminated]
+  protected[this] type BaseUpdateQuery = UpdateQuery[T, R, TableRow, Ungroupped, Unordered, Unlimited, Unchainned, AssignUnchainned, HNil]
 
   private[morpheus] def all: BaseUpdateQuery = {
     new UpdateQuery(table, st.all, rowFunc)
@@ -97,7 +98,7 @@ class UpdateQuery[T <: BaseTable[T, _, TableRow],
   Limit <: LimitBind,
   Chain <: ChainBind,
   AssignChain <: AssignBind,
-  Status <: StatusBind
+  Status <: HList
 ](table: T, query: SQLBuiltQuery, rowFunc: TableRow => R) extends Query[T, R, TableRow, Group, Order, Limit, Chain, AssignChain,
   Status](table, query, rowFunc) {
 
@@ -113,7 +114,7 @@ class UpdateQuery[T <: BaseTable[T, _, TableRow],
   }
 
   @implicitNotFound("You can't use 2 SET parts on a single UPDATE query")
-  def set(condition: T => QueryAssignment)(implicit ev: AssignChain =:= AssignUnchainned, ev1: Status =:= Unterminated): UpdateQuery[T, R,
+  def set(condition: T => QueryAssignment)(implicit ev: AssignChain =:= AssignUnchainned, ev1: Status =:= HNil): UpdateQuery[T, R,
     TableRow, Group, Order, Limit, Chain, AssignChainned, Status] = {
     new UpdateQuery(
       table,
@@ -141,13 +142,4 @@ class UpdateQuery[T <: BaseTable[T, _, TableRow],
   def and(condition: QueryCondition)(implicit ev: Chain =:= Chainned): UpdateQuery[T, R, TableRow, Group, Order, Limit, Chain, AssignChainned, Status]  = {
     new UpdateQuery(table, table.queryBuilder.and(query, condition.clause), rowFunc)
   }
-
-  private[morpheus] def terminate: UpdateQuery[T, R, TableRow, Group, Order, Limit, Chain, AssignChainned, Terminated] = {
-    new UpdateQuery(
-      table,
-      query,
-      rowFunc
-    )
-  }
-
 }

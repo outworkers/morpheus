@@ -34,6 +34,7 @@ import com.websudos.morpheus.column.{AbstractColumn, ForeignKeyDefinition}
 import com.websudos.morpheus.dsl.BaseTable
 import com.websudos.morpheus.sql.DefaultRow
 import com.websudos.morpheus.{Row, SQLPrimitive}
+import shapeless.{HNil, HList}
 
 import scala.annotation.implicitNotFound
 
@@ -81,11 +82,11 @@ rowFunc: TableRow => R) {
 
   def fromRow(r: TableRow): R = rowFunc(r)
 
-  def distinct: SelectQuery[T, R, TableRow, Ungroupped, Unordered, Unlimited, Unchainned, AssignUnchainned, Unterminated] = {
+  def distinct: SelectQuery[T, R, TableRow, Ungroupped, Unordered, Unlimited, Unchainned, AssignUnchainned, HNil] = {
     new SelectQuery(table, st.distinct, rowFunc)
   }
 
-  def all: SelectQuery[T, R, TableRow, Ungroupped, Unordered, Unlimited, Unchainned, AssignUnchainned, Unterminated] = {
+  def all: SelectQuery[T, R, TableRow, Ungroupped, Unordered, Unlimited, Unchainned, AssignUnchainned, HNil] = {
     new SelectQuery(table, st.*, rowFunc)
   }
 }
@@ -111,7 +112,7 @@ class SelectQuery[T <: BaseTable[T, _, TableRow],
   Limit <: LimitBind,
   Chain <: ChainBind,
   AssignChain <: AssignBind,
-  Status <: StatusBind
+  Status <: HList
 ](table: T, query: SQLBuiltQuery, rowFunc: TableRow => R) extends Query[T, R, TableRow, Group, Order, Limit, Chain, AssignChain, Status](table, query,
   rowFunc) {
 
@@ -151,12 +152,12 @@ class SelectQuery[T <: BaseTable[T, _, TableRow],
   @inline
   private[this] def joinBuilder[Owner <: BaseTable[Owner, Record, TableRow], Record](
       joiner: (SQLBuiltQuery, String) => SQLBuiltQuery,
-      join: BaseTable[Owner, Record, TableRow]): OnJoinQuery[T, (R, Record), TableRow, Group, Order, Limit, Chain, AssignChain, Unterminated] = {
+      join: BaseTable[Owner, Record, TableRow]): OnJoinQuery[T, (R, Record), TableRow, Group, Order, Limit, Chain, AssignChain, HNil] = {
 
     def fromRow(row: Row): (R, Record) = fromRow(row)
 
-    new OnJoinQuery[T, (R, Record), TableRow, Group, Order, Limit, Chain, AssignChain, Unterminated](
-      new SelectQuery[T, (R, Record), TableRow, Group, Order, Limit, Chain, AssignChain, Unterminated](
+    new OnJoinQuery[T, (R, Record), TableRow, Group, Order, Limit, Chain, AssignChain, HNil](
+      new SelectQuery[T, (R, Record), TableRow, Group, Order, Limit, Chain, AssignChain, HNil](
         table,
         joiner(query, join.tableName),
         fromRow
@@ -165,20 +166,16 @@ class SelectQuery[T <: BaseTable[T, _, TableRow],
   }
 
   def innerJoin[Owner <: BaseTable[Owner, Record, TableRow], Record](join: BaseTable[Owner, Record, TableRow])
-      : OnJoinQuery[T, (R, Record), TableRow, Group, Order, Limit, Chain, AssignChain, Unterminated] =
+      : OnJoinQuery[T, (R, Record), TableRow, Group, Order, Limit, Chain, AssignChain, HNil] =
     joinBuilder(table.queryBuilder.innerJoin, join)
 
   def leftJoin[Owner <: BaseTable[Owner, Record, TableRow], Record](join: BaseTable[Owner, Record, TableRow])
-      : OnJoinQuery[T, (R, Record), TableRow, Group, Order, Limit, Chain, AssignChain, Unterminated] =
+      : OnJoinQuery[T, (R, Record), TableRow, Group, Order, Limit, Chain, AssignChain, HNil] =
     joinBuilder(table.queryBuilder.leftJoin, join)
 
   def rightJoin[Owner <: BaseTable[Owner, Record, TableRow], Record](join: BaseTable[Owner, Record, TableRow])
-      : OnJoinQuery[T, (R, Record), TableRow, Group, Order, Limit, Chain, AssignChain, Unterminated] =
+      : OnJoinQuery[T, (R, Record), TableRow, Group, Order, Limit, Chain, AssignChain, HNil] =
     joinBuilder(table.queryBuilder.rightJoin, join)
-
-  private[morpheus] final def terminate: SelectQuery[T, R, TableRow, Group, Order, Limit, Chain, AssignChain, Terminated] = {
-    new SelectQuery(table, query, fromRow)
-  }
 }
 
 sealed case class JoinClause(clause: SQLBuiltQuery)
@@ -199,7 +196,7 @@ class OnJoinQuery[T <: BaseTable[T, _, TableRow],
   Limit <: LimitBind,
   Chain <: ChainBind,
   AssignChain <: AssignBind,
-  Status <: StatusBind
+  Status <: HList
 ](val query: SelectQuery[T, R, TableRow, Group, Order, Limit, Chain, AssignChain, Status]) {
 
   def on(condition: T => JoinClause): SelectQuery[T, R, TableRow, Group, Order, Limit, Chain, AssignChain, Status] = {

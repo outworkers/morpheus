@@ -30,6 +30,7 @@
 package com.websudos.morpheus.query
 
 import com.websudos.morpheus.builder.SQLBuiltQuery
+import shapeless.{HNil, HList}
 
 import scala.annotation.implicitNotFound
 
@@ -52,10 +53,6 @@ final abstract class Unordered extends OrderBind
 sealed trait LimitBind
 final abstract class Limited extends LimitBind
 final abstract class Unlimited extends LimitBind
-
-sealed trait StatusBind
-final abstract class Terminated extends StatusBind
-final abstract class Unterminated extends StatusBind
 
 /**
  * This bit of magic allows all extending sub-classes to implement the "where" and "and" SQL clauses with all the necessary operators,
@@ -81,18 +78,18 @@ class Query[T <: BaseTable[T, _, TableRow],
   Lim <: LimitBind,
   Chain <: ChainBind,
   AC <: AssignBind,
-  Status <: StatusBind
+  PS <: HList
 ](val table: T, val query: SQLBuiltQuery, val rowFunc: TableRow => R) extends SQLQuery[T, R, TableRow] {
 
   def fromRow(row: TableRow): R = rowFunc(row)
 
   @implicitNotFound("You cannot set two limits on the same query")
-  final def limit(value: Int)(implicit ev: Lim =:= Unlimited): Query[T, R, TableRow, Group, Ord, Limited, Chain, AC, Status] = {
+  final def limit(value: Int)(implicit ev: Lim =:= Unlimited): Query[T, R, TableRow, Group, Ord, Limited, Chain, AC, PS] = {
     new Query(table, table.queryBuilder.limit(query, value.toString), rowFunc)
   }
 
   @implicitNotFound("You cannot ORDER a query more than once")
-  final def orderBy(conditions: (T => QueryOrder)*)(implicit ev: Ord =:= Unordered): Query[T, R, TableRow, Group, Ordered, Lim, Chain, AC, Status] = {
+  final def orderBy(conditions: (T => QueryOrder)*)(implicit ev: Ord =:= Unordered): Query[T, R, TableRow, Group, Ordered, Lim, Chain, AC, PS] = {
     val applied = conditions map {
       fn => fn(table).clause
     }
@@ -101,7 +98,7 @@ class Query[T <: BaseTable[T, _, TableRow],
 
   @implicitNotFound("You cannot GROUP a query more than once or GROUP after you ORDER a query")
   final def groupBy(columns: (T => SelectColumn[_])*)(implicit ev1: Group =:= Ungroupped, ev2: Ord =:= Unordered): Query[T, R, TableRow, Groupped, Ord, Lim,
-    Chain, AC, Status] = {
+    Chain, AC, PS] = {
     new Query(table, table.queryBuilder.groupBy(query, columns map { _(table).queryString }), rowFunc)
   }
 
@@ -114,7 +111,9 @@ object Query {
     Unordered,
     Unlimited,
     Unchainned,
-    AssignUnchainned, Unterminated] = {
+    AssignUnchainned,
+    HNil
+  ] = {
     new Query(table, query, rowFunc)
   }
 }
