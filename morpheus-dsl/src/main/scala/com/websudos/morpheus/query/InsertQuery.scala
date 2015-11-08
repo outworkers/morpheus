@@ -79,7 +79,8 @@ private[morpheus] class DefaultRootInsertQuery[T <: BaseTable[T, _, DefaultRow],
 
 
 
-class InsertQuery[T <: BaseTable[T, _, TableRow],
+class InsertQuery[
+  T <: BaseTable[T, _, TableRow],
   R,
   TableRow <: Row,
   Group <: GroupBind,
@@ -93,10 +94,36 @@ class InsertQuery[T <: BaseTable[T, _, TableRow],
   rowFunc: TableRow => R,
   columnsPart: ColumnsPart = Defaults.EmptyColumnsPart,
   valuePart: ValuePart = Defaults.EmptyValuePart,
-  lightweightPart: LightweightPart = Defaults.EmptyLightweightPart
+  lightweightPart: LightweightPart = Defaults.EmptyLightweightPart,
+  parameters: Seq[Any] = Seq.empty
 ) extends Query[T, R,
-  TableRow, Group, Order, Limit, Chain, AssignChain, Status](table, init, rowFunc) {
+  TableRow, Group, Order, Limit, Chain, AssignChain, Status](table, init, rowFunc, parameters) {
 
+  protected[this] type QueryType[
+    Table <: BaseTable[Table, _, TR],
+    Record,
+    TR <: Row,
+    G <: GroupBind,
+    O <: OrderBind,
+    L <: LimitBind,
+    S <: ChainBind,
+    C <: AssignBind,
+    P <: HList
+  ] = InsertQuery[Table, Record, TR, G, O, L, S, C, P]
+
+  override protected[this] def create[
+    Table <: BaseTable[Table, _, TR],
+    Record,
+    TR <: Row,
+    G <: GroupBind,
+    O <: OrderBind,
+    L <: LimitBind,
+    S <: ChainBind,
+    C <: AssignBind,
+    P <: HList
+  ](t: Table, q: SQLBuiltQuery, r: TR => Record, parameters: Seq[Any]): QueryType[Table, Record, TR, G, O, L, S, C, P] = {
+    new InsertQuery[Table, Record, TR, G, O, L, S, C, P](t, q, r, columnsPart, valuePart, lightweightPart, parameters)
+  }
 
   /**
    * At this point you may be reading and thinking "WTF", but fear not, it all makes sense. Every call to a "value method" will generate a new Insert Query,

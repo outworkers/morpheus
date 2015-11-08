@@ -29,14 +29,13 @@
  */
 package com.websudos.morpheus.query
 
-import com.websudos.morpheus.builder.SQLBuiltQuery
-import shapeless.{HNil, HList}
-
-import scala.annotation.implicitNotFound
-
 import com.websudos.morpheus.Row
+import com.websudos.morpheus.builder.SQLBuiltQuery
 import com.websudos.morpheus.column.SelectColumn
 import com.websudos.morpheus.dsl.BaseTable
+import shapeless.HList
+
+import scala.annotation.implicitNotFound
 
 sealed trait GroupBind
 final abstract class Groupped extends GroupBind
@@ -70,7 +69,7 @@ final abstract class Unlimited extends LimitBind
  * @tparam T The type of the table owning the record.
  * @tparam R The type of the record held in the table.
  */
-class Query[T <: BaseTable[T, _, TableRow],
+abstract class Query[T <: BaseTable[T, _, TableRow],
   R,
   TableRow <: Row,
   Group <: GroupBind,
@@ -79,13 +78,42 @@ class Query[T <: BaseTable[T, _, TableRow],
   Chain <: ChainBind,
   AC <: AssignBind,
   PS <: HList
-](val table: T, val query: SQLBuiltQuery, val rowFunc: TableRow => R) extends SQLQuery[T, R, TableRow] {
+](
+  val table: T,
+  val query: SQLBuiltQuery,
+  val rowFunc: TableRow => R,
+  val parameters: Seq[Any] = Seq.empty
+) extends SQLQuery[T, R, TableRow] {
+
+  protected[this] type QueryType[
+    Table <: BaseTable[Table, _, TR],
+    Record,
+    TR <: Row,
+    G <: GroupBind,
+    O <: OrderBind,
+    L <: LimitBind,
+    S <: ChainBind,
+    C <: AssignBind,
+    P <: HList
+  ] <: Query[Table, Record, TR, G, O, L, S, C, P]
+
+  protected[this] def create[
+    Table <: BaseTable[Table, _, TableRow],
+    Record,
+    TR <: Row,
+    G <: GroupBind,
+    O <: OrderBind,
+    L <: LimitBind,
+    S <: ChainBind,
+    C <: AssignBind,
+    P <: HList
+  ](t: Table, q: SQLBuiltQuery, r: TR => Record, parameters: Seq[Any]): QueryType[Table, Record, TR, G, O, L, S, C, P]
 
   def fromRow(row: TableRow): R = rowFunc(row)
 
   @implicitNotFound("You cannot set two limits on the same query")
   final def limit(value: Int)(implicit ev: Lim =:= Unlimited): Query[T, R, TableRow, Group, Ord, Limited, Chain, AC, PS] = {
-    new Query(table, table.queryBuilder.limit(query, value.toString), rowFunc)
+    create(table, table.queryBuilder.limit(query, value.toString), rowFunc, parameters)
   }
 
   @implicitNotFound("You cannot ORDER a query more than once")
@@ -93,27 +121,14 @@ class Query[T <: BaseTable[T, _, TableRow],
     val applied = conditions map {
       fn => fn(table).clause
     }
-    new Query(table, table.queryBuilder.orderBy(query, applied), rowFunc)
+
+    create(table, table.queryBuilder.orderBy(query, applied), rowFunc, parameters)
   }
 
   @implicitNotFound("You cannot GROUP a query more than once or GROUP after you ORDER a query")
   final def groupBy(columns: (T => SelectColumn[_])*)(implicit ev1: Group =:= Ungroupped, ev2: Ord =:= Unordered): Query[T, R, TableRow, Groupped, Ord, Lim,
     Chain, AC, PS] = {
-    new Query(table, table.queryBuilder.groupBy(query, columns map { _(table).queryString }), rowFunc)
+    create(table, table.queryBuilder.groupBy(query, columns map { _(table).queryString }), rowFunc, parameters)
   }
 
-
-}
-
-object Query {
-  def apply[T <: BaseTable[T, _, TableRow], R, TableRow <: Row](table: T, query: SQLBuiltQuery, rowFunc: TableRow => R): Query[T, R, TableRow,
-    Ungroupped,
-    Unordered,
-    Unlimited,
-    Unchainned,
-    AssignUnchainned,
-    HNil
-  ] = {
-    new Query(table, query, rowFunc)
-  }
 }
