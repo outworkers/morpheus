@@ -80,7 +80,7 @@ private[morpheus] class DefaultRootInsertQuery[T <: BaseTable[T, _, DefaultRow],
 
 
 class InsertQuery[
-  T <: BaseTable[T, _, TableRow],
+T <: BaseTable[T, _, TableRow],
   R,
   TableRow <: Row,
   Group <: GroupBind,
@@ -100,29 +100,23 @@ class InsertQuery[
   TableRow, Group, Order, Limit, Chain, AssignChain, Status](table, init, rowFunc, parameters) {
 
   protected[this] type QueryType[
-    Table <: BaseTable[Table, _, TR],
-    Record,
-    TR <: Row,
     G <: GroupBind,
     O <: OrderBind,
     L <: LimitBind,
     S <: ChainBind,
     C <: AssignBind,
     P <: HList
-  ] = InsertQuery[Table, Record, TR, G, O, L, S, C, P]
+  ] = InsertQuery[T, R, TableRow, G, O, L, S, C, P]
 
   override protected[this] def create[
-    Table <: BaseTable[Table, _, TR],
-    Record,
-    TR <: Row,
     G <: GroupBind,
     O <: OrderBind,
     L <: LimitBind,
     S <: ChainBind,
     C <: AssignBind,
     P <: HList
-  ](t: Table, q: SQLBuiltQuery, r: TR => Record, parameters: Seq[Any]): QueryType[Table, Record, TR, G, O, L, S, C, P] = {
-    new InsertQuery[Table, Record, TR, G, O, L, S, C, P](t, q, r, columnsPart, valuePart, lightweightPart, parameters)
+  ](t: T, q: SQLBuiltQuery, r: TableRow => R, parameters: Seq[Any]): QueryType[G, O, L, S, C, P] = {
+    new InsertQuery(t, q, r, columnsPart, valuePart, lightweightPart, parameters)
   }
 
   /**
@@ -139,7 +133,7 @@ class InsertQuery[
    */
   @implicitNotFound(msg = "To use the value method this query needs to be an insert query and the query needs to be HNil. You probably have more " +
     "value calls than columns in your table, which would result in an invalid MySQL query.")
-  final def value[RR : SQLPrimitive](insertion: T => AbstractColumn[RR], obj: RR): InsertQuery[T, R, TableRow, Group, Order, Limit, Chain, AssignChain, HNil] = {
+  def value[RR : SQLPrimitive](insertion: T => AbstractColumn[RR], obj: RR): QueryType[Group, Order, Limit, Chain, AssignChain, HNil] = {
 
     new InsertQuery[T, R, TableRow, Group, Order, Limit, Chain, AssignChain, HNil](
       table,
@@ -151,7 +145,5 @@ class InsertQuery[
     )
   }
 
-  override val query = {
-    (columnsPart merge valuePart merge lightweightPart) build init
-  }
+  override val query = (columnsPart merge valuePart merge lightweightPart) build init
 }

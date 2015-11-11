@@ -30,11 +30,16 @@
 
 package com.websudos.morpheus.mysql.query
 
+import com.websudos.morpheus.SQLPrimitive
 import com.websudos.morpheus.builder.SQLBuiltQuery
+import com.websudos.morpheus.column.AbstractColumn
+import com.websudos.morpheus.dsl.BaseTable
 import com.websudos.morpheus.mysql._
 import com.websudos.morpheus.query._
-import com.websudos.morpheus.query.parts.{LightweightPart, ValuePart, Defaults, ColumnsPart}
-import shapeless.{HNil, HList}
+import com.websudos.morpheus.query.parts.{ColumnsPart, Defaults, LightweightPart, ValuePart}
+import shapeless.{HList, HNil}
+
+import scala.annotation.implicitNotFound
 
 private[morpheus] class MySQLInsertSyntaxBlock(query: String, tableName: String) extends RootInsertSyntaxBlock(query, tableName) {
   override val syntax = MySQLSyntax
@@ -98,8 +103,58 @@ class MySQLInsertQuery[T <: BaseTable[T, _, MySQLRow],
   rowFunc: MySQLRow => R,
   columnsPart: ColumnsPart = Defaults.EmptyColumnsPart,
   valuePart: ValuePart = Defaults.EmptyValuePart,
-  lightweightPart: LightweightPart = Defaults.EmptyLightweightPart
-) extends InsertQuery[T, R, MySQLRow, Group, Order, Limit, Chain, AssignChain, Status](table: T, init, rowFunc) {}
+  lightweightPart: LightweightPart = Defaults.EmptyLightweightPart,
+  override val parameters: Seq[Any] = Seq.empty
+) extends InsertQuery[T, R, MySQLRow, Group, Order, Limit, Chain, AssignChain, Status](table: T, init, rowFunc) {
+
+  override protected[this] type QueryType[
+    G <: GroupBind,
+    O <: OrderBind,
+    L <: LimitBind,
+    S <: ChainBind,
+    C <: AssignBind,
+    P <: HList
+  ] = MySQLInsertQuery[T, R, G, O, L, S, C, P]
+
+  override protected[this] def create[
+    G <: GroupBind,
+    O <: OrderBind,
+    L <: LimitBind,
+    S <: ChainBind,
+    C <: AssignBind,
+    P <: HList
+  ](t: T, q: SQLBuiltQuery, r: MySQLRow => R, parameters: Seq[Any]): QueryType[G, O, L, S, C, P] = {
+    new MySQLInsertQuery(t, q, r, columnsPart, valuePart, lightweightPart, parameters)
+  }
+
+  /**
+    * At this point you may be reading and thinking "WTF", but fear not, it all makes sense. Every call to a "value method" will generate a new Insert Query,
+    * but the list of statements in the new query will include a new (String, String) pair, where the first part is the column name and the second one is the
+    * serialised value. This is a very simple accumulator that will eventually allow calling the "insert" method on a queryBuilder to produce the final
+    * serialisation result, a hopefully valid MySQL insert query.
+    *
+    * @param insertion The insert condition is a pair of a column with the value to use for it. It looks like this: value(_.someColumn, someValue),
+    *                  where the assignment is of course type safe.
+    * @param obj The object is the value to use for the column.
+    * @tparam RR The SQL primitive or rather it's Scala correspondent to use at this time.
+    * @return A new InsertQuery, where the list of statements in the Insert has been chained and updated for serialisation.
+    */
+  @implicitNotFound(msg = "To use the value method this query needs to be an insert query and the query needs to be unterminated. You probably have more " +
+    "value calls than columns in your table, which would result in an invalid MySQL query.")
+  override def value[RR : SQLPrimitive](insertion: T => AbstractColumn[RR], obj: RR): MySQLInsertQuery[T, R, Group, Order, Limit, Chain, AssignChain, Status] = {
+
+    new MySQLInsertQuery[T, R, Group, Order, Limit, Chain, AssignChain, Status](
+      table,
+      init,
+      fromRow,
+      columnsPart append SQLBuiltQuery(insertion(table).name),
+      valuePart append SQLBuiltQuery(implicitly[SQLPrimitive[RR]].toSQL(obj)),
+      lightweightPart
+    )
+  }
+
+
+}
 
 object MySQLInsertQuery {
   type Default[T <: BaseTable[T, _, MySQLRow], R] = MySQLInsertQuery[T, R, Ungroupped, Unordered, Unlimited, Unchainned, AssignUnchainned, HNil]

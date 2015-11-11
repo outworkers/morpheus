@@ -115,6 +115,27 @@ class CreateQuery[T <: BaseTable[T, _, TableRow],
   Status <: HList
 ](table: T, query: SQLBuiltQuery, rowFunc: TableRow => R) extends Query[T, R, TableRow, Group, Order, Limit, Chain, AssignChain, Status](table, query, rowFunc) {
 
+  protected[this] type QueryType[
+    G <: GroupBind,
+    O <: OrderBind,
+    L <: LimitBind,
+    S <: ChainBind,
+    C <: AssignBind,
+    P <: HList
+  ] = CreateQuery[T, R, TableRow, G, O, L, S, C, P]
+
+  override protected[this] def create[
+    G <: GroupBind,
+    O <: OrderBind,
+    L <: LimitBind,
+    S <: ChainBind,
+    C <: AssignBind,
+    P <: HList
+  ](t: T, q: SQLBuiltQuery, r: TableRow => R, parameters: Seq[Any]): QueryType[G, O, L, S, C, P] = {
+    new CreateQuery(t, q, r)
+  }
+
+
   final protected[morpheus] def columnDefinitions: List[String] = {
     table.columns.foldRight(List.empty[String])((col, acc) => {
       col.qb.queryString :: acc

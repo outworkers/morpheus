@@ -113,35 +113,51 @@ class SelectQuery[T <: BaseTable[T, _, TableRow],
   Chain <: ChainBind,
   AssignChain <: AssignBind,
   Status <: HList
-](table: T, query: SQLBuiltQuery, rowFunc: TableRow => R) extends Query[T, R, TableRow, Group, Order, Limit, Chain, AssignChain, Status](table, query,
+](table: T, query: SQLBuiltQuery, rowFunc: TableRow => R, override val parameters: Seq[Any] = Seq.empty) extends Query[T, R, TableRow, Group, Order, Limit, Chain, AssignChain, Status](table, query,
   rowFunc) {
 
+  protected[this] type QueryType[
+    G <: GroupBind,
+    O <: OrderBind,
+    L <: LimitBind,
+    S <: ChainBind,
+    C <: AssignBind,
+    P <: HList
+  ] = SelectQuery[T, R, TableRow, G, O, L, S, C, P]
+
+  override protected[this] def create[
+    G <: GroupBind,
+    O <: OrderBind,
+    L <: LimitBind,
+    S <: ChainBind,
+    C <: AssignBind,
+    P <: HList
+    ](t: T, q: SQLBuiltQuery, r: TableRow => R, parameters: Seq[Any]): QueryType[G, O, L, S, C, P] = {
+    new SelectQuery(t, q, r, parameters)
+  }
+
   @implicitNotFound("You cannot use two where clauses on a single query")
-  def where(condition: T => QueryCondition)(implicit ev: Chain =:= Unchainned): SelectQuery[T, R, TableRow, Group, Order, Limit, Chainned, AssignChain,
+  def where(condition: T => QueryCondition)(implicit ev: Chain =:= Unchainned): QueryType[Group, Order, Limit, Chainned, AssignChain,
     Status] = {
     new SelectQuery(table, table.queryBuilder.where(query, condition(table).clause), rowFunc)
   }
 
   @implicitNotFound("You cannot use two where clauses on a single query")
-  def where(condition: QueryCondition)(implicit ev: Chain =:= Unchainned): SelectQuery[T, R, TableRow, Group, Order, Limit, Chainned, AssignChain, Status] = {
+  def where(condition: QueryCondition)(implicit ev: Chain =:= Unchainned): QueryType[Group, Order, Limit, Chainned, AssignChain, Status] = {
     new SelectQuery(table, table.queryBuilder.where(query, condition.clause), rowFunc)
   }
 
   @implicitNotFound("You need to use the where method first")
-  def and(condition: T => QueryCondition)(implicit ev: Chain =:= Chainned): SelectQuery[T, R, TableRow, Group, Order, Limit, Chain, AssignChainned, Status]  = {
+  def and(condition: T => QueryCondition)(implicit ev: Chain =:= Chainned): QueryType[Group, Order, Limit, Chain, AssignChainned, Status]  = {
     new SelectQuery(table, table.queryBuilder.and(query, condition(table).clause), rowFunc)
   }
 
   @implicitNotFound("You need to use the where method first")
-  def and(condition: QueryCondition)(implicit ev: Chain =:= Chainned): SelectQuery[T, R, TableRow, Group, Order, Limit, Chain, AssignChainned, Status] = {
+  def and(condition: QueryCondition)(implicit ev: Chain =:= Chainned): QueryType[Group, Order, Limit, Chain, AssignChainned, Status] = {
     new SelectQuery(table, table.queryBuilder.and(query, condition.clause), rowFunc)
   }
 
-  final def having(condition: T => QueryCondition): SelectQuery[T, R, TableRow, Group,
-    Order,
-    Limit,
-    Chain,
-    AssignChainned, Status] = {
+  final def having(condition: T => QueryCondition): QueryType[Group, Order, Limit, Chain, AssignChainned, Status] = {
     new SelectQuery[T, R, TableRow, Group, Order, Limit, Chain, AssignChainned, Status](
       table,
       table.queryBuilder.having(query, condition(table).clause),
@@ -152,7 +168,8 @@ class SelectQuery[T <: BaseTable[T, _, TableRow],
   @inline
   private[this] def joinBuilder[Owner <: BaseTable[Owner, Record, TableRow], Record](
       joiner: (SQLBuiltQuery, String) => SQLBuiltQuery,
-      join: BaseTable[Owner, Record, TableRow]): OnJoinQuery[T, (R, Record), TableRow, Group, Order, Limit, Chain, AssignChain, HNil] = {
+      join: BaseTable[Owner, Record, TableRow]
+  ): OnJoinQuery[T, (R, Record), TableRow, Group, Order, Limit, Chain, AssignChain, HNil] = {
 
     def fromRow(row: Row): (R, Record) = fromRow(row)
 

@@ -86,38 +86,32 @@ abstract class Query[T <: BaseTable[T, _, TableRow],
 ) extends SQLQuery[T, R, TableRow] {
 
   protected[this] type QueryType[
-    Table <: BaseTable[Table, _, TR],
-    Record,
-    TR <: Row,
     G <: GroupBind,
     O <: OrderBind,
     L <: LimitBind,
     S <: ChainBind,
     C <: AssignBind,
     P <: HList
-  ] <: Query[Table, Record, TR, G, O, L, S, C, P]
+  ] <: Query[T, R, TableRow, G, O, L, S, C, P]
 
   protected[this] def create[
-    Table <: BaseTable[Table, _, TableRow],
-    Record,
-    TR <: Row,
     G <: GroupBind,
     O <: OrderBind,
     L <: LimitBind,
     S <: ChainBind,
     C <: AssignBind,
     P <: HList
-  ](t: Table, q: SQLBuiltQuery, r: TR => Record, parameters: Seq[Any]): QueryType[Table, Record, TR, G, O, L, S, C, P]
+  ](t: T, q: SQLBuiltQuery, r: TableRow => R, parameters: Seq[Any]): QueryType[G, O, L, S, C, P]
 
   def fromRow(row: TableRow): R = rowFunc(row)
 
   @implicitNotFound("You cannot set two limits on the same query")
-  final def limit(value: Int)(implicit ev: Lim =:= Unlimited): Query[T, R, TableRow, Group, Ord, Limited, Chain, AC, PS] = {
+  final def limit(value: Int)(implicit ev: Lim =:= Unlimited): QueryType[Group, Ord, Limited, Chain, AC, PS] = {
     create(table, table.queryBuilder.limit(query, value.toString), rowFunc, parameters)
   }
 
   @implicitNotFound("You cannot ORDER a query more than once")
-  final def orderBy(conditions: (T => QueryOrder)*)(implicit ev: Ord =:= Unordered): Query[T, R, TableRow, Group, Ordered, Lim, Chain, AC, PS] = {
+  final def orderBy(conditions: (T => QueryOrder)*)(implicit ev: Ord =:= Unordered): QueryType[Group, Ordered, Lim, Chain, AC, PS] = {
     val applied = conditions map {
       fn => fn(table).clause
     }
@@ -126,8 +120,10 @@ abstract class Query[T <: BaseTable[T, _, TableRow],
   }
 
   @implicitNotFound("You cannot GROUP a query more than once or GROUP after you ORDER a query")
-  final def groupBy(columns: (T => SelectColumn[_])*)(implicit ev1: Group =:= Ungroupped, ev2: Ord =:= Unordered): Query[T, R, TableRow, Groupped, Ord, Lim,
-    Chain, AC, PS] = {
+  final def groupBy(columns: (T => SelectColumn[_])*)(
+    implicit ev1: Group =:= Ungroupped,
+    ev2: Ord =:= Unordered
+  ): QueryType[Groupped, Ord, Lim, Chain, AC, PS] = {
     create(table, table.queryBuilder.groupBy(query, columns map { _(table).queryString }), rowFunc, parameters)
   }
 
