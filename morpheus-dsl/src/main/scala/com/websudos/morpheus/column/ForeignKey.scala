@@ -77,8 +77,12 @@ private[morpheus] trait ForeignKeyDefinition
  */
 @implicitNotFound("You are trying to define a ForeignKey from a table to its own columns or you are trying to define a relationship between this ForeignKey " +
   "and another ForeignKey or Index.")
-abstract class AbstractForeignKey[T <: BaseTable[T, R, TableRow], R, TableRow <: Row, T1 <: BaseTable[T1, _, TableRow]]
-  (origin: T, columns: IndexColumn#NonIndexColumn[T1]*)
+abstract class AbstractForeignKey[
+  T <: BaseTable[T, R, TableRow],
+  R,
+  TableRow <: Row,
+  T1 <: BaseTable[T1, _, TableRow]
+](origin: T, columns: IndexColumn#NonIndexColumn[T1]*)
   (implicit ev: T =:!= T1, ev2: IndexColumn#NonIndexColumn[T1] <:!< IndexColumn)
 
   extends AbstractColumn[String] with IndexColumn with ForeignKeyDefinition {
