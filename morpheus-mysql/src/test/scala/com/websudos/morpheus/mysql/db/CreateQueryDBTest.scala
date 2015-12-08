@@ -27,7 +27,6 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-
 package com.websudos.morpheus.mysql.db
 
 import org.scalatest.FlatSpec
@@ -45,10 +44,6 @@ class CreateQueryDBTest extends FlatSpec with MySQLSuite {
   }
 
   it should "create a new table in the database if the table doesn't exist" in {
-
-    Console.println(BasicTable.create.ifNotExists.engine(InnoDB).queryString)
-
-
     BasicTable.create.ifNotExists.engine(InnoDB).execute.successful { _ => }
   }
 
