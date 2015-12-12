@@ -19,8 +19,12 @@ scala:
 # Emails to notify
 notifications:
   slack:
-    rooms:
-      - websudos: P9QNXx1ZGFnDHp3v3jUqtB8k
+    - websudos:P9QNXx1ZGFnDHp3v3jUqtB8k
+  email:
+    - dev@websudos.co.uk
+
+
+
 
   email:
   - dev@websudos.com
