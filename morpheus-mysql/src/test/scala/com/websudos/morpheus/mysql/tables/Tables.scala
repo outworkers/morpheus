@@ -34,6 +34,8 @@ import com.websudos.morpheus.mysql._
 import com.websudos.morpheus.mysql.query.MySQLInsertQuery
 import com.websudos.morpheus.query.InsertQuery
 
+import scala.concurrent.{ExecutionContext, Future}
+
 case class IndexedRecord(id: Int, value: Long)
 
 sealed class IndexTable extends Table[IndexTable, IndexedRecord] {
@@ -196,9 +198,10 @@ class EnumerationTable extends Table[EnumerationTable, EnumerationRecord] {
 }
 
 object EnumerationTable extends EnumerationTable {
-  def store(record: EnumerationRecord): MySQLInsertQuery.Default[EnumerationTable, EnumerationRecord] = {
+  def store(record: EnumerationRecord)(implicit ec: ExecutionContext): Future[Result] = {
     insert
       .value(_.id, record.id)
       .value(_.enum, record.enum)
+      .future()
   }
 }
