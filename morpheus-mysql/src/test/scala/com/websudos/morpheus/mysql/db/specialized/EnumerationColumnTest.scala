@@ -14,7 +14,7 @@ class EnumerationColumnTest extends FlatSpec with MySQLSuite with Samplers {
 
   override def beforeAll(): Unit = {
     super.beforeAll()
-    Await.result(EnumerationTable.create.ifNotExists.future(), 5.seconds)
+    Await.result(EnumerationTable.create.ifNotExists.engine(InnoDB).future(), 5.seconds)
   }
 
   implicit val enumPrimitive: SQLPrimitive[TestEnumeration#Value] = {
