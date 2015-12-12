@@ -1,11 +1,11 @@
 
-import com.twitter.sbt.StandardProject
+import com.twitter.sbt.VersionManagement
 import sbt.Keys._
 import sbt._
 
 object Build extends Build {
 
-  val UtilVersion = "0.9.11"
+  val UtilVersion = "0.10.0"
   val FinagleVersion = "6.25.0"
   val SparkVersion = "1.2.1"
   val FinaglePostgres = "0.1.0-SNAPSHOT"
@@ -67,7 +67,7 @@ object Build extends Build {
 
   val sharedSettings: Seq[Def.Setting[_]] = Seq(
     organization := "com.websudos",
-    version := "0.2.3",
+    version := "0.2.4",
     scalaVersion := "2.11.7",
     crossScalaVersions := Seq("2.10.5", "2.11.7"),
     resolvers ++= Seq(
@@ -95,7 +95,7 @@ object Build extends Build {
      ),
     fork in Test := true,
     javaOptions in Test ++= Seq("-Xmx2G")
-  ) ++ net.virtualvoid.sbt.graph.Plugin.graphSettings ++ bintrayPublishing ++ StandardProject.newSettings
+  ) ++ net.virtualvoid.sbt.graph.Plugin.graphSettings ++ bintrayPublishing ++ VersionManagement.newSettings
 
   lazy val morpheus = Project(
     id = "morpheus",
