@@ -6,9 +6,16 @@ import com.websudos.morpheus.mysql.tables.{TestEnumeration, EnumerationRecord, E
 import com.websudos.util.testing._
 import org.scalatest.FlatSpec
 
+import scala.concurrent.Await
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.duration._
 
 class EnumerationColumnTest extends FlatSpec with MySQLSuite with Samplers {
+
+  override def beforeAll(): Unit = {
+    super.beforeAll()
+    Await.result(EnumerationTable.create.ifNotExists.future(), 5.seconds)
+  }
 
   implicit val enumPrimitive: SQLPrimitive[TestEnumeration#Value] = {
     enumToQueryConditionPrimitive(TestEnumeration)
