@@ -1,21 +1,27 @@
 package com.websudos.morpheus.mysql.db.specialized
 
-import com.websudos.morpheus.mysql.Samplers
-
-import scala.concurrent.ExecutionContext.Implicits.global
-import com.websudos.morpheus.mysql._
+import com.websudos.morpheus.mysql.{Samplers, _}
 import com.websudos.morpheus.mysql.db.MySQLSuite
-import com.websudos.morpheus.mysql.tables.{EnumerationRecord, EnumerationTable}
+import com.websudos.morpheus.mysql.tables.{TestEnumeration, EnumerationRecord, EnumerationTable}
 import com.websudos.util.testing._
 import org.scalatest.FlatSpec
 
+import scala.concurrent.ExecutionContext.Implicits.global
+
 class EnumerationColumnTest extends FlatSpec with MySQLSuite with Samplers {
+
+  implicit val enumPrimitive: SQLPrimitive[TestEnumeration#Value] = {
+    enumToQueryConditionPrimitive(TestEnumeration)
+  }
 
   it should "store a record with an enumeration defined inside it" in {
     val record = gen[EnumerationRecord]
 
     val chain = for {
-      store <- EnumerationTable.store(record)
+      store <- EnumerationTable.insert
+        .value(_.id, record.id)
+        .value(_.enum, record.enum)
+        .future()
       get <- EnumerationTable.select.where(_.id eqs record.id).one
     } yield get
 

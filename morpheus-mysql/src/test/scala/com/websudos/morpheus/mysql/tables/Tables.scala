@@ -197,11 +197,4 @@ class EnumerationTable extends Table[EnumerationTable, EnumerationRecord] {
   }
 }
 
-object EnumerationTable extends EnumerationTable {
-  def store(record: EnumerationRecord)(implicit ec: ExecutionContext): Future[Result] = {
-    insert
-      .value(_.id, record.id)
-      .value(_.enum, record.enum)
-      .future()
-  }
-}
+object EnumerationTable extends EnumerationTable
