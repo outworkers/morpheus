@@ -30,57 +30,47 @@
 package com.websudos.morpheus.dsl
 
 import com.websudos.morpheus.builder.SQLBuiltQuery
+import com.websudos.util.testing._
 import org.scalatest.prop.GeneratorDrivenPropertyChecks
 import org.scalatest.{Matchers, FlatSpec}
 
 class SQLBuiltQueryTest extends FlatSpec with Matchers with GeneratorDrivenPropertyChecks {
 
   it should "serialise an append on an SQLBuiltQuery" in {
-    forAll(minSuccessful(300)) { (part1: String, part2: String) =>
-      whenever (part1.length > 0 && part2.length > 0) {
-        val query = SQLBuiltQuery(part1).append(SQLBuiltQuery(part2)).queryString
-        query shouldEqual s"$part1$part2"
-      }
-    }
+    val part1 = gen[ShortString].value
+    val part2 = gen[ShortString].value
+
+    val query = SQLBuiltQuery(part1).append(SQLBuiltQuery(part2)).queryString
+    query shouldEqual s"$part1$part2"
   }
 
   it should "serialise a prepend on an SQLBuiltQuery" in {
-    forAll(minSuccessful(300)) { (part1: String, part2: String) =>
-      whenever (part1.length > 0 && part2.length > 0) {
-        val query = SQLBuiltQuery(part1).prepend(SQLBuiltQuery(part2)).queryString
-        query shouldEqual s"$part2$part1"
-      }
-    }
+    val part1 = gen[ShortString].value
+    val part2 = gen[ShortString].value
+    val query = SQLBuiltQuery(part1).prepend(SQLBuiltQuery(part2)).queryString
+    query shouldEqual s"$part2$part1"
   }
 
 
   it should "serialise and pad an SQLBuiltQuery with a trailing space if the space is missing" in {
-    forAll(minSuccessful(300)) { (part1: String) =>
-      whenever (!part1.isEmpty ) {
-        val tested = part1.trim
-        val query = SQLBuiltQuery(tested).pad.queryString
-        query shouldEqual s"$tested "
-      }
-    }
+    val part1 = gen[ShortString].value
+    val tested = part1.trim
+    val query = SQLBuiltQuery(tested).pad.queryString
+    query shouldEqual s"$tested "
   }
 
   it should "not add a trailing space if the last character of an SQLBuiltQuery is a space" in {
-    forAll(minSuccessful(300)) { (part1: String) =>
-      whenever (part1.length > 0 && !part1.endsWith(" ")) {
-        val s = part1 + " "
-        val query = SQLBuiltQuery(s).pad.queryString
-        query shouldEqual s"$s"
-      }
-    }
+    val part1 = gen[ShortString].value
+    val s = part1 + " "
+    val query = SQLBuiltQuery(s).pad.queryString
+    query shouldEqual s"$s"
   }
 
   it should "wrap a value in a set of parentheses" in {
-    forAll(minSuccessful(300)) { (part1: String, value: String) =>
-      whenever (part1.length > 0 && !part1.endsWith(" ") && !value.isEmpty) {
-        val query = SQLBuiltQuery(part1).wrap(value).queryString
-        query shouldEqual s"$part1 ($value)"
-      }
-    }
+    val part1 = gen[ShortString].value
+    val value = gen[ShortString].value
+    val query = SQLBuiltQuery(part1).wrap(value).queryString
+    query shouldEqual s"$part1 ($value)"
   }
 
 }
