@@ -1,5 +1,5 @@
 
-import com.twitter.sbt.VersionManagement
+import com.twitter.sbt.{GitProject, VersionManagement}
 import sbt.Keys._
 import sbt._
 
@@ -67,7 +67,7 @@ object Build extends Build {
 
   val sharedSettings: Seq[Def.Setting[_]] = Seq(
     organization := "com.websudos",
-    version := "0.2.4",
+    version := "0.2.5",
     scalaVersion := "2.11.7",
     crossScalaVersions := Seq("2.10.5", "2.11.7"),
     resolvers ++= Seq(
@@ -95,7 +95,10 @@ object Build extends Build {
      ),
     fork in Test := true,
     javaOptions in Test ++= Seq("-Xmx2G")
-  ) ++ net.virtualvoid.sbt.graph.Plugin.graphSettings ++ bintrayPublishing ++ VersionManagement.newSettings
+  ) ++ net.virtualvoid.sbt.graph.Plugin.graphSettings ++
+    bintrayPublishing ++
+    VersionManagement.newSettings ++
+    GitProject.gitSettings
 
   lazy val morpheus = Project(
     id = "morpheus",
