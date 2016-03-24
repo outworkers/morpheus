@@ -34,7 +34,7 @@ import com.websudos.morpheus.mysql._
 import com.websudos.morpheus.query.{RootCreateQuery, RootCreateSyntaxBlock}
 
 
-class MySQLCreateSyntaxBLock(query: String, tableName: String) extends RootCreateSyntaxBlock(query, tableName) {
+class MySQLCreateSyntaxBlock(query: String, tableName: String) extends RootCreateSyntaxBlock(query, tableName) {
   override def syntax: AbstractSQLSyntax = MySQLSyntax
 }
 

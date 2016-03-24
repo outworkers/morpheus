@@ -5,12 +5,12 @@ import sbt._
 
 object Build extends Build {
 
-  val UtilVersion = "0.10.0"
+  val UtilVersion = "0.15.0"
   val FinagleVersion = "6.25.0"
-  val SparkVersion = "1.2.1"
+  val SparkVersion = "1.6.2"
   val FinaglePostgres = "0.1.0-SNAPSHOT"
-  val FinagleZkVersion = "6.28.0"
-  val ShapelessVersion = "2.2.4"
+  val FinagleZkVersion = "6.30.0"
+  val ShapelessVersion = "2.2.5"
   val DieselEngineVersion = "0.2.4"
 
   val bintrayPublishing: Seq[Def.Setting[_]] = Seq(
@@ -29,10 +29,11 @@ object Build extends Build {
     publishTo <<= version.apply {
       v =>
         val nexus = "https://oss.sonatype.org/"
-        if (v.trim.endsWith("SNAPSHOT"))
+        if (v.trim.endsWith("SNAPSHOT")) {
           Some("snapshots" at nexus + "content/repositories/snapshots")
-        else
+        } else {
           Some("releases" at nexus + "service/local/staging/deploy/maven2")
+        }
     },
     publishArtifact in Test := false,
     pomIncludeRepository := { _ => true },
@@ -58,7 +59,7 @@ object Build extends Build {
         </developers>
   )
 
-  def liftVersion(scalaVersion: String) = {
+  def liftVersion(scalaVersion: String): String = {
     scalaVersion match {
       case "2.10.5" => "3.0-M1"
       case _ => "3.0-M2"
