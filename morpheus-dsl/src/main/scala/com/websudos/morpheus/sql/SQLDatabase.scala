@@ -33,7 +33,7 @@ import com.websudos.diesel.engine.reflection.EarlyInit
 import scala.reflect.runtime.universe.TypeTag
 
 abstract class SQLDatabase[
-  T <: BaseTable[T, R TableRow] : TypeTag,
+  T <: BaseTable[T, R, TableRow] : TypeTag,
   R,
   TableRow <: com.websudos.morpheus.Row
 ] extends EarlyInit[T] {

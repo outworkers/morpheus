@@ -356,7 +356,8 @@ class MySQLSelectQueryTest extends FlatSpec with Matchers {
   }
 
   it should "serialise a partial SELECT SQL_NO_CACHE query with multiple columns in a partial select and a simple where clause" in {
-    BasicTable.select(_.name, _.count).sqlNoCache.where(_.count <= 10).queryString shouldEqual "SELECT SQL_NO_CACHE name, count FROM `BasicTable` WHERE count <= 10;"
+    BasicTable.select(_.name, _.count).sqlNoCache.where(_.count <= 10)
+      .queryString shouldEqual "SELECT SQL_NO_CACHE name, count FROM `BasicTable` WHERE count <= 10;"
   }
 
 
@@ -365,7 +366,8 @@ class MySQLSelectQueryTest extends FlatSpec with Matchers {
   }
 
   it should "serialise a simple SELECT SQL_CALC_FOUND_ROWS query with an WHERE clause" in {
-    BasicTable.select.sqlCalcFoundRows.where(_.name eqs "test").queryString shouldEqual "SELECT SQL_CALC_FOUND_ROWS * FROM `BasicTable` WHERE name = 'test';"
+    BasicTable.select.sqlCalcFoundRows.where(_.name eqs "test")
+      .queryString shouldEqual "SELECT SQL_CALC_FOUND_ROWS * FROM `BasicTable` WHERE name = 'test';"
   }
 
   it should "serialise a partial SELECT SQL_CALC_FOUND_ROWS query with a single column in the partial select" in {
@@ -373,7 +375,9 @@ class MySQLSelectQueryTest extends FlatSpec with Matchers {
   }
 
   it should "serialise a partial SELECT SQL_CALC_FOUND_ROWS query with a single column in the partial select and a single WHERE clause" in {
-    BasicTable.select(_.name).sqlCalcFoundRows.where(_.count >= 5).queryString shouldEqual "SELECT SQL_CALC_FOUND_ROWS name FROM `BasicTable` WHERE count >= 5;"
+    BasicTable.select(_.name)
+      .sqlCalcFoundRows.where(_.count >= 5)
+      .queryString shouldEqual "SELECT SQL_CALC_FOUND_ROWS name FROM `BasicTable` WHERE count >= 5;"
   }
 
   it should "serialise a partial SELECT SQL_CALC_FOUND_ROWS query with multiple columns in a partial select" in {
