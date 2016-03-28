@@ -63,7 +63,7 @@ package object mysql extends DefaultImportsDefinition
 
   type Table[Owner <: BaseTable[Owner, Record, MySQLRow], Record] = com.websudos.morpheus.mysql.MySQLTable[Owner, Record]
 
-  def enumToQueryConditionPrimitive[T <: Enumeration](enum: T)(implicit ev: SQLPrimitive[String]): SQLPrimitive[T#Value] = {
+  def primitive[T <: Enumeration](enum: T)(implicit ev: SQLPrimitive[String]): SQLPrimitive[T#Value] = {
     new SQLPrimitive[T#Value] {
 
       override def sqlType: String = ev.sqlType
