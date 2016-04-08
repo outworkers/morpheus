@@ -1,5 +1,5 @@
 
-import com.twitter.sbt.VersionManagement
+import com.twitter.sbt.{GitProject, VersionManagement}
 import sbt.Keys._
 import sbt._
 
@@ -95,7 +95,10 @@ object Build extends Build {
      ),
     fork in Test := true,
     javaOptions in Test ++= Seq("-Xmx2G")
-  ) ++ net.virtualvoid.sbt.graph.Plugin.graphSettings ++ bintrayPublishing ++ VersionManagement.newSettings
+  ) ++ net.virtualvoid.sbt.graph.Plugin.graphSettings ++
+    bintrayPublishing ++
+    VersionManagement.newSettings ++
+    GitProject.gitSettings
 
   lazy val morpheus = Project(
     id = "morpheus",
