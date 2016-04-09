@@ -1,14 +1,10 @@
-# Travis CI credentials
-
 language: scala
-
 services:
-    - mysql
-
+- mysql
 cache:
   directories:
-   - $HOME/.ivy2/cache
-   - $HOME/.sbt/boot/scala-$TRAVIS_SCALA_VERSION
+  - $HOME/.ivy2/cache
+  - $HOME/.sbt/boot/scala-$TRAVIS_SCALA_VERSION
 sudo: false
 scala:
 - 2.10.5
@@ -16,9 +12,9 @@ scala:
 env:
   global:
   - GH_REF: github.com/outworkers/morpheus.git
-  - secure: WwLG0fkVV1DS5P6GeLOHjPJ2z+GP9UaLzX27DuHBEXRxNPPw27y7jag0gbbf6E80kYwGB4zfBx9YjcJFVFdGCCcAjDJHMP8kLQirUak1jzuoWZFUEtTkF7ev/OVs0PmMHrOGuysT4W/UaL9MZD/mYO5lO9oavycTQ0kbOwZJwUg=
-  - secure: Qtr5ULJ90s5pfLBaXRKFLMPBcDSYBQfUVz+abgjlG/um8iWE/OJswYn2n3zylAqnI4bSKhPobl6bBYzt8f6k9kzMqpR4t/4gWFV1LJUas0eAsTnrjV1He4nbPvO9RVEkvuQcTCqmus2AgYEnwdKhGWwktok5PAoJ22ycy4HK8C8=
-  - secure: hbuc+lReAC/tzOfmF3M70L4Qfb48S6fI/gqchctnBD7TcZ6i13EOLhsjgPkFwTuINYU7Bvwd54yjy9simu1Se34+DaGtxKPJ8NZIeWk0ciCGyFxNiz0QVkE+/Cc0kZLD7hJXb0UpLsbMwpIQFlL6FHcB/2xGmMhgYvGHe7+64zM=
+  - secure: RtMttctU8NUIcVO9y+ygDXKVtnwE8TZ/UrvjUD64c1FAoWotsviHawCaZ1/3Tga0DY3JOpVA/zafkmzlJhtP6yyqBkZKsujeDw0Xt6WJ5Y4bxHW2ucBjRSz1EcCIzSKfuW1fXlvndErjN4pTHmKQzi/ahtFlKn1NWtGjPR5WyrgD+mfCcxAdnlDasJ3FcmklZMFwupDuJK/9lJFXI5dcoG8aX7U5u2dxEIVpLYRLX9cpaDTOxC8rBZRtNVqjJh9A3unfQ13XAcrFWcdEuDXHQZ9rdFpXqskXOCsaFDT/dZUPyjy/rdN6GURM00p6FFy//w6qBLW9FWWtGsESiabTvxSLPP/uG+LB6E2oxl1mnQ0rfTxXmCVW1wewNUlICFYKGqSYaTgx8TQUilAfPHxzaJgWDPKeFGEPu9Cgl4sznaEA5soVX2EXy2iIrRi7PFOVyyYSHDDWLuoodApzYjwIznEUUi121zv8LvosdMtbEYG5rtaNHhVpzbiGKwDiowJQBlsZVf8DSQFMljL9J6tfd7awm1cl5QGbFJAmM9NTkvv9eU2UpoOWNWmmTwnX225RseFFvMWC74Dz0sFfGdbo/K+8EJ5k398f5Spn1BxxuXVuIy7Aii8NuxQ99U1ZKVEcKNd+vkKvLMQ0fI6/WhpHaHJut5x1eWyHSckCCbMVMFo=
+  - secure: e35fJ2QDCpsKtXqgAMU9pon2LS7bvQS2wRDjE8vpFwe7dLSMXnNhOaE58HQPfqbFD/QS6nwAyYip7iBQ55tjntBTBQ1RiePgjkoC9HK1VR7qvw22Enx5bux5b/UIwJcy41BIKmH5/mE8z05FdJLha3HO2tPVmaeXP+asALP70xR0js1smCGWGyowhUsqQL6fgXdw4f80vIrogQXuyR1KzVvr8U/iIlmb7Ys5jxqQ76btBLQYTw6pHNLVebMkgQIh+ZTR9tKnnFZdj0VNFGhWAlxeps8srsLXf0dxSUckoAYFNLjz37fvOQ89LrY4PQH/9mcQQvW01GMS8lJSCG5eL/ZhoefeVhkvwOZHfzIv53VxIXoqNIhuAM2Cg1WZgd0SZ0e/F1OEM6Dv3jSGlsCa6U+/G4HGGIJ5NVSWJQXgeH1fs56RbIKhpSdd6bIAlZ6JP0Zq7p+Ty06UKUQ+3Fe9MPZVmNw9iaB1A3Lw7XpFYsCIcmyoWtpV+3VpWI/LduOdpaHOv4PJCbx+dD4728mbutYwJkHpLB5LqLCI3YuKAnqWGWT0iBqJFGSNlIyYN30K/MpcE8l79vnbAZ6Y7bGWttnuEfz1e3ewCdXhDuxq6BQdgL3wmmRyS8HTJhFgjCymoCn5kbhiaw1qiKdXnTp4/uokEqNzeb2QgxS02T3tZ6Q=
+  - secure: W1HqSPhT74PxImeoIqy7y8JoAlmgRN0o4cFU9Uy9+3HA7IWDUhSqUKqimlOjtIrUirux9lS6a0TvJcv8culbnAlD00LKcOm+qWRVoUdOyHFc70t3CKOmiFx6taYJBYbSeKyLf00HNDMXv8jxRywgoQcadxM7lWhDNnvxw3HK4x9odaWbg6TKruE2PF1VM2LoS2iSXZ98wbTqhMWknvJSItH6jJjq4yuRguLl45bwAU3nyycFPCvssi9Qbf3g7jyWAv5/yHhdzVZyfWUeA0Cq+SPp8d6qAeQ1ooVMJ+usTKOoo47tieSkjvx531DBTdko6pk0PyhGUAVE484Xo7J6r/sIE9uIE6G4I6osM6rrqkWyBbShUI+BJC9rr305aytnY2B7EpYJq6AvVmrLD+OQn45FPllgFomBg4R2wPVY+VcZ77ugiPLuGn0A/d5Osp6u4gtpclne81ZQ7M9e4c4BBlKO2BEuJhM3YoTfGq45WZggDmUMhJukFW7BENePdfWwV5uGOgFFIY8Aeh2mIIifQGJKLNrefPYwJuUqca42lNbIxHaV3QBpIlEBlt1xUL3uDk8HxkRdkyDnMPK5k9ffCmKIDf/klqkARsYSrTlVATfqJXpsmDGZnqh/tdnruqkR26y6M/d5XssvXx4jPkRvmEX5AcOWpjXmKY+oHBeszhU=
 notifications:
   slack:
   - websudos:P9QNXx1ZGFnDHp3v3jUqtB8k
@@ -32,10 +28,10 @@ jdk:
 - oraclejdk7
 - oraclejdk8
 before_script:
-  - travis_retry sbt ++$TRAVIS_SCALA_VERSION update
-  - mysql -e "CREATE DATABASE morpheus_test;"
-  - mysql -e "CREATE USER 'morpheus'@'localhost' IDENTIFIED BY 'morpheus23!';"
-  - mysql -e "SET PASSWORD FOR 'travis'@'localhost' = PASSWORD('morpheus23!')"
+- travis_retry sbt ++$TRAVIS_SCALA_VERSION update
+- mysql -e "CREATE DATABASE morpheus_test;"
+- mysql -e "CREATE USER 'morpheus'@'localhost' IDENTIFIED BY 'morpheus23!';"
+- mysql -e "SET PASSWORD FOR 'travis'@'localhost' = PASSWORD('morpheus23!')"
 script:
 - sbt ++$TRAVIS_SCALA_VERSION clean coverage test coverageReport coverageAggregate
   coveralls
