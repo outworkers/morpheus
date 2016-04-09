@@ -5,6 +5,12 @@ then
     if [ "${TRAVIS_SCALA_VERSION}" == "2.11.7" ] && [ "${TRAVIS_JDK_VERSION}" == "oraclejdk8" ];
     then
 
+        echo "Setting git user email to ci@outworkers.com"
+        git config user.email "ci@outworkers.com"
+        
+        echo "Setting git user name to Travis CI"
+        git config user.name "Travis CI"
+
         echo "The current JDK version is ${TRAVIS_JDK_VERSION}"
         echo "The current Scala version is ${TRAVIS_SCALA_VERSION}"
 
@@ -29,6 +35,7 @@ then
         sbt version-bump-patch git-tag
 
         echo "Pushing tag to GitHub."
+
         git push --tags "https://${github_token}@${GH_REF}"
 
         echo "Publishing Bintray artifact"
@@ -40,9 +47,12 @@ then
 
         git commit -m "Automatically incrementing tag version."
 
+        echo "Printing available remotes"
+        git remote -v
+
         git push "https://${github_token}@${GH_REF}" develop
 
-        git push --all  "https://${github_token}@${GH_REF}" develop:master
+        git push "https://${github_token}@${GH_REF}" develop:master
 
     else
         echo "Only publishing version for Scala 2.11.7 and Oracle JDK 8 to prevent multiple artifacts"
