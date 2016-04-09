@@ -1,4 +1,4 @@
-morpheus [![Build Status](https://travis-ci.org/outworkers/morpheus.svg)](https://travis-ci.org/outworkers/morpheus) [![Coverage Status](https://coveralls.io/repos/outworkers/morpheus/badge.svg?branch=develop&service=github)](https://coveralls.io/github/websudos/morpheus?branch=develop) [ ![Download](https://api.bintray.com/packages/websudos/oss-releases/morpheus-mysql/images/download.svg) ](https://bintray.com/websudos/oss-releases/morpheus-mysql/_latestVersion)
+morpheus [![Build Status](https://travis-ci.org/outworkers/morpheus.svg)](https://travis-ci.org/outworkers/morpheus) [![Coverage Status](https://coveralls.io/repos/outworkers/morpheus/badge.svg?branch=develop&service=github)](https://coveralls.io/github/websudos/morpheus?branch=develop) [![Bintray](https://api.bintray.com/packages/websudos/oss-releases/morpheus-mysql/images/download.svg) ](https://bintray.com/websudos/oss-releases/morpheus-mysql/_latestVersion)
 
 ========================================================================================================================================================================================================================
 
@@ -18,7 +18,7 @@ currently hitting that bar for Cassandra and Neo4J. But why stop there?
 Using morpheus
 ==============
 
-The current version is: ```val morpheusVersion = 0.2.3```.
+The current version is: ```val morpheusVersion = ``` [![Bintray](https://api.bintray.com/packages/websudos/oss-releases/morpheus-mysql/images/download.svg) ](https://bintray.com/websudos/oss-releases/morpheus-mysql/_latestVersion).
 
 Morpheus is actively and avidly developed. It is not yet production ready, so trial at your own risk.
 
@@ -126,7 +126,7 @@ Morpheus was developed by us from scratch in an attempt to evolve the SQL toolin
 <a href="#table-of-contents">back to top</a>
 
 We, the people behind phantom run a software development house specialised in Scala and NoSQL. If you are after enterprise grade
-training or support for using phantom, [Websudos](http://websudos.com) is here to help!
+training or support for using phantom, [Outworkers](http://outworkers.com) is here to help!
 
 We offer a comprehensive range of elite Scala development services, including but not limited to:
 
@@ -135,7 +135,7 @@ We offer a comprehensive range of elite Scala development services, including bu
 - Advanced Scala and Morpheus training
 
 
-We are big fans of open source and we will open source every project we can! To read more about our OSS efforts, click [here](http://www.websudos.com/#/work).
+We are big fans of open source and we will open source every project we can! To read more about our OSS efforts, click [here](http://www.outworkers.com/work).
 
 ### morpheus-enterprise
 
@@ -152,4 +152,4 @@ Morpheus Enterprise is an upgraded version of Morpheus which includes several ex
 ===============================
 <a href="#table-of-contents">back to top</a>
 
-Copyright (c) 2012 - 2015 websudos.
+Copyright (c) 2012 - 2015 outworkers.
