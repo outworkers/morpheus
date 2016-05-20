@@ -7,7 +7,7 @@ then
 
         echo "Setting git user email to ci@outworkers.com"
         git config user.email "ci@outworkers.com"
-        
+
         echo "Setting git user name to Travis CI"
         git config user.name "Travis CI"
 
@@ -27,7 +27,7 @@ then
         fi
 
         if [ -e "$HOME/.bintray/.credentials" ]; then
-            echo "Bintray credentials file succesfully created"
+            echo "Bintray credentials file successfully created"
         else
             echo "Bintray credentials still not found"
         fi
