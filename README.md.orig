@@ -1,4 +1,8 @@
+<<<<<<< HEAD
+morpheus [![Build Status](https://travis-ci.org/outworkers/morpheus.svg)](https://travis-ci.org/outworkers/morpheus) [![Coverage Status](https://coveralls.io/repos/outworkers/morpheus/badge.svg?branch=develop&service=github)](https://coveralls.io/github/outworkers/morpheus?branch=develop) [ ![Bintray](https://api.bintray.com/packages/websudos/oss-releases/morpheus-mysql/images/download.svg) ](https://bintray.com/websudos/oss-releases/morpheus-mysql/_latestVersion)
+=======
 morpheus [![Build Status](https://travis-ci.org/outworkers/morpheus.svg)](https://travis-ci.org/outworkers/morpheus) [![Coverage Status](https://coveralls.io/repos/outworkers/morpheus/badge.svg?branch=develop&service=github)](https://coveralls.io/github/websudos/morpheus?branch=develop) [ ![Download](https://api.bintray.com/packages/websudos/oss-releases/morpheus-mysql/images/download.svg) ](https://bintray.com/websudos/oss-releases/morpheus-mysql/_latestVersion)
+>>>>>>> f1739f6527ffa05489822c07395273b7d472e3dd
 
 ========================================================================================================================================================================================================================
 
