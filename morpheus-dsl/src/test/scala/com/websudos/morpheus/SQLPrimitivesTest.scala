@@ -55,4 +55,5 @@ class SQLPrimitivesTest extends FlatSpec with Matchers with GeneratorDrivenPrope
     query shouldEqual s"${value.toString}"
   }
 
+
 }
