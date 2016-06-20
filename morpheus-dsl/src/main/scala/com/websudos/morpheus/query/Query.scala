@@ -29,13 +29,13 @@
  */
 package com.websudos.morpheus.query
 
-import com.websudos.morpheus.builder.SQLBuiltQuery
-
-import scala.annotation.implicitNotFound
-
 import com.websudos.morpheus.Row
+import com.websudos.morpheus.builder.SQLBuiltQuery
 import com.websudos.morpheus.column.SelectColumn
 import com.websudos.morpheus.dsl.BaseTable
+import shapeless.HList
+
+import scala.annotation.implicitNotFound
 
 sealed trait GroupBind
 final abstract class Groupped extends GroupBind
@@ -53,10 +53,6 @@ sealed trait LimitBind
 final abstract class Limited extends LimitBind
 final abstract class Unlimited extends LimitBind
 
-sealed trait StatusBind
-final abstract class Terminated extends StatusBind
-final abstract class Unterminated extends StatusBind
-
 /**
  * This bit of magic allows all extending sub-classes to implement the "where" and "and" SQL clauses with all the necessary operators,
  * in a type safe way. By providing the third type argument and a custom way to subclass with the predetermined set of arguments, all queries such as UPDATE,
@@ -73,7 +69,7 @@ final abstract class Unterminated extends StatusBind
  * @tparam T The type of the table owning the record.
  * @tparam R The type of the record held in the table.
  */
-class Query[T <: BaseTable[T, _, TableRow],
+abstract class Query[T <: BaseTable[T, _, TableRow],
   R,
   TableRow <: Row,
   Group <: GroupBind,
@@ -81,40 +77,54 @@ class Query[T <: BaseTable[T, _, TableRow],
   Lim <: LimitBind,
   Chain <: ChainBind,
   AC <: AssignBind,
-  Status <: StatusBind
-](val table: T, val query: SQLBuiltQuery, val rowFunc: TableRow => R) extends SQLQuery[T, R, TableRow] {
+  PS <: HList
+](
+  val table: T,
+  val query: SQLBuiltQuery,
+  val rowFunc: TableRow => R,
+  val parameters: Seq[Any] = Seq.empty
+) extends SQLQuery[T, R, TableRow] {
+
+  protected[this] type QueryType[
+    G <: GroupBind,
+    O <: OrderBind,
+    L <: LimitBind,
+    S <: ChainBind,
+    C <: AssignBind,
+    P <: HList
+  ] <: Query[T, R, TableRow, G, O, L, S, C, P]
+
+  protected[this] def create[
+    G <: GroupBind,
+    O <: OrderBind,
+    L <: LimitBind,
+    S <: ChainBind,
+    C <: AssignBind,
+    P <: HList
+  ](t: T, q: SQLBuiltQuery, r: TableRow => R, parameters: Seq[Any]): QueryType[G, O, L, S, C, P]
 
   def fromRow(row: TableRow): R = rowFunc(row)
 
   @implicitNotFound("You cannot set two limits on the same query")
-  final def limit(value: Int)(implicit ev: Lim =:= Unlimited): Query[T, R, TableRow, Group, Ord, Limited, Chain, AC, Status] = {
-    new Query(table, table.queryBuilder.limit(query, value.toString), rowFunc)
+  final def limit(value: Int)(implicit ev: Lim =:= Unlimited): QueryType[Group, Ord, Limited, Chain, AC, PS] = {
+    create(table, table.queryBuilder.limit(query, value.toString), rowFunc, parameters)
   }
 
   @implicitNotFound("You cannot ORDER a query more than once")
-  final def orderBy(conditions: (T => QueryOrder)*)(implicit ev: Ord =:= Unordered): Query[T, R, TableRow, Group, Ordered, Lim, Chain, AC, Status] = {
+  final def orderBy(conditions: (T => QueryOrder)*)(implicit ev: Ord =:= Unordered): QueryType[Group, Ordered, Lim, Chain, AC, PS] = {
     val applied = conditions map {
       fn => fn(table).clause
     }
-    new Query(table, table.queryBuilder.orderBy(query, applied), rowFunc)
+
+    create(table, table.queryBuilder.orderBy(query, applied), rowFunc, parameters)
   }
 
   @implicitNotFound("You cannot GROUP a query more than once or GROUP after you ORDER a query")
-  final def groupBy(columns: (T => SelectColumn[_])*)(implicit ev1: Group =:= Ungroupped, ev2: Ord =:= Unordered): Query[T, R, TableRow, Groupped, Ord, Lim,
-    Chain, AC, Status] = {
-    new Query(table, table.queryBuilder.groupBy(query, columns map { _(table).queryString }), rowFunc)
+  final def groupBy(columns: (T => SelectColumn[_])*)(
+    implicit ev1: Group =:= Ungroupped,
+    ev2: Ord =:= Unordered
+  ): QueryType[Groupped, Ord, Lim, Chain, AC, PS] = {
+    create(table, table.queryBuilder.groupBy(query, columns map { _(table).queryString }), rowFunc, parameters)
   }
 
-
-}
-
-object Query {
-  def apply[T <: BaseTable[T, _, TableRow], R, TableRow <: Row](table: T, query: SQLBuiltQuery, rowFunc: TableRow => R): Query[T, R, TableRow,
-    Ungroupped,
-    Unordered,
-    Unlimited,
-    Unchainned,
-    AssignUnchainned, Unterminated] = {
-    new Query(table, query, rowFunc)
-  }
 }

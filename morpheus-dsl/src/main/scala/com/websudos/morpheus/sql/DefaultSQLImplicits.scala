@@ -33,6 +33,7 @@ import com.websudos.morpheus.{ Row => MorpheusRow }
 import com.websudos.morpheus.builder.SQLBuiltQuery
 import com.websudos.morpheus.column.{AbstractColumn, AbstractModifyColumn, Column, SelectColumn}
 import com.websudos.morpheus.query._
+import shapeless.HNil
 
 private[morpheus] trait DefaultSQLImplicits extends JoinImplicits {
 
@@ -67,7 +68,7 @@ private[morpheus] trait DefaultSQLImplicits extends JoinImplicits {
   implicit def rootUpdateQueryToUpdateQuery[T <: BaseTable[T, R, DefaultRow], R](root: DefaultRootUpdateQuery[T, R]): UpdateQuery[T, R, DefaultRow, Ungroupped,
     Unordered,
     Unlimited,
-    Unchainned, AssignUnchainned, Unterminated
+    Unchainned, AssignUnchainned, HNil
     ] = {
     new UpdateQuery(
       root.table,
@@ -99,7 +100,7 @@ private[morpheus] trait DefaultSQLImplicits extends JoinImplicits {
     Unlimited,
     Unchainned,
     AssignUnchainned,
-    Unterminated
+    HNil
     ] = {
     new DeleteQuery(
       root.table,
@@ -124,7 +125,7 @@ private[morpheus] trait DefaultSQLImplicits extends JoinImplicits {
    * @return An executable SelectQuery.
    */
   implicit def rootSelectQueryToSelectQuery[T <: BaseTable[T, _, DefaultRow], R](root: DefaultRootSelectQuery[T, R]): SelectQuery[T, R, DefaultRow, Ungroupped,
-    Unordered, Unlimited, Unchainned, AssignUnchainned, Unterminated] = root.all
+    Unordered, Unlimited, Unchainned, AssignUnchainned, HNil] = root.all
 
   /**
    * This defines an implicit conversion from a RootInsertQuery to an InsertQuery, making the INSERT syntax block invisible to the end user.
@@ -141,7 +142,7 @@ private[morpheus] trait DefaultSQLImplicits extends JoinImplicits {
    */
   implicit def rootInsertQueryToQuery[T <: BaseTable[T, R, DefaultRow], R](root: DefaultRootInsertQuery[T, R]): InsertQuery[T, R, DefaultRow, Ungroupped,
     Unordered,
-    Unlimited, Unchainned, AssignUnchainned, Unterminated] = {
+    Unlimited, Unchainned, AssignUnchainned, HNil] = {
     new InsertQuery(
       root.table,
       root.st.into,
@@ -159,7 +160,7 @@ private[morpheus] trait DefaultSQLImplicits extends JoinImplicits {
    * @return An executable SelectQuery.
    */
   implicit def rootCreateQueryToCreateQuery[T <: BaseTable[T, R, TR], R, TR <: MorpheusRow](root: RootCreateQuery[T, R, TR]): CreateQuery[T, R, TR, Ungroupped,
-    Unordered, Unlimited, Unchainned, AssignUnchainned, Unterminated] = {
+    Unordered, Unlimited, Unchainned, AssignUnchainned, HNil] = {
     new CreateQuery(
       root.table,
       root.st.default,

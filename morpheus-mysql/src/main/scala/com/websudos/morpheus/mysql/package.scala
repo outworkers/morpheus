@@ -34,7 +34,8 @@ import com.websudos.morpheus.column.{AbstractColumn, DefaultForeignKeyConstraint
 import com.websudos.morpheus.dsl.DefaultImportsDefinition
 import com.websudos.morpheus.mysql.query.{MySQLRootSelectQuery, MySQLSelectQuery}
 import com.websudos.morpheus.operators.MySQLOperatorSet
-import com.websudos.morpheus.query.{AssignUnchainned, Unchainned, Ungroupped, Unlimited, Unordered, Unterminated}
+import com.websudos.morpheus.query.{AssignUnchainned, Unchainned, Ungroupped, Unlimited, Unordered}
+import shapeless.HNil
 
 import scala.util.Try
 
@@ -59,6 +60,8 @@ package object mysql extends DefaultImportsDefinition
       root.rowFunc
     )
   }
+
+  type SQLTable[Owner <: BaseTable[Owner, Record, MySQLRow], Record] = com.websudos.morpheus.mysql.MySQLTable[Owner, Record]
 
   type Row = com.websudos.morpheus.mysql.MySQLRow
   type Result = com.websudos.morpheus.mysql.MySQLResult

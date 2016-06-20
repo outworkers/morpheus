@@ -35,6 +35,7 @@ import com.websudos.morpheus.Client
 import com.websudos.morpheus.builder.SQLBuiltQuery
 import com.websudos.morpheus.mysql._
 import com.websudos.morpheus.query._
+import shapeless.{HNil, HList}
 
 import scala.annotation.implicitNotFound
 import scala.concurrent.{Future => ScalaFuture}
@@ -93,7 +94,7 @@ private[morpheus] class MySQLSelectSyntaxBlock(
 private[morpheus] class MySQLRootSelectQuery[T <: BaseTable[T, _, MySQLRow], R](table: T, st: MySQLSelectSyntaxBlock, rowFunc: MySQLRow => R)
   extends AbstractRootSelectQuery[T, R, MySQLRow](table, st, rowFunc) {
 
-  type BaseSelectQuery = MySQLSelectQuery[T, R, Ungroupped, Unordered, Unlimited, Unchainned, AssignUnchainned, Unterminated]
+  type BaseSelectQuery = MySQLSelectQuery[T, R, Ungroupped, Unordered, Unlimited, Unchainned, AssignUnchainned, HNil]
 
   def distinctRow: BaseSelectQuery = {
     new MySQLSelectQuery(table, st.distinctRow, rowFunc)
@@ -140,7 +141,7 @@ class MySQLSelectQuery[T <: BaseTable[T, _, MySQLRow],
   Limit <: LimitBind,
   Chain <: ChainBind,
   AssignChain <: AssignBind,
-  Status <: StatusBind
+  Status <: HList
 ](table: T, query: SQLBuiltQuery, rowFunc: MySQLRow => R)
   extends SelectQuery[T, R, MySQLRow, Group, Order, Limit, Chain, AssignChain, Status](table, query, rowFunc)
   with SQLResultsQuery[T, R, MySQLRow, MySQLResult, Limit] {

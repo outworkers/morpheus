@@ -29,24 +29,17 @@
  */
 package com.websudos.morpheus.mysql.db
 
-import org.scalatest.FlatSpec
+import com.websudos.morpheus.mysql.tables.{EnumerationRecord, TestEnumeration}
+import com.websudos.util.testing._
 
-import com.outworkers.util.testing._
-import com.websudos.morpheus.mysql.tables.BasicTable
-import com.websudos.morpheus.mysql._
 
-class CreateQueryDBTest extends FlatSpec with MySQLSuite {
-
-  it should "create a new table in the MySQL database" in {
-    BasicTable.create.temporary.engine(InnoDB).execute.successful {
-      res =>
+trait Generators {
+  implicit object EnumerationTableSampler extends Sample[EnumerationRecord] {
+    override def sample: EnumerationRecord = {
+      EnumerationRecord(
+        gen[Int],
+        oneOf(TestEnumeration)
+      )
     }
   }
-
-  it should "create a new table in the database if the table doesn't exist" in {
-
-
-    BasicTable.create.ifNotExists.engine(InnoDB).execute.successful { _ => }
-  }
-
 }

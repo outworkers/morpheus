@@ -35,6 +35,7 @@ import com.websudos.morpheus.dsl.BaseTable
 import com.websudos.morpheus.query.parts.{Defaults, LightweightPart, ValuePart, ColumnsPart}
 import com.websudos.morpheus.sql.DefaultRow
 import com.websudos.morpheus.{Row, SQLPrimitive}
+import shapeless.{HNil, HList}
 
 import scala.annotation.implicitNotFound
 
@@ -47,7 +48,7 @@ private[morpheus] class RootInsertSyntaxBlock(query: String, tableName: String) 
       .forcePad.appendEscape(tableName)
   }
 
-  override def syntax: AbstractSQLSyntax = DefaultSQLSyntax
+  override val syntax: AbstractSQLSyntax = DefaultSQLSyntax
 }
 
 /**
@@ -67,7 +68,7 @@ TableRow => R) {
 
   def fromRow(r: TableRow): R = rowFunc(r)
 
-  private[morpheus] def into: InsertQuery[T, R, TableRow, Ungroupped, Unordered, Unlimited, Unchainned, AssignUnchainned, Unterminated] = {
+  private[morpheus] def into: InsertQuery[T, R, TableRow, Ungroupped, Unordered, Unlimited, Unchainned, AssignUnchainned, HNil] = {
     new InsertQuery(table, st.into, rowFunc)
   }
 }
@@ -78,7 +79,8 @@ private[morpheus] class DefaultRootInsertQuery[T <: BaseTable[T, _, DefaultRow],
 
 
 
-class InsertQuery[T <: BaseTable[T, _, TableRow],
+class InsertQuery[
+T <: BaseTable[T, _, TableRow],
   R,
   TableRow <: Row,
   Group <: GroupBind,
@@ -86,16 +88,36 @@ class InsertQuery[T <: BaseTable[T, _, TableRow],
   Limit <: LimitBind,
   Chain <: ChainBind,
   AssignChain <: AssignBind,
-  Status <: StatusBind
+  Status <: HList
 ](table: T,
   val init: SQLBuiltQuery,
   rowFunc: TableRow => R,
   columnsPart: ColumnsPart = Defaults.EmptyColumnsPart,
   valuePart: ValuePart = Defaults.EmptyValuePart,
-  lightweightPart: LightweightPart = Defaults.EmptyLightweightPart
+  lightweightPart: LightweightPart = Defaults.EmptyLightweightPart,
+  parameters: Seq[Any] = Seq.empty
 ) extends Query[T, R,
-  TableRow, Group, Order, Limit, Chain, AssignChain, Status](table, init, rowFunc) {
+  TableRow, Group, Order, Limit, Chain, AssignChain, Status](table, init, rowFunc, parameters) {
 
+  protected[this] type QueryType[
+    G <: GroupBind,
+    O <: OrderBind,
+    L <: LimitBind,
+    S <: ChainBind,
+    C <: AssignBind,
+    P <: HList
+  ] = InsertQuery[T, R, TableRow, G, O, L, S, C, P]
+
+  override protected[this] def create[
+    G <: GroupBind,
+    O <: OrderBind,
+    L <: LimitBind,
+    S <: ChainBind,
+    C <: AssignBind,
+    P <: HList
+  ](t: T, q: SQLBuiltQuery, r: TableRow => R, parameters: Seq[Any]): QueryType[G, O, L, S, C, P] = {
+    new InsertQuery(t, q, r, columnsPart, valuePart, lightweightPart, parameters)
+  }
 
   /**
    * At this point you may be reading and thinking "WTF", but fear not, it all makes sense. Every call to a "value method" will generate a new Insert Query,
@@ -106,21 +128,14 @@ class InsertQuery[T <: BaseTable[T, _, TableRow],
    * @param insertion The insert condition is a pair of a column with the value to use for it. It looks like this: value(_.someColumn, someValue),
    *                  where the assignment is of course type safe.
    * @param obj The object is the value to use for the column.
-   * @param primitive The primitive is the SQL primitive that converts the object into an SQL Primitive. Since the user cannot deal with types that are not
-   *                  "marked" as SQL primitives for the particular database in use, we use a simple context bound to enforce this constraint.
-   * @param ev1 The second evidence parameter is a restriction upon the status of a Query. Certain "exit" points mark the serialisation as Terminated with
-   *            respect to the SQL syntax in use. It's a way of saying: there are no further options possible according to the DB you are using.
    * @tparam RR The SQL primitive or rather it's Scala correspondent to use at this time.
    * @return A new InsertQuery, where the list of statements in the Insert has been chained and updated for serialisation.
    */
-  @implicitNotFound(msg = "To use the value method this query needs to be an insert query and the query needs to be unterminated. You probably have more " +
+  @implicitNotFound(msg = "To use the value method this query needs to be an insert query and the query needs to be HNil. You probably have more " +
     "value calls than columns in your table, which would result in an invalid MySQL query.")
-  final def value[RR](insertion: T => AbstractColumn[RR], obj: RR)(
-    implicit primitive: SQLPrimitive[RR],
-    ev1: Status =:= Unterminated
-    ): InsertQuery[T, R, TableRow, Group, Order, Limit, Chain, AssignChain, Unterminated] = {
+  def value[RR : SQLPrimitive](insertion: T => AbstractColumn[RR], obj: RR): QueryType[Group, Order, Limit, Chain, AssignChain, HNil] = {
 
-    new InsertQuery[T, R, TableRow, Group, Order, Limit, Chain, AssignChain, Unterminated](
+    new InsertQuery[T, R, TableRow, Group, Order, Limit, Chain, AssignChain, HNil](
       table,
       init,
       fromRow,
@@ -130,7 +145,5 @@ class InsertQuery[T <: BaseTable[T, _, TableRow],
     )
   }
 
-  override val query = {
-    (columnsPart merge valuePart merge lightweightPart) build init
-  }
+  override val query = (columnsPart merge valuePart merge lightweightPart) build init
 }

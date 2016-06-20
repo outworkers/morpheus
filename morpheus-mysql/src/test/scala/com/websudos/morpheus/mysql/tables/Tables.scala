@@ -197,4 +197,13 @@ class EnumerationTable extends Table[EnumerationTable, EnumerationRecord] {
   }
 }
 
-object EnumerationTable extends EnumerationTable
+object EnumerationTable extends EnumerationTable {
+
+  implicit val primitive: SQLPrimitive[TestEnumeration#Value] = enumPrimitive(TestEnumeration)
+
+  def store(record: EnumerationRecord): MySQLInsertQuery.Default[EnumerationTable, EnumerationRecord] = {
+    insert
+      .value(_.id, record.id)
+      .value(_.enum, record.enum)
+  }
+}

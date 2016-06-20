@@ -30,11 +30,14 @@
 
 package com.websudos.morpheus.mysql
 
-import com.websudos.morpheus.{ Row => MorpheusRow }
 import com.websudos.morpheus.builder.SQLBuiltQuery
 import com.websudos.morpheus.column.{AbstractColumn, AbstractModifyColumn, Column, SelectColumn}
-import com.websudos.morpheus.mysql.query.{MySQLUpdateQuery, MySQLInsertQuery, MySQLRootInsertQuery, MySQLRootUpdateQuery}
+import com.websudos.morpheus.mysql.query.{MySQLInsertQuery, MySQLRootInsertQuery, MySQLRootUpdateQuery, MySQLUpdateQuery}
 import com.websudos.morpheus.query._
+import com.websudos.morpheus.{Row => MorpheusRow}
+import shapeless.{HList, HNil}
+
+import scala.util.Try
 
 trait MySQLImplicits extends DefaultSQLEngines {
 
@@ -65,7 +68,7 @@ trait MySQLImplicits extends DefaultSQLEngines {
    * @return An executable SelectQuery.
    */
   implicit def rootInsertQueryToQuery[T <: BaseTable[T, _, MySQLRow], R](root: MySQLRootInsertQuery[T, R]): MySQLInsertQuery[T, R, Ungroupped,
-    Unordered, Unlimited, Unchainned, AssignUnchainned, Unterminated] = {
+    Unordered, Unlimited, Unchainned, AssignUnchainned, HNil] = {
     new MySQLInsertQuery(
       root.table,
       root.st.into,
@@ -89,7 +92,7 @@ trait MySQLImplicits extends DefaultSQLEngines {
    * @return An executable SelectQuery.
    */
   implicit def defaultUpdateQueryToUpdateQuery[T <: BaseTable[T, R, MySQLRow], R](root: MySQLRootUpdateQuery[T, R]): MySQLUpdateQuery[T, R,
-    Ungroupped, Unordered, Unlimited, Unchainned, AssignUnchainned, Unterminated] = {
+    Ungroupped, Unordered, Unlimited, Unchainned, AssignUnchainned, HNil] = {
     new MySQLUpdateQuery(
       root.table,
       root.st.all,
@@ -104,10 +107,26 @@ trait MySQLImplicits extends DefaultSQLEngines {
     Limit <: LimitBind,
     Chain <: ChainBind,
     AssignChain <: AssignBind,
-    Status <: StatusBind
+    Status <: HList
   ](query: MySQLUpdateQuery[T, R, Group, Order, Limit, Chain, AssignChain, Status]): MySQLUpdateQuery[T, R, Group, Order, Limit, Chain,
     AssignChain, Status] = {
     new MySQLUpdateQuery[T, R, Group, Order, Limit, Chain, AssignChain, Status](query.table, query.query, query.rowFunc)
   }
+
+  def enumPrimitive[T <: Enumeration](enum: T): SQLPrimitive[T#Value] = {
+    new SQLPrimitive[T#Value] {
+
+      private[this] val primitive = implicitly[SQLPrimitive[String]]
+
+      override val sqlType: String = primitive.sqlType
+
+      override def toSQL(value: T#Value): String = primitive.toSQL(value.toString)
+
+      override def fromRow(row: MorpheusRow, name: String): Try[T#Value] = {
+        primitive.fromRow(row, name) map { enum.withName(_) }
+      }
+    }
+  }
+
 
 }
