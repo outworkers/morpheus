@@ -40,7 +40,7 @@ object MySQLManager
 
 
 trait SQLQuery[T <: BaseTable[T, _, TableRow], R, TableRow <: Row] extends ResultSetOperations {
-  protected[morpheus] val query: SQLBuiltQuery
+  protected[morpheus] def query: SQLBuiltQuery
 
   /**
    * A simple forwarding method to prevent some extra boiler-plate during tests.
@@ -77,8 +77,6 @@ trait SQLQuery[T <: BaseTable[T, _, TableRow], R, TableRow <: Row] extends Resul
    * @return A Scala Future wrapping a default Finagle MySQL query result object.
    */
   def execute[DBRow <: Row, DBResult <: Result]()(implicit  client: Client[DBRow, DBResult]): Future[DBResult] = {
-    Console.println(s"Executing query $queryString")
-
     queryToFuture[DBRow, DBResult](queryString)
   }
 

@@ -32,7 +32,7 @@ package com.websudos.morpheus.mysql.db
 
 import com.websudos.morpheus.mysql._
 import com.websudos.morpheus.mysql.tables.{BasicRecord, BasicTable}
-import com.websudos.util.testing._
+import com.outworkers.util.testing._
 import org.scalatest.FlatSpec
 
 import scala.concurrent.Await

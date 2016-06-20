@@ -30,14 +30,16 @@
 
 package com.websudos.morpheus.mysql.db
 
+import java.util.concurrent.TimeUnit
+
 import com.twitter.conversions.time._
 import com.twitter.finagle.exp.Mysql
 import com.twitter.util.Await
 import com.websudos.morpheus.Client
 import com.websudos.morpheus.mysql.{MySQLClient, MySQLResult, MySQLRow}
-import org.scalatest.{Suite, BeforeAndAfterAll, Matchers, OptionValues}
+import org.scalatest.{BeforeAndAfterAll, Matchers, OptionValues, Suite}
 import org.scalatest.concurrent.{AsyncAssertions, PatienceConfiguration, ScalaFutures}
-import org.scalatest.time.{Seconds, Span}
+import org.scalatest.time.{Millis, Seconds, Span}
 
 object MySQLConnector {
 
@@ -66,13 +68,27 @@ trait MySQLSuite extends AsyncAssertions
   with ScalaFutures
   with OptionValues
   with Matchers
+  with Generators
   with BeforeAndAfterAll {
 
   this: Suite =>
 
   implicit lazy val client: Client[MySQLRow, MySQLResult] = new MySQLClient(MySQLConnector.client)
 
-  implicit def patience: PatienceConfiguration.Timeout = timeout(Span(5L, Seconds))
+  protected[this] val defaultScalaTimeoutSeconds = 10
+
+  private[this] val defaultScalaInterval = 50L
+
+  implicit val defaultScalaTimeout = scala.concurrent.duration.Duration(defaultScalaTimeoutSeconds, TimeUnit.SECONDS)
+
+  private[this] val defaultTimeoutSpan = Span(defaultScalaTimeoutSeconds, Seconds)
+
+  implicit val defaultTimeout: PatienceConfiguration.Timeout = timeout(defaultTimeoutSpan)
+
+  override implicit val patienceConfig = PatienceConfig(
+    timeout = defaultTimeoutSpan,
+    interval = Span(defaultScalaInterval, Millis)
+  )
 }
 
 // CREATE USER 'morpheus'@'localhost' IDENTIFIED BY 'morpheus23!';

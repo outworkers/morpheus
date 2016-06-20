@@ -34,7 +34,10 @@ import com.websudos.morpheus.column.{AbstractColumn, DefaultForeignKeyConstraint
 import com.websudos.morpheus.dsl.DefaultImportsDefinition
 import com.websudos.morpheus.mysql.query.{MySQLRootSelectQuery, MySQLSelectQuery}
 import com.websudos.morpheus.operators.MySQLOperatorSet
-import com.websudos.morpheus.query.{AssignUnchainned, Unchainned, Ungroupped, Unlimited, Unordered, Unterminated}
+import com.websudos.morpheus.query.{AssignUnchainned, Unchainned, Ungroupped, Unlimited, Unordered}
+import shapeless.HNil
+
+import scala.util.Try
 
 import scala.util.Try
 
@@ -50,13 +53,17 @@ package object mysql extends DefaultImportsDefinition
 
   override implicit def columnToQueryColumn[T : SQLPrimitive](col: AbstractColumn[T]): MySQLQueryColumn[T] = new MySQLQueryColumn[T](col)
 
-  implicit def rootSelectQueryToQuery[T <: Table[T, _], R](root: MySQLRootSelectQuery[T, R]): MySQLSelectQuery[T, R, Ungroupped, Unordered, Unlimited, Unchainned, AssignUnchainned, Unterminated] = {
+  implicit def rootSelectQueryToQuery[T <: Table[T, _], R](
+    root: MySQLRootSelectQuery[T, R]
+  ): MySQLSelectQuery[T, R, Ungroupped, Unordered, Unlimited, Unchainned, AssignUnchainned, HNil] = {
     new MySQLSelectQuery(
       root.table,
       root.st.*,
       root.rowFunc
     )
   }
+
+  type SQLTable[Owner <: BaseTable[Owner, Record, MySQLRow], Record] = com.websudos.morpheus.mysql.MySQLTable[Owner, Record]
 
   type Row = com.websudos.morpheus.mysql.MySQLRow
   type Result = com.websudos.morpheus.mysql.MySQLResult

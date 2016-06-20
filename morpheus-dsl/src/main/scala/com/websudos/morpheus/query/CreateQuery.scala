@@ -34,6 +34,7 @@ import com.websudos.morpheus.Row
 import com.websudos.morpheus.builder.{SQLBuiltQuery, AbstractSyntaxBlock, DefaultSQLSyntax, AbstractSQLSyntax}
 import com.websudos.morpheus.dsl.BaseTable
 import com.websudos.morpheus.sql.DefaultRow
+import shapeless.{HNil, HList}
 
 private[morpheus] class RootCreateSyntaxBlock(query: String, tableName: String) extends AbstractSyntaxBlock {
 
@@ -72,10 +73,13 @@ private[morpheus] class RootCreateSyntaxBlock(query: String, tableName: String) 
  * @tparam T The type of the owning table.
  * @tparam R The type of the record.
  */
-private[morpheus] class RootCreateQuery[T <: BaseTable[T, _, TableRow], R, TableRow <: Row](val table: T, val st: RootCreateSyntaxBlock, val rowFunc:
-TableRow => R) {
+private[morpheus] class RootCreateQuery[
+  T <: BaseTable[T, _, TableRow],
+  R,
+  TableRow <: Row
+](val table: T, val st: RootCreateSyntaxBlock, val rowFunc: TableRow => R) {
 
-  protected[this] type BaseCreateQuery = CreateQuery[T, R, TableRow, Ungroupped, Unordered, Unlimited, Unchainned, AssignUnchainned, Unterminated]
+  protected[this] type BaseCreateQuery = CreateQuery[T, R, TableRow, Ungroupped, Unordered, Unlimited, Unchainned, AssignUnchainned, HNil]
 
   private[morpheus] def default: BaseCreateQuery = {
     new CreateQuery(table, st.default, rowFunc)
@@ -111,8 +115,29 @@ class CreateQuery[T <: BaseTable[T, _, TableRow],
   Limit <: LimitBind,
   Chain <: ChainBind,
   AssignChain <: AssignBind,
-  Status <: StatusBind
+  Status <: HList
 ](table: T, query: SQLBuiltQuery, rowFunc: TableRow => R) extends Query[T, R, TableRow, Group, Order, Limit, Chain, AssignChain, Status](table, query, rowFunc) {
+
+  protected[this] type QueryType[
+    G <: GroupBind,
+    O <: OrderBind,
+    L <: LimitBind,
+    S <: ChainBind,
+    C <: AssignBind,
+    P <: HList
+  ] = CreateQuery[T, R, TableRow, G, O, L, S, C, P]
+
+  override protected[this] def create[
+    G <: GroupBind,
+    O <: OrderBind,
+    L <: LimitBind,
+    S <: ChainBind,
+    C <: AssignBind,
+    P <: HList
+  ](t: T, q: SQLBuiltQuery, r: TableRow => R): QueryType[G, O, L, S, C, P] = {
+    new CreateQuery(t, q, r)
+  }
+
 
   final protected[morpheus] def columnDefinitions: List[String] = {
     table.columns.foldRight(List.empty[String])((col, acc) => {
@@ -120,15 +145,15 @@ class CreateQuery[T <: BaseTable[T, _, TableRow],
     })
   }
 
-  final protected[morpheus] def columnSchema[St <: StatusBind]: CreateQuery[T, R, TableRow, Group, Order, Limit, Chain, AssignChain, St] = {
+  final protected[morpheus] def columnSchema[St <: HList]: CreateQuery[T, R, TableRow, Group, Order, Limit, Chain, AssignChain, St] = {
     new CreateQuery(table, query.append(columnDefinitions.mkString(", ")), rowFunc)
   }
 
-  def ifNotExists: CreateQuery[T, R, TableRow, Group, Order, Limit, Chain, AssignChain, Unterminated] = {
+  def ifNotExists: CreateQuery[T, R, TableRow, Group, Order, Limit, Chain, AssignChain, HNil] = {
     new CreateQuery(table, table.queryBuilder.ifNotExists(query), rowFunc)
   }
 
-  def engine(engine: SQLEngine): Query[T, R, TableRow, Group, Order, Limit, Chain, AssignChain, Unterminated] = {
+  def engine(engine: SQLEngine): Query[T, R, TableRow, Group, Order, Limit, Chain, AssignChain, HNil] = {
     new CreateQuery(table,
       table.queryBuilder.engine(
         query.wrap(columnDefinitions.mkString(", ")),
@@ -137,13 +162,4 @@ class CreateQuery[T <: BaseTable[T, _, TableRow],
       rowFunc
     )
   }
-
-  private[morpheus] final def terminate: CreateQuery[T, R, TableRow, Group, Order, Limit, Chain, AssignChain, Terminated] = {
-    new CreateQuery(
-      table,
-      query,
-      rowFunc
-    )
-  }
-
 }
