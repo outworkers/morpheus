@@ -50,7 +50,9 @@ package object mysql extends DefaultImportsDefinition
 
   override implicit def columnToQueryColumn[T : SQLPrimitive](col: AbstractColumn[T]): MySQLQueryColumn[T] = new MySQLQueryColumn[T](col)
 
-  implicit def rootSelectQueryToQuery[T <: Table[T, _], R](root: MySQLRootSelectQuery[T, R]): MySQLSelectQuery[T, R, Ungroupped, Unordered, Unlimited, Unchainned, AssignUnchainned, Unterminated] = {
+  implicit def rootSelectQueryToQuery[T <: Table[T, _], R](
+    root: MySQLRootSelectQuery[T, R]
+  ): MySQLSelectQuery[T, R, Ungroupped, Unordered, Unlimited, Unchainned, AssignUnchainned, Unterminated] = {
     new MySQLSelectQuery(
       root.table,
       root.st.*,
@@ -62,17 +64,4 @@ package object mysql extends DefaultImportsDefinition
   type Result = com.websudos.morpheus.mysql.MySQLResult
 
   type Table[Owner <: BaseTable[Owner, Record, MySQLRow], Record] = com.websudos.morpheus.mysql.MySQLTable[Owner, Record]
-
-  def primitive[T <: Enumeration](enum: T)(implicit ev: SQLPrimitive[String]): SQLPrimitive[T#Value] = {
-    new SQLPrimitive[T#Value] {
-
-      override def sqlType: String = ev.sqlType
-
-      override def fromRow(row: com.websudos.morpheus.Row, name: String): Try[T#Value] = {
-        Try { enum.withName(row.string(name)) }
-      }
-
-      override def toSQL(value: T#Value): String = ev.toSQL(value.toString)
-    }
-  }
 }

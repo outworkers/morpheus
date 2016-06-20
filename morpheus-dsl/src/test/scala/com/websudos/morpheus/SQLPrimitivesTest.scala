@@ -29,7 +29,7 @@
  */
 package com.websudos.morpheus
 
-import com.websudos.util.testing._
+import com.outworkers.util.testing._
 import org.scalatest.{Matchers, FlatSpec}
 import org.scalatest.prop.GeneratorDrivenPropertyChecks
 
@@ -54,6 +54,5 @@ class SQLPrimitivesTest extends FlatSpec with Matchers with GeneratorDrivenPrope
     val query = implicitly[SQLPrimitive[Int]].toSQL(value)
     query shouldEqual s"${value.toString}"
   }
-
 
 }

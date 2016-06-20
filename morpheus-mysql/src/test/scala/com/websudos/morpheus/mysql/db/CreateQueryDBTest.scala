@@ -32,7 +32,7 @@ package com.websudos.morpheus.mysql.db
 
 import org.scalatest.FlatSpec
 
-import com.websudos.util.testing._
+import com.outworkers.util.testing._
 import com.websudos.morpheus.mysql.tables.BasicTable
 import com.websudos.morpheus.mysql._
 

@@ -41,6 +41,7 @@ lazy val Versions = new {
   val slf4j = "1.7.21"
   val joda = "2.9.4"
   val jodaConvert = "1.8.1"
+  val twitterUtil = "6.33.0§"
 }
 
 val liftVersion: String => String = {
@@ -86,8 +87,7 @@ val sharedSettings: Seq[Def.Setting[_]] = Seq(
   ),
   fork in Test := true,
   javaOptions in Test ++= Seq("-Xmx2G")
-) ++ net.virtualvoid.sbt.graph.Plugin.graphSettings ++
-  bintrayPublishing ++
+) ++ bintrayPublishing ++
   VersionManagement.newSettings ++
   GitProject.gitSettings
 
@@ -111,6 +111,7 @@ lazy val morpheus = (project in file("."))
       name := "morpheus-dsl",
       moduleName := "morpheus-dsl",
       libraryDependencies ++= Seq(
+        "com.twitter" %% "util-core" % Versions.twitterUtil,
         "org.slf4j" % "slf4j-api" % Versions.slf4j,
         "com.websudos" %% "diesel-engine" % Versions.diesel,
         "com.chuusai" %% "shapeless" % Versions.shapeless,
@@ -123,7 +124,7 @@ lazy val morpheus = (project in file("."))
       morpheusTestkit % Test
     )
 
-  lazy val mysql = (project in file("morpheus-mysql"))
+  lazy val morpheusMySQL = (project in file("morpheus-mysql"))
     .settings(sharedSettings: _*)
     .settings(
       moduleName := "morpheus-mysql",
@@ -182,7 +183,7 @@ lazy val morpheus = (project in file("."))
     name := "morpheus-testkit",
     libraryDependencies ++= Seq(
       "com.h2database"                   % "h2"                        % "1.4.181",
-      "com.websudos"                     %% "util-testing"             % Versions.util excludeAll {
+      "com.outworkers"                   %% "util-testing"             % Versions.util excludeAll {
         ExclusionRule("org.scala-lang", "scala-reflect")
       }
     )

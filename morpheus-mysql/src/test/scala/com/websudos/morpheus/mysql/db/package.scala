@@ -17,7 +17,7 @@
 package com.websudos.morpheus.mysql
 
 import com.websudos.morpheus.mysql.tables.{TestEnumeration, EnumerationRecord, BasicRecord}
-import com.websudos.util.testing._
+import com.outworkers.util.testing._
 
 package object db {
 

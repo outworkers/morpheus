@@ -32,7 +32,7 @@ package com.websudos.morpheus.mysql.query
 import com.websudos.morpheus.builder.SQLBuiltQuery
 import org.scalatest.prop.GeneratorDrivenPropertyChecks
 import org.scalatest.{FlatSpec, Matchers}
-import com.websudos.util.testing._
+import com.outworkers.util.testing._
 
 import com.websudos.morpheus.mysql.MySQLQueryBuilder
 
