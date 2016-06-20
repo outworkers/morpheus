@@ -29,7 +29,9 @@
  */
 package com.websudos.morpheus.mysql.query
 
-import com.websudos.morpheus.mysql.tables.BasicTable
+import com.outworkers.util.testing._
+import com.websudos.morpheus.mysql._
+import com.websudos.morpheus.mysql.tables.{BasicTable, EnumerationRecord, EnumerationTable}
 import org.scalatest.{FlatSpec, Matchers}
 
 class  MySQLInsertQueryTest extends FlatSpec with Matchers {
@@ -48,4 +50,14 @@ class  MySQLInsertQueryTest extends FlatSpec with Matchers {
   it should "serialise an INSERT DELAYED INTO query to the correct query" in {
     BasicTable.insert.delayed.queryString shouldEqual "INSERT DELAYED INTO BasicTable;"
   }
+
+  it should "serialise an INSERT value query with a single value clause" in {
+    BasicTable.insert.value(_.name, "test").queryString shouldEqual "INSERT INTO `BasicTable` (name) VALUES('test');"
+  }
+
+  it should "serialise an INSERT value query with a multiple value clauses" in {
+    BasicTable.insert.value(_.name, "test").value(_.count, 5)
+      .queryString shouldEqual "INSERT INTO `BasicTable` (name, count) VALUES('test', 5);"
+  }
+
 }

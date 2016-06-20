@@ -28,16 +28,16 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 resolvers ++= Seq(
-  "Sonatype snapshots"                                 at "http://oss.sonatype.org/content/repositories/snapshots/",
-  "jgit-repo"                                          at "http://download.eclipse.org/jgit/maven",
+  "jgit-repo" at "http://download.eclipse.org/jgit/maven",
   "Twitter Repo"                                       at "http://maven.twttr.com/",
-  "sonatype-releases"                                  at "https://oss.sonatype.org/content/repositories/releases/",
+  Resolver.sonatypeRepo("releases"),
+  Resolver.bintrayRepo("websudos", "oss-releases"),
   Resolver.url("scoverage-bintray", url("https://dl.bintray.com/sksamuel/sbt-plugins/"))(Resolver.ivyStylePatterns),
   Resolver.url("Websudos OSS", url("http://dl.bintray.com/websudos/oss-releases"))(Resolver.ivyStylePatterns),
   Classpaths.sbtPluginReleases
 )
 
-addSbtPlugin("net.virtual-void" % "sbt-dependency-graph" % "0.7.5")
+addSbtPlugin("net.virtual-void" % "sbt-dependency-graph" % "0.8.2")
 
 // addSbtPlugin("com.twitter" %% "scrooge-sbt-plugin" % "3.18.1")
 

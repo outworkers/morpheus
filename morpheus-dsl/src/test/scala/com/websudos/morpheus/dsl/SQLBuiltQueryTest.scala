@@ -30,11 +30,11 @@
 package com.websudos.morpheus.dsl
 
 import com.websudos.morpheus.builder.SQLBuiltQuery
-import com.websudos.util.testing._
+import com.outworkers.util.testing._
 import org.scalatest.prop.GeneratorDrivenPropertyChecks
 import org.scalatest.{Matchers, FlatSpec}
 
-class SQLBuiltQueryTest extends FlatSpec with Matchers with GeneratorDrivenPropertyChecks {
+class SQLBuiltQueryTest extends FlatSpec with Matchers {
 
   it should "serialise an append on an SQLBuiltQuery" in {
     val part1 = gen[ShortString].value

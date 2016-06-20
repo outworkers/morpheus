@@ -34,6 +34,8 @@ import com.websudos.morpheus.Row
 import com.websudos.morpheus.column.{AbstractColumn, DefaultForeignKeyConstraints}
 import com.websudos.morpheus.query.AbstractQueryColumn
 
+import scala.util.Try
+
 /**
  * As the implementation of SQL builders may differ depending on the type of SQL database in use, we will provide a series of specific imports for each
  * individual database.
@@ -52,6 +54,21 @@ import com.websudos.morpheus.query.AbstractQueryColumn
 trait DefaultImportsDefinition extends DefaultForeignKeyConstraints {
 
   type SQLPrimitive[T] = com.websudos.morpheus.SQLPrimitive[T]
+
+  object SQLPrimitive {
+    def apply[T <: Enumeration](enum: T)(implicit ev: SQLPrimitive[String]): SQLPrimitive[T#Value] = {
+      new SQLPrimitive[T#Value] {
+
+        override def sqlType: String = ev.sqlType
+
+        override def fromRow(row: com.websudos.morpheus.Row, name: String): Try[T#Value] = {
+          Try { enum.withName(row.string(name)) }
+        }
+
+        override def toSQL(value: T#Value): String = ev.toSQL(value.toString)
+      }
+    }
+  }
 
   type BaseTable[Owner <: BaseTable[Owner, Record, TableRow], Record, TableRow <: Row] = com.websudos.morpheus.dsl.BaseTable[Owner, Record, TableRow]
 

@@ -29,13 +29,13 @@
  */
 package com.websudos.morpheus
 
-import com.websudos.util.testing._
+import com.outworkers.util.testing._
 import org.scalatest.{Matchers, FlatSpec}
 import org.scalatest.prop.GeneratorDrivenPropertyChecks
 
 import com.websudos.morpheus.sql._
 
-class SQLPrimitivesTest extends FlatSpec with Matchers with GeneratorDrivenPropertyChecks {
+class SQLPrimitivesTest extends FlatSpec with Matchers {
 
   "The SQL String primitive" should "always use '(apostrophes) around the serialised strings" in {
     val name = gen[ShortString].value

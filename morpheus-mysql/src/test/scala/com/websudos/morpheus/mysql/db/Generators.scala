@@ -27,40 +27,19 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-package com.websudos.morpheus.mysql.db.specialized
+package com.websudos.morpheus.mysql.db
 
-import com.websudos.morpheus.mysql._
-import com.websudos.morpheus.mysql.db.MySQLSuite
-import com.websudos.morpheus.mysql.tables.{TestEnumeration, EnumerationRecord, EnumerationTable}
+import com.websudos.morpheus.mysql.tables.{EnumerationRecord, TestEnumeration}
 import com.outworkers.util.testing._
-import org.scalatest.FlatSpec
 
-import scala.concurrent.Await
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.duration._
 
-class EnumerationColumnTest extends FlatSpec with MySQLSuite {
-
-  override def beforeAll(): Unit = {
-    super.beforeAll()
-    Await.result(EnumerationTable.create.ifNotExists.engine(InnoDB).future(), 5.seconds)
-  }
-
-  implicit val enumPrimitive: SQLPrimitive[TestEnumeration#Value] = SQLPrimitive(TestEnumeration)
-
-  it should "store a record with an enumeration defined inside it" in {
-    val record = gen[EnumerationRecord]
-
-    val chain = for {
-      store <- EnumerationTable.store(record).future()
-      get <- EnumerationTable.select.where(_.id eqs record.id).one
-    } yield get
-
-    whenReady(chain) {
-      res => {
-        res.value shouldEqual record
-      }
+trait Generators {
+  implicit object EnumerationTableSampler extends Sample[EnumerationRecord] {
+    override def sample: EnumerationRecord = {
+      EnumerationRecord(
+        gen[Int],
+        oneOf(TestEnumeration)
+      )
     }
-
   }
 }

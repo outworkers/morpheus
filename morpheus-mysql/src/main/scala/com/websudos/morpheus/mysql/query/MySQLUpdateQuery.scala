@@ -34,6 +34,7 @@ import com.websudos.morpheus.builder.SQLBuiltQuery
 import com.websudos.morpheus.dsl.BaseTable
 import com.websudos.morpheus.mysql._
 import com.websudos.morpheus.query._
+import shapeless.{HNil, HList}
 
 import scala.annotation.implicitNotFound
 
@@ -56,11 +57,11 @@ case class MySQLUpdateSyntaxBlock(query: String, tableName: String) extends Root
 class MySQLRootUpdateQuery[T <: BaseTable[T, _, MySQLRow], R](table: T, st: MySQLUpdateSyntaxBlock, rowFunc: MySQLRow => R)
   extends RootUpdateQuery[T, R, MySQLRow](table, st, rowFunc) {
 
-  def lowPriority: MySQLUpdateQuery[T, R, Ungroupped, Unordered, Unlimited, Unchainned, AssignUnchainned, Unterminated] = {
+  def lowPriority: MySQLUpdateQuery[T, R, Ungroupped, Unordered, Unlimited, Unchainned, AssignUnchainned, HNil] = {
     new MySQLUpdateQuery(table, st.lowPriority, rowFunc)
   }
 
-  def ignore: MySQLUpdateQuery[T, R, Ungroupped, Unordered, Unlimited, Unchainned, AssignUnchainned, Unterminated] = {
+  def ignore: MySQLUpdateQuery[T, R, Ungroupped, Unordered, Unlimited, Unchainned, AssignUnchainned, HNil] = {
     new MySQLUpdateQuery(table, st.ignore, rowFunc)
   }
 }
@@ -73,36 +74,31 @@ class MySQLUpdateQuery[T <: BaseTable[T, _, MySQLRow],
   Limit <: LimitBind,
   Chain <: ChainBind,
   AssignChain <: AssignBind,
-  Status <: StatusBind
+  Status <: HList
 ](table: T, query: SQLBuiltQuery, rowFunc: MySQLRow => R) extends UpdateQuery[T, R, MySQLRow, Group, Order, Limit, Chain, AssignChain, Status](table: T, query,
   rowFunc) {
 
-  @implicitNotFound("You cannot use two where clauses on a single query")
   override def where(condition: T => QueryCondition)(implicit ev: Chain =:= Unchainned): MySQLUpdateQuery[T, R, Group, Order, Limit, Chainned,
     AssignChain, Status] = {
     new MySQLUpdateQuery(table, table.queryBuilder.where(query, condition(table).clause), rowFunc)
   }
 
-  @implicitNotFound("You cannot use two where clauses on a single query")
   override def where(condition: QueryCondition)(implicit ev: Chain =:= Unchainned): MySQLUpdateQuery[T, R, Group, Order, Limit, Chainned,
     AssignChain, Status] = {
     new MySQLUpdateQuery(table, table.queryBuilder.where(query, condition.clause), rowFunc)
   }
 
-  @implicitNotFound("You need to use the where method first")
   override def and(condition: T => QueryCondition)(implicit ev: Chain =:= Chainned): MySQLUpdateQuery[T, R, Group, Order, Limit, Chain,
     AssignChainned, Status]  = {
     new MySQLUpdateQuery(table, table.queryBuilder.and(query, condition(table).clause), rowFunc)
   }
 
-  @implicitNotFound("You need to use the where method first")
   override def and(condition: QueryCondition)(implicit ev: Chain =:= Chainned): MySQLUpdateQuery[T, R, Group, Order, Limit, Chain, AssignChainned,
     Status]  = {
     new MySQLUpdateQuery(table, table.queryBuilder.and(query, condition.clause), rowFunc)
   }
 
-  @implicitNotFound("You can't use 2 SET parts on a single UPDATE query")
-  override def set(condition: T => QueryAssignment)(implicit ev: AssignChain =:= AssignUnchainned, ev1: Status =:= Unterminated): MySQLUpdateQuery[T, R,
+  override def set(condition: T => QueryAssignment)(implicit ev: AssignChain =:= AssignUnchainned, ev1: Status =:= HNil): MySQLUpdateQuery[T, R,
     Group, Order, Limit, Chain, AssignChainned, Status] = {
     new MySQLUpdateQuery(
       table,
@@ -117,14 +113,6 @@ class MySQLUpdateQuery[T <: BaseTable[T, _, MySQLRow],
     new MySQLUpdateQuery(
       table,
       table.queryBuilder.andSet(query, condition(table).clause),
-      rowFunc
-    )
-  }
-
-  private[morpheus] override def terminate: MySQLUpdateQuery[T, R, Group, Order, Limit, Chain, AssignChainned, Terminated] = {
-    new MySQLUpdateQuery(
-      table,
-      query,
       rowFunc
     )
   }

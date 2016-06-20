@@ -34,6 +34,7 @@ import com.websudos.morpheus.builder.DefaultQueryBuilder
 import com.websudos.morpheus.{Row, SQLPrimitive}
 import com.websudos.morpheus.dsl.BaseTable
 import com.websudos.morpheus.query._
+import shapeless.HNil
 
 sealed abstract class Operator {}
 
@@ -141,7 +142,7 @@ sealed class ExistsOperator extends Operator {
     Limit <: LimitBind,
     Chain <: ChainBind,
     AssignChain <: AssignBind
-  ](query: SelectQuery[T, R, TableRow, Group, Order, Limit, Chain, AssignChain, Unterminated]): QueryCondition = {
+  ](query: SelectQuery[T, R, TableRow, Group, Order, Limit, Chain, AssignChain, HNil]): QueryCondition = {
     QueryCondition(
       query.table.queryBuilder.exists(query.query)
     )
@@ -160,7 +161,7 @@ sealed class NotExistsOperator extends Operator {
     Limit <: LimitBind,
     Chain <: ChainBind,
     AssignChain <: AssignBind
-  ](query: SelectQuery[T, R, TableRow, Group, Order, Limit, Chain, AssignChain, Unterminated]): QueryCondition = {
+  ](query: SelectQuery[T, R, TableRow, Group, Order, Limit, Chain, AssignChain, HNil]): QueryCondition = {
     QueryCondition(
       query.table.queryBuilder.notExists(query.query)
     )
