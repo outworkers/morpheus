@@ -33,7 +33,7 @@ import sbt._
 
 object Build extends Build {
 
-  val UtilVersion = "0.10.0"
+  val UtilVersion = "0.18.2"
   val FinagleVersion = "6.25.0"
   val SparkVersion = "1.2.1"
   val FinaglePostgres = "0.1.0-SNAPSHOT"
@@ -57,10 +57,11 @@ object Build extends Build {
     publishTo <<= version.apply {
       v =>
         val nexus = "https://oss.sonatype.org/"
-        if (v.trim.endsWith("SNAPSHOT"))
+        if (v.trim.endsWith("SNAPSHOT")) {
           Some("snapshots" at nexus + "content/repositories/snapshots")
-        else
+        } else {
           Some("releases" at nexus + "service/local/staging/deploy/maven2")
+        }
     },
     publishArtifact in Test := false,
     pomIncludeRepository := { _ => true },
@@ -225,9 +226,9 @@ object Build extends Build {
     name := "morpheus-testkit",
     libraryDependencies ++= Seq(
       "com.h2database"                   % "h2"                        % "1.4.181",
-      "com.websudos"                     %% "util-testing"             % UtilVersion excludeAll(
+      "com.websudos"                     %% "util-testing"             % UtilVersion excludeAll {
         ExclusionRule("org.scala-lang", "scala-reflect")
-      )
+      }
     )
   ).dependsOn(
     // morpheusZookeeper
