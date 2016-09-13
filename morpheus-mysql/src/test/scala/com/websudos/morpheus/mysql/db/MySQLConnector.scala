@@ -32,14 +32,12 @@ package com.websudos.morpheus.mysql.db
 
 import java.util.concurrent.TimeUnit
 
-import com.twitter.conversions.time._
 import com.twitter.finagle.Mysql
-import com.twitter.util.Await
 import com.websudos.morpheus.Client
 import com.websudos.morpheus.mysql.{MySQLClient, MySQLResult, MySQLRow}
-import org.scalatest.{BeforeAndAfterAll, Matchers, OptionValues, Suite}
 import org.scalatest.concurrent.{AsyncAssertions, PatienceConfiguration, ScalaFutures}
 import org.scalatest.time.{Millis, Seconds, Span}
+import org.scalatest.{BeforeAndAfterAll, Matchers, OptionValues, Suite}
 
 object MySQLConnector {
 
@@ -53,14 +51,10 @@ object MySQLConnector {
   /**
    * This client is meant to connect to the Travis CI default MySQL service.
    */
-  lazy val client = {
-    val c = Mysql.client
-      .withCredentials(user, pwd)
-      .withDatabase("morpheus_test")
-      .newRichClient("127.0.0.1:3306")
-    Await.result(c.ping(), 2.seconds)
-    c
-  }
+  lazy val client = Mysql.client
+    .withCredentials(user, pwd)
+    .withDatabase("morpheus_test")
+    .newRichClient("127.0.0.1:3306")
 }
 
 

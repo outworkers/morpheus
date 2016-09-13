@@ -40,7 +40,7 @@ lazy val Versions = new {
   val slf4j = "1.7.21"
   val joda = "2.9.4"
   val jodaConvert = "1.8.1"
-  val twitterUtil = "6.34.0"
+  val twitterUtil = "6.36.0"
 }
 
 val liftVersion: String => String = {
