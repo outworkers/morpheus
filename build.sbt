@@ -31,17 +31,16 @@ import com.twitter.sbt.{GitProject, VersionManagement}
 
 lazy val Versions = new {
   val util = "0.18.2"
-  val finagle = "6.35.0"
+  val finagle = "6.37.0"
   val spark = "1.2.1"
-  val FinaglePostgres = "0.1.0-SNAPSHOT"
-  val FinagleZkVersion = "6.28.0"
-  val shapeless = "2.2.5"
-  val diesel = "0.2.4"
+  val FinaglePostgres = "0.1.0"
+  val shapeless = "2.3.1"
+  val diesel = "0.3.0"
   val lift = "3.0-RC3"
   val slf4j = "1.7.21"
   val joda = "2.9.4"
   val jodaConvert = "1.8.1"
-  val twitterUtil = "6.33.0"
+  val twitterUtil = "6.34.0"
 }
 
 val liftVersion: String => String = {
@@ -53,7 +52,7 @@ val liftVersion: String => String = {
 
 val bintrayPublishing: Seq[Def.Setting[_]] = Seq(
   publishMavenStyle := true,
-  bintrayOrganization := Some("websudos"),
+  bintrayOrganization := Some("outworkers"),
   bintrayRepository := "oss-releases",
   bintrayReleaseOnPublish := true,
   publishArtifact in Test := false,
@@ -151,6 +150,16 @@ lazy val morpheus = (project in file("."))
     )
 
 /*
+  lazy val morpheusRedshift = (project in file("morpheus-redshift"))
+    .settings(sharedSettings: _*)
+    .settings(
+      name := "morpheus-redshift",
+      moduleName := "morpheus-redshift"
+    ).dependsOn(
+      morpheusDsl,
+      morpheusTestkit % Test
+    )
+
   lazy val morpheusZookeeper = Project(
     id = "morpheus-zookeeper",
     base = file("morpheus-zookeeper"),

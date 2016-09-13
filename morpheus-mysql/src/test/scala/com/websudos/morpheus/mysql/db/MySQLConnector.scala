@@ -33,7 +33,7 @@ package com.websudos.morpheus.mysql.db
 import java.util.concurrent.TimeUnit
 
 import com.twitter.conversions.time._
-import com.twitter.finagle.exp.Mysql
+import com.twitter.finagle.Mysql
 import com.twitter.util.Await
 import com.websudos.morpheus.Client
 import com.websudos.morpheus.mysql.{MySQLClient, MySQLResult, MySQLRow}
