@@ -30,13 +30,13 @@
 import com.twitter.sbt.{GitProject, VersionManagement}
 
 lazy val Versions = new {
-  val util = "0.18.2"
+  val util = "0.27.8"
   val finagle = "6.37.0"
   val spark = "1.2.1"
   val FinaglePostgres = "0.1.0"
   val shapeless = "2.3.1"
-  val diesel = "0.3.0"
-  val lift = "3.0-RC3"
+  val diesel = "0.5.0"
+  val lift = "3.0"
   val slf4j = "1.7.21"
   val joda = "2.9.4"
   val jodaConvert = "1.8.1"
@@ -45,7 +45,7 @@ lazy val Versions = new {
 
 val liftVersion: String => String = {
   s => CrossVersion.partialVersion(s) match {
-    case Some((major, minor)) if minor >= 11 => Versions.lift
+    case Some((_, minor)) if minor >= 11 => Versions.lift
     case _ => "3.0-M1"
   }
 }
@@ -61,7 +61,7 @@ val bintrayPublishing: Seq[Def.Setting[_]] = Seq(
 )
 
 val sharedSettings: Seq[Def.Setting[_]] = Seq(
-  organization := "com.websudos",
+  organization := "com.outworkers",
   version := "0.3.0",
   scalaVersion := "2.11.8",
   crossScalaVersions := Seq("2.10.6", "2.11.8"),
@@ -69,7 +69,6 @@ val sharedSettings: Seq[Def.Setting[_]] = Seq(
     Resolver.typesafeRepo("releases"),
     Resolver.sonatypeRepo("releases"),
     Resolver.jcenterRepo,
-    Resolver.bintrayRepo("websudos", "oss-releases"),
     "Twitter Repository" at "http://maven.twttr.com"
   ),
   scalacOptions ++= Seq(
@@ -111,10 +110,9 @@ lazy val morpheus = (project in file("."))
       moduleName := "morpheus-dsl",
       libraryDependencies ++= Seq(
         "com.twitter" %% "util-core" % Versions.twitterUtil,
+        "com.outworkers" %% "diesel-engine" % Versions.diesel,
         "org.slf4j" % "slf4j-api" % Versions.slf4j,
-        "com.websudos" %% "diesel-engine" % Versions.diesel,
         "com.chuusai" %% "shapeless" % Versions.shapeless,
-        "org.scala-lang" % "scala-reflect" % scalaVersion.value,
         "joda-time" % "joda-time" % Versions.joda,
         "org.joda" % "joda-convert" % Versions.jodaConvert,
         "net.liftweb" %% "lift-json" % liftVersion(scalaVersion.value) % Test
