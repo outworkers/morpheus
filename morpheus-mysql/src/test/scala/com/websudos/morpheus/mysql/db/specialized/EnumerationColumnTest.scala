@@ -57,9 +57,7 @@ class EnumerationColumnTest extends FlatSpec with MySQLSuite {
     } yield get
 
     whenReady(chain) {
-      res => {
-        res.value shouldEqual record
-      }
+      res => res.value shouldEqual record
     }
 
   }

@@ -30,13 +30,13 @@
 import com.twitter.sbt.{GitProject, VersionManagement}
 
 lazy val Versions = new {
-  val util = "0.18.2"
+  val util = "0.28.0"
   val finagle = "6.37.0"
   val spark = "1.2.1"
   val FinaglePostgres = "0.1.0"
   val shapeless = "2.3.1"
   val diesel = "0.3.0"
-  val lift = "3.0-RC3"
+  val lift = "3.0"
   val slf4j = "1.7.21"
   val joda = "2.9.4"
   val jodaConvert = "1.8.1"
