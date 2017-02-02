@@ -106,7 +106,14 @@ class MySQLInsertQuery[T <: BaseTable[T, _, MySQLRow],
   lightweightPart: LightweightPart = Defaults.EmptyLightweightPart
 ) extends InsertQuery[T, R, MySQLRow, Group, Order, Limit, Chain, AssignChain, Status](table: T, init, rowFunc) {
 
-  override val query: SQLBuiltQuery = (columnsPart merge valuePart merge lightweightPart) build init
+  override protected[this] type QueryType[
+    G <: GroupBind,
+    O <: OrderBind,
+    L <: LimitBind,
+    S <: ChainBind,
+    C <: AssignBind,
+    P <: HList
+  ] = MySQLInsertQuery[T, R, G, O, L, S, C, P]
 
   override protected[this] def create[
     G <: GroupBind,
