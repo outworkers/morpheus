@@ -29,6 +29,7 @@
  */
 package com.outworkers.morpheus.sql
 
+import com.outworkers.morpheus.builder.{DefaultQueryBuilder, DefaultSQLSyntax}
 import com.outworkers.morpheus.dsl.SelectTable
 import com.outworkers.morpheus.query._
 import com.outworkers.morpheus.{Row => MorpheusRow}

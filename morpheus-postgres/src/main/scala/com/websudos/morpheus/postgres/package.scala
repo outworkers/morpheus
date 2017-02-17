@@ -28,7 +28,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-package com.websudos.morpheus
+package com.outworkers.morpheus
 
 package object postgres {
 

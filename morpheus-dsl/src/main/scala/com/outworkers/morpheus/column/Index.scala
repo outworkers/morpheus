@@ -31,6 +31,8 @@
 package com.outworkers.morpheus.column
 
 import com.outworkers.morpheus.builder.{DefaultSQLSyntax, SQLBuiltQuery}
+import com.outworkers.morpheus.dsl.BaseTable
+import com.outworkers.morpheus.Row
 import shapeless.<:!<
 
 private[morpheus] trait IndexColumn {

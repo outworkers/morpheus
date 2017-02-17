@@ -29,8 +29,10 @@
  */
 package com.outworkers.morpheus.query
 
+import com.outworkers.morpheus.Row
 import com.outworkers.morpheus.sql.DefaultRow
 import com.outworkers.morpheus.builder.{AbstractSQLSyntax, AbstractSyntaxBlock, DefaultSQLSyntax, SQLBuiltQuery}
+import com.outworkers.morpheus.dsl.BaseTable
 import shapeless.{HList, HNil}
 
 import scala.annotation.implicitNotFound

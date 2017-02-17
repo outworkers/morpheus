@@ -28,7 +28,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-package com.websudos.morpheus.testkit
+package com.outworkers.morpheus.testkit
 
 import org.scalatest.{BeforeAndAfterAll, Suite}
 

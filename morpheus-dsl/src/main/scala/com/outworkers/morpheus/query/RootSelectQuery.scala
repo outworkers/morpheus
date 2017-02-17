@@ -67,7 +67,7 @@ private[morpheus] class AbstractSelectSyntaxBlock(
 
 /**
  * This is the implementation of a root select query, a wrapper around an abstract syntax block.
- * The basic select of select methods can be seen in {@link com.websudos.morpheus.dsl.SelectTable}
+ * The basic select of select methods can be seen in {@link com.outworkers.morpheus.dsl.SelectTable}
  *
  * This is used as the entry point to an SQL query, and it requires the user to provide "one more method" to fully specify a SELECT query.
  * The implicit conversion from a RootSelectQuery to a SelectQuery will automatically pick the "all" strategy below.

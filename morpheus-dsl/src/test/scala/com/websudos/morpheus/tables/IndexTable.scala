@@ -27,7 +27,7 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-package com.websudos.morpheus.tables
+package com.outworkers.morpheus.tables
 
 import com.outworkers.morpheus.keys.Unsigned
 import com.outworkers.morpheus.sql._

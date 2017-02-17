@@ -28,7 +28,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-package com.websudos.morpheus.postgres
+package com.outworkers.morpheus.postgres
 
 import com.outworkers.morpheus.query.{RootCreateQuery, RootUpdateQuery}
 import com.outworkers.morpheus.Row

@@ -31,13 +31,15 @@ package com.outworkers.morpheus.sql
 
 import com.outworkers.morpheus.query._
 import com.outworkers.morpheus.builder.SQLBuiltQuery
+import com.outworkers.morpheus.column.{AbstractColumn, AbstractModifyColumn, Column, SelectColumn}
 import com.outworkers.morpheus.{Row => MorpheusRow}
 import shapeless.HNil
 
 private[morpheus] trait DefaultSQLImplicits extends JoinImplicits {
 
-  implicit class SelectColumnRequired[Owner <: BaseTable[Owner, Record, TableRow], Record, TableRow <: MorpheusRow, T](col: Column[Owner, Record, TableRow, T])
-    extends SelectColumn[T](SQLBuiltQuery(col.name)) {
+  implicit class SelectColumnRequired[Owner <: BaseTable[Owner, Record, TableRow], Record, TableRow <: MorpheusRow, T](
+    col: Column[Owner, Record, TableRow, T]
+  ) extends SelectColumn[T](SQLBuiltQuery(col.name)) {
     def apply(r: MorpheusRow): T = col.apply(r)
   }
 

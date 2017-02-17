@@ -31,6 +31,9 @@
 package com.outworkers.morpheus.dsl
 
 import com.outworkers.morpheus
+import com.outworkers.morpheus.Row
+import com.outworkers.morpheus.column.{AbstractColumn, DefaultForeignKeyConstraints}
+import com.outworkers.morpheus.query.AbstractQueryColumn
 
 import scala.util.Try
 
@@ -59,7 +62,7 @@ trait DefaultImportsDefinition extends DefaultForeignKeyConstraints {
 
         override def sqlType: String = ev.sqlType
 
-        override def fromRow(row: com.websudos.morpheus.Row, name: String): Try[T#Value] = {
+        override def fromRow(row: com.outworkers.morpheus.Row, name: String): Try[T#Value] = {
           Try { enum.withName(row.string(name)) }
         }
 
@@ -68,14 +71,17 @@ trait DefaultImportsDefinition extends DefaultForeignKeyConstraints {
     }
   }
 
-  type BaseTable[Owner <: BaseTable[Owner, Record, TableRow], Record, TableRow <: Row] = com.websudos.morpheus.dsl.BaseTable[Owner, Record, TableRow]
+  type BaseTable[
+    Owner <: BaseTable[Owner, Record, TableRow],
+    Record,
+    TableRow <: Row
+  ] = com.outworkers.morpheus.dsl.BaseTable[Owner, Record, TableRow]
 
-
-  type PrimaryKey[ValueType] = com.websudos.morpheus.keys.PrimaryKey[ValueType]
-  type UniqueKey[ValueType] = com.websudos.morpheus.keys.UniqueKey[ValueType]
-  type NotNull = com.websudos.morpheus.keys.NotNull
-  type Autoincrement = com.websudos.morpheus.keys.Autoincrement
-  type Zerofill[ValueType] = com.websudos.morpheus.keys.Zerofill[ValueType]
+  type PrimaryKey[ValueType] = com.outworkers.morpheus.keys.PrimaryKey[ValueType]
+  type UniqueKey[ValueType] = com.outworkers.morpheus.keys.UniqueKey[ValueType]
+  type NotNull = com.outworkers.morpheus.keys.NotNull
+  type Autoincrement = com.outworkers.morpheus.keys.Autoincrement
+  type Zerofill[ValueType] = com.outworkers.morpheus.keys.Zerofill[ValueType]
 
   implicit def columnToQueryColumn[T: SQLPrimitive](col: AbstractColumn[T]): AbstractQueryColumn[T]
 

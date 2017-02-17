@@ -75,7 +75,7 @@ package object mysql extends DefaultImportsDefinition
 
       override def sqlType: String = ev.sqlType
 
-      override def fromRow(row: com.websudos.morpheus.Row, name: String): Try[T#Value] = {
+      override def fromRow(row: com.outworkers.morpheus.Row, name: String): Try[T#Value] = {
         Try { enum.withName(row.string(name)) }
       }
 
