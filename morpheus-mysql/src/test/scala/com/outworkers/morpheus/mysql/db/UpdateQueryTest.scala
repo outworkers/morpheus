@@ -29,18 +29,8 @@
  */
 package com.outworkers.morpheus.mysql.db
 
-import com.outworkers.morpheus.mysql.tables.{EnumerationRecord, TestEnumeration}
-import com.websudos.morpheus.mysql.tables.EnumerationRecord
-import com.outworkers.util.testing._
+import org.scalatest.FlatSpec
 
+class UpdateQueryTest extends FlatSpec with MySQLSuite {
 
-trait Generators {
-  implicit object EnumerationTableSampler extends Sample[EnumerationRecord] {
-    override def sample: EnumerationRecord = {
-      EnumerationRecord(
-        gen[Int],
-        oneOf(TestEnumeration)
-      )
-    }
-  }
 }

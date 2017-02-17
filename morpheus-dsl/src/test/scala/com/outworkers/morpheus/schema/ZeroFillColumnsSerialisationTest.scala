@@ -27,20 +27,24 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-package com.outworkers.morpheus.mysql.db
+package com.outworkers.morpheus.schema
 
-import com.outworkers.morpheus.mysql.tables.{EnumerationRecord, TestEnumeration}
-import com.websudos.morpheus.mysql.tables.EnumerationRecord
-import com.outworkers.util.testing._
+import org.scalatest.{Matchers, FlatSpec}
 
+import com.websudos.morpheus.tables.ZeroFillTable
 
-trait Generators {
-  implicit object EnumerationTableSampler extends Sample[EnumerationRecord] {
-    override def sample: EnumerationRecord = {
-      EnumerationRecord(
-        gen[Int],
-        oneOf(TestEnumeration)
-      )
-    }
+class ZeroFillColumnsSerialisationTest extends FlatSpec with Matchers {
+
+  it should "serialise a ZEROFILL UNSIGNED NOT NULL column" in {
+    ZeroFillTable.tinyInt.qb.queryString shouldEqual "tinyInt TINYINT ZEROFILL UNSIGNED NOT NULL"
   }
+
+  it should "serialise a ZEROFILL NOT NULL column" in {
+    ZeroFillTable.tinyIntLimited.qb.queryString shouldEqual "tinyIntLimited TINYINT(5) ZEROFILL NOT NULL"
+  }
+
+  it should "serialise a ZEROFILL UNSIGNED column" in {
+    ZeroFillTable.smallInt.qb.queryString shouldEqual "smallInt SMALLINT ZEROFILL UNSIGNED"
+  }
+
 }

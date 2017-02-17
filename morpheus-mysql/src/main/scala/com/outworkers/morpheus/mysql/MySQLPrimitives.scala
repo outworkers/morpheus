@@ -27,20 +27,44 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-package com.outworkers.morpheus.mysql.db
 
-import com.outworkers.morpheus.mysql.tables.{EnumerationRecord, TestEnumeration}
-import com.websudos.morpheus.mysql.tables.EnumerationRecord
-import com.outworkers.util.testing._
+package com.outworkers.morpheus.mysql
 
+import java.util.Date
 
-trait Generators {
-  implicit object EnumerationTableSampler extends Sample[EnumerationRecord] {
-    override def sample: EnumerationRecord = {
-      EnumerationRecord(
-        gen[Int],
-        oneOf(TestEnumeration)
-      )
-    }
+import com.websudos.morpheus._
+import MySQLRow
+import org.joda.time.DateTime
+
+trait MySQLPrimitives {
+
+  def apply[RR : SQLPrimitive]: SQLPrimitive[RR] = implicitly[SQLPrimitive[RR]]
+
+  implicit object IntPrimitive extends DefaultIntPrimitive {
+    def fromRow(row: MySQLRow, name: String): Option[Int] = Some(row.int(name))
+  }
+
+  implicit object FloatPrimitive extends DefaultFloatPrimitive {
+    def fromRow(row: MySQLRow, name: String): Option[Float] = Some(row.float(name))
+  }
+
+  implicit object DoublePrimitive extends DefaultDoublePrimitive {
+    def fromRow(row: MySQLRow, name: String): Option[Double] = Some(row.double(name))
+  }
+
+  implicit object LongPrimitive extends DefaultLongPrimitive {
+    def fromRow(row: MySQLRow, name: String): Option[Long] = Some(row.long(name))
+  }
+
+  implicit object DatePrimitive extends DefaultDatePrimitive {
+    def fromRow(row: MySQLRow, name: String): Option[Date] = Some(row.date(name))
+  }
+
+  implicit object DateTimePrimitive extends DefaultDateTimePrimitive {
+    def fromRow(row: MySQLRow, name: String): Option[DateTime] = Some(row.datetime(name))
+  }
+
+  implicit object StringPrimitive extends DefaultStringPrimitive {
+    def fromRow(row: MySQLRow, name: String): Option[String] = Some(row.string(name))
   }
 }

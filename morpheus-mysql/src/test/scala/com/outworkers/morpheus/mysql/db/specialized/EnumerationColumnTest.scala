@@ -27,20 +27,37 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-package com.outworkers.morpheus.mysql.db
+package com.outworkers.morpheus.mysql.db.specialized
 
-import com.outworkers.morpheus.mysql.tables.{EnumerationRecord, TestEnumeration}
-import com.websudos.morpheus.mysql.tables.EnumerationRecord
+import com.outworkers.morpheus.mysql.tables.{EnumerationRecord, EnumerationTable, TestEnumeration}
 import com.outworkers.util.testing._
+import com.websudos.morpheus.SQLPrimitive
+import com.websudos.morpheus.mysql.tables.{EnumerationRecord, EnumerationTable}
+import org.scalatest.FlatSpec
 
+import scala.concurrent.Await
+import scala.concurrent.duration._
 
-trait Generators {
-  implicit object EnumerationTableSampler extends Sample[EnumerationRecord] {
-    override def sample: EnumerationRecord = {
-      EnumerationRecord(
-        gen[Int],
-        oneOf(TestEnumeration)
-      )
+class EnumerationColumnTest extends FlatSpec with MySQLSuite {
+
+  override def beforeAll(): Unit = {
+    super.beforeAll()
+    Await.result(EnumerationTable.create.ifNotExists.engine(InnoDB).future(), 5.seconds)
+  }
+
+  implicit val enumPrimitive: SQLPrimitive[TestEnumeration#Value] = SQLPrimitive(TestEnumeration)
+
+  it should "store a record with an enumeration defined inside it" in {
+    val record = gen[EnumerationRecord]
+
+    val chain = for {
+      store <- EnumerationTable.store(record).future()
+      get <- EnumerationTable.select.where(_.id eqs record.id).one
+    } yield get
+
+    whenReady(chain) {
+      res => res.value shouldEqual record
     }
+
   }
 }

@@ -63,12 +63,12 @@ package object mysql extends DefaultImportsDefinition
     )
   }
 
-  type SQLTable[Owner <: BaseTable[Owner, Record, MySQLRow], Record] = com.websudos.morpheus.mysql.MySQLTable[Owner, Record]
+  type SQLTable[Owner <: BaseTable[Owner, Record, MySQLRow], Record] = MySQLTable[Owner, Record]
 
-  type Row = com.websudos.morpheus.mysql.MySQLRow
-  type Result = com.websudos.morpheus.mysql.MySQLResult
+  type Row = MySQLRow
+  type Result = MySQLResult
 
-  type Table[Owner <: BaseTable[Owner, Record, MySQLRow], Record] = com.websudos.morpheus.mysql.MySQLTable[Owner, Record]
+  type Table[Owner <: BaseTable[Owner, Record, MySQLRow], Record] = MySQLTable[Owner, Record]
 
   def enumToQueryConditionPrimitive[T <: Enumeration](enum: T)(implicit ev: SQLPrimitive[String]): SQLPrimitive[T#Value] = {
     new SQLPrimitive[T#Value] {

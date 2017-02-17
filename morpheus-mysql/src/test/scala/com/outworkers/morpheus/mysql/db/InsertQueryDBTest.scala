@@ -27,20 +27,36 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
+
 package com.outworkers.morpheus.mysql.db
 
-import com.outworkers.morpheus.mysql.tables.{EnumerationRecord, TestEnumeration}
-import com.websudos.morpheus.mysql.tables.EnumerationRecord
+import com.outworkers.morpheus.mysql.tables.{BasicRecord, BasicTable}
 import com.outworkers.util.testing._
+import com.websudos.morpheus.mysql.tables.BasicTable
+import org.scalatest.FlatSpec
 
+import scala.concurrent.Await
+import scala.concurrent.duration._
 
-trait Generators {
-  implicit object EnumerationTableSampler extends Sample[EnumerationRecord] {
-    override def sample: EnumerationRecord = {
-      EnumerationRecord(
-        gen[Int],
-        oneOf(TestEnumeration)
-      )
+class InsertQueryDBTest extends FlatSpec with MySQLSuite {
+
+  override def beforeAll(): Unit = {
+    super.beforeAll()
+    Await.result(BasicTable.create.ifNotExists.engine(InnoDB).future(), 3.seconds)
+  }
+
+  it should "store a record in the database and retrieve it by id" in {
+    val sample = gen[BasicRecord]
+
+    val chain = for {
+      store <- BasicTable.insert.value(_.name, sample.name).value(_.count, sample.count).future()
+      get <- BasicTable.select.where(_.name eqs sample.name).one()
+    } yield get
+
+    chain.successful {
+      res => {
+        res.value shouldEqual sample
+      }
     }
   }
 }

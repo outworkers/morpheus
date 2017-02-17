@@ -27,20 +27,31 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-package com.outworkers.morpheus.mysql.db
 
-import com.outworkers.morpheus.mysql.tables.{EnumerationRecord, TestEnumeration}
-import com.websudos.morpheus.mysql.tables.EnumerationRecord
-import com.outworkers.util.testing._
+package com.outworkers.morpheus.dsl
 
+import scala.concurrent.{Future => ScalaFuture, Promise => ScalaPromise}
 
-trait Generators {
-  implicit object EnumerationTableSampler extends Sample[EnumerationRecord] {
-    override def sample: EnumerationRecord = {
-      EnumerationRecord(
-        gen[Int],
-        oneOf(TestEnumeration)
-      )
-    }
+import com.twitter.util.{ Future, Throw, Return }
+import com.websudos.morpheus.{Row, Result, Client}
+
+private[morpheus] trait ResultSetOperations {
+
+  protected[this] def queryToFuture[DBRow <: Row, DBResult <: Result](query: String)(implicit client: Client[DBRow, DBResult]): Future[DBResult] = {
+    client.query(query)
   }
+
+  protected[this] def queryToScalaFuture[DBRow <: Row, DBResult <: Result](query: String)(implicit client: Client[DBRow, DBResult]): ScalaFuture[DBResult] = {
+    twitterToScala(client.query(query))
+  }
+
+  protected[this] def twitterToScala[A](future: Future[A]): ScalaFuture[A] = {
+    val promise = ScalaPromise[A]()
+    future respond {
+      case Return(data) => promise success data
+      case Throw(err) => promise failure err
+    }
+    promise.future
+  }
+
 }

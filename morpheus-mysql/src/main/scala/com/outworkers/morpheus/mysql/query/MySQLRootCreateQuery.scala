@@ -27,20 +27,19 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-package com.outworkers.morpheus.mysql.db
+package com.outworkers.morpheus.mysql.query
 
-import com.outworkers.morpheus.mysql.tables.{EnumerationRecord, TestEnumeration}
-import com.websudos.morpheus.mysql.tables.EnumerationRecord
-import com.outworkers.util.testing._
+import com.outworkers.morpheus.mysql.{MySQLRow, MySQLSyntax}
+import com.websudos.morpheus.builder.AbstractSQLSyntax
+import com.websudos.morpheus.mysql._
+import com.websudos.morpheus.query.{RootCreateQuery, RootCreateSyntaxBlock}
 
 
-trait Generators {
-  implicit object EnumerationTableSampler extends Sample[EnumerationRecord] {
-    override def sample: EnumerationRecord = {
-      EnumerationRecord(
-        gen[Int],
-        oneOf(TestEnumeration)
-      )
-    }
-  }
+class MySQLCreateSyntaxBlock(query: String, tableName: String) extends RootCreateSyntaxBlock(query, tableName) {
+  override def syntax: AbstractSQLSyntax = MySQLSyntax
+}
+
+class MySQLRootCreateQuery[T <: BaseTable[T, _, MySQLRow], R](table: T, st: RootCreateSyntaxBlock, rowFunc: MySQLRow => R)
+  extends RootCreateQuery[T, R, MySQLRow](table, st, rowFunc){
+
 }

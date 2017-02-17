@@ -29,9 +29,10 @@
  */
 package com.outworkers.morpheus.mysql.query
 
+import com.outworkers.morpheus.mysql.tables.BasicTable
 import com.outworkers.util.testing._
 import com.websudos.morpheus.mysql._
-import com.websudos.morpheus.mysql.tables.{BasicTable, EnumerationRecord, EnumerationTable}
+import com.websudos.morpheus.mysql.tables.{EnumerationRecord, EnumerationTable}
 import org.scalatest.{FlatSpec, Matchers}
 
 class  MySQLInsertQueryTest extends FlatSpec with Matchers {

@@ -32,9 +32,10 @@ package com.outworkers.morpheus.mysql.db
 
 import java.util.concurrent.TimeUnit
 
+import com.outworkers.morpheus.mysql.{MySQLClient, MySQLResult, MySQLRow}
 import com.twitter.finagle.Mysql
 import com.websudos.morpheus.Client
-import com.websudos.morpheus.mysql.{MySQLClient, MySQLResult, MySQLRow}
+import com.websudos.morpheus.mysql.{MySQLClient, MySQLRow}
 import org.scalatest.concurrent.{AsyncAssertions, PatienceConfiguration, ScalaFutures}
 import org.scalatest.time.{Millis, Seconds, Span}
 import org.scalatest.{BeforeAndAfterAll, Matchers, OptionValues, Suite}

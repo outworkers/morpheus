@@ -27,20 +27,46 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-package com.outworkers.morpheus.mysql.db
+package com.outworkers.morpheus
 
-import com.outworkers.morpheus.mysql.tables.{EnumerationRecord, TestEnumeration}
-import com.websudos.morpheus.mysql.tables.EnumerationRecord
-import com.outworkers.util.testing._
+import java.nio.ByteBuffer
+import java.util.Date
 
+import com.twitter.util.Future
+import org.joda.time.DateTime
 
-trait Generators {
-  implicit object EnumerationTableSampler extends Sample[EnumerationRecord] {
-    override def sample: EnumerationRecord = {
-      EnumerationRecord(
-        gen[Int],
-        oneOf(TestEnumeration)
-      )
-    }
-  }
+trait Row {
+
+  def bool(name: String): Boolean = ???
+
+  def byte(name: String): Byte = ???
+
+  def string(name: String): String = ???
+
+  def byteBuffer(name: String): ByteBuffer = ???
+
+  def int(name: String): Int = ???
+
+  def double(name: String): Double = ???
+
+  def short(name: String): Short = ???
+
+  def date(name: String): Date = ???
+
+  def datetime(name: String): DateTime = new DateTime(date(name))
+
+  def float(name: String): Float = ???
+
+  def long(name: String): Long = ???
+
+  def bigDecimal(name: String): BigDecimal = ???
+}
+
+trait Result {}
+
+trait Client[+DBRow, DBResult] {
+
+  def select[T](query: String)(f: DBRow => T): Future[Seq[T]]
+
+  def query(query: String): Future[DBResult]
 }

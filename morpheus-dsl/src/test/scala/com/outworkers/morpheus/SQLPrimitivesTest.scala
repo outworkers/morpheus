@@ -27,20 +27,33 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-package com.outworkers.morpheus.mysql.db
+package com.outworkers.morpheus
 
-import com.outworkers.morpheus.mysql.tables.{EnumerationRecord, TestEnumeration}
-import com.websudos.morpheus.mysql.tables.EnumerationRecord
 import com.outworkers.util.testing._
+import org.scalatest.{Matchers, FlatSpec}
+import org.scalatest.prop.GeneratorDrivenPropertyChecks
 
+import com.websudos.morpheus.sql._
 
-trait Generators {
-  implicit object EnumerationTableSampler extends Sample[EnumerationRecord] {
-    override def sample: EnumerationRecord = {
-      EnumerationRecord(
-        gen[Int],
-        oneOf(TestEnumeration)
-      )
-    }
+class SQLPrimitivesTest extends FlatSpec with Matchers {
+
+  "The SQL String primitive" should "always use '(apostrophes) around the serialised strings" in {
+    val name = gen[ShortString].value
+    val query = implicitly[SQLPrimitive[String]].toSQL(name)
+    query shouldEqual s"'$name'"
   }
+
+  "The SQL Long primitive" should "serialise a Long value to its string value" in {
+    val value = gen[Long]
+    val query = implicitly[SQLPrimitive[Long]].toSQL(value)
+    query shouldEqual s"${value.toString}"
+  }
+
+  "The SQL Int primitive" should "serialise a Int value to its string value" in {
+    val value = gen[Int]
+    val query = implicitly[SQLPrimitive[Int]].toSQL(value)
+    query shouldEqual s"${value.toString}"
+  }
+
+
 }

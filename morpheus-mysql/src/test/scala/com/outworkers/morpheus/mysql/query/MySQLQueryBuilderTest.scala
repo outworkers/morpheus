@@ -29,12 +29,11 @@
  */
 package com.outworkers.morpheus.mysql.query
 
+import com.outworkers.morpheus.mysql.MySQLQueryBuilder
 import com.websudos.morpheus.builder.SQLBuiltQuery
 import org.scalatest.prop.GeneratorDrivenPropertyChecks
 import org.scalatest.{FlatSpec, Matchers}
 import com.outworkers.util.testing._
-
-import com.websudos.morpheus.mysql.MySQLQueryBuilder
 
 
 class MySQLQueryBuilderTest extends FlatSpec with Matchers {
