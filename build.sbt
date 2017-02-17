@@ -41,7 +41,7 @@ lazy val Versions = new {
   val joda = "2.9.4"
   val jodaConvert = "1.8.1"
 
-  val twitterUtilVersion: String => String = {
+  val twitterUtil: String => String = {
     s => CrossVersion.partialVersion(s) match {
       case Some((_, minor)) if minor >= 12 => "6.39.0"
       case _ => "6.34.0"
@@ -115,7 +115,7 @@ lazy val morpheus = (project in file("."))
       name := "morpheus-dsl",
       moduleName := "morpheus-dsl",
       libraryDependencies ++= Seq(
-        "com.twitter" %% "util-core" % Versions.twitterUtil(scalaVersion.value),
+        "com.twitter" %% "util-core" % Versions.twitterUtilVersion(scalaVersion.value),
         "com.outworkers" %% "diesel-engine" % Versions.diesel,
         "com.outworkers" %% "diesel-reflection" % Versions.diesel,
         "org.slf4j" % "slf4j-api" % Versions.slf4j,
