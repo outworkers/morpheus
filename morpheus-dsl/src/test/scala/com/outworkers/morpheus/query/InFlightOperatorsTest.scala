@@ -29,10 +29,10 @@
  */
 package com.outworkers.morpheus.query
 
-import org.scalatest.{Matchers, FlatSpec}
-import com.websudos.morpheus.dsl.BasicTable
-import com.websudos.morpheus.sql._
-import com.websudos.morpheus.tables.IndexTable
+import com.outworkers.morpheus.dsl.BasicTable
+import org.scalatest.{FlatSpec, Matchers}
+import com.outworkers.morpheus.sql._
+import com.outworkers.morpheus.tables.IndexTable
 
 class InFlightOperatorsTest extends FlatSpec with Matchers {
 

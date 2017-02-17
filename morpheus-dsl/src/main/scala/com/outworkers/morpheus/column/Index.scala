@@ -28,11 +28,9 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-package com.websudos.morpheus.column
+package com.outworkers.morpheus.column
 
-import com.websudos.morpheus.Row
-import com.websudos.morpheus.builder.{SQLBuiltQuery, DefaultSQLSyntax}
-import com.websudos.morpheus.dsl.BaseTable
+import com.outworkers.morpheus.builder.{DefaultSQLSyntax, SQLBuiltQuery}
 import shapeless.<:!<
 
 private[morpheus] trait IndexColumn {

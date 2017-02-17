@@ -27,12 +27,11 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-package com.websudos.morpheus.sql
+package com.outworkers.morpheus.sql
 
-import com.websudos.morpheus.{ Row => MorpheusRow }
-import com.websudos.morpheus.builder.SQLBuiltQuery
-import com.websudos.morpheus.column.{AbstractColumn, AbstractModifyColumn, Column, SelectColumn}
-import com.websudos.morpheus.query._
+import com.outworkers.morpheus.query._
+import com.outworkers.morpheus.builder.SQLBuiltQuery
+import com.outworkers.morpheus.{Row => MorpheusRow}
 import shapeless.HNil
 
 private[morpheus] trait DefaultSQLImplicits extends JoinImplicits {

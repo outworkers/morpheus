@@ -31,11 +31,12 @@
 package com.outworkers.morpheus.mysql.query
 
 import com.outworkers.morpheus.mysql.{MySQLResult, MySQLRow, MySQLSyntax}
+import com.outworkers.morpheus.query.{AssignBind, AssignChainned, AssignUnchainned}
 import com.twitter.util.Future
-import com.websudos.morpheus.Client
-import com.websudos.morpheus.builder.SQLBuiltQuery
-import com.websudos.morpheus.mysql._
-import com.websudos.morpheus.query._
+import com.outworkers.morpheus.Client
+import com.outworkers.morpheus.builder.SQLBuiltQuery
+import com.outworkers.morpheus.mysql._
+import com.outworkers.morpheus.query._
 import shapeless.{HList, HNil}
 
 import scala.annotation.implicitNotFound

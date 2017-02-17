@@ -27,16 +27,13 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-package com.websudos.morpheus.query
+package com.outworkers.morpheus.query
 
-import com.websudos.morpheus.builder.{SQLBuiltQuery, AbstractSyntaxBlock, DefaultSQLSyntax, AbstractSQLSyntax}
-import com.websudos.morpheus.sql.DefaultRow
-import shapeless.{HNil, HList}
+import com.outworkers.morpheus.sql.DefaultRow
+import com.outworkers.morpheus.builder.{AbstractSQLSyntax, AbstractSyntaxBlock, DefaultSQLSyntax, SQLBuiltQuery}
+import shapeless.{HList, HNil}
 
 import scala.annotation.implicitNotFound
-
-import com.websudos.morpheus.Row
-import com.websudos.morpheus.dsl.BaseTable
 
 
 private[morpheus] class RootUpdateSyntaxBlock(query: String, tableName: String) extends AbstractSyntaxBlock {

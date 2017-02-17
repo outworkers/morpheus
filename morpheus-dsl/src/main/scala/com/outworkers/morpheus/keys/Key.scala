@@ -30,8 +30,9 @@
 
 package com.outworkers.morpheus.keys
 
-import com.websudos.morpheus.builder.{SQLBuiltQuery, DefaultSQLSyntax}
-import com.websudos.morpheus.column.{NumericColumn, AbstractColumn}
+import com.outworkers.morpheus.column.NumericColumn
+import com.outworkers.morpheus.builder.{DefaultSQLSyntax, SQLBuiltQuery}
+import com.outworkers.morpheus.column.AbstractColumn
 
 private[morpheus] trait Key[ValueType, KeyType <: Key[ValueType, KeyType]] {
   self: AbstractColumn[ValueType] =>

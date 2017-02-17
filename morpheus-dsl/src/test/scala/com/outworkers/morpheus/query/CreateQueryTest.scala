@@ -28,12 +28,10 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-package com.websudos.morpheus.query
+package com.outworkers.morpheus.query
 
-import org.scalatest.{Matchers, FlatSpec}
-
-import com.websudos.morpheus.dsl.BasicTable
-import com.websudos.morpheus.sql._
+import com.outworkers.morpheus.dsl.BasicTable
+import org.scalatest.{FlatSpec, Matchers}
 
 class CreateQueryTest extends FlatSpec with Matchers {
 

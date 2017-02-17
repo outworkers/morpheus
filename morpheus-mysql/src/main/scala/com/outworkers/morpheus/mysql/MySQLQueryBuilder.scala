@@ -34,8 +34,8 @@ import java.util.Date
 
 import com.twitter.finagle.mysql.{Client => FinagleClient, Result => FinagleResult, ResultSet => FinagleResultSet, Row => FinagleRow, _}
 import com.twitter.util.Future
-import com.websudos.morpheus.builder.{AbstractQueryBuilder, AbstractSQLSyntax, SQLOperatorSet}
-import com.websudos.morpheus.{Result => BaseResult, Row => BaseRow}
+import com.outworkers.morpheus.builder.{AbstractQueryBuilder, AbstractSQLSyntax, SQLOperatorSet}
+import com.outworkers.morpheus.{Result => BaseResult, Row => BaseRow}
 
 case class MySQLResult(result: FinagleResult) extends BaseResult {}
 

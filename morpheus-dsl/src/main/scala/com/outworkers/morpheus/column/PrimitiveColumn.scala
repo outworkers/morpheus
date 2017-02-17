@@ -32,9 +32,10 @@ package com.outworkers.morpheus.column
 
 import java.util.Date
 
-import com.websudos.morpheus.builder.SQLBuiltQuery
-import com.websudos.morpheus.dsl.BaseTable
-import com.websudos.morpheus.{Row, SQLPrimitive}
+import com.outworkers.morpheus.SQLPrimitive
+import com.outworkers.morpheus.builder.SQLBuiltQuery
+import com.outworkers.morpheus.dsl.BaseTable
+import com.outworkers.morpheus.Row
 import org.joda.time.DateTime
 
 import scala.annotation.implicitNotFound

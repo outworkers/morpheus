@@ -31,9 +31,10 @@
 package com.outworkers.morpheus.mysql.query
 
 import com.outworkers.morpheus.mysql.{MySQLRow, MySQLSyntax}
-import com.websudos.morpheus.builder.{DefaultSQLSyntax, SQLBuiltQuery}
-import com.websudos.morpheus.mysql._
-import com.websudos.morpheus.query._
+import com.outworkers.morpheus.query.{AssignBind, AssignUnchainned}
+import com.outworkers.morpheus.builder.{DefaultSQLSyntax, SQLBuiltQuery}
+import com.outworkers.morpheus.mysql._
+import com.outworkers.morpheus.query._
 import shapeless.{HList, HNil}
 
 case class MySQLDeleteSyntaxBlock(query: String, tableName: String) extends RootDeleteSyntaxBlock(query, tableName) {

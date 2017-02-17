@@ -29,10 +29,10 @@
  */
 package com.outworkers.morpheus.query
 
-import com.websudos.morpheus.Row
-import com.websudos.morpheus.builder.SQLBuiltQuery
-import com.websudos.morpheus.column.SelectColumn
-import com.websudos.morpheus.dsl.BaseTable
+import com.outworkers.morpheus.Row
+import com.outworkers.morpheus.builder.SQLBuiltQuery
+import com.outworkers.morpheus.column.SelectColumn
+import com.outworkers.morpheus.dsl.BaseTable
 import shapeless.HList
 
 import scala.annotation.implicitNotFound

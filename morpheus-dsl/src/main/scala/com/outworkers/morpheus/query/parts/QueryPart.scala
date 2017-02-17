@@ -29,8 +29,8 @@
  */
 package com.outworkers.morpheus.query.parts
 
-import com.websudos.diesel.engine.query.multiparts.{QueryPart, MergedQueryList}
-import com.websudos.morpheus.builder.{DefaultQueryBuilder, SQLBuiltQuery}
+import com.outworkers.diesel.engine.query.multiparts.{QueryPart, MergedQueryList}
+import com.outworkers.morpheus.builder.{DefaultQueryBuilder, SQLBuiltQuery}
 
 class SQLMergeList(override val list: List[SQLBuiltQuery]) extends MergedQueryList[SQLBuiltQuery](list) {
 

@@ -28,11 +28,9 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-package com.websudos.morpheus.dsl
+package com.outworkers.morpheus.dsl
 
-import com.websudos.morpheus.Row
-import com.websudos.morpheus.column.{AbstractColumn, DefaultForeignKeyConstraints}
-import com.websudos.morpheus.query.AbstractQueryColumn
+import com.outworkers.morpheus
 
 import scala.util.Try
 
@@ -40,7 +38,7 @@ import scala.util.Try
  * As the implementation of SQL builders may differ depending on the type of SQL database in use, we will provide a series of specific imports for each
  * individual database.
  *
- * For instance, for MySQL a user will {{ import com.websudos.morpheus.mysql._ }}, for Postgress the user will {{import com.websudos.morpheus
+ * For instance, for MySQL a user will {{ import com.outworkers.morpheus.mysql._ }}, for Postgress the user will {{import com.outworkers.morpheus
  * .postgres._ }} and so on. To make our life easy when we reach the point of writing disjoint import objects for the various SQL databases,
  * this trait will provide the base implementation of an "all you can eat" imports object.
  *
@@ -53,7 +51,7 @@ import scala.util.Try
  */
 trait DefaultImportsDefinition extends DefaultForeignKeyConstraints {
 
-  type SQLPrimitive[T] = com.websudos.morpheus.SQLPrimitive[T]
+  type SQLPrimitive[T] = morpheus.SQLPrimitive[T]
 
   object SQLPrimitive {
     def apply[T <: Enumeration](enum: T)(implicit ev: SQLPrimitive[String]): SQLPrimitive[T#Value] = {

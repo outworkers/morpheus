@@ -29,7 +29,7 @@
  */
 package com.outworkers.morpheus.dsl
 
-import com.websudos.morpheus.builder.SQLBuiltQuery
+import com.outworkers.morpheus.builder.SQLBuiltQuery
 import com.outworkers.util.testing._
 import org.scalatest.prop.GeneratorDrivenPropertyChecks
 import org.scalatest.{Matchers, FlatSpec}

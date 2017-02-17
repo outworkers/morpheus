@@ -30,10 +30,10 @@
 
 package com.outworkers.morpheus.dsl
 
-import com.websudos.morpheus.Row
-import com.websudos.morpheus.builder.{AbstractQueryBuilder, AbstractSQLSyntax}
-import com.websudos.morpheus.column.AbstractColumn
-import com.websudos.morpheus.query._
+import com.outworkers.morpheus.Row
+import com.outworkers.morpheus.builder.{AbstractQueryBuilder, AbstractSQLSyntax}
+import com.outworkers.morpheus.column.AbstractColumn
+import com.outworkers.morpheus.query._
 import org.slf4j.LoggerFactory
 
 import scala.collection.mutable.{ArrayBuffer => MutableArrayBuffer, SynchronizedBuffer => MutableSyncBuffer}

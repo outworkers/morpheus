@@ -29,10 +29,10 @@
  */
 package com.outworkers.morpheus.mysql.db.specialized
 
+import com.outworkers.morpheus.SQLPrimitive
 import com.outworkers.morpheus.mysql.tables.{EnumerationRecord, EnumerationTable, TestEnumeration}
 import com.outworkers.util.testing._
-import com.websudos.morpheus.SQLPrimitive
-import com.websudos.morpheus.mysql.tables.{EnumerationRecord, EnumerationTable}
+import com.outworkers.morpheus.mysql.tables.{EnumerationRecord, EnumerationTable}
 import org.scalatest.FlatSpec
 
 import scala.concurrent.Await

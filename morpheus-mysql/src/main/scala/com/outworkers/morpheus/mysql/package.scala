@@ -30,15 +30,15 @@
 
 package com.outworkers.morpheus
 
-import com.websudos.morpheus.column.{AbstractColumn, DefaultForeignKeyConstraints}
-import com.websudos.morpheus.dsl.DefaultImportsDefinition
-import com.websudos.morpheus.mysql.query.{MySQLRootSelectQuery, MySQLSelectQuery}
-import com.websudos.morpheus.operators.MySQLOperatorSet
-import com.websudos.morpheus.query.{AssignUnchainned, Unchainned, Ungroupped, Unlimited, Unordered}
+import com.outworkers.morpheus.dsl.DefaultImportsDefinition
+import com.outworkers.morpheus.operators.MySQLOperatorSet
+import com.outworkers.morpheus.query.AssignUnchainned
+import com.outworkers.morpheus.column.{AbstractColumn, DefaultForeignKeyConstraints}
+import com.outworkers.morpheus.mysql.query.{MySQLRootSelectQuery, MySQLSelectQuery}
+import com.outworkers.morpheus.query.{Unchainned, Ungroupped, Unlimited, Unordered}
 import shapeless.HNil
 
 import scala.util.Try
-
 import scala.util.Try
 
 

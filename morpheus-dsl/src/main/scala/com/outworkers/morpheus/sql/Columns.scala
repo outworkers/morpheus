@@ -27,9 +27,9 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-package com.websudos.morpheus.sql
+package com.outworkers.morpheus.sql
 
-import com.websudos.morpheus.column._
+import com.outworkers.morpheus.column._
 import shapeless.{<:!<, =:!=}
 
 trait SqlKeys {

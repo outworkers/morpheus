@@ -27,15 +27,25 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-package com.websudos.morpheus.sql
+package com.outworkers.morpheus
 
-import com.websudos.diesel.engine.reflection.EarlyInit
-import scala.reflect.runtime.universe.TypeTag
+import com.outworkers.morpheus.dsl.DefaultImportsDefinition
+import com.outworkers.morpheus.operators.SQLOperatorSet
 
-abstract class SQLDatabase[
-  T <: BaseTable[T, R, TableRow] : TypeTag,
-  R,
-  TableRow <: com.websudos.morpheus.Row
-] extends EarlyInit[T] {
-  val columns = initialize()
+package object sql extends DefaultImportsDefinition
+  with MaterialisedPrimitives
+  with DefaultSQLEngines
+  with SQLOperatorSet
+  with SqlColumns
+  with SqlPrimitiveColumns
+  with SqlKeys
+  with DefaultSQLImplicits {
+
+  override implicit def columnToQueryColumn[T : SQLPrimitive](col: AbstractColumn[T]): SQLQueryColumn[T] = new SQLQueryColumn[T](col)
+
+  type Table[Owner <: BaseTable[Owner, Record, DefaultRow], Record] = SQLTable[Owner, Record]
+
+
+  type Row = DefaultRow
+
 }

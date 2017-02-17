@@ -29,9 +29,9 @@
  */
 package com.outworkers.morpheus.column
 
-import com.websudos.morpheus.Row
-import com.websudos.morpheus.builder.{SQLBuiltQuery, DefaultSQLSyntax, DefaultSQLDataTypes}
-import com.websudos.morpheus.dsl.BaseTable
+import com.outworkers.morpheus.Row
+import com.outworkers.morpheus.builder.{SQLBuiltQuery, DefaultSQLSyntax, DefaultSQLDataTypes}
+import com.outworkers.morpheus.dsl.BaseTable
 import shapeless.{<:!<, =:!=}
 
 import scala.annotation.implicitNotFound

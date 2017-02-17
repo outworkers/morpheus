@@ -28,11 +28,10 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-package com.websudos.morpheus.column
+package com.outworkers.morpheus.column
 
-import com.websudos.morpheus.builder.{SQLBuiltQuery, DefaultSQLDataTypes}
-import com.websudos.morpheus.{Row, SQLPrimitive}
-import com.websudos.morpheus.dsl.BaseTable
+import com.outworkers.morpheus.SQLPrimitive
+import com.outworkers.morpheus.builder.{DefaultSQLDataTypes, SQLBuiltQuery}
 
 sealed abstract class NumericColumn[T <: BaseTable[T, R, TableRow], R, TableRow <: Row, ValueType : Numeric : SQLPrimitive](t: BaseTable[T, R, TableRow], limit: Int =
 0) extends PrimitiveColumn[T, R, TableRow, ValueType](t) {

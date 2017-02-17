@@ -32,8 +32,8 @@ package com.outworkers.morpheus.mysql
 
 import java.util.Date
 
-import com.websudos.morpheus._
-import MySQLRow
+import com.outworkers.morpheus._
+import com.outworkers.morpheus._
 import org.joda.time.DateTime
 
 trait MySQLPrimitives {

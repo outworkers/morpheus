@@ -30,7 +30,7 @@
 
 package com.outworkers.morpheus.postgres
 
-import com.websudos.morpheus.builder.{AbstractQueryBuilder, AbstractSQLSyntax, SQLOperatorSet}
+import com.outworkers.morpheus.builder.{AbstractQueryBuilder, AbstractSQLSyntax, SQLOperatorSet}
 
 sealed class PostgresOperatorSet extends SQLOperatorSet {
 

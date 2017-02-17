@@ -33,7 +33,7 @@ import com.outworkers.util.testing._
 import org.scalatest.{Matchers, FlatSpec}
 import org.scalatest.prop.GeneratorDrivenPropertyChecks
 
-import com.websudos.morpheus.sql._
+import com.outworkers.morpheus.sql._
 
 class SQLPrimitivesTest extends FlatSpec with Matchers {
 

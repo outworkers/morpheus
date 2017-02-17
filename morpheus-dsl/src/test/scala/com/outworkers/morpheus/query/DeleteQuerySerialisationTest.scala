@@ -27,11 +27,10 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-package com.websudos.morpheus.query
+package com.outworkers.morpheus.query
 
-import org.scalatest.{Matchers, FlatSpec}
-import com.websudos.morpheus.dsl.BasicTable
-import com.websudos.morpheus.sql._
+import com.outworkers.morpheus.dsl.BasicTable
+import org.scalatest.{FlatSpec, Matchers}
 
 
 class DeleteQuerySerialisationTest extends FlatSpec with Matchers {

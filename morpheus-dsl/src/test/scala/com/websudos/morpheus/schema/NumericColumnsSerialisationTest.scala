@@ -31,7 +31,7 @@ package com.websudos.morpheus.schema
 
 import org.scalatest.{FlatSpec, Matchers}
 
-import com.websudos.morpheus.tables.NumericsTable
+import com.outworkers.morpheus.tables.NumericsTable
 
 
 class NumericColumnsSerialisationTest extends FlatSpec with Matchers {

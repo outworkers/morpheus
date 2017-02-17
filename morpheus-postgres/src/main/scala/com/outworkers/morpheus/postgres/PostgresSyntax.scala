@@ -30,7 +30,7 @@
 
 package com.outworkers.morpheus.postgres
 
-import com.websudos.morpheus.builder.AbstractSQLSyntax
+import com.outworkers.morpheus.builder.AbstractSQLSyntax
 
 sealed trait PostgresSyntax extends AbstractSQLSyntax {}
 

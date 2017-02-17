@@ -30,7 +30,8 @@
 
 package com.outworkers.morpheus.mysql.tables
 
-import com.outworkers.morpheus.mysql.MySQLRow
+import com.outworkers.morpheus.mysql._
+import com.outworkers.morpheus.mysql.query.MySQLInsertQuery
 
 case class IndexedRecord(id: Int, value: Long)
 

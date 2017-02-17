@@ -30,7 +30,8 @@
 
 package com.outworkers.morpheus.mysql
 
-import com.websudos.morpheus.column._
+import com.outworkers.morpheus.column._
+import com.outworkers.morpheus.column._
 import shapeless.{<:!<, =:!=}
 
 trait MySQLKeys {

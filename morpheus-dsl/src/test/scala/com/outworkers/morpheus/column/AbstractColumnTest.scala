@@ -29,8 +29,8 @@
  */
 package com.outworkers.morpheus.column
 
-import com.websudos.morpheus.builder.SQLBuiltQuery
-import com.websudos.morpheus.dsl.BaseTable
+import com.outworkers.morpheus.builder.SQLBuiltQuery
+import com.outworkers.morpheus.dsl.BaseTable
 import org.scalatest.{Matchers, FlatSpec}
 
 class TestColumn extends AbstractColumn[Int] {

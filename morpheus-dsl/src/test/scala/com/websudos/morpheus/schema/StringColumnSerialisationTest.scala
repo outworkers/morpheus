@@ -31,8 +31,8 @@ package com.websudos.morpheus.schema
 
 import org.scalatest.{Matchers, FlatSpec}
 
-import com.websudos.morpheus.column.KnownTypeLimits
-import com.websudos.morpheus.tables.StringsTable
+import com.outworkers.morpheus.column.KnownTypeLimits
+import com.outworkers.morpheus.tables.StringsTable
 
 class StringColumnSerialisationTest extends FlatSpec with Matchers {
 

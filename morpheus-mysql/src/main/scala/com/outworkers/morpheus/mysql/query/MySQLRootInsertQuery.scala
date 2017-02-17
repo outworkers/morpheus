@@ -30,14 +30,9 @@
 
 package com.outworkers.morpheus.mysql.query
 
+import com.outworkers.morpheus.SQLPrimitive
 import com.outworkers.morpheus.mysql.{MySQLRow, MySQLSyntax}
-import com.websudos.morpheus.SQLPrimitive
-import com.websudos.morpheus.builder.SQLBuiltQuery
-import com.websudos.morpheus.column.AbstractColumn
-import com.websudos.morpheus.dsl.BaseTable
-import com.websudos.morpheus.mysql._
-import com.websudos.morpheus.query._
-import com.websudos.morpheus.query.parts.{ColumnsPart, Defaults, LightweightPart, ValuePart}
+import com.outworkers.morpheus.builder.SQLBuiltQuery
 import shapeless.{HList, HNil}
 
 import scala.annotation.implicitNotFound

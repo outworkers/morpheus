@@ -29,12 +29,13 @@
  */
 package com.outworkers.morpheus.query
 
-import com.websudos.morpheus.builder.{SQLBuiltQuery, AbstractSyntaxBlock, DefaultSQLSyntax, AbstractSQLSyntax}
-import com.websudos.morpheus.column.{AbstractColumn, ForeignKeyDefinition}
-import com.websudos.morpheus.dsl.BaseTable
-import com.websudos.morpheus.sql.DefaultRow
-import com.websudos.morpheus.{Row, SQLPrimitive}
-import shapeless.{HNil, HList}
+import com.outworkers.morpheus.SQLPrimitive
+import com.outworkers.morpheus.sql.DefaultRow
+import com.outworkers.morpheus.builder.{AbstractSQLSyntax, AbstractSyntaxBlock, DefaultSQLSyntax, SQLBuiltQuery}
+import com.outworkers.morpheus.column.{AbstractColumn, ForeignKeyDefinition}
+import com.outworkers.morpheus.dsl.BaseTable
+import com.outworkers.morpheus.Row
+import shapeless.{HList, HNil}
 
 import scala.annotation.implicitNotFound
 

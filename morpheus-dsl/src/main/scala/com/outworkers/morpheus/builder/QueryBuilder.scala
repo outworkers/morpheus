@@ -28,7 +28,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-package com.websudos.morpheus.builder
+package com.outworkers.morpheus.builder
 
 /**
  * The hierarchical implementation of operators is designed to account for potential variations between SQL databases.

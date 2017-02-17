@@ -30,9 +30,9 @@
 package com.outworkers.morpheus.mysql.query
 
 import com.outworkers.morpheus.mysql.{MySQLRow, MySQLSyntax}
-import com.websudos.morpheus.builder.AbstractSQLSyntax
-import com.websudos.morpheus.mysql._
-import com.websudos.morpheus.query.{RootCreateQuery, RootCreateSyntaxBlock}
+import com.outworkers.morpheus.builder.AbstractSQLSyntax
+import com.outworkers.morpheus.mysql._
+import com.outworkers.morpheus.query.{RootCreateQuery, RootCreateSyntaxBlock}
 
 
 class MySQLCreateSyntaxBlock(query: String, tableName: String) extends RootCreateSyntaxBlock(query, tableName) {

@@ -31,7 +31,7 @@ package com.websudos.morpheus.schema
 
 import org.scalatest.{Matchers, FlatSpec}
 
-import com.websudos.morpheus.tables.KeysTable
+import com.outworkers.morpheus.tables.KeysTable
 
 class KeysSerialisationTest extends FlatSpec with Matchers {
 

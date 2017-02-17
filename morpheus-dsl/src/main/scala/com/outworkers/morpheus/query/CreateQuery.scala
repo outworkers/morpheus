@@ -28,13 +28,11 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-package com.websudos.morpheus.query
+package com.outworkers.morpheus.query
 
-import com.websudos.morpheus.Row
-import com.websudos.morpheus.builder.{SQLBuiltQuery, AbstractSyntaxBlock, DefaultSQLSyntax, AbstractSQLSyntax}
-import com.websudos.morpheus.dsl.BaseTable
-import com.websudos.morpheus.sql.DefaultRow
-import shapeless.{HNil, HList}
+import com.outworkers.morpheus.sql.DefaultRow
+import com.outworkers.morpheus.builder.{AbstractSQLSyntax, AbstractSyntaxBlock, DefaultSQLSyntax, SQLBuiltQuery}
+import shapeless.{HList, HNil}
 
 private[morpheus] class RootCreateSyntaxBlock(query: String, tableName: String) extends AbstractSyntaxBlock {
 

@@ -30,9 +30,10 @@
 
 package com.outworkers.morpheus.query
 
-import com.websudos.morpheus.builder.{SQLBuiltQuery, DefaultQueryBuilder, DefaultSQLSyntax}
-import com.websudos.morpheus.{Row, SQLPrimitive}
-import com.websudos.morpheus.column.AbstractColumn
+import com.outworkers.morpheus.SQLPrimitive
+import com.outworkers.morpheus.builder.{DefaultQueryBuilder, DefaultSQLSyntax, SQLBuiltQuery}
+import com.outworkers.morpheus.Row
+import com.outworkers.morpheus.column.AbstractColumn
 
 private[morpheus] abstract class BaseQueryCondition(val clause: SQLBuiltQuery)
 

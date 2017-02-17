@@ -27,12 +27,12 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-package com.websudos.morpheus
+package com.outworkers.morpheus
 
 import java.util.Date
-import org.joda.time.DateTime
 
-import com.websudos.morpheus.builder.{DefaultQueryBuilder, DefaultSQLDataTypes}
+import com.outworkers.morpheus.builder.{DefaultQueryBuilder, DefaultSQLDataTypes}
+import org.joda.time.DateTime
 
 import scala.util.Try
 

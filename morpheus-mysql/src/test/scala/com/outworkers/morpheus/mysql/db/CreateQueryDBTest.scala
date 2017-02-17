@@ -32,7 +32,7 @@ package com.outworkers.morpheus.mysql.db
 import com.outworkers.morpheus.mysql.tables.BasicTable
 import org.scalatest.FlatSpec
 import com.outworkers.util.testing._
-import com.websudos.morpheus.mysql._
+import com.outworkers.morpheus.mysql._
 
 class CreateQueryDBTest extends FlatSpec with MySQLSuite {
 

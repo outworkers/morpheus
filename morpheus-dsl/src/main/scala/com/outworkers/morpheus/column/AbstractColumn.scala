@@ -30,10 +30,10 @@
 
 package com.outworkers.morpheus.column
 
-import com.websudos.morpheus.Row
-import com.websudos.morpheus.builder.SQLBuiltQuery
-import com.websudos.morpheus.dsl.BaseTable
-import com.websudos.morpheus.query.QueryAssignment
+import com.outworkers.morpheus.Row
+import com.outworkers.morpheus.builder.SQLBuiltQuery
+import com.outworkers.morpheus.dsl.BaseTable
+import com.outworkers.morpheus.query.QueryAssignment
 
 import scala.reflect.runtime.{currentMirror => cm}
 import scala.util.{Failure, Success, Try}

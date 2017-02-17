@@ -30,9 +30,9 @@
 
 package com.outworkers.morpheus.dsl
 
-import com.websudos.morpheus.Row
-import com.websudos.morpheus.column.SelectColumn
-import com.websudos.morpheus.query._
+import com.outworkers.morpheus.Row
+import com.outworkers.morpheus.column.SelectColumn
+import com.outworkers.morpheus.query._
 
 
 /**

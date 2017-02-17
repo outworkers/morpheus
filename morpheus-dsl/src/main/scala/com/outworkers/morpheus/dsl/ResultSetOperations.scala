@@ -33,7 +33,7 @@ package com.outworkers.morpheus.dsl
 import scala.concurrent.{Future => ScalaFuture, Promise => ScalaPromise}
 
 import com.twitter.util.{ Future, Throw, Return }
-import com.websudos.morpheus.{Row, Result, Client}
+import com.outworkers.morpheus.{Row, Result, Client}
 
 private[morpheus] trait ResultSetOperations {
 

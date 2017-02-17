@@ -28,11 +28,10 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-package com.websudos.morpheus.column
+package com.outworkers.morpheus.column
 
-import com.websudos.morpheus.builder.{DefaultQueryBuilder, DefaultSQLDataTypes, SQLBuiltQuery}
-import com.websudos.morpheus.dsl.BaseTable
-import com.websudos.morpheus.{Row, SQLPrimitive}
+import com.outworkers.morpheus.SQLPrimitive
+import com.outworkers.morpheus.builder.{DefaultQueryBuilder, DefaultSQLDataTypes, SQLBuiltQuery}
 
 import scala.util.{Failure, Success, Try}
 

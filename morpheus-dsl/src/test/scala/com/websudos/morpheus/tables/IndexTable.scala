@@ -29,8 +29,8 @@
  */
 package com.websudos.morpheus.tables
 
-import com.websudos.morpheus.keys.Unsigned
-import com.websudos.morpheus.sql._
+import com.outworkers.morpheus.keys.Unsigned
+import com.outworkers.morpheus.sql._
 
 case class IndexedRecord(id: Int, value: Long)
 

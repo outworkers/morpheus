@@ -29,10 +29,9 @@
  */
 package com.outworkers.morpheus.query
 
-import org.scalatest.{Matchers, FlatSpec}
-import com.websudos.morpheus.sql._
-
-import com.websudos.morpheus.dsl.BasicTable
+import com.outworkers.morpheus.dsl.BasicTable
+import org.scalatest.{FlatSpec, Matchers}
+import com.outworkers.morpheus.sql._
 
 class WhereClauseOperatorsTest extends FlatSpec with Matchers {
   it should "serialise a SELECT clause with a BETWEEN - AND operator sequence" in {

@@ -29,11 +29,11 @@
  */
 package com.outworkers.morpheus.query
 
+import com.outworkers.morpheus.dsl.{BasicRecord, BasicTable}
 import org.scalatest.{FlatSpec, Matchers}
-
-import com.websudos.morpheus.dsl.{BasicRecord, BasicTable}
-import com.websudos.morpheus.sql._
-import com.websudos.morpheus.tables.{KeysRecord, KeysTable, IndexTable}
+import com.outworkers.morpheus.dsl.BasicRecord
+import com.outworkers.morpheus.sql._
+import com.outworkers.morpheus.tables.{IndexTable, KeysRecord, KeysTable}
 
 class CompileTimeRestrictionsTest extends FlatSpec with Matchers {
 

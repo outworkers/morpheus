@@ -27,9 +27,10 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-package com.websudos.morpheus.dsl
+package com.outworkers.morpheus.dsl
 
-import com.websudos.morpheus.sql._
+import com.outworkers.morpheus.sql.DefaultRow
+import com.outworkers.morpheus.sql._
 
 case class BasicRecord(name: String, count: Long)
 

@@ -31,11 +31,11 @@ package com.websudos.morpheus
 
 import java.util.concurrent.{Callable, Executors}
 
+import com.outworkers.morpheus.sql.DefaultRow
+
 import scala.collection.JavaConversions._
-
 import org.scalatest.FunSuite
-
-import com.websudos.morpheus.sql._
+import com.outworkers.morpheus.sql._
 
 class RaceConditionTest extends FunSuite {
 

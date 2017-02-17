@@ -31,7 +31,7 @@ package com.outworkers.morpheus.schema
 
 import org.scalatest.{Matchers, FlatSpec}
 
-import com.websudos.morpheus.tables.ZeroFillTable
+import com.outworkers.morpheus.tables.ZeroFillTable
 
 class ZeroFillColumnsSerialisationTest extends FlatSpec with Matchers {
 

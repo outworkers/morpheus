@@ -30,7 +30,7 @@
 package com.outworkers.morpheus.mysql.db
 
 import com.outworkers.morpheus.mysql.tables.{EnumerationRecord, TestEnumeration}
-import com.websudos.morpheus.mysql.tables.EnumerationRecord
+import com.outworkers.morpheus.mysql.tables.EnumerationRecord
 import com.outworkers.util.testing._
 
 

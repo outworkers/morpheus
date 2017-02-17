@@ -31,7 +31,7 @@ package com.outworkers.morpheus.mysql.query
 
 import com.outworkers.morpheus.mysql.tables.BasicTable
 import org.scalatest.{FlatSpec, Matchers}
-import com.websudos.morpheus.mysql._
+import com.outworkers.morpheus.mysql._
 
 class MySQLUpdateQueryTest extends FlatSpec with Matchers {
   

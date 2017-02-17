@@ -30,10 +30,11 @@
 
 package com.websudos.morpheus.postgres
 
-import com.websudos.morpheus.Row
-import com.websudos.morpheus.builder.{AbstractQueryBuilder, AbstractSQLSyntax}
-import com.websudos.morpheus.dsl.BaseTable
-import com.websudos.morpheus.query._
+import com.outworkers.morpheus.query.{RootCreateQuery, RootUpdateQuery}
+import com.outworkers.morpheus.Row
+import com.outworkers.morpheus.builder.{AbstractQueryBuilder, AbstractSQLSyntax}
+import com.outworkers.morpheus.dsl.BaseTable
+import com.outworkers.morpheus.query._
 
 
 trait PostgresRow extends Row

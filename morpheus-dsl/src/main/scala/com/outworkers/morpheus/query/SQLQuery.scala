@@ -30,9 +30,9 @@
 package com.outworkers.morpheus.query
 
 import com.twitter.util.Future
-import com.websudos.morpheus.builder.SQLBuiltQuery
-import com.websudos.morpheus.dsl.{BaseTable, ResultSetOperations}
-import com.websudos.morpheus.{Client, Result, Row}
+import com.outworkers.morpheus.builder.SQLBuiltQuery
+import com.outworkers.morpheus.dsl.{BaseTable, ResultSetOperations}
+import com.outworkers.morpheus.{Client, Result, Row}
 
 import scala.concurrent.{Future => ScalaFuture}
 

@@ -31,10 +31,10 @@
 package com.outworkers.morpheus.mysql
 
 import com.outworkers.morpheus.mysql.query.{MySQLRootUpdateQuery, MySQLUpdateQuery}
-import com.websudos.morpheus.builder.SQLBuiltQuery
-import MySQLRow
-import com.websudos.morpheus.query._
-import com.websudos.morpheus.{Row => MorpheusRow}
+import com.outworkers.morpheus.query.{AssignBind, AssignUnchainned}
+import com.outworkers.morpheus.builder.SQLBuiltQuery
+import com.outworkers.morpheus.query._
+import com.outworkers.morpheus.{Row => MorpheusRow}
 import shapeless.{HList, HNil}
 
 import scala.util.Try

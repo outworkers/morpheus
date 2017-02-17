@@ -27,7 +27,7 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-package com.websudos.morpheus.dsl
+package com.outworkers.morpheus.dsl
 
 import org.scalatest.{FlatSpec, Matchers}
 
