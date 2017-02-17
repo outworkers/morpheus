@@ -115,7 +115,7 @@ lazy val morpheus = (project in file("."))
       name := "morpheus-dsl",
       moduleName := "morpheus-dsl",
       libraryDependencies ++= Seq(
-        "com.twitter" %% "util-core" % Versions.twitterUtilVersion(scalaVersion.value),
+        "com.twitter" %% "util-core" % Versions.twitterUtil(scalaVersion.value),
         "com.outworkers" %% "diesel-engine" % Versions.diesel,
         "com.outworkers" %% "diesel-reflection" % Versions.diesel,
         "org.slf4j" % "slf4j-api" % Versions.slf4j,
