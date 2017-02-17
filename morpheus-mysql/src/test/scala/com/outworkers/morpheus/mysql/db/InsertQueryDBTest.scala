@@ -30,9 +30,9 @@
 
 package com.outworkers.morpheus.mysql.db
 
+import com.outworkers.morpheus.mysql._
 import com.outworkers.morpheus.mysql.tables.{BasicRecord, BasicTable}
 import com.outworkers.util.testing._
-import com.outworkers.morpheus.mysql.tables.BasicTable
 import org.scalatest.FlatSpec
 
 import scala.concurrent.Await
@@ -50,13 +50,11 @@ class InsertQueryDBTest extends FlatSpec with MySQLSuite {
 
     val chain = for {
       store <- BasicTable.insert.value(_.name, sample.name).value(_.count, sample.count).future()
-      get <- BasicTable.select.where(_.name eqs sample.name).one()
-    } yield get
+      one <- BasicTable.select.where(_.name eqs sample.name).one()
+    } yield one
 
-    chain.successful {
-      res => {
-        res.value shouldEqual sample
-      }
+    whenReady(chain) { res =>
+      res.value shouldEqual sample
     }
   }
 }

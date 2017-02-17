@@ -47,12 +47,19 @@ abstract class SQLTable[Owner <: BaseTable[Owner, Record, DefaultRow], Record] e
 
   val syntax = DefaultSQLSyntax
 
-  protected[this] def createRootSelect[A <: BaseTable[A, _, DefaultRow], B](table: A, block: AbstractSelectSyntaxBlock, rowFunc: DefaultRow => B):
+  protected[this] def createRootSelect[
+    A <: BaseTable[A, _, DefaultRow],
+  B
+  ](table: A, block: AbstractSelectSyntaxBlock, rowFunc: DefaultRow => B):
   DefaultRootSelectQuery[A, B] = {
     new DefaultRootSelectQuery[A, B](table, block, rowFunc)
   }
 
-  protected[this] def createSelectSyntaxBlock(query: String, tableName: String, cols: List[String] = List("*")): AbstractSelectSyntaxBlock = {
+  protected[this] def createSelectSyntaxBlock(
+    query: String,
+    tableName: String,
+    cols: List[String] = List("*")
+  ): AbstractSelectSyntaxBlock = {
     new AbstractSelectSyntaxBlock(query, tableName, cols)
   }
 

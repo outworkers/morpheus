@@ -30,11 +30,16 @@
 
 package com.outworkers.morpheus.column
 
-import com.outworkers.morpheus.SQLPrimitive
+import com.outworkers.morpheus.{Row, SQLPrimitive}
 import com.outworkers.morpheus.builder.{DefaultSQLDataTypes, SQLBuiltQuery}
+import com.outworkers.morpheus.dsl.BaseTable
 
-sealed abstract class NumericColumn[T <: BaseTable[T, R, TableRow], R, TableRow <: Row, ValueType : Numeric : SQLPrimitive](t: BaseTable[T, R, TableRow], limit: Int =
-0) extends PrimitiveColumn[T, R, TableRow, ValueType](t) {
+sealed abstract class NumericColumn[
+  T <: BaseTable[T, R, TableRow],
+  R,
+  TableRow <: Row,
+  ValueType : Numeric : SQLPrimitive
+](t: BaseTable[T, R, TableRow], limit: Int = 0) extends PrimitiveColumn[T, R, TableRow, ValueType](t) {
 
   protected[this] def numericType: String
 

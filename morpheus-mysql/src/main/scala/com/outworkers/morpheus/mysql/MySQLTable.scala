@@ -30,6 +30,7 @@
 
 package com.outworkers.morpheus.mysql
 
+import com.outworkers.morpheus.dsl.SelectTable
 import com.outworkers.morpheus.mysql.query._
 
 abstract class MySQLTable[Owner <: BaseTable[Owner, Record, MySQLRow], Record]

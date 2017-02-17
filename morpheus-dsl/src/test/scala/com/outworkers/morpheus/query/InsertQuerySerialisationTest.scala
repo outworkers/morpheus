@@ -29,7 +29,8 @@
  */
 package com.outworkers.morpheus.query
 
-import com.outworkers.morpheus.dsl.BasicTable
+import com.outworkers.morpheus.sql._
+import com.outworkers.morpheus.dsl._
 import org.scalatest.{FlatSpec, Matchers}
 
 class InsertQuerySerialisationTest extends FlatSpec with Matchers {

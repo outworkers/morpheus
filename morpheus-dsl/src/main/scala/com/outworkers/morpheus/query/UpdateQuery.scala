@@ -116,9 +116,9 @@ class UpdateQuery[T <: BaseTable[T, _, TableRow],
   AssignChain <: AssignBind,
   Status <: HList
 ](table: T,
-  query: SQLBuiltQuery,
+  init: SQLBuiltQuery,
   rowFunc: TableRow => R
-) extends Query[T, R, TableRow, Group, Order, Limit, Chain, AssignChain, Status](table, query, rowFunc) {
+) extends Query[T, R, TableRow, Group, Order, Limit, Chain, AssignChain, Status](table, init, rowFunc) {
 
   protected[this] type QueryType[
     G <: GroupBind,
@@ -191,4 +191,6 @@ class UpdateQuery[T <: BaseTable[T, _, TableRow],
   ): QueryType[Group, Order, Limit, Chain, AssignChainned, Status]  = {
     new UpdateQuery(table, table.queryBuilder.and(query, condition.clause), rowFunc)
   }
+
+  override protected[morpheus] def query: SQLBuiltQuery = init
 }

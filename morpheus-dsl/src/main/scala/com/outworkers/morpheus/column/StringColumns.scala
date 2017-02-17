@@ -30,8 +30,9 @@
 
 package com.outworkers.morpheus.column
 
-import com.outworkers.morpheus.SQLPrimitive
+import com.outworkers.morpheus.{Row, SQLPrimitive}
 import com.outworkers.morpheus.builder.{DefaultQueryBuilder, DefaultSQLDataTypes, SQLBuiltQuery}
+import com.outworkers.morpheus.dsl.BaseTable
 
 import scala.util.{Failure, Success, Try}
 

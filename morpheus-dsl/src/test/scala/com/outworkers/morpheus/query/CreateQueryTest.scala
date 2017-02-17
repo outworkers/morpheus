@@ -32,6 +32,7 @@ package com.outworkers.morpheus.query
 
 import com.outworkers.morpheus.dsl.BasicTable
 import org.scalatest.{FlatSpec, Matchers}
+import com.outworkers.morpheus.sql._
 
 class CreateQueryTest extends FlatSpec with Matchers {
 

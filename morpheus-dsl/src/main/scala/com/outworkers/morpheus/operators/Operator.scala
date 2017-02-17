@@ -30,13 +30,14 @@
 
 package com.outworkers.morpheus.operators
 
-import com.outworkers.morpheus.{BinOperator, SQLPrimitive}
+import com.outworkers.morpheus.{Row, SQLPrimitive}
 import com.outworkers.morpheus.query.{AssignBind, ChainBind}
 import com.outworkers.morpheus.builder.DefaultQueryBuilder
+import com.outworkers.morpheus.dsl.BaseTable
 import com.outworkers.morpheus.query._
 import shapeless.HNil
 
-sealed abstract class Operator {}
+sealed abstract class Operator
 
 sealed class AsciiOperator extends Operator {
 
@@ -210,6 +211,16 @@ sealed class CoalesceOperator extends Operator {
       DefaultQueryBuilder.greatest(values.map(implicitly[SQLPrimitive[T]].toSQL))
     ) {
       def fromRow(row: Row): String = ""
+    }
+  }
+}
+
+sealed class BinOperator extends Operator {
+  final def apply[T](value: T)(implicit ev: SQLPrimitive[T], ev2: SQLPrimitive[Int], ev3: Numeric[T]): SelectOperatorClause[Int] = {
+    new SelectOperatorClause[Int](
+      DefaultQueryBuilder.bin(ev.toSQL(value))
+    ) {
+      def fromRow(row: Row): Int = 5
     }
   }
 }

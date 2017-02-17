@@ -33,6 +33,10 @@ package com.outworkers.morpheus.mysql.query
 import com.outworkers.morpheus.SQLPrimitive
 import com.outworkers.morpheus.mysql.{MySQLRow, MySQLSyntax}
 import com.outworkers.morpheus.builder.SQLBuiltQuery
+import com.outworkers.morpheus.column.AbstractColumn
+import com.outworkers.morpheus.dsl.BaseTable
+import com.outworkers.morpheus.query._
+import com.outworkers.morpheus.query.parts.{ColumnsPart, Defaults, LightweightPart, ValuePart}
 import shapeless.{HList, HNil}
 
 import scala.annotation.implicitNotFound
@@ -102,15 +106,6 @@ class MySQLInsertQuery[T <: BaseTable[T, _, MySQLRow],
   lightweightPart: LightweightPart = Defaults.EmptyLightweightPart
 ) extends InsertQuery[T, R, MySQLRow, Group, Order, Limit, Chain, AssignChain, Status](table: T, init, rowFunc) {
 
-  override protected[this] type QueryType[
-    G <: GroupBind,
-    O <: OrderBind,
-    L <: LimitBind,
-    S <: ChainBind,
-    C <: AssignBind,
-    P <: HList
-  ] = MySQLInsertQuery[T, R, G, O, L, S, C, P]
-
   override protected[this] def create[
     G <: GroupBind,
     O <: OrderBind,
@@ -155,5 +150,14 @@ class MySQLInsertQuery[T <: BaseTable[T, _, MySQLRow],
 }
 
 object MySQLInsertQuery {
-  type Default[T <: BaseTable[T, _, MySQLRow], R] = MySQLInsertQuery[T, R, Ungroupped, Unordered, Unlimited, Unchainned, AssignUnchainned, HNil]
+  type Default[T <: BaseTable[T, _, MySQLRow], R] = MySQLInsertQuery[
+    T,
+    R,
+    Ungroupped,
+    Unordered,
+    Unlimited,
+    Unchainned,
+    AssignUnchainned,
+    HNil
+    ]
 }

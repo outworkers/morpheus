@@ -91,7 +91,7 @@ class InsertQuery[
   AssignChain <: AssignBind,
   Status <: HList
 ](table: T,
-  val init: SQLBuiltQuery,
+  init: SQLBuiltQuery,
   rowFunc: TableRow => R,
   columnsPart: ColumnsPart = Defaults.EmptyColumnsPart,
   valuePart: ValuePart = Defaults.EmptyValuePart,
@@ -146,5 +146,5 @@ class InsertQuery[
     )
   }
 
-  override val query: SQLBuiltQuery = (columnsPart merge valuePart merge lightweightPart) build init
+  override def query: SQLBuiltQuery = (columnsPart merge valuePart merge lightweightPart) build init
 }

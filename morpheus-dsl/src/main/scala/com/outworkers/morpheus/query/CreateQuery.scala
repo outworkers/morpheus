@@ -116,7 +116,9 @@ class CreateQuery[T <: BaseTable[T, _, TableRow],
   Chain <: ChainBind,
   AssignChain <: AssignBind,
   Status <: HList
-](table: T, query: SQLBuiltQuery, rowFunc: TableRow => R) extends Query[T, R, TableRow, Group, Order, Limit, Chain, AssignChain, Status](table, query, rowFunc) {
+](table: T, init: SQLBuiltQuery, rowFunc: TableRow => R) extends Query[T, R, TableRow, Group, Order, Limit, Chain, AssignChain, Status](table, init, rowFunc) {
+
+  override def query: SQLBuiltQuery = init
 
   protected[this] type QueryType[
     G <: GroupBind,
@@ -146,17 +148,17 @@ class CreateQuery[T <: BaseTable[T, _, TableRow],
   }
 
   final protected[morpheus] def columnSchema[St <: HList]: CreateQuery[T, R, TableRow, Group, Order, Limit, Chain, AssignChain, St] = {
-    new CreateQuery(table, query.append(columnDefinitions.mkString(", ")), rowFunc)
+    new CreateQuery(table, init.append(columnDefinitions.mkString(", ")), rowFunc)
   }
 
   def ifNotExists: CreateQuery[T, R, TableRow, Group, Order, Limit, Chain, AssignChain, HNil] = {
-    new CreateQuery(table, table.queryBuilder.ifNotExists(query), rowFunc)
+    new CreateQuery(table, table.queryBuilder.ifNotExists(init), rowFunc)
   }
 
   def engine(engine: SQLEngine): Query[T, R, TableRow, Group, Order, Limit, Chain, AssignChain, HNil] = {
     new CreateQuery(table,
       table.queryBuilder.engine(
-        query.wrap(columnDefinitions.mkString(", ")),
+        init.wrap(columnDefinitions.mkString(", ")),
         engine.value
       ),
       rowFunc

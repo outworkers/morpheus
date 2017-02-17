@@ -64,7 +64,7 @@ final abstract class Unlimited extends LimitBind
  * I will link to it as soon as the book is published.
  *
  * @param table The table owning the record.
- * @param query The root SQL query to start building from.
+ * @param init The root SQL query to start building from.
  * @param rowFunc The function mapping a row to a record.
  * @tparam T The type of the table owning the record.
  * @tparam R The type of the record held in the table.
@@ -80,7 +80,7 @@ abstract class Query[T <: BaseTable[T, _, TableRow],
   PS <: HList
 ](
   val table: T,
-  val query: SQLBuiltQuery,
+  val init: SQLBuiltQuery,
   val rowFunc: TableRow => R
 ) extends SQLQuery[T, R, TableRow] {
 

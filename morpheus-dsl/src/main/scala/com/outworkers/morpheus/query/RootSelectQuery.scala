@@ -78,8 +78,11 @@ private[morpheus] class AbstractSelectSyntaxBlock(
  * @tparam T The type of the owning table.
  * @tparam R The type of the record.
  */
-private[morpheus] class AbstractRootSelectQuery[T <: BaseTable[T, _, TableRow], R, TableRow <: Row](val table: T, val st: AbstractSelectSyntaxBlock, val
-rowFunc: TableRow => R) {
+private[morpheus] class AbstractRootSelectQuery[
+  T <: BaseTable[T, _, TableRow],
+  R,
+  TableRow <: Row
+](val table: T, val st: AbstractSelectSyntaxBlock, val rowFunc: TableRow => R) {
 
   def fromRow(r: TableRow): R = rowFunc(r)
 
@@ -114,9 +117,8 @@ class SelectQuery[T <: BaseTable[T, _, TableRow],
   Chain <: ChainBind,
   AssignChain <: AssignBind,
   Status <: HList
-](table: T, query: SQLBuiltQuery, rowFunc: TableRow => R)
-  extends Query[T, R, TableRow, Group, Order, Limit, Chain, AssignChain, Status](table, query,
-  rowFunc) {
+](table: T, init: SQLBuiltQuery, rowFunc: TableRow => R)
+  extends Query[T, R, TableRow, Group, Order, Limit, Chain, AssignChain, Status](table, init, rowFunc) {
 
   protected[this] type QueryType[
     G <: GroupBind,
@@ -202,6 +204,8 @@ class SelectQuery[T <: BaseTable[T, _, TableRow],
   def rightJoin[Owner <: BaseTable[Owner, Record, TableRow], Record](join: BaseTable[Owner, Record, TableRow])
       : OnJoinQuery[T, (R, Record), TableRow, Group, Order, Limit, Chain, AssignChain, HNil] =
     joinBuilder(table.queryBuilder.rightJoin, join)
+
+  override protected[morpheus] def query: SQLBuiltQuery = init
 }
 
 sealed case class JoinClause(clause: SQLBuiltQuery)

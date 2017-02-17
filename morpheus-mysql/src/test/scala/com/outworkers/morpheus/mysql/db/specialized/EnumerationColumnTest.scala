@@ -30,9 +30,10 @@
 package com.outworkers.morpheus.mysql.db.specialized
 
 import com.outworkers.morpheus.SQLPrimitive
+import com.outworkers.morpheus.mysql._
+import com.outworkers.morpheus.mysql.db.MySQLSuite
 import com.outworkers.morpheus.mysql.tables.{EnumerationRecord, EnumerationTable, TestEnumeration}
 import com.outworkers.util.testing._
-import com.outworkers.morpheus.mysql.tables.{EnumerationRecord, EnumerationTable}
 import org.scalatest.FlatSpec
 
 import scala.concurrent.Await
@@ -55,9 +56,8 @@ class EnumerationColumnTest extends FlatSpec with MySQLSuite {
       get <- EnumerationTable.select.where(_.id eqs record.id).one
     } yield get
 
-    whenReady(chain) {
-      res => res.value shouldEqual record
+    whenReady(chain) { res =>
+      res.value shouldEqual record
     }
-
   }
 }

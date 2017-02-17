@@ -98,26 +98,26 @@ class DeleteQuery[T <: BaseTable[T, _, TableRow],
   AssignChain <: AssignBind,
   Status <: HList
 ](table: T,
-  query: SQLBuiltQuery,
+  init: SQLBuiltQuery,
   rowFunc: TableRow => R
-) extends Query[T, R, TableRow, Group, Order, Limit, Chain, AssignChain, Status](table, query, rowFunc) {
+) extends Query[T, R, TableRow, Group, Order, Limit, Chain, AssignChain, Status](table, init, rowFunc) {
 
   protected[this] type QueryType[
-    G <: GroupBind,
-    O <: OrderBind,
-    L <: LimitBind,
-    S <: ChainBind,
-    C <: AssignBind,
-    P <: HList
+  G <: GroupBind,
+  O <: OrderBind,
+  L <: LimitBind,
+  S <: ChainBind,
+  C <: AssignBind,
+  P <: HList
   ] = DeleteQuery[T, R, TableRow, G, O, L, S, C, P]
 
   override protected[this] def create[
-    G <: GroupBind,
-    O <: OrderBind,
-    L <: LimitBind,
-    S <: ChainBind,
-    C <: AssignBind,
-    P <: HList
+  G <: GroupBind,
+  O <: OrderBind,
+  L <: LimitBind,
+  S <: ChainBind,
+  C <: AssignBind,
+  P <: HList
   ](t: T, q: SQLBuiltQuery, r: TableRow => R): QueryType[G, O, L, S, C, P] = {
     new DeleteQuery(t, q, r)
   }
@@ -127,7 +127,7 @@ class DeleteQuery[T <: BaseTable[T, _, TableRow],
     implicit ev: Chain =:= Unchainned
   ): QueryType[Group, Order, Limit, Chainned, AssignChain,
     Status] = {
-    new DeleteQuery(table, table.queryBuilder.where(query, condition(table).clause), rowFunc)
+    new DeleteQuery(table, table.queryBuilder.where(init, condition(table).clause), rowFunc)
   }
 
   @implicitNotFound("You cannot use two where clauses on a single query")
@@ -135,15 +135,15 @@ class DeleteQuery[T <: BaseTable[T, _, TableRow],
     implicit ev: Chain =:= Unchainned
   ): QueryType[Group, Order, Limit, Chainned, AssignChain,
     Status] = {
-    new DeleteQuery(table, table.queryBuilder.where(query, condition.clause), rowFunc)
+    new DeleteQuery(table, table.queryBuilder.where(init, condition.clause), rowFunc)
   }
 
   @implicitNotFound("You need to use the where method first")
   final def and(condition: T => QueryCondition)(
     implicit ev: Chain =:= Chainned
   ): QueryType[Group, Order, Limit, Chain, AssignChainned,
-    Status]  = {
-    new DeleteQuery(table, table.queryBuilder.and(query, condition(table).clause), rowFunc)
+    Status] = {
+    new DeleteQuery(table, table.queryBuilder.and(init, condition(table).clause), rowFunc)
   }
 
   @implicitNotFound("You need to use the where method first")
@@ -151,6 +151,8 @@ class DeleteQuery[T <: BaseTable[T, _, TableRow],
     implicit ev: Chain =:= Chainned
   ): QueryType[Group, Order, Limit, Chain, AssignChainned, Status]
   = {
-    new DeleteQuery(table, table.queryBuilder.and(query, condition.clause), rowFunc)
+    new DeleteQuery(table, table.queryBuilder.and(init, condition.clause), rowFunc)
   }
+
+  override protected[morpheus] def query: SQLBuiltQuery = init
 }

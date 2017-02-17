@@ -35,7 +35,9 @@ import java.util.Date
 import com.twitter.finagle.mysql.{Client => FinagleClient, Result => FinagleResult, ResultSet => FinagleResultSet, Row => FinagleRow, _}
 import com.twitter.util.Future
 import com.outworkers.morpheus.builder.{AbstractQueryBuilder, AbstractSQLSyntax, SQLOperatorSet}
-import com.outworkers.morpheus.{Result => BaseResult, Row => BaseRow}
+import com.outworkers.morpheus.column.AbstractColumn
+import com.outworkers.morpheus.query.AbstractQueryColumn
+import com.outworkers.morpheus.{Client, Result => BaseResult, Row => BaseRow}
 
 case class MySQLResult(result: FinagleResult) extends BaseResult {}
 
@@ -122,7 +124,7 @@ class MySQLClient(val client: FinagleClient) extends Client[MySQLRow, MySQLResul
     // logger.info(s"Executing query $qb")
     client.query(qb).map {
       case set: FinagleResultSet => set.rows.map {
-        row => f(new MySQLRow(row))
+        row => f(MySQLRow(row))
       }
       case _ => Seq.empty[T]
     }

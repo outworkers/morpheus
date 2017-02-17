@@ -80,6 +80,8 @@ trait MySQLSuite extends AsyncAssertions
 
   implicit val defaultTimeout: PatienceConfiguration.Timeout = timeout(defaultTimeoutSpan)
 
+  implicit val context = scala.concurrent.ExecutionContext.Implicits.global
+
   override implicit val patienceConfig = PatienceConfig(
     timeout = defaultTimeoutSpan,
     interval = Span(defaultScalaInterval, Millis)

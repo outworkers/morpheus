@@ -30,9 +30,10 @@
 
 package com.outworkers.morpheus.mysql
 
-import com.outworkers.morpheus.mysql.query.{MySQLRootUpdateQuery, MySQLUpdateQuery}
+import com.outworkers.morpheus.mysql.query.{MySQLInsertQuery, MySQLRootInsertQuery, MySQLRootUpdateQuery, MySQLUpdateQuery}
 import com.outworkers.morpheus.query.{AssignBind, AssignUnchainned}
 import com.outworkers.morpheus.builder.SQLBuiltQuery
+import com.outworkers.morpheus.column.{AbstractColumn, AbstractModifyColumn, Column, SelectColumn}
 import com.outworkers.morpheus.query._
 import com.outworkers.morpheus.{Row => MorpheusRow}
 import shapeless.{HList, HNil}
@@ -41,7 +42,10 @@ import scala.util.Try
 
 trait MySQLImplicits extends DefaultSQLEngines {
 
-  implicit class SelectColumnRequired[Owner <: BaseTable[Owner, Record, TableRow], Record, TableRow <: MorpheusRow,  T](col: Column[Owner, Record, TableRow, T])
+  implicit class SelectColumnRequired[
+    Owner <: BaseTable[Owner, Record, TableRow],
+    Record, TableRow <: MorpheusRow, T
+  ](col: Column[Owner, Record, TableRow, T])
     extends SelectColumn[T](SQLBuiltQuery(col.name)) {
     def apply(r: MorpheusRow): T = col.apply(r)
   }
@@ -67,7 +71,9 @@ trait MySQLImplicits extends DefaultSQLEngines {
    * @tparam R The record type.
    * @return An executable SelectQuery.
    */
-  implicit def rootInsertQueryToQuery[T <: BaseTable[T, _, MySQLRow], R](root: MySQLRootInsertQuery[T, R]): MySQLInsertQuery[T, R, Ungroupped,
+  implicit def rootInsertQueryToQuery[T <: BaseTable[T, _, MySQLRow], R](
+    root: MySQLRootInsertQuery[T, R]
+  ): MySQLInsertQuery[T, R, Ungroupped,
     Unordered, Unlimited, Unchainned, AssignUnchainned, HNil] = {
     new MySQLInsertQuery(
       root.table,
@@ -108,8 +114,9 @@ trait MySQLImplicits extends DefaultSQLEngines {
     Chain <: ChainBind,
     AssignChain <: AssignBind,
     Status <: HList
-  ](query: MySQLUpdateQuery[T, R, Group, Order, Limit, Chain, AssignChain, Status]): MySQLUpdateQuery[T, R, Group, Order, Limit, Chain,
-    AssignChain, Status] = {
+  ](
+    query: MySQLUpdateQuery[T, R, Group, Order, Limit, Chain, AssignChain, Status]
+  ): MySQLUpdateQuery[T, R, Group, Order, Limit, Chain, AssignChain, Status] = {
     new MySQLUpdateQuery[T, R, Group, Order, Limit, Chain, AssignChain, Status](query.table, query.query, query.rowFunc)
   }
 
@@ -123,7 +130,7 @@ trait MySQLImplicits extends DefaultSQLEngines {
       override def toSQL(value: T#Value): String = primitive.toSQL(value.toString)
 
       override def fromRow(row: MorpheusRow, name: String): Try[T#Value] = {
-        primitive.fromRow(row, name) map { enum.withName(_) }
+        primitive.fromRow(row, name) map (x => enum.withName(x))
       }
     }
   }
