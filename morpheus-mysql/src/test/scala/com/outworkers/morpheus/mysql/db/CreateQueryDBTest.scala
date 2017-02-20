@@ -37,15 +37,13 @@ import com.outworkers.morpheus.mysql._
 class CreateQueryDBTest extends FlatSpec with MySQLSuite {
 
   it should "create a new table in the MySQL database" in {
-    BasicTable.create.temporary.engine(InnoDB).execute.successful {
+    whenReady(BasicTable.create.temporary.engine(InnoDB).future) {
       res =>
     }
   }
 
   it should "create a new table in the database if the table doesn't exist" in {
-
-
-    BasicTable.create.ifNotExists.engine(InnoDB).execute.successful { _ => }
+    whenReady(BasicTable.create.ifNotExists.engine(InnoDB).future) { _ => }
   }
 
 }

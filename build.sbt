@@ -31,7 +31,6 @@ import com.twitter.sbt.{GitProject, VersionManagement}
 
 lazy val Versions = new {
   val util = "0.30.1"
-  val finagle = "6.41.0"
   val spark = "1.2.1"
   val FinaglePostgres = "0.1.0"
   val shapeless = "2.3.2"
@@ -41,9 +40,16 @@ lazy val Versions = new {
   val joda = "2.9.4"
   val jodaConvert = "1.8.1"
 
+  val finagle: String => String = { s =>
+    CrossVersion.partialVersion(s) match {
+      case Some((_, minor)) if minor >= 12 => "6.42.0"
+      case _ => "6.35.0"
+    }
+  }
+
   val twitterUtil: String => String = {
     s => CrossVersion.partialVersion(s) match {
-      case Some((_, minor)) if minor >= 12 => "6.39.0"
+      case Some((_, minor)) if minor >= 12 => "6.41.0"
       case _ => "6.34.0"
     }
   }
@@ -103,10 +109,7 @@ lazy val morpheus = (project in file("."))
   ).aggregate(
     morpheusDsl,
     morpheusMySQL,
-    // morpheusPostgres,
-    // morpheusSpark,
     morpheusTestkit
-    // morpheusZookeeper
   )
 
   lazy val morpheusDsl = (project in file("morpheus-dsl"))
@@ -134,7 +137,7 @@ lazy val morpheus = (project in file("."))
       moduleName := "morpheus-mysql",
       name := "morpheus-mysql",
       libraryDependencies ++= Seq(
-        "com.twitter" %% "finagle-mysql" % Versions.finagle
+        "com.twitter" %% "finagle-mysql" % Versions.finagle(scalaVersion.value)
       )
     ).dependsOn(
       morpheusDsl,
@@ -154,43 +157,6 @@ lazy val morpheus = (project in file("."))
       morpheusTestkit % Test
     )
 
-/*
-  lazy val morpheusRedshift = (project in file("morpheus-redshift"))
-    .settings(sharedSettings: _*)
-    .settings(
-      name := "morpheus-redshift",
-      moduleName := "morpheus-redshift"
-    ).dependsOn(
-      morpheusDsl,
-      morpheusTestkit % Test
-    )
-
-  lazy val morpheusZookeeper = Project(
-    id = "morpheus-zookeeper",
-    base = file("morpheus-zookeeper"),
-    settings = Defaults.coreDefaultSettings ++ sharedSettings
-  ).settings(
-    name := "morpheus-zookeeper",
-    libraryDependencies ++= Seq(
-      "com.twitter"                  %% "finagle-zookeeper"                 % FinagleZkVersion,
-      "com.websudos"                 %% "util-zookeeper"                    % UtilVersion
-    )
-  )
-
-  lazy val morpheusSpark = Project(
-    id = "morpheus-spark",
-    base = file("morpheus-spark"),
-    settings = Defaults.coreDefaultSettings ++ sharedSettings
-  ).settings(
-    name := "morpheus-spark",
-    libraryDependencies ++= Seq(
-      "org.apache.spark"             %% "spark-sql"                    % SparkVersion
-    )
-  ).dependsOn(
-    morpheusTestkit
-  )*/
-
-
   lazy val morpheusTestkit = (project in file("morpheus-testkit"))
     .settings(sharedSettings: _*)
     .settings(
@@ -201,6 +167,4 @@ lazy val morpheus = (project in file("."))
         ExclusionRule("org.scala-lang", "scala-reflect")
       }
     )
-  ).dependsOn(
-    // morpheusZookeeper
   )

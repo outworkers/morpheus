@@ -32,19 +32,16 @@ package com.outworkers.morpheus.mysql.db
 
 import java.util.concurrent.TimeUnit
 
-import com.outworkers.morpheus.mysql.{MySQLClient, MySQLResult, MySQLRow}
-import com.twitter.finagle.Mysql
 import com.outworkers.morpheus.Client
-import com.outworkers.morpheus.mysql.{MySQLClient, MySQLRow}
-import org.scalatest.concurrent.{AsyncAssertions, PatienceConfiguration, ScalaFutures}
+import com.outworkers.morpheus.mysql.{MySQLClient, MySQLResult, MySQLRow}
+import com.twitter.finagle.exp.Mysql
+import org.scalatest.concurrent.{PatienceConfiguration, ScalaFutures, Waiters}
 import org.scalatest.time.{Millis, Seconds, Span}
 import org.scalatest.{BeforeAndAfterAll, Matchers, OptionValues, Suite}
 
 object MySQLConnector {
 
-  def isRunningUnderTravis: Boolean = {
-    System.getenv.containsKey("TRAVIS")
-  }
+  def isRunningUnderTravis: Boolean = sys.env.contains("TRAVIS")
 
   val user = if (isRunningUnderTravis) "travis" else "morpheus"
   val pwd = "morpheus23!"
@@ -58,12 +55,10 @@ object MySQLConnector {
     .newRichClient("127.0.0.1:3306")
 }
 
-
-trait MySQLSuite extends AsyncAssertions
+trait MySQLSuite extends Waiters
   with ScalaFutures
   with OptionValues
   with Matchers
-  with Generators
   with BeforeAndAfterAll {
 
   this: Suite =>

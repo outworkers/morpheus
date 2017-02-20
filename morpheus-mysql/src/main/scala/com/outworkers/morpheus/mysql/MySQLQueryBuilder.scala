@@ -32,7 +32,13 @@ package com.outworkers.morpheus.mysql
 
 import java.util.Date
 
-import com.twitter.finagle.mysql.{Client => FinagleClient, Result => FinagleResult, ResultSet => FinagleResultSet, Row => FinagleRow, _}
+import com.twitter.finagle.exp.mysql.{
+  Client => FinagleClient,
+  Result => FinagleResult,
+  ResultSet => FinagleResultSet,
+  Row => FinagleRow,
+  _
+}
 import com.twitter.util.Future
 import com.outworkers.morpheus.builder.{AbstractQueryBuilder, AbstractSQLSyntax, SQLOperatorSet}
 import com.outworkers.morpheus.column.AbstractColumn
