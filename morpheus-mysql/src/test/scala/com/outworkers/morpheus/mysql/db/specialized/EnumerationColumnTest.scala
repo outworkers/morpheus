@@ -33,6 +33,7 @@ import com.outworkers.morpheus.SQLPrimitive
 import com.outworkers.morpheus.mysql._
 import com.outworkers.morpheus.mysql.db.MySQLSuite
 import com.outworkers.morpheus.mysql.tables.{EnumerationRecord, EnumerationTable, TestEnumeration}
+import com.outworkers.util.samplers.{Generators, Sample}
 import com.outworkers.util.testing._
 import org.scalatest.FlatSpec
 
@@ -44,6 +45,10 @@ class EnumerationColumnTest extends FlatSpec with MySQLSuite {
   override def beforeAll(): Unit = {
     super.beforeAll()
     Await.result(EnumerationTable.create.ifNotExists.engine(InnoDB).future(), 5.seconds)
+  }
+
+  implicit object EnumerationRecordSampler extends Sample[EnumerationRecord] {
+    override def sample: EnumerationRecord = EnumerationRecord(gen[Int], Generators.oneOf(TestEnumeration))
   }
 
   implicit val enumPrimitive: SQLPrimitive[TestEnumeration#Value] = SQLPrimitive(TestEnumeration)

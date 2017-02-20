@@ -180,6 +180,7 @@ case class EnumerationRecord(
   enum: TestEnumeration#Value
 )
 
+
 class EnumerationTable extends Table[EnumerationTable, EnumerationRecord] {
 
   object id extends IntColumn(this) with PrimaryKey[Int] with Autoincrement with NotNull
