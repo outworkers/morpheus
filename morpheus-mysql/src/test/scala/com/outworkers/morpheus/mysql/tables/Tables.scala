@@ -43,7 +43,7 @@ sealed class IndexTable extends Table[IndexTable, IndexedRecord] {
 
   object index extends Index(id, value)
 
-  def fromRow(row: MySQLRow): IndexedRecord = {
+  def fromRow(row: Row): IndexedRecord = {
     IndexedRecord(
       id(row),
       value(row)
@@ -103,7 +103,7 @@ sealed class KeysTable extends Table[KeysTable, KeysRecord] {
    * @param row The row incoming as a result from a MySQL query.
    * @return A Record instance.
    */
-  override def fromRow(row: MySQLRow): KeysRecord = KeysRecord(id(row))
+  override def fromRow(row: Row): KeysRecord = KeysRecord(id(row))
 }
 
 object KeysTable extends KeysTable
@@ -147,7 +147,7 @@ class StringsTable extends Table[StringsTable, String] {
   object mediumBlob extends MediumBlobColumn(this)
   object largeBlob extends LongBlobColumn(this)
 
-  def fromRow(row: MySQLRow): String = textColumn(row)
+  def fromRow(row: Row): String = textColumn(row)
 }
 
 object StringsTable extends StringsTable
@@ -159,7 +159,7 @@ class BasicTable extends Table[BasicTable, BasicRecord] {
   object name extends TextColumn(this)
   object count extends IntColumn(this)
 
-  def fromRow(row: MySQLRow): BasicRecord = {
+  def fromRow(row: Row): BasicRecord = {
     BasicRecord(name(row), count(row))
   }
 

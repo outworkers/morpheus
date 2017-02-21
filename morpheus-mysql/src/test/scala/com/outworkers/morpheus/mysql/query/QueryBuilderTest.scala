@@ -29,7 +29,7 @@
  */
 package com.outworkers.morpheus.mysql.query
 
-import com.outworkers.morpheus.mysql.MySQLQueryBuilder
+import com.outworkers.morpheus.mysql.QueryBuilder
 import com.outworkers.morpheus.builder.SQLBuiltQuery
 import org.scalatest.prop.GeneratorDrivenPropertyChecks
 import org.scalatest.{FlatSpec, Matchers}
@@ -41,69 +41,69 @@ class QueryBuilderTest extends FlatSpec with Matchers {
   it should "serialise a simple equals condition" in {
     val name = gen[String]
     val value = gen[String]
-    val query = MySQLQueryBuilder.eqs(name, value).queryString
+    val query = QueryBuilder.eqs(name, value).queryString
     query shouldEqual s"$name = $value"
   }
 
   it should "serialise a simple lt condition" in {
     val name = gen[String]
     val value = gen[String]
-    val query = MySQLQueryBuilder.lt(name, value).queryString
+    val query = QueryBuilder.lt(name, value).queryString
     query shouldEqual s"$name < $value"
   }
 
   it should "serialise a simple lte condition" in {
     val name = gen[String]
     val value = gen[String]
-    val query = MySQLQueryBuilder.lte(name, value).queryString
+    val query = QueryBuilder.lte(name, value).queryString
     query shouldEqual s"$name <= $value"
   }
 
   it should "serialise a simple gt condition" in {
     val name = gen[String]
     val value = gen[String]
-    val query = MySQLQueryBuilder.gt(name, value).queryString
+    val query = QueryBuilder.gt(name, value).queryString
     query shouldEqual s"$name > $value"
   }
 
   it should "serialise a simple gte condition" in {
     val name = gen[String]
     val value = gen[String]
-    val query = MySQLQueryBuilder.gte(name, value).queryString
+    val query = QueryBuilder.gte(name, value).queryString
     query shouldEqual s"$name >= $value"
   }
 
   it should "serialise a simple != condition" in {
     val name = gen[String]
     val value = gen[String]
-    val query = MySQLQueryBuilder.!=(name, value).queryString
+    val query = QueryBuilder.!=(name, value).queryString
     query shouldEqual s"$name != $value"
   }
 
   it should "serialise a simple <> condition" in {
     val name = gen[String]
     val value = gen[String]
-    val query = MySQLQueryBuilder.<>(name, value).queryString
+    val query = QueryBuilder.<>(name, value).queryString
     query shouldEqual s"$name <> $value"
   }
 
   it should "serialise a simple <=> condition" in {
     val name = gen[String]
     val value = gen[String]
-    val query = MySQLQueryBuilder.<=>(name, value).queryString
+    val query = QueryBuilder.<=>(name, value).queryString
     query shouldEqual s"$name <=> $value"
   }
 
   it should "serialise a simple select * query" in {
     val name = gen[String]
-    val query = MySQLQueryBuilder.select(name).queryString
+    val query = QueryBuilder.select(name).queryString
     query shouldEqual s"SELECT * FROM `$name`"
   }
 
   it should "serialise a partial select query where 1 column name is specified" in {
     val name = gen[String]
     val column = gen[ShortString].value
-    val query = MySQLQueryBuilder.select(name, column).queryString
+    val query = QueryBuilder.select(name, column).queryString
     query shouldEqual s"SELECT $column FROM `$name`"
   }
 
@@ -111,7 +111,7 @@ class QueryBuilderTest extends FlatSpec with Matchers {
     val name = gen[String]
     val column1 = gen[ShortString].value
     val column2 = gen[ShortString].value
-    val query = MySQLQueryBuilder.select(name, column1, column2).queryString
+    val query = QueryBuilder.select(name, column1, column2).queryString
     query shouldEqual s"SELECT $column1 $column2 FROM `$name`"
   }
 
@@ -121,7 +121,7 @@ class QueryBuilderTest extends FlatSpec with Matchers {
     val column2 = gen[ShortString].value
     val column3 = gen[ShortString].value
 
-    val query = MySQLQueryBuilder.select(name, column1, column2, column3).queryString
+    val query = QueryBuilder.select(name, column1, column2, column3).queryString
     query shouldEqual s"SELECT $column1 $column2 $column3 FROM `$name`"
   }
 
@@ -131,7 +131,7 @@ class QueryBuilderTest extends FlatSpec with Matchers {
     val column2 = gen[ShortString].value
     val column3 = gen[ShortString].value
 
-    val query = MySQLQueryBuilder.in(name, List(column1, column2, column3)).queryString
+    val query = QueryBuilder.in(name, List(column1, column2, column3)).queryString
     query shouldEqual s"$name IN ($column1, $column2, $column3)"
   }
 
@@ -140,35 +140,35 @@ class QueryBuilderTest extends FlatSpec with Matchers {
     val column1 = gen[ShortString].value
     val column2 = gen[ShortString].value
     val column3 = gen[ShortString].value
-    val query = MySQLQueryBuilder.notIn(name, List(column1, column2, column3)).queryString
+    val query = QueryBuilder.notIn(name, List(column1, column2, column3)).queryString
     query shouldEqual s"$name NOT IN ($column1, $column2, $column3)"
   }
 
   it should "serialise an setTo operator query" in {
     val name = gen[String]
     val value = gen[String]
-    val query = MySQLQueryBuilder.setTo(name, value).queryString
+    val query = QueryBuilder.setTo(name, value).queryString
     query shouldEqual s"$name = $value"
   }
 
 
   it should "serialise an ASC operator query" in {
     val name = gen[String]
-    val query = MySQLQueryBuilder.asc(name).queryString
+    val query = QueryBuilder.asc(name).queryString
     query shouldEqual s"$name ASC"
   }
 
   it should "serialise a DESC operator query" in {
     val name = gen[String]
     val value = gen[String]
-    val query = MySQLQueryBuilder.desc(name).queryString
+    val query = QueryBuilder.desc(name).queryString
     query shouldEqual s"$name DESC"
   }
 
   it should "serialise a SET query" in {
     val name = gen[ShortString].value
     val part = gen[ShortString].value
-    val query = MySQLQueryBuilder.set(SQLBuiltQuery(part), SQLBuiltQuery(name)).queryString
+    val query = QueryBuilder.set(SQLBuiltQuery(part), SQLBuiltQuery(name)).queryString
     query shouldEqual s"$part SET $name"
   }
 
@@ -176,70 +176,70 @@ class QueryBuilderTest extends FlatSpec with Matchers {
     val name = gen[ShortString].value
     val part = gen[ShortString].value
     val tested = part.trim
-    val query = MySQLQueryBuilder.like(tested, name).queryString
+    val query = QueryBuilder.like(tested, name).queryString
     query shouldEqual s"$tested LIKE $name"
   }
 
   it should "serialise a NOT LIKE operator query" in {
     val name = gen[ShortString].value
     val part = gen[ShortString].value
-    val query = MySQLQueryBuilder.notLike(part, name).queryString
+    val query = QueryBuilder.notLike(part, name).queryString
     query shouldEqual s"$part NOT LIKE $name"
   }
 
   it should "correctly set multiple conditions" in {
     val name = gen[ShortString].value
     val part = gen[ShortString].value
-    val query = MySQLQueryBuilder.andSet(SQLBuiltQuery(part), SQLBuiltQuery(name)).queryString
+    val query = QueryBuilder.andSet(SQLBuiltQuery(part), SQLBuiltQuery(name)).queryString
     query shouldEqual s"$part, $name"
   }
 
   it should "append an ENGINE clause" in {
     val name = gen[ShortString].value
     val part = gen[ShortString].value
-    val query = MySQLQueryBuilder.engine(SQLBuiltQuery(part), name).queryString
+    val query = QueryBuilder.engine(SQLBuiltQuery(part), name).queryString
     query shouldEqual s"$part ENGINE $name"
   }
 
   it should "serialise a BIN clause" in {
     val part = gen[ShortString].value
-    val query = MySQLQueryBuilder.bin(part).queryString
+    val query = QueryBuilder.bin(part).queryString
     query shouldEqual s"BIN ($part)"
   }
 
   it should "serialise a CHAR_LENGTH clause" in {
     val part = gen[ShortString].value
-    val query = MySQLQueryBuilder.charLength(part).queryString
+    val query = QueryBuilder.charLength(part).queryString
     query shouldEqual s"CHAR_LENGTH ($part)"
   }
 
   it should "serialise a CHARACTER_LENGTH clause" in {
     val part = gen[ShortString].value
-    val query = MySQLQueryBuilder.characterLength(part).queryString
+    val query = QueryBuilder.characterLength(part).queryString
     query shouldEqual s"CHARACTER_LENGTH ($part)"
   }
 
   it should "serialise a BIT_LENGTH clause" in {
     val part = gen[ShortString].value
-    val query = MySQLQueryBuilder.bitLength(part).queryString
+    val query = QueryBuilder.bitLength(part).queryString
     query shouldEqual s"BIT_LENGTH ($part)"
   }
 
   it should "serialise a ASCII clause" in {
     val part = gen[ShortString].value
-    val query = MySQLQueryBuilder.ascii(part).queryString
+    val query = QueryBuilder.ascii(part).queryString
     query shouldEqual s"ASCII ($part)"
   }
 
   it should "serialise an EXISTS clause" in {
     val part = gen[ShortString].value
-    val query = MySQLQueryBuilder.exists(SQLBuiltQuery(part)).queryString
+    val query = QueryBuilder.exists(SQLBuiltQuery(part)).queryString
     query shouldEqual s"EXISTS ($part)"
   }
 
   it should "serialise a NOT EXISTS clause" in {
     val part = gen[ShortString].value
-    val query = MySQLQueryBuilder.notExists(SQLBuiltQuery(part)).queryString
+    val query = QueryBuilder.notExists(SQLBuiltQuery(part)).queryString
     query shouldEqual s"NOT EXISTS ($part)"
   }
 
@@ -247,21 +247,21 @@ class QueryBuilderTest extends FlatSpec with Matchers {
     val name = gen[ShortString].value
     val part = gen[ShortString].value
     val value = gen[ShortString].value
-    val query = MySQLQueryBuilder.on(SQLBuiltQuery(part), SQLBuiltQuery(value)).queryString
+    val query = QueryBuilder.on(SQLBuiltQuery(part), SQLBuiltQuery(value)).queryString
     query shouldEqual s"$part ON $value"
   }
 
   it should "serialise a BETWEEN clause" in {
     val part = gen[ShortString].value
     val value = gen[ShortString].value
-    val query = MySQLQueryBuilder.between(part, value).queryString
+    val query = QueryBuilder.between(part, value).queryString
     query shouldEqual s"$part BETWEEN $value"
   }
 
   it should "serialise a NOT BETWEEN clause" in {
     val part = gen[ShortString].value
     val value = gen[ShortString].value
-    val query = MySQLQueryBuilder.notBetween(part, value).queryString
+    val query = QueryBuilder.notBetween(part, value).queryString
     query shouldEqual s"$part NOT BETWEEN $value"
   }
 }

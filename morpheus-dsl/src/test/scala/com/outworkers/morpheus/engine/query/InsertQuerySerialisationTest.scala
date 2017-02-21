@@ -27,31 +27,32 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-package com.outworkers.morpheus.query
+package com.outworkers.morpheus.engine.query
 
-import com.outworkers.morpheus.dsl.BasicTable
-import org.scalatest.{FlatSpec, Matchers}
 import com.outworkers.morpheus.sql._
+import com.outworkers.morpheus.dsl._
+import org.scalatest.{FlatSpec, Matchers}
 
-class WhereClauseOperatorsTest extends FlatSpec with Matchers {
-  it should "serialise a SELECT clause with a BETWEEN - AND operator sequence" in {
-    BasicTable.select.where(_.count between 5 and 10).queryString shouldEqual "SELECT * FROM `BasicTable` WHERE count BETWEEN 5 AND 10;"
+class InsertQuerySerialisationTest extends FlatSpec with Matchers {
+
+  it should "serialise an INSERT INTO query to the correct query and convert using an implicit" in {
+    BasicTable.insert.queryString shouldEqual "INSERT INTO `BasicTable`;"
   }
 
-  it should "serialise a SELECT clause with a BETWEEN - AND operator sequence inside an OR sequence" in {
-    BasicTable.select
-      .where(t => { (t.count between 5 and 10) or (t.count gte 5) })
-      .queryString shouldEqual "SELECT * FROM `BasicTable` WHERE (count BETWEEN 5 AND 10 OR count >= 5);"
+  it should "serialise an INSERT INTO query to the correct query" in {
+    BasicTable.insert.into.queryString shouldEqual "INSERT INTO `BasicTable`;"
   }
 
-  it should "serialise a SELECT clause with a NOT BETWEEN - AND operator sequence" in {
-    BasicTable.select.where(_.count notBetween 5 and 10)
-      .queryString shouldEqual "SELECT * FROM `BasicTable` WHERE count NOT BETWEEN 5 AND 10;"
+  it should "serialise an INSERT query with a single value defined" in {
+    BasicTable.insert
+      .value(_.count, 5L)
+      .queryString shouldEqual "INSERT INTO `BasicTable` (count) VALUES(5);"
   }
 
-  it should "serialise a SELECT clause with a NOT BETWEEN - AND operator sequence inside an OR sequence" in {
-    BasicTable.select
-      .where(t => { (t.count notBetween 5 and 10) or (t.count gte 5) })
-      .queryString shouldEqual "SELECT * FROM `BasicTable` WHERE (count NOT BETWEEN 5 AND 10 OR count >= 5);"
+  it should "serialise an INSERT query with multiple values defined" in {
+    BasicTable.insert
+      .value(_.count, 5L)
+      .value(_.name, "test")
+      .queryString shouldEqual "INSERT INTO `BasicTable` (count, name) VALUES(5, 'test');"
   }
 }

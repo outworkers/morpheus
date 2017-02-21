@@ -28,7 +28,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-package com.outworkers.morpheus.query
+package com.outworkers.morpheus.engine.query
 
 import org.scalatest.{Matchers, FlatSpec}
 

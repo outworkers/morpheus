@@ -32,7 +32,7 @@ package com.outworkers.morpheus.dsl
 
 import com.outworkers.morpheus.Row
 import com.outworkers.morpheus.column.SelectColumn
-import com.outworkers.morpheus.query._
+import com.outworkers.morpheus.engine.query._
 
 
 /**

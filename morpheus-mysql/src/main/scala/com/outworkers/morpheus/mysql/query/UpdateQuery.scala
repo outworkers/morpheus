@@ -30,18 +30,18 @@
 
 package com.outworkers.morpheus.mysql.query
 
-import com.outworkers.morpheus.mysql.{MySQLRow, MySQLSyntax}
-import com.outworkers.morpheus.query.{AssignBind, AssignChainned, AssignUnchainned, UpdateQuery}
+import com.outworkers.morpheus.mysql.{Row, Syntax}
+import com.outworkers.morpheus.engine.query._
 import com.outworkers.morpheus.builder.SQLBuiltQuery
 import com.outworkers.morpheus.mysql._
-import com.outworkers.morpheus.query._
+import com.outworkers.morpheus.engine
 import shapeless.{HList, HNil}
 
 import scala.annotation.implicitNotFound
 
 
-case class MySQLUpdateSyntaxBlock(query: String, tableName: String) extends RootUpdateSyntaxBlock(query, tableName) {
-  override val syntax = MySQLSyntax
+case class UpdateSyntaxBlock(query: String, tableName: String) extends engine.query.RootUpdateSyntaxBlock(query, tableName) {
+  override val syntax = Syntax
 
   def lowPriority: SQLBuiltQuery = {
     qb.pad.append(syntax.Priorities.lowPriority)
@@ -55,20 +55,20 @@ case class MySQLUpdateSyntaxBlock(query: String, tableName: String) extends Root
 }
 
 
-class MySQLRootUpdateQuery[T <: BaseTable[T, _, MySQLRow], R](table: T, st: MySQLUpdateSyntaxBlock, rowFunc: MySQLRow => R)
-  extends RootUpdateQuery[T, R, MySQLRow](table, st, rowFunc) {
+class MySQLRootUpdateQuery[T <: BaseTable[T, _, Row], R](table: T, st: UpdateSyntaxBlock, rowFunc: Row => R)
+  extends engine.query.RootUpdateQuery[T, R, Row](table, st, rowFunc) {
 
-  def lowPriority: MySQLUpdateQuery[T, R, Ungroupped, Unordered, Unlimited, Unchainned, AssignUnchainned, HNil] = {
-    new MySQLUpdateQuery(table, st.lowPriority, rowFunc)
+  def lowPriority: UpdateQuery[T, R, Ungroupped, Unordered, Unlimited, Unchainned, AssignUnchainned, HNil] = {
+    new UpdateQuery(table, st.lowPriority, rowFunc)
   }
 
-  def ignore: MySQLUpdateQuery[T, R, Ungroupped, Unordered, Unlimited, Unchainned, AssignUnchainned, HNil] = {
-    new MySQLUpdateQuery(table, st.ignore, rowFunc)
+  def ignore: UpdateQuery[T, R, Ungroupped, Unordered, Unlimited, Unchainned, AssignUnchainned, HNil] = {
+    new UpdateQuery(table, st.ignore, rowFunc)
   }
 }
 
 
-class MySQLUpdateQuery[T <: BaseTable[T, _, MySQLRow],
+class UpdateQuery[T <: BaseTable[T, _, Row],
   R,
   Group <: GroupBind,
   Order <: OrderBind,
@@ -76,32 +76,36 @@ class MySQLUpdateQuery[T <: BaseTable[T, _, MySQLRow],
   Chain <: ChainBind,
   AssignChain <: AssignBind,
   Status <: HList
-](table: T, query: SQLBuiltQuery, rowFunc: MySQLRow => R) extends UpdateQuery[T, R, MySQLRow, Group, Order, Limit, Chain, AssignChain, Status](table: T, query,
-  rowFunc) {
+](
+  table: T,
+  query: SQLBuiltQuery,
+  rowFunc: Row => R
+) extends engine.query.UpdateQuery[T, R, Row, Group, Order, Limit, Chain, AssignChain, Status](table: T, query, rowFunc) {
 
-  override def where(condition: T => QueryCondition)(implicit ev: Chain =:= Unchainned): MySQLUpdateQuery[T, R, Group, Order, Limit, Chainned,
-    AssignChain, Status] = {
-    new MySQLUpdateQuery(table, table.queryBuilder.where(query, condition(table).clause), rowFunc)
+  override def where(condition: T => QueryCondition)(
+    implicit ev: Chain =:= Unchainned
+  ): UpdateQuery[T, R, Group, Order, Limit, Chainned, AssignChain, Status] = {
+    new UpdateQuery(table, table.queryBuilder.where(query, condition(table).clause), rowFunc)
   }
 
-  override def where(condition: QueryCondition)(implicit ev: Chain =:= Unchainned): MySQLUpdateQuery[T, R, Group, Order, Limit, Chainned,
+  override def where(condition: QueryCondition)(implicit ev: Chain =:= Unchainned): UpdateQuery[T, R, Group, Order, Limit, Chainned,
     AssignChain, Status] = {
-    new MySQLUpdateQuery(table, table.queryBuilder.where(query, condition.clause), rowFunc)
+    new UpdateQuery(table, table.queryBuilder.where(query, condition.clause), rowFunc)
   }
 
-  override def and(condition: T => QueryCondition)(implicit ev: Chain =:= Chainned): MySQLUpdateQuery[T, R, Group, Order, Limit, Chain,
+  override def and(condition: T => QueryCondition)(implicit ev: Chain =:= Chainned): UpdateQuery[T, R, Group, Order, Limit, Chain,
     AssignChainned, Status]  = {
-    new MySQLUpdateQuery(table, table.queryBuilder.and(query, condition(table).clause), rowFunc)
+    new UpdateQuery(table, table.queryBuilder.and(query, condition(table).clause), rowFunc)
   }
 
-  override def and(condition: QueryCondition)(implicit ev: Chain =:= Chainned): MySQLUpdateQuery[T, R, Group, Order, Limit, Chain, AssignChainned,
+  override def and(condition: QueryCondition)(implicit ev: Chain =:= Chainned): UpdateQuery[T, R, Group, Order, Limit, Chain, AssignChainned,
     Status]  = {
-    new MySQLUpdateQuery(table, table.queryBuilder.and(query, condition.clause), rowFunc)
+    new UpdateQuery(table, table.queryBuilder.and(query, condition.clause), rowFunc)
   }
 
-  override def set(condition: T => QueryAssignment)(implicit ev: AssignChain =:= AssignUnchainned, ev1: Status =:= HNil): MySQLUpdateQuery[T, R,
+  override def set(condition: T => QueryAssignment)(implicit ev: AssignChain =:= AssignUnchainned, ev1: Status =:= HNil): UpdateQuery[T, R,
     Group, Order, Limit, Chain, AssignChainned, Status] = {
-    new MySQLUpdateQuery(
+    new UpdateQuery(
       table,
       table.queryBuilder.set(query, condition(table).clause),
       rowFunc
@@ -109,9 +113,9 @@ class MySQLUpdateQuery[T <: BaseTable[T, _, MySQLRow],
   }
 
   @implicitNotFound("""You need to use the "set" method before using the "and"""")
-  override def andSet(condition: T => QueryAssignment, signChange: Int = 0)(implicit ev: AssignChain =:= AssignChainned): MySQLUpdateQuery[T, R,
+  override def andSet(condition: T => QueryAssignment, signChange: Int = 0)(implicit ev: AssignChain =:= AssignChainned): UpdateQuery[T, R,
     Group, Order, Limit, Chain, AssignChainned, Status] = {
-    new MySQLUpdateQuery(
+    new UpdateQuery(
       table,
       table.queryBuilder.andSet(query, condition(table).clause),
       rowFunc

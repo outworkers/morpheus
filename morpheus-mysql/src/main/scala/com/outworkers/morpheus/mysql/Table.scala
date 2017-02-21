@@ -28,30 +28,36 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-package com.outworkers.morpheus.mysql
+package com.outworkers
+package morpheus
+package mysql
 
 import com.outworkers.morpheus.dsl.SelectTable
 import com.outworkers.morpheus.mysql.query._
 
-abstract class MySQLTable[Owner <: BaseTable[Owner, Record, MySQLRow], Record]
-  extends BaseTable[Owner, Record, MySQLRow]
-  with SelectTable[Owner, Record, MySQLRow, MySQLRootSelectQuery, MySQLSelectSyntaxBlock] {
+abstract class Table[Owner <: BaseTable[Owner, Record, mysql.Row], Record]
+  extends BaseTable[Owner, Record, Row]
+  with SelectTable[Owner, Record, Row, RootSelectQuery, SelectSyntaxBlock] {
 
-  val queryBuilder = MySQLQueryBuilder
+  val queryBuilder = QueryBuilder
 
-  val syntax = MySQLSyntax
+  val syntax = Syntax
 
-  protected[this] def createRootSelect[A <: BaseTable[A, _, MySQLRow], B](table: A, block: MySQLSelectSyntaxBlock, rowFunc: MySQLRow => B): MySQLRootSelectQuery[A, B] = {
-    new MySQLRootSelectQuery[A, B](table, block, rowFunc)
+  protected[this] def createRootSelect[A <: BaseTable[A, _, Row], B](
+    table: A,
+    block: SelectSyntaxBlock,
+    rowFunc: Row => B
+  ): RootSelectQuery[A, B] = {
+    new RootSelectQuery[A, B](table, block, rowFunc)
   }
 
-  protected[this] def createSelectSyntaxBlock(query: String, tableName: String, cols: List[String] = List("*")): MySQLSelectSyntaxBlock = {
-    new MySQLSelectSyntaxBlock(query, tableName, cols)
+  protected[this] def createSelectSyntaxBlock(query: String, tableName: String, cols: List[String] = List("*")): SelectSyntaxBlock = {
+    new SelectSyntaxBlock(query, tableName, cols)
   }
 
   def update: MySQLRootUpdateQuery[Owner, Record] = new MySQLRootUpdateQuery(
     this.asInstanceOf[Owner],
-    MySQLUpdateSyntaxBlock(syntax.update, tableName),
+    UpdateSyntaxBlock(syntax.update, tableName),
     fromRow
   )
 

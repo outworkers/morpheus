@@ -33,7 +33,7 @@ package com.outworkers.morpheus.dsl
 import com.outworkers.morpheus.Row
 import com.outworkers.morpheus.builder.{AbstractQueryBuilder, AbstractSQLSyntax}
 import com.outworkers.morpheus.column.AbstractColumn
-import com.outworkers.morpheus.query._
+import com.outworkers.morpheus.engine.query._
 import org.slf4j.LoggerFactory
 
 import scala.collection.mutable.{ArrayBuffer => MutableArrayBuffer, SynchronizedBuffer => MutableSyncBuffer}

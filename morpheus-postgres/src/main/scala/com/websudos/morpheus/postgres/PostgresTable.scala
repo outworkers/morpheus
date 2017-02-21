@@ -30,11 +30,11 @@
 
 package com.outworkers.morpheus.postgres
 
-import com.outworkers.morpheus.query.{RootCreateQuery, RootUpdateQuery}
+import com.outworkers.morpheus.engine.query.{RootCreateQuery, RootUpdateQuery}
 import com.outworkers.morpheus.Row
 import com.outworkers.morpheus.builder.{AbstractQueryBuilder, AbstractSQLSyntax}
 import com.outworkers.morpheus.dsl.BaseTable
-import com.outworkers.morpheus.query._
+import com.outworkers.morpheus.engine.query._
 
 
 trait PostgresRow extends Row

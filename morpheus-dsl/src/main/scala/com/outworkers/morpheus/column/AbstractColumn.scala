@@ -33,7 +33,7 @@ package com.outworkers.morpheus.column
 import com.outworkers.morpheus.Row
 import com.outworkers.morpheus.builder.SQLBuiltQuery
 import com.outworkers.morpheus.dsl.BaseTable
-import com.outworkers.morpheus.query.QueryAssignment
+import com.outworkers.morpheus.engine.query.QueryAssignment
 
 import scala.reflect.runtime.{currentMirror => cm}
 import scala.util.{Failure, Success, Try}

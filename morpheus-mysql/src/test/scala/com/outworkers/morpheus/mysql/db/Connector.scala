@@ -33,7 +33,7 @@ package com.outworkers.morpheus.mysql.db
 import java.util.concurrent.TimeUnit
 
 import com.outworkers.morpheus.Client
-import com.outworkers.morpheus.mysql.{MySQLClient, MySQLResult, MySQLRow}
+import com.outworkers.morpheus.mysql.{Client, Result, Row}
 import com.twitter.finagle.exp.Mysql
 import org.scalatest.concurrent.{PatienceConfiguration, ScalaFutures, Waiters}
 import org.scalatest.time.{Millis, Seconds, Span}
@@ -63,7 +63,7 @@ trait BaseSuite extends Waiters
 
   this: Suite =>
 
-  implicit lazy val client: Client[MySQLRow, MySQLResult] = new MySQLClient(Connector.client)
+  implicit lazy val client: Client[Row, Result] = new Client(Connector.client)
 
   protected[this] val defaultScalaTimeoutSeconds = 10
 

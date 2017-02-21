@@ -27,7 +27,7 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-package com.outworkers.morpheus.query.parts
+package com.outworkers.morpheus.engine.query.parts
 
 import com.outworkers.diesel.engine.query.multiparts.{QueryPart, MergedQueryList}
 import com.outworkers.morpheus.builder.{DefaultQueryBuilder, SQLBuiltQuery}

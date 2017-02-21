@@ -28,31 +28,32 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-package com.outworkers.morpheus
+package com.outworkers
+package morpheus
 
 import com.outworkers.morpheus.dsl.DefaultImportsDefinition
 import com.outworkers.morpheus.operators.MySQLOperatorSet
-import com.outworkers.morpheus.query.AssignUnchainned
+import com.outworkers.morpheus.engine.query.AssignUnchainned
 import com.outworkers.morpheus.column.{AbstractColumn, DefaultForeignKeyConstraints}
-import com.outworkers.morpheus.mysql.query.{MySQLRootSelectQuery, MySQLSelectQuery}
-import com.outworkers.morpheus.query.{Unchainned, Ungroupped, Unlimited, Unordered}
+import com.outworkers.morpheus.mysql.query.{RootSelectQuery, MySQLSelectQuery}
+import com.outworkers.morpheus.engine.query.{Unchainned, Ungroupped, Unlimited, Unordered}
 import shapeless.HNil
 
 import scala.util.Try
 
 package object mysql extends DefaultImportsDefinition
-  with MySQLImplicits
+  with Implicits
   with DataTypes
   with MySQLOperatorSet
-  with MySQLColumns
-  with MySQLKeys
-  with MySQLPrimitiveColumns
+  with Columns
+  with Keys
+  with PrimitiveColumns
   with DefaultForeignKeyConstraints {
 
-  override implicit def columnToQueryColumn[T : DataType](col: AbstractColumn[T]): MySQLQueryColumn[T] = new MySQLQueryColumn[T](col)
+  override implicit def columnToQueryColumn[T : DataType](col: AbstractColumn[T]): QueryColumn[T] = new QueryColumn[T](col)
 
   implicit def rootSelectQueryToQuery[T <: Table[T, _], R](
-    root: MySQLRootSelectQuery[T, R]
+    root: RootSelectQuery[T, R]
   ): MySQLSelectQuery[T, R, Ungroupped, Unordered, Unlimited, Unchainned, AssignUnchainned, HNil] = {
     new MySQLSelectQuery(
       root.table,
@@ -61,12 +62,12 @@ package object mysql extends DefaultImportsDefinition
     )
   }
 
-  type SQLTable[Owner <: BaseTable[Owner, Record, MySQLRow], Record] = MySQLTable[Owner, Record]
+  type Row = morpheus.mysql.Row
+  type Result = morpheus.mysql.Result
 
-  type Row = MySQLRow
-  type Result = MySQLResult
+  type SQLTable[Owner <: BaseTable[Owner, Record, Row], Record] = Table[Owner, Record]
 
-  type Table[Owner <: BaseTable[Owner, Record, MySQLRow], Record] = MySQLTable[Owner, Record]
+  type Table[Owner <: BaseTable[Owner, Record, Row], Record] = Table[Owner, Record]
 
   def enumToQueryConditionPrimitive[T <: Enumeration](enum: T)(implicit ev: DataType[String]): DataType[T#Value] = {
     new DataType[T#Value] {

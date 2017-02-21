@@ -27,35 +27,31 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-package com.outworkers.morpheus.query
+package com.outworkers.morpheus.engine.query
 
+import com.outworkers.morpheus.dsl.BasicTable
 import org.scalatest.{FlatSpec, Matchers}
-
 import com.outworkers.morpheus.sql._
-import com.outworkers.morpheus.tables.{IndexTable, KeysTable}
 
-class JoinsQuerySerialisationTest extends FlatSpec with Matchers {
-
-  it should "serialise a simple LEFT JOIN query" in {
-    val qb = KeysTable
-      .select
-      .where(_.id eqs 10)
-      .leftJoin(IndexTable)
-      .on(_.foreignKey eqs IndexTable.value)
-      .queryString
-
-    qb shouldEqual "SELECT * FROM `KeysTable` WHERE id = 10 LEFT JOIN `IndexTable` ON KeysTable.foreignKey = IndexTable.value;"
+class WhereClauseOperatorsTest extends FlatSpec with Matchers {
+  it should "serialise a SELECT clause with a BETWEEN - AND operator sequence" in {
+    BasicTable.select.where(_.count between 5 and 10).queryString shouldEqual "SELECT * FROM `BasicTable` WHERE count BETWEEN 5 AND 10;"
   }
 
-  it should "serialise a simple INNER JOIN query" in {
-    val qb = KeysTable
-      .select
-      .where(_.id eqs 10)
-      .innerJoin(IndexTable)
-      .on(_.foreignKey eqs IndexTable.value)
-      .queryString
-
-    qb shouldEqual "SELECT * FROM `KeysTable` WHERE id = 10 INNER JOIN `IndexTable` ON KeysTable.foreignKey = IndexTable.value;"
+  it should "serialise a SELECT clause with a BETWEEN - AND operator sequence inside an OR sequence" in {
+    BasicTable.select
+      .where(t => { (t.count between 5 and 10) or (t.count gte 5) })
+      .queryString shouldEqual "SELECT * FROM `BasicTable` WHERE (count BETWEEN 5 AND 10 OR count >= 5);"
   }
 
+  it should "serialise a SELECT clause with a NOT BETWEEN - AND operator sequence" in {
+    BasicTable.select.where(_.count notBetween 5 and 10)
+      .queryString shouldEqual "SELECT * FROM `BasicTable` WHERE count NOT BETWEEN 5 AND 10;"
+  }
+
+  it should "serialise a SELECT clause with a NOT BETWEEN - AND operator sequence inside an OR sequence" in {
+    BasicTable.select
+      .where(t => { (t.count notBetween 5 and 10) or (t.count gte 5) })
+      .queryString shouldEqual "SELECT * FROM `BasicTable` WHERE (count NOT BETWEEN 5 AND 10 OR count >= 5);"
+  }
 }

@@ -27,43 +27,35 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
+package com.outworkers.morpheus.engine.query
 
-package com.outworkers.morpheus.query
-
-import com.outworkers.morpheus.dsl.BasicTable
 import org.scalatest.{FlatSpec, Matchers}
+
 import com.outworkers.morpheus.sql._
+import com.outworkers.morpheus.tables.{IndexTable, KeysTable}
 
-class CreateQueryTest extends FlatSpec with Matchers {
+class JoinsQuerySerialisationTest extends FlatSpec with Matchers {
 
-  it should "serialise a simple CREATE query" in {
-    BasicTable.create.queryString shouldEqual "CREATE TABLE `BasicTable`;"
+  it should "serialise a simple LEFT JOIN query" in {
+    val qb = KeysTable
+      .select
+      .where(_.id eqs 10)
+      .leftJoin(IndexTable)
+      .on(_.foreignKey eqs IndexTable.value)
+      .queryString
+
+    qb shouldEqual "SELECT * FROM `KeysTable` WHERE id = 10 LEFT JOIN `IndexTable` ON KeysTable.foreignKey = IndexTable.value;"
   }
 
-  it should "serialise a simple CREATE query with an IF NOT EXISTS clause" in {
-    BasicTable.create.ifNotExists.queryString shouldEqual "CREATE TABLE IF NOT EXISTS `BasicTable`;"
-  }
+  it should "serialise a simple INNER JOIN query" in {
+    val qb = KeysTable
+      .select
+      .where(_.id eqs 10)
+      .innerJoin(IndexTable)
+      .on(_.foreignKey eqs IndexTable.value)
+      .queryString
 
-  it should "serialise a CREATE query with a TEMPORARY clause" in {
-    BasicTable.create.temporary.queryString shouldEqual "CREATE TEMPORARY TABLE `BasicTable`;"
+    qb shouldEqual "SELECT * FROM `KeysTable` WHERE id = 10 INNER JOIN `IndexTable` ON KeysTable.foreignKey = IndexTable.value;"
   }
-
-  it should "serialise a CREATE create query with a TEMPORARY clause" in {
-    BasicTable.create.temporary.queryString shouldEqual "CREATE TEMPORARY TABLE `BasicTable`;"
-  }
-
-  ignore should "serialise a CREATE create query with a TEMPORARY clause and an IF NOT EXISTS clause" in {
-    BasicTable.create.temporary.ifNotExists.queryString shouldEqual "CREATE TEMPORARY TABLE IF NOT EXISTS `BasicTable`;"
-  }
-
-  it should "serialise a complete table definition when an engine is specified" in {
-    BasicTable.create.engine(InnoDB).queryString shouldEqual "CREATE TABLE `BasicTable` (name TEXT, count LONG) ENGINE InnoDB;"
-  }
-
-  it should "serialise a complete table definition with an IF NOT EXSITS clause when an engine is specified" in {
-    BasicTable.create.ifNotExists.engine(InnoDB)
-      .queryString shouldEqual "CREATE TABLE IF NOT EXISTS `BasicTable` (name TEXT, count LONG) ENGINE InnoDB;"
-  }
-
 
 }

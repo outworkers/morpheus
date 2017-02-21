@@ -32,7 +32,7 @@ package com.outworkers.morpheus
 import com.outworkers.morpheus.column.AbstractColumn
 import com.outworkers.morpheus.dsl.DefaultImportsDefinition
 import com.outworkers.morpheus.operators.SQLOperatorSet
-import com.outworkers.morpheus.query.{DefaultSQLEngines, SQLQueryColumn}
+import com.outworkers.morpheus.engine.query.{DefaultSQLEngines, SQLQueryColumn}
 
 package object sql extends DefaultImportsDefinition
   with DefaultDataTypes

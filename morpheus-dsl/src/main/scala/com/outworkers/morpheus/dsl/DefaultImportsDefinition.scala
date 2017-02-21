@@ -33,7 +33,7 @@ package com.outworkers.morpheus.dsl
 import com.outworkers.morpheus
 import com.outworkers.morpheus.Row
 import com.outworkers.morpheus.column.{AbstractColumn, DefaultForeignKeyConstraints}
-import com.outworkers.morpheus.query.AbstractQueryColumn
+import com.outworkers.morpheus.engine.query.AbstractQueryColumn
 
 import scala.util.Try
 

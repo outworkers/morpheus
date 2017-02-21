@@ -34,18 +34,18 @@ import java.nio.ByteBuffer
 import java.util.Date
 
 import com.twitter.finagle.exp.mysql.{Client => FinagleClient, Result => FinagleResult, ResultSet => FinagleResultSet, Row => FinagleRow, _}
-import com.twitter.finagle.exp.mysql
+import com.twitter.finagle.exp.{mysql => fsql}
 import com.twitter.util.Future
 import com.outworkers.morpheus.builder.{AbstractQueryBuilder, AbstractSQLSyntax, SQLOperatorSet}
 import com.outworkers.morpheus.column.AbstractColumn
-import com.outworkers.morpheus.query.AbstractQueryColumn
-import com.outworkers.morpheus.{Client, Result => BaseResult, Row => BaseRow}
+import com.outworkers.morpheus.engine.query.AbstractQueryColumn
+import com.outworkers.morpheus.{mysql, Client => RootClient, Result => BaseResult, Row => BaseRow}
 
 import scala.util.{Failure, Success, Try}
 
-case class MySQLResult(result: FinagleResult) extends BaseResult
+case class Result(result: FinagleResult) extends BaseResult
 
-case class MySQLRow(res: FinagleRow) extends BaseRow {
+case class Row(res: FinagleRow) extends BaseRow {
 
   protected[this] def extract[T](column: String)(fn: Option[Value] => Try[T]): Try[T] = {
     fn(res(column))
@@ -79,85 +79,74 @@ case class MySQLRow(res: FinagleRow) extends BaseRow {
     }
   }
 
-  override def bigDecimal(name: String): BigDecimal = {
-    val extracted = res.apply(name)
-    extracted match {
-      case Some(BigDecimalValue(value)) => value
-      case _ => throw new Exception(s"Invalid value $extracted for column $name")
+  override def bigDecimal(name: String): Try[BigDecimal] = {
+    extract(name) {
+      case Some(BigDecimalValue(value)) => Success(value)
+      case x @ _ => Failure(new Exception(s"Invalid value $name for column $name, expected BigDecimal, got $x"))
     }
   }
 
-  override def double(name: String): Double = {
-    val extracted = res.apply(name)
-    extracted match {
-      case Some(DoubleValue(value)) => value
-      case _ => throw new Exception(s"Invalid value $extracted for column $name")
+  override def double(name: String): Try[Double] = {
+    extract(name) {
+      case Some(DoubleValue(value)) => Success(value)
+      case x @ _ => Failure(new Exception(s"Invalid value $name for column $name, expected double, got $x"))
     }
   }
 
-  override def float(name: String): Float = {
-    val extracted = res.apply(name)
-    extracted match {
-      case Some(FloatValue(value)) => value
-      case _ => throw new Exception(s"Invalid value $extracted for column $name")
+  override def float(name: String): Try[Float] = {
+    extract(name) {
+      case Some(FloatValue(value)) => Success(value)
+      case x @ _ => Failure(new Exception(s"Invalid value $name for column $name, expected float, got $x"))
     }
   }
 
-  override def long(name: String): Long = {
-    val extracted = res.apply(name)
-    extracted match {
-      case Some(LongValue(value)) => value
-      case Some(StringValue(value)) => value.toLong
-      case _ => throw new Exception(s"Invalid value $extracted for column $name")
+  override def long(name: String): Try[Long] = {
+    extract(name) {
+      case Some(LongValue(value)) => Success(value)
+      case x @ _ => Failure(new Exception(s"Invalid value $name for column $name, expected long, got $x"))
     }
   }
 
-  override def short(name: String): Short = {
-    val extracted = res.apply(name)
-    extracted match {
-      case Some(ShortValue(value)) => value
-      case _ => throw new Exception(s"Invalid value $extracted for column $name")
+  override def short(name: String): Try[Short] = {
+    extract(name) {
+      case Some(ShortValue(value)) => Success(value)
+      case x @ _ => Failure(new Exception(s"Invalid value $name for column $name, expected short, got $x"))
     }
   }
 
-  override def bool(name: String): Boolean = {
-    val extracted = res.apply(name)
-    extracted match {
-      case Some(mysql.StringValue("true")) => true
-      case Some(mysql.StringValue("false")) => false
-      case _ => throw new Exception(s"Invalid value $extracted for column $name")
+  override def bool(name: String): Try[Boolean] = {
+    extract(name) {
+      case Some(fsql.StringValue("true")) => Success(true)
+      case Some(fsql.StringValue("false")) => Success(false)
+      case x @ _ => Failure(new Exception(s"Invalid value $name for column $name, expected boolean, got $x"))
     }
   }
 
-  override def byteBuffer(name: String): ByteBuffer = {
-    val extracted = res.apply(name)
-    extracted match {
-      case Some(mysql.RawValue(typ, charset, isBinary, bytes)) => ByteBuffer.wrap(bytes)
-      case _ => throw new Exception(s"Invalid value $extracted for column $name")
+  override def byteBuffer(name: String): Try[ByteBuffer] = {
+    extract(name) {
+      case Some(fsql.RawValue(typ, charset, isBinary, bytes)) => Success(ByteBuffer.wrap(bytes))
+      case x @ _ => Failure(new Exception(s"Invalid value $name for column $name, expected ByteArray, got $x"))
     }
   }
 }
 
-class MySQLClient(val client: FinagleClient) extends Client[MySQLRow, MySQLResult] {
+class Client(val client: FinagleClient) extends RootClient[Row, Result] {
 
-  def select[T](qb: String)(f: MySQLRow => T): Future[Seq[T]] = {
-    // logger.info(s"Executing query $qb")
+  def select[T](qb: String)(f: mysql.Row => T): Future[Seq[T]] = {
     client.query(qb).map {
-      case set: FinagleResultSet => set.rows.map {
-        row => f(MySQLRow(row))
+      case res: FinagleResultSet => res.rows.map {
+        row => f(mysql.Row(row))
       }
       case _ => Seq.empty[T]
     }
   }
 
-  def query(query: String): Future[MySQLResult] = {
-    client.query(query).map { res => MySQLResult(res) }
+  def query(query: String): Future[Result] = {
+    client.query(query).map { res => Result(res) }
   }
-
 }
 
-object MySQLSyntax extends AbstractSQLSyntax {
-
+object Syntax extends AbstractSQLSyntax {
 
   object SelectOptions {
     val distinctRow = "DISTINCTROW"
@@ -187,11 +176,11 @@ object MySQLSyntax extends AbstractSQLSyntax {
 }
 
 
-object MySQLOperatorSet extends SQLOperatorSet
+object OperatorSet extends SQLOperatorSet
 
-object MySQLQueryBuilder extends AbstractQueryBuilder {
-  val operators = MySQLOperatorSet
-  val syntax = MySQLSyntax
+object QueryBuilder extends AbstractQueryBuilder {
+  val operators = OperatorSet
+  val syntax = Syntax
 }
 
-private[morpheus] class MySQLQueryColumn[T : DataType](col: AbstractColumn[T]) extends AbstractQueryColumn[T](col)
+private[morpheus] class QueryColumn[T : DataType](col: AbstractColumn[T]) extends AbstractQueryColumn[T](col)

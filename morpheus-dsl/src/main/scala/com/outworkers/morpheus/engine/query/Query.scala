@@ -27,7 +27,7 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-package com.outworkers.morpheus.query
+package com.outworkers.morpheus.engine.query
 
 import com.outworkers.morpheus.Row
 import com.outworkers.morpheus.builder.SQLBuiltQuery

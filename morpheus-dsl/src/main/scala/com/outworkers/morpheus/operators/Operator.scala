@@ -31,10 +31,10 @@
 package com.outworkers.morpheus.operators
 
 import com.outworkers.morpheus.{Row, DataType}
-import com.outworkers.morpheus.query.{AssignBind, ChainBind}
+import com.outworkers.morpheus.engine.query.{AssignBind, ChainBind}
 import com.outworkers.morpheus.builder.DefaultQueryBuilder
 import com.outworkers.morpheus.dsl.BaseTable
-import com.outworkers.morpheus.query._
+import com.outworkers.morpheus.engine.query._
 import shapeless.HNil
 
 sealed abstract class Operator

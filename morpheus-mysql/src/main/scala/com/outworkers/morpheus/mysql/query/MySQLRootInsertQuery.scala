@@ -31,18 +31,18 @@
 package com.outworkers.morpheus.mysql.query
 
 import com.outworkers.morpheus.DataType
-import com.outworkers.morpheus.mysql.{MySQLRow, MySQLSyntax}
+import com.outworkers.morpheus.mysql.{Row, Syntax}
 import com.outworkers.morpheus.builder.SQLBuiltQuery
 import com.outworkers.morpheus.column.AbstractColumn
 import com.outworkers.morpheus.dsl.BaseTable
-import com.outworkers.morpheus.query._
-import com.outworkers.morpheus.query.parts.{ColumnsPart, Defaults, LightweightPart, ValuePart}
+import com.outworkers.morpheus.engine.query._
+import com.outworkers.morpheus.engine.query.parts.{ColumnsPart, Defaults, LightweightPart, ValuePart}
 import shapeless.{HList, HNil}
 
 import scala.annotation.implicitNotFound
 
 private[morpheus] class MySQLInsertSyntaxBlock(query: String, tableName: String) extends RootInsertSyntaxBlock(query, tableName) {
-  override val syntax = MySQLSyntax
+  override val syntax = Syntax
 
   private[this] def insertOption(option: String, table: String): SQLBuiltQuery = {
     qb.pad.append(option)
@@ -69,8 +69,8 @@ private[morpheus] class MySQLInsertSyntaxBlock(query: String, tableName: String)
 }
 
 
-class MySQLRootInsertQuery[T <: BaseTable[T, _, MySQLRow], R](table: T, st: MySQLInsertSyntaxBlock, rowFunc: MySQLRow => R)
-  extends RootInsertQuery[T, R, MySQLRow](table, st, rowFunc) {
+class MySQLRootInsertQuery[T <: BaseTable[T, _, Row], R](table: T, st: MySQLInsertSyntaxBlock, rowFunc: Row => R)
+  extends RootInsertQuery[T, R, Row](table, st, rowFunc) {
 
   def delayed: MySQLInsertQuery.Default[T, R] = {
     new MySQLInsertQuery(table, st.delayed, rowFunc)
@@ -90,7 +90,7 @@ class MySQLRootInsertQuery[T <: BaseTable[T, _, MySQLRow], R](table: T, st: MySQ
 
 }
 
-class MySQLInsertQuery[T <: BaseTable[T, _, MySQLRow],
+class MySQLInsertQuery[T <: BaseTable[T, _, Row],
   R,
   Group <: GroupBind,
   Order <: OrderBind,
@@ -100,11 +100,11 @@ class MySQLInsertQuery[T <: BaseTable[T, _, MySQLRow],
   Status <: HList
 ](table: T,
   override val init: SQLBuiltQuery,
-  rowFunc: MySQLRow => R,
+  rowFunc: Row => R,
   columnsPart: ColumnsPart = Defaults.EmptyColumnsPart,
   valuePart: ValuePart = Defaults.EmptyValuePart,
   lightweightPart: LightweightPart = Defaults.EmptyLightweightPart
-) extends InsertQuery[T, R, MySQLRow, Group, Order, Limit, Chain, AssignChain, Status](table: T, init, rowFunc) {
+) extends InsertQuery[T, R, Row, Group, Order, Limit, Chain, AssignChain, Status](table: T, init, rowFunc) {
 
   override def query: SQLBuiltQuery = (columnsPart merge valuePart merge lightweightPart) build init
 
@@ -115,7 +115,7 @@ class MySQLInsertQuery[T <: BaseTable[T, _, MySQLRow],
     S <: ChainBind,
     C <: AssignBind,
     P <: HList
-  ](t: T, q: SQLBuiltQuery, r: MySQLRow => R): QueryType[G, O, L, S, C, P] = {
+  ](t: T, q: SQLBuiltQuery, r: Row => R): QueryType[G, O, L, S, C, P] = {
     new MySQLInsertQuery(t, q, r, columnsPart, valuePart, lightweightPart)
   }
 
@@ -152,7 +152,7 @@ class MySQLInsertQuery[T <: BaseTable[T, _, MySQLRow],
 }
 
 object MySQLInsertQuery {
-  type Default[T <: BaseTable[T, _, MySQLRow], R] = MySQLInsertQuery[
+  type Default[T <: BaseTable[T, _, Row], R] = MySQLInsertQuery[
     T,
     R,
     Ungroupped,

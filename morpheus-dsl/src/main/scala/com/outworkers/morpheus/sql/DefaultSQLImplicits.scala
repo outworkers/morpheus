@@ -29,7 +29,7 @@
  */
 package com.outworkers.morpheus.sql
 
-import com.outworkers.morpheus.query._
+import com.outworkers.morpheus.engine.query._
 import com.outworkers.morpheus.builder.SQLBuiltQuery
 import com.outworkers.morpheus.column.{AbstractColumn, AbstractModifyColumn, Column, SelectColumn}
 import com.outworkers.morpheus.{Row => MorpheusRow}

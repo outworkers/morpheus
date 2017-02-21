@@ -43,30 +43,30 @@ trait DataTypes {
   def apply[RR](implicit ev: DataType[RR]): DataType[RR] = ev
 
   implicit object IntPrimitive extends DefaultIntPrimitive {
-    def fromRow(row: MySQLRow, name: String): Try[Int] = row.int(name)
+    def fromRow(row: Row, name: String): Try[Int] = row.int(name)
   }
 
   implicit object FloatPrimitive extends DefaultFloatPrimitive {
-    def fromRow(row: MySQLRow, name: String): Try[Float] = row.float(name)
+    def fromRow(row: Row, name: String): Try[Float] = row.float(name)
   }
 
   implicit object DoublePrimitive extends DefaultDoublePrimitive {
-    def fromRow(row: MySQLRow, name: String): Try[Double] = row.double(name)
+    def fromRow(row: Row, name: String): Try[Double] = row.double(name)
   }
 
   implicit object LongPrimitive extends DefaultLongPrimitive {
-    def fromRow(row: MySQLRow, name: String): Try[Long] = row.long(name)
+    def fromRow(row: Row, name: String): Try[Long] = row.long(name)
   }
 
   implicit object DatePrimitive extends DefaultDatePrimitive {
-    def fromRow(row: MySQLRow, name: String): Try[Date] = row.date(name)
+    def fromRow(row: Row, name: String): Try[Date] = row.date(name)
   }
 
   implicit object DateTimePrimitive extends DefaultDateTimePrimitive {
-    def fromRow(row: MySQLRow, name: String): Try[DateTime] = row.datetime(name)
+    def fromRow(row: Row, name: String): Try[DateTime] = row.datetime(name)
   }
 
   implicit object StringPrimitive extends DefaultStringPrimitive {
-    def fromRow(row: MySQLRow, name: String): Try[String] = row.string(name)
+    def fromRow(row: Row, name: String): Try[String] = row.string(name)
   }
 }

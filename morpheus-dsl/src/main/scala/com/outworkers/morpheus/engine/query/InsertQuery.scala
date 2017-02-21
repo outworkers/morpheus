@@ -27,14 +27,14 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-package com.outworkers.morpheus.query
+package com.outworkers.morpheus.engine.query
 
 import com.outworkers.morpheus.DataType
 import com.outworkers.morpheus.sql.DefaultRow
 import com.outworkers.morpheus.builder.{AbstractSQLSyntax, AbstractSyntaxBlock, DefaultSQLSyntax, SQLBuiltQuery}
 import com.outworkers.morpheus.column.AbstractColumn
 import com.outworkers.morpheus.dsl.BaseTable
-import com.outworkers.morpheus.query.parts.{ColumnsPart, Defaults, LightweightPart, ValuePart}
+import com.outworkers.morpheus.engine.query.parts.{ColumnsPart, Defaults, LightweightPart, ValuePart}
 import com.outworkers.morpheus.Row
 import shapeless.{HList, HNil}
 
