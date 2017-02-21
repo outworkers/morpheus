@@ -27,7 +27,6 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-
 package com.outworkers.morpheus.column
 
 import com.outworkers.morpheus.{Row, DataType}
@@ -145,9 +144,6 @@ abstract class AbstractLongBlobColumn[
   override def sqlType: String = DefaultSQLDataTypes.longBlob
 }
 
-
-
-
 abstract class AbstractEnumColumn[
   Owner <: BaseTable[Owner, Record, TableRow],
   Record,
@@ -160,7 +156,7 @@ abstract class AbstractEnumColumn[
     r.string(name) flatMap (s => {
       enum.values.find(_.toString == s) match {
         case Some(value) => Success(value)
-        case None => Failure(new Exception(s"Enumeration ${enum.toString()} doesn't contain value $s"))
+        case None => Failure(new Exception(s"Enumeration $enum doesn't contain value $s"))
       }
     })
   }
