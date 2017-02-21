@@ -77,8 +77,8 @@ trait Implicits extends DefaultSQLEngines {
    */
   implicit def rootInsertQueryToQuery[T <: BaseTable[T, _, mysql.Row], R](
     root: RootInsertQuery[T, R]
-  ): InsertQuery[T, R, Ungroupped, Unordered, Unlimited, Unchainned, AssignUnchainned, HNil] = {
-    new InsertQuery(
+  ): mysql.query.InsertQuery[T, R, Ungroupped, Unordered, Unlimited, Unchainned, AssignUnchainned, HNil] = {
+    new mysql.query.InsertQuery(
       root.table,
       root.st.into,
       root.rowFunc
@@ -128,17 +128,14 @@ trait Implicits extends DefaultSQLEngines {
     new UpdateQuery[T, R, Group, Order, Limit, Chain, AssignChain, Status](query.table, query.query, query.rowFunc)
   }
 
-  def enumPrimitive[T <: Enumeration](enum: T): DataType[T#Value] = {
+  def enumPrimitive[T <: Enumeration](enum: T)(implicit ev: DataType[String]): DataType[T#Value] = {
     new DataType[T#Value] {
+      override val sqlType: String = ev.sqlType
 
-      private[this] val primitive = implicitly[DataType[String]]
-
-      override val sqlType: String = primitive.sqlType
-
-      override def serialize(value: T#Value): String = primitive.serialize(value.toString)
+      override def serialize(value: T#Value): String = ev.serialize(value.toString)
 
       override def deserialize(row: MorpheusRow, name: String): Try[T#Value] = {
-        primitive.deserialize(row, name) map (x => enum.withName(x))
+        ev.deserialize(row, name) map (x => enum.withName(x))
       }
     }
   }

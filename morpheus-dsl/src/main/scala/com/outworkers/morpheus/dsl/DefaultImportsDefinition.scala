@@ -41,7 +41,7 @@ import scala.util.Try
  * As the implementation of SQL builders may differ depending on the type of SQL database in use, we will provide a series of specific imports for each
  * individual database.
  *
- * For instance, for MySQL a user will {{ import com.outworkers.morpheus.mysql._ }}, for Postgress the user will {{import com.outworkers.morpheus
+ * For instance, for MySQL a user will {{ import com.outworkers.morpheus.mysql.dsl._ }}, for Postgress the user will {{import com.outworkers.morpheus
  * .postgres._ }} and so on. To make our life easy when we reach the point of writing disjoint import objects for the various SQL databases,
  * this trait will provide the base implementation of an "all you can eat" imports object.
  *

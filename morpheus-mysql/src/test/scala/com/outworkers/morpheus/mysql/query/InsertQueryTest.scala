@@ -29,7 +29,7 @@ package com.outworkers.morpheus.mysql.query
 
 import com.outworkers.morpheus.mysql.tables.BasicTable
 import com.outworkers.util.testing._
-import com.outworkers.morpheus.mysql._
+import com.outworkers.morpheus.mysql.dsl._
 import com.outworkers.morpheus.mysql.tables.{EnumerationRecord, EnumerationTable}
 import org.scalatest.{FlatSpec, Matchers}
 

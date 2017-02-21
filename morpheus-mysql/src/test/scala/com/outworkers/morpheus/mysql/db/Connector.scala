@@ -26,7 +26,10 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-package com.outworkers.morpheus.mysql.db
+package com.outworkers.morpheus
+
+package mysql
+package db
 
 import java.util.concurrent.TimeUnit
 
@@ -61,7 +64,7 @@ trait BaseSuite extends Waiters
 
   this: Suite =>
 
-  implicit lazy val client: Client[Row, Result] = new Client(Connector.client)
+  implicit lazy val client = new mysql.Client(Connector.client)
 
   protected[this] val defaultScalaTimeoutSeconds = 10
 

@@ -27,10 +27,11 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
+package com.outworkers.morpheus
+package mysql
+package tables
 
-package com.outworkers.morpheus.mysql.tables
-
-import com.outworkers.morpheus.mysql._
+import com.outworkers.morpheus.mysql.dsl._
 import com.outworkers.morpheus.mysql.query.InsertQuery$
 
 case class IndexedRecord(id: Int, value: Long)
@@ -199,7 +200,7 @@ object EnumerationTable extends EnumerationTable {
 
   implicit val primitive: DataType[TestEnumeration#Value] = enumPrimitive(TestEnumeration)
 
-  def store(record: EnumerationRecord): InsertQuery.Default[EnumerationTable, EnumerationRecord] = {
+  def store(record: EnumerationRecord): mysql.query.InsertQuery.Default[EnumerationTable, EnumerationRecord] = {
     insert
       .value(_.id, record.id)
       .value(_.enum, record.enum)

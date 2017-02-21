@@ -29,8 +29,7 @@ package com.outworkers.morpheus.mysql.db
 
 import com.outworkers.morpheus.mysql.tables.BasicTable
 import org.scalatest.FlatSpec
-import com.outworkers.util.testing._
-import com.outworkers.morpheus.mysql._
+import com.outworkers.morpheus.mysql.dsl._
 
 class CreateQueryTest extends FlatSpec with BaseSuite {
 

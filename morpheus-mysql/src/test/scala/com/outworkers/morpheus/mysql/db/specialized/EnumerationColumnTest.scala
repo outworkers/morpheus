@@ -30,7 +30,7 @@
 package com.outworkers.morpheus.mysql.db.specialized
 
 import com.outworkers.morpheus.DataType
-import com.outworkers.morpheus.mysql._
+import com.outworkers.morpheus.mysql.dsl._
 import com.outworkers.morpheus.mysql.db.BaseSuite
 import com.outworkers.morpheus.mysql.tables.{EnumerationRecord, EnumerationTable, TestEnumeration}
 import com.outworkers.util.samplers.{Generators, Sample}
