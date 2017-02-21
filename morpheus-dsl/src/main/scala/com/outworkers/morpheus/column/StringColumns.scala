@@ -58,64 +58,111 @@ abstract class AbstractCharColumn[
   override def sqlType: String = s"${DefaultSQLDataTypes.char}($limit)"
 }
 
-abstract class AbstractVarcharColumn[T <: BaseTable[T, R, TableRow], R, TableRow <: Row](t: BaseTable[T, R, TableRow], limit: Int = KnownTypeLimits
-  .varcharLimit)(implicit ev: DataType[String]) extends LimitedTextColumn[T, R, TableRow, String](t, limit) {
+abstract class AbstractVarcharColumn[
+  T <: BaseTable[T, R, TableRow],
+  R,
+  TableRow <: Row
+](t: BaseTable[T, R, TableRow], limit: Int = KnownTypeLimits.varcharLimit)(
+  implicit ev: DataType[String]
+) extends LimitedTextColumn[T, R, TableRow, String](t, limit) {
   override def sqlType: String = s"${DefaultSQLDataTypes.varchar}($limit)"
 }
 
-abstract class AbstractTinyTextColumn[T <: BaseTable[T, R, TableRow], R, TableRow <: Row](t: BaseTable[T, R, TableRow], limit: Int = 0)(implicit ev: DataType[String])
-  extends LimitedTextColumn[T, R, TableRow, String](t, limit) {
+abstract class AbstractTinyTextColumn[
+  T <: BaseTable[T, R, TableRow],
+  R,
+  TableRow <: Row
+](t: BaseTable[T, R, TableRow], limit: Int = 0)(
+  implicit ev: DataType[String]
+) extends LimitedTextColumn[T, R, TableRow, String](t, limit) {
   override def sqlType: String = DefaultSQLDataTypes.tinyText
 }
 
-abstract class AbstractTextColumn[T <: BaseTable[T, R, TableRow], R, TableRow <: Row](t: BaseTable[T, R, TableRow], limit: Int = 0)(implicit ev: DataType[String])
-  extends LimitedTextColumn[T, R, TableRow, String](t, limit) {
+abstract class AbstractTextColumn[
+  T <: BaseTable[T, R, TableRow],
+  R,
+  TableRow <: Row
+](t: BaseTable[T, R, TableRow], limit: Int = 0)(
+  implicit ev: DataType[String]
+) extends LimitedTextColumn[T, R, TableRow, String](t, limit) {
   override def sqlType: String = DefaultSQLDataTypes.text
 }
 
-abstract class AbstractMediumTextColumn[T <: BaseTable[T, R, TableRow], R, TableRow <: Row](t: BaseTable[T, R, TableRow], limit: Int = 0)(implicit ev: DataType[String])
-  extends LimitedTextColumn[T, R, TableRow, String](t, limit) {
+abstract class AbstractMediumTextColumn[
+  T <: BaseTable[T, R, TableRow],
+  R, TableRow <: Row](t: BaseTable[T, R, TableRow], limit: Int = 0)(
+  implicit ev: DataType[String]
+) extends LimitedTextColumn[T, R, TableRow, String](t, limit) {
   override def sqlType: String = DefaultSQLDataTypes.mediumText
 }
 
-abstract class AbstractLongTextColumn[T <: BaseTable[T, R, TableRow], R, TableRow <: Row](t: BaseTable[T, R, TableRow], limit: Int = 0)(implicit ev: DataType[String])
-  extends LimitedTextColumn[T, R, TableRow, String](t, limit) {
+abstract class AbstractLongTextColumn[
+  T <: BaseTable[T, R, TableRow],
+  R,
+  TableRow <: Row
+](t: BaseTable[T, R, TableRow], limit: Int = 0)(
+  implicit ev: DataType[String]) extends LimitedTextColumn[T, R, TableRow, String](t, limit) {
   override def sqlType: String = DefaultSQLDataTypes.longText
 }
 
-abstract class AbstractTinyBlobColumn[T <: BaseTable[T, R, TableRow], R, TableRow <: Row](t: BaseTable[T, R, TableRow], limit: Int = 0)(implicit ev: DataType[String])
-  extends LimitedTextColumn[T, R, TableRow, String](t, limit) {
+abstract class AbstractTinyBlobColumn[
+  T <: BaseTable[T, R, TableRow],
+  R,
+  TableRow <: Row
+](t: BaseTable[T, R, TableRow], limit: Int = 0)(
+  implicit ev: DataType[String]
+) extends LimitedTextColumn[T, R, TableRow, String](t, limit) {
   override def sqlType: String = DefaultSQLDataTypes.tinyBlob
 }
 
-abstract class AbstractBlobColumn[T <: BaseTable[T, R, TableRow], R, TableRow <: Row](t: BaseTable[T, R, TableRow], limit: Int = 0)(implicit ev: DataType[String])
-  extends LimitedTextColumn[T, R, TableRow, String](t, limit) {
+abstract class AbstractBlobColumn[
+  T <: BaseTable[T, R, TableRow],
+  R,
+  TableRow <: Row
+](t: BaseTable[T, R, TableRow], limit: Int = 0)(
+  implicit ev: DataType[String]
+) extends LimitedTextColumn[T, R, TableRow, String](t, limit) {
   override def sqlType: String = DefaultSQLDataTypes.blob
 }
 
-abstract class AbstractMediumBlobColumn[T <: BaseTable[T, R, TableRow], R, TableRow <: Row](t: BaseTable[T, R, TableRow], limit: Int = 0)(implicit ev: DataType[String])
-  extends LimitedTextColumn[T, R, TableRow, String](t, limit) {
+abstract class AbstractMediumBlobColumn[
+  T <: BaseTable[T, R, TableRow],
+  R,
+  TableRow <: Row
+](t: BaseTable[T, R, TableRow], limit: Int = 0)(
+  implicit ev: DataType[String]
+) extends LimitedTextColumn[T, R, TableRow, String](t, limit) {
   override def sqlType: String = DefaultSQLDataTypes.mediumBlob
 }
 
-abstract class AbstractLongBlobColumn[T <: BaseTable[T, R, TableRow], R, TableRow <: Row](t: BaseTable[T, R, TableRow], limit: Int = 0)(implicit ev: DataType[String])
-  extends LimitedTextColumn[T, R, TableRow, String](t, limit) {
+abstract class AbstractLongBlobColumn[
+  T <: BaseTable[T, R, TableRow],
+  R,
+  TableRow <: Row
+](t: BaseTable[T, R, TableRow], limit: Int = 0)(
+  implicit ev: DataType[String]
+) extends LimitedTextColumn[T, R, TableRow, String](t, limit) {
   override def sqlType: String = DefaultSQLDataTypes.longBlob
 }
 
 
 
 
-abstract class AbstractEnumColumn[Owner <: BaseTable[Owner, Record, TableRow], Record, TableRow <: Row, EnumType <: Enumeration](table: BaseTable[Owner, Record, TableRow], enum: EnumType)
+abstract class AbstractEnumColumn[
+  Owner <: BaseTable[Owner, Record, TableRow],
+  Record,
+  TableRow <: Row,
+  EnumType <: Enumeration
+](table: BaseTable[Owner, Record, TableRow], enum: EnumType)
   extends Column[Owner, Record, TableRow, EnumType#Value](table) {
 
   override def optional(r: Row): Try[EnumType#Value] = {
-    val enumConstant = r.string(name)
-
-    enum.values.find(_.toString == enumConstant) match {
-      case Some(value) => Success(value)
-      case None => Failure(new Exception(s"Enumeration ${enum.toString()} doesn't contain value $enumConstant"))
-    }
+    r.string(name) flatMap (s => {
+      enum.values.find(_.toString == s) match {
+        case Some(value) => Success(value)
+        case None => Failure(new Exception(s"Enumeration ${enum.toString()} doesn't contain value $s"))
+      }
+    })
   }
 
   override def toQueryString(v: EnumType#Value): String = DefaultQueryBuilder.escape(v.toString)
@@ -125,8 +172,15 @@ abstract class AbstractEnumColumn[Owner <: BaseTable[Owner, Record, TableRow], R
   override def sqlType: String = s"${DefaultSQLDataTypes.varchar}(200)"
 }
 
-abstract class AbstractOptionalEnumColumn[Owner <: BaseTable[Owner, Record, TableRow], Record, TableRow <: Row, EnumType <: Enumeration](table: BaseTable[Owner, Record, TableRow], enum: EnumType)
-  extends OptionalColumn[Owner, Record, TableRow, String](table) {
+abstract class AbstractOptionalEnumColumn[
+  Owner <: BaseTable[Owner, Record, TableRow],
+  Record,
+  TableRow <: Row,
+  EnumType <: Enumeration
+](
+  table: BaseTable[Owner, Record, TableRow],
+  enum: EnumType
+) extends OptionalColumn[Owner, Record, TableRow, String](table) {
 
   override def sqlType: String = DefaultSQLDataTypes.varchar
 }
