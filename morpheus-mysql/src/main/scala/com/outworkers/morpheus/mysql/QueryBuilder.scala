@@ -26,24 +26,25 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-package com.outworkers.morpheus.mysql
+package com.outworkers.morpheus
+package mysql
 
 import java.nio.ByteBuffer
 import java.util.Date
 
-import com.twitter.finagle.exp.mysql.{Client => FinagleClient, Result => FinagleResult, ResultSet => FinagleResultSet, Row => FinagleRow, _}
-import com.twitter.finagle.exp.{mysql => fsql}
-import com.twitter.util.Future
 import com.outworkers.morpheus.builder.{AbstractQueryBuilder, AbstractSQLSyntax, SQLOperatorSet}
 import com.outworkers.morpheus.column.AbstractColumn
 import com.outworkers.morpheus.engine.query.AbstractQueryColumn
-import com.outworkers.morpheus.{mysql, Client => RootClient, Result => BaseResult, Row => BaseRow}
+import com.outworkers.morpheus.{Client => RootClient, Result => BaseResult, Row => BaseRow}
+import com.twitter.finagle.exp.mysql.{Client => FinagleClient, Result => FinagleResult, ResultSet => FinagleResultSet, Row => FinagleRow, _}
+import com.twitter.finagle.exp.{mysql => fsql}
+import com.twitter.util.Future
 
 import scala.util.{Failure, Success, Try}
 
 case class Result(result: FinagleResult) extends BaseResult
 
-case class Row(res: FinagleRow) extends  {
+case class Row(res: FinagleRow) extends BaseRow {
 
   protected[this] def extract[T](column: String)(fn: Option[Value] => Try[T]): Try[T] = {
     fn(res(column))

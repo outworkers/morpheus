@@ -58,7 +58,7 @@ import scala.reflect.runtime.{currentMirror => cm, universe => ru}
  */
 abstract class BaseTable[Owner <: BaseTable[Owner, _, TableRow], Record, TableRow <: Row] {
 
-  val queryBuilder: AbstractQueryBuilder
+  def queryBuilder: AbstractQueryBuilder
 
   protected[this] def syntax: AbstractSQLSyntax
 

@@ -30,7 +30,7 @@ package com.outworkers
 package morpheus
 package mysql
 
-import com.outworkers.morpheus.dsl.SelectTable
+import com.outworkers.morpheus.dsl.{BaseTable, SelectTable}
 import com.outworkers.morpheus.mysql.query._
 
 abstract class Table[Owner <: BaseTable[Owner, Record, mysql.Row], Record]
@@ -49,31 +49,31 @@ abstract class Table[Owner <: BaseTable[Owner, Record, mysql.Row], Record]
     new RootSelectQuery[A, B](table, block, rowFunc)
   }
 
-  protected[this] def createSelectSyntaxBlock(query: String, tableName: String, cols: List[String] = List("*")): SelectSyntaxBlock = {
+  protected[this] def selectBlock(query: String, tableName: String, cols: List[String] = List("*")): SelectSyntaxBlock = {
     new SelectSyntaxBlock(query, tableName, cols)
   }
 
-  def update: MySQLRootUpdateQuery[Owner, Record] = new MySQLRootUpdateQuery(
+  def update: RootUpdateQuery[Owner, Record] = new RootUpdateQuery(
     this.asInstanceOf[Owner],
     UpdateSyntaxBlock(syntax.update, tableName),
     fromRow
   )
 
-  def delete: MySQLRootDeleteQuery[Owner, Record] = new MySQLRootDeleteQuery(
+  def delete: RootDeleteQuery[Owner, Record] = new RootDeleteQuery(
     this.asInstanceOf[Owner],
-    MySQLDeleteSyntaxBlock(syntax.delete, tableName),
+    DeleteSyntaxBlock(syntax.delete, tableName),
     fromRow
   )
 
-  def insert: MySQLRootInsertQuery[Owner, Record] = new MySQLRootInsertQuery(
+  def insert: RootInsertQuery[Owner, Record] = new RootInsertQuery(
     this.asInstanceOf[Owner],
-    new MySQLInsertSyntaxBlock(syntax.insert, tableName),
+    new InsertSyntaxBlock(syntax.insert, tableName),
     fromRow
   )
 
-  def create: MySQLRootCreateQuery[Owner, Record] = new MySQLRootCreateQuery(
+  def create: RootCreateQuery[Owner, Record] = new RootCreateQuery(
     this.asInstanceOf[Owner],
-    new MySQLCreateSyntaxBlock(syntax.create, tableName),
+    new CreateSyntaxBlock(syntax.create, tableName),
     fromRow
   )
 

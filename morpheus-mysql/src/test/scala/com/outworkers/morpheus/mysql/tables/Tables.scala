@@ -31,7 +31,7 @@
 package com.outworkers.morpheus.mysql.tables
 
 import com.outworkers.morpheus.mysql._
-import com.outworkers.morpheus.mysql.query.MySQLInsertQuery
+import com.outworkers.morpheus.mysql.query.InsertQuery$
 
 case class IndexedRecord(id: Int, value: Long)
 
@@ -199,7 +199,7 @@ object EnumerationTable extends EnumerationTable {
 
   implicit val primitive: DataType[TestEnumeration#Value] = enumPrimitive(TestEnumeration)
 
-  def store(record: EnumerationRecord): MySQLInsertQuery.Default[EnumerationTable, EnumerationRecord] = {
+  def store(record: EnumerationRecord): InsertQuery.Default[EnumerationTable, EnumerationRecord] = {
     insert
       .value(_.id, record.id)
       .value(_.enum, record.enum)

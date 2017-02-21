@@ -26,20 +26,19 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-package com.outworkers
-package morpheus
+package com.outworkers.morpheus
+package mysql
 
-import com.outworkers.morpheus.dsl.DefaultImportsDefinition
-import com.outworkers.morpheus.operators.MySQLOperatorSet
-import com.outworkers.morpheus.engine.query.AssignUnchainned
 import com.outworkers.morpheus.column.{AbstractColumn, DefaultForeignKeyConstraints}
-import com.outworkers.morpheus.mysql.query.{RootSelectQuery, MySQLSelectQuery}
-import com.outworkers.morpheus.engine.query.{Unchainned, Ungroupped, Unlimited, Unordered}
+import com.outworkers.morpheus.dsl.DefaultImportsDefinition
+import com.outworkers.morpheus.engine.query._
+import com.outworkers.morpheus.mysql.query.{SelectQuery, RootSelectQuery}
+import com.outworkers.morpheus.operators.MySQLOperatorSet
 import shapeless.HNil
 
 import scala.util.Try
 
-package object mysql extends DefaultImportsDefinition
+package object dsl extends DefaultImportsDefinition
   with Implicits
   with DataTypes
   with MySQLOperatorSet
@@ -52,20 +51,20 @@ package object mysql extends DefaultImportsDefinition
 
   implicit def rootSelectQueryToQuery[T <: Table[T, _], R](
     root: RootSelectQuery[T, R]
-  ): MySQLSelectQuery[T, R, Ungroupped, Unordered, Unlimited, Unchainned, AssignUnchainned, HNil] = {
-    new MySQLSelectQuery(
+  ): SelectQuery[T, R, Ungroupped, Unordered, Unlimited, Unchainned, AssignUnchainned, HNil] = {
+    new SelectQuery(
       root.table,
       root.st.*,
       root.rowFunc
     )
   }
 
-  type Row = morpheus.mysql.Row
-  type Result = morpheus.mysql.Result
+  type Row = mysql.Row
+  type Result = mysql.Result
 
-  type SQLTable[Owner <: BaseTable[Owner, Record, Row], Record] = Table[Owner, Record]
+  type SQLTable[Owner <: BaseTable[Owner, Record, Row], Record] = mysql.Table[Owner, Record]
 
-  type Table[Owner <: BaseTable[Owner, Record, Row], Record] = Table[Owner, Record]
+  type Table[Owner <: BaseTable[Owner, Record, Row], Record] = mysql.Table[Owner, Record]
 
   def enumToQueryConditionPrimitive[T <: Enumeration](enum: T)(implicit ev: DataType[String]): DataType[T#Value] = {
     new DataType[T#Value] {

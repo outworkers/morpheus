@@ -79,7 +79,6 @@ private[morpheus] class DefaultRootInsertQuery[T <: BaseTable[T, _, DefaultRow],
   extends RootInsertQuery[T, R, DefaultRow](table, st, rowFunc) {}
 
 
-
 class InsertQuery[
   T <: BaseTable[T, _, TableRow],
   R,

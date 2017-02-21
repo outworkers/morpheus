@@ -29,12 +29,12 @@
 package com.outworkers.morpheus.mysql.query
 
 import com.outworkers.morpheus.mysql.{Result, Row, Syntax}
-import com.outworkers.morpheus.engine.query.{AssignBind, AssignChainned, AssignUnchainned}
+import com.outworkers.morpheus.engine.query._
 import com.twitter.util.Future
 import com.outworkers.morpheus.Client
 import com.outworkers.morpheus.builder.SQLBuiltQuery
-import com.outworkers.morpheus.mysql._
-import com.outworkers.morpheus.engine.query._
+import com.outworkers.morpheus.dsl.BaseTable
+import com.outworkers.morpheus.engine
 import shapeless.{HList, HNil}
 
 import scala.annotation.implicitNotFound
@@ -43,7 +43,7 @@ import scala.concurrent.{Future => ScalaFuture}
 
 private[morpheus] class SelectSyntaxBlock(
   query: String, tableName: String,
-  columns: List[String] = List("*")) extends AbstractSelectSyntaxBlock(query, tableName, columns) {
+  columns: List[String] = List("*")) extends engine.query.AbstractSelectSyntaxBlock(query, tableName, columns) {
   override val syntax = Syntax
 
   private[this] def selector(quantifier: String, columns: List[String], table: String): SQLBuiltQuery = {
@@ -92,49 +92,49 @@ private[morpheus] class SelectSyntaxBlock(
 
 
 private[morpheus] class RootSelectQuery[T <: BaseTable[T, _, Row], R](table: T, st: SelectSyntaxBlock, rowFunc: Row => R)
-  extends AbstractRootSelectQuery[T, R, Row](table, st, rowFunc) {
+  extends engine.query.AbstractRootSelectQuery[T, R, Row](table, st, rowFunc) {
 
-  type BaseSelectQuery = MySQLSelectQuery[T, R, Ungroupped, Unordered, Unlimited, Unchainned, AssignUnchainned, HNil]
+  type BaseSelectQuery = SelectQuery[T, R, Ungroupped, Unordered, Unlimited, Unchainned, AssignUnchainned, HNil]
 
   def distinctRow: BaseSelectQuery = {
-    new MySQLSelectQuery(table, st.distinctRow, rowFunc)
+    new SelectQuery(table, st.distinctRow, rowFunc)
   }
 
   def highPriority: BaseSelectQuery = {
-    new MySQLSelectQuery(table, st.highPriority, rowFunc)
+    new SelectQuery(table, st.highPriority, rowFunc)
   }
 
   def straightJoin: BaseSelectQuery = {
-    new MySQLSelectQuery(table, st.straightJoin, rowFunc)
+    new SelectQuery(table, st.straightJoin, rowFunc)
   }
 
   def sqlSmallResult: BaseSelectQuery = {
-    new MySQLSelectQuery(table, st.sqlSmallResult, rowFunc)
+    new SelectQuery(table, st.sqlSmallResult, rowFunc)
   }
 
   def sqlBigResult: BaseSelectQuery = {
-    new MySQLSelectQuery(table, st.sqlBigResult, rowFunc)
+    new SelectQuery(table, st.sqlBigResult, rowFunc)
   }
 
   def sqlBufferResult: BaseSelectQuery = {
-    new MySQLSelectQuery(table, st.sqlBufferResult, rowFunc)
+    new SelectQuery(table, st.sqlBufferResult, rowFunc)
   }
 
   def sqlCache: BaseSelectQuery = {
-    new MySQLSelectQuery(table, st.sqlCache, rowFunc)
+    new SelectQuery(table, st.sqlCache, rowFunc)
   }
 
   def sqlNoCache: BaseSelectQuery = {
-    new MySQLSelectQuery(table, st.sqlNoCache, rowFunc)
+    new SelectQuery(table, st.sqlNoCache, rowFunc)
   }
 
   def sqlCalcFoundRows: BaseSelectQuery = {
-    new MySQLSelectQuery(table, st.sqlCalcFoundRows, rowFunc)
+    new SelectQuery(table, st.sqlCalcFoundRows, rowFunc)
   }
 }
 
 
-class MySQLSelectQuery[T <: BaseTable[T, _, Row],
+class SelectQuery[T <: BaseTable[T, _, Row],
   R,
   Group <: GroupBind,
   Order <: OrderBind,
@@ -143,35 +143,35 @@ class MySQLSelectQuery[T <: BaseTable[T, _, Row],
   AssignChain <: AssignBind,
   Status <: HList
 ](table: T, query: SQLBuiltQuery, rowFunc: Row => R)
-  extends SelectQuery[T, R, Row, Group, Order, Limit, Chain, AssignChain, Status](table, query, rowFunc)
+  extends engine.query.SelectQuery[T, R, Row, Group, Order, Limit, Chain, AssignChain, Status](table, query, rowFunc)
   with SQLResultsQuery[T, R, Row, Result, Limit] {
 
   @implicitNotFound("You cannot use two where clauses on a single query")
   override def where(condition: T => QueryCondition)(
     implicit ev: Chain =:= Unchainned
-  ): MySQLSelectQuery[T, R, Group, Order, Limit, Chainned, AssignChain, Status] = {
-    new MySQLSelectQuery(table, table.queryBuilder.where(query, condition(table).clause), rowFunc)
+  ): SelectQuery[T, R, Group, Order, Limit, Chainned, AssignChain, Status] = {
+    new SelectQuery(table, table.queryBuilder.where(query, condition(table).clause), rowFunc)
   }
 
   @implicitNotFound("You cannot use two where clauses on a single query")
   override def where(condition: QueryCondition)(
     implicit ev: Chain =:= Unchainned
-  ): MySQLSelectQuery[T, R, Group, Order, Limit, Chainned, AssignChain, Status] = {
-    new MySQLSelectQuery(table, table.queryBuilder.where(query, condition.clause), rowFunc)
+  ): SelectQuery[T, R, Group, Order, Limit, Chainned, AssignChain, Status] = {
+    new SelectQuery(table, table.queryBuilder.where(query, condition.clause), rowFunc)
   }
 
   @implicitNotFound("You need to use the where method first")
   override def and(condition: T => QueryCondition)(
     implicit ev: Chain =:= Chainned
-  ): MySQLSelectQuery[T, R, Group, Order, Limit, Chain, AssignChainned, Status]  = {
-    new MySQLSelectQuery(table, table.queryBuilder.and(query, condition(table).clause), rowFunc)
+  ): SelectQuery[T, R, Group, Order, Limit, Chain, AssignChainned, Status]  = {
+    new SelectQuery(table, table.queryBuilder.and(query, condition(table).clause), rowFunc)
   }
 
   @implicitNotFound("You need to use the where method first")
   override def and(condition: QueryCondition)(
     implicit ev: Chain =:= Chainned
-  ): MySQLSelectQuery[T, R, Group, Order, Limit, Chain, AssignChainned, Status] = {
-    new MySQLSelectQuery(table, table.queryBuilder.and(query, condition.clause), rowFunc)
+  ): SelectQuery[T, R, Group, Order, Limit, Chain, AssignChainned, Status] = {
+    new SelectQuery(table, table.queryBuilder.and(query, condition.clause), rowFunc)
   }
 
   /**

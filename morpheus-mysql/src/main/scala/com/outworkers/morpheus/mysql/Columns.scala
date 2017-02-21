@@ -28,7 +28,9 @@
 
 package com.outworkers.morpheus.mysql
 
+import com.outworkers.morpheus.DataType
 import com.outworkers.morpheus.column._
+import com.outworkers.morpheus.dsl.BaseTable
 import shapeless.{<:!<, =:!=}
 
 trait Keys {
@@ -95,7 +97,10 @@ trait Columns {
   class CharColumn[T <: BaseTable[T, R, Row], R](t: BaseTable[T, R, Row], limit: Int = 0)(implicit ev: DataType[String])
     extends AbstractCharColumn[T, R, Row](t, limit)
 
-  class EnumColumn[T <: BaseTable[T, R, Row], R, EnumType <: Enumeration](t: BaseTable[T, R, Row], enum: EnumType)(implicit ev: DataType[String])
+  class EnumColumn[T <: BaseTable[T, R, Row], R, EnumType <: Enumeration](
+    t: BaseTable[T, R, Row],
+    enum: EnumType
+  )(implicit ev: DataType[String])
     extends AbstractEnumColumn[T, R, Row, EnumType](t, enum) {
   }
 

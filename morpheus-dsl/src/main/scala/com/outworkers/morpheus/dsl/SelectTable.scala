@@ -66,7 +66,7 @@ private[morpheus] trait SelectTable[
    */
   protected[this] def createRootSelect[A <: BaseTable[A, _, TableRow], B](table: A, block: Block, rowFunc: TableRow => B): RootSelectQuery[A, B]
 
-  protected[this] def createSelectSyntaxBlock(query: String, tableName: String, cols: List[String] = List("*")): Block
+  protected[this] def selectBlock(query: String, tableName: String, cols: List[String] = List("*")): Block
 
   /**
    * This is the SELECT * query, where the user won't specify any partial select.
@@ -75,7 +75,7 @@ private[morpheus] trait SelectTable[
   def select: RootSelectQuery[Owner, Record] = {
     createRootSelect[Owner, Record](
       this.asInstanceOf[Owner],
-      createSelectSyntaxBlock(syntax.select, tableName),
+      selectBlock(syntax.select, tableName),
       fromRow
     )
   }
@@ -92,7 +92,7 @@ private[morpheus] trait SelectTable[
 
     createRootSelect[Owner, T1](
       this.asInstanceOf[Owner],
-      createSelectSyntaxBlock(syntax.select, tableName, List(c1.queryString)),
+      selectBlock(syntax.select, tableName, List(c1.queryString)),
       rowFunc
     )
   }
@@ -125,7 +125,7 @@ private[morpheus] trait SelectTable[
 
     createRootSelect[Owner, (T1, T2)](
       this.asInstanceOf[Owner],
-      createSelectSyntaxBlock(syntax.select, tableName, List(c1.queryString, c2.queryString)),
+      selectBlock(syntax.select, tableName, List(c1.queryString, c2.queryString)),
       rowFunc
     )
   }
@@ -146,7 +146,7 @@ private[morpheus] trait SelectTable[
 
     createRootSelect[Owner, (T1, T2, T3)](
       this.asInstanceOf[Owner],
-      createSelectSyntaxBlock(syntax.select, tableName, List(c1.queryString, c2.queryString, c3.queryString)),
+      selectBlock(syntax.select, tableName, List(c1.queryString, c2.queryString, c3.queryString)),
       rowFunc
     )
   }
@@ -169,7 +169,7 @@ private[morpheus] trait SelectTable[
 
     createRootSelect[Owner, (T1, T2, T3, T4)](
       this.asInstanceOf[Owner],
-      createSelectSyntaxBlock(syntax.select, tableName, List(c1.queryString, c2.queryString, c3.queryString, c4.queryString)),
+      selectBlock(syntax.select, tableName, List(c1.queryString, c2.queryString, c3.queryString, c4.queryString)),
       rowFunc
     )
   }
@@ -196,7 +196,7 @@ private[morpheus] trait SelectTable[
 
     createRootSelect[Owner, (T1, T2, T3, T4, T5)](
       this.asInstanceOf[Owner],
-      createSelectSyntaxBlock(
+      selectBlock(
         syntax.select,
         tableName,
         List(c1.queryString, c2.queryString, c3.queryString, c4.queryString, c5.queryString)

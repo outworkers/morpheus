@@ -31,7 +31,7 @@ package com.outworkers.morpheus.mysql.query
 import com.outworkers.morpheus.mysql.{Row, Syntax}
 import com.outworkers.morpheus.engine.query._
 import com.outworkers.morpheus.builder.SQLBuiltQuery
-import com.outworkers.morpheus.mysql._
+import com.outworkers.morpheus.dsl.BaseTable
 import com.outworkers.morpheus.engine
 import shapeless.{HList, HNil}
 
@@ -53,7 +53,7 @@ case class UpdateSyntaxBlock(query: String, tableName: String) extends engine.qu
 }
 
 
-class MySQLRootUpdateQuery[T <: BaseTable[T, _, Row], R](table: T, st: UpdateSyntaxBlock, rowFunc: Row => R)
+class RootUpdateQuery[T <: BaseTable[T, _, Row], R](table: T, st: UpdateSyntaxBlock, rowFunc: Row => R)
   extends engine.query.RootUpdateQuery[T, R, Row](table, st, rowFunc) {
 
   def lowPriority: UpdateQuery[T, R, Ungroupped, Unordered, Unlimited, Unchainned, AssignUnchainned, HNil] = {

@@ -29,13 +29,14 @@
 package com.outworkers.morpheus.mysql.query
 
 import com.outworkers.morpheus.mysql.{Row, Syntax}
+import com.outworkers.morpheus.engine
 import com.outworkers.morpheus.engine.query.{AssignBind, AssignUnchainned}
 import com.outworkers.morpheus.builder.{DefaultSQLSyntax, SQLBuiltQuery}
-import com.outworkers.morpheus.mysql._
+import com.outworkers.morpheus.dsl.BaseTable
 import com.outworkers.morpheus.engine.query._
 import shapeless.{HList, HNil}
 
-case class MySQLDeleteSyntaxBlock(query: String, tableName: String) extends RootDeleteSyntaxBlock(query, tableName) {
+case class DeleteSyntaxBlock(query: String, tableName: String) extends engine.query.RootDeleteSyntaxBlock(query, tableName) {
 
   override val syntax = Syntax
 
@@ -59,19 +60,19 @@ case class MySQLDeleteSyntaxBlock(query: String, tableName: String) extends Root
   }
 }
 
-private[morpheus] class MySQLRootDeleteQuery[T <: BaseTable[T, _, Row], R](table: T, st: MySQLDeleteSyntaxBlock, rowFunc: Row => R)
-  extends RootDeleteQuery[T, R, Row](table, st, rowFunc) {
+private[morpheus] class RootDeleteQuery[T <: BaseTable[T, _, Row], R](table: T, st: DeleteSyntaxBlock, rowFunc: Row => R)
+  extends engine.query.RootDeleteQuery[T, R, Row](table, st, rowFunc) {
 
-  def lowPriority: MySQLDeleteQuery[T, R, Ungroupped, Unordered, Unlimited, Unchainned, AssignUnchainned, HNil] = {
-    new MySQLDeleteQuery(table, st.lowPriority, rowFunc)
+  def lowPriority: DeleteQuery[T, R, Ungroupped, Unordered, Unlimited, Unchainned, AssignUnchainned, HNil] = {
+    new DeleteQuery(table, st.lowPriority, rowFunc)
   }
 
-  def ignore: MySQLDeleteQuery[T, R, Ungroupped, Unordered, Unlimited, Unchainned, AssignUnchainned, HNil] = {
-    new MySQLDeleteQuery(table, st.ignore, rowFunc)
+  def ignore: DeleteQuery[T, R, Ungroupped, Unordered, Unlimited, Unchainned, AssignUnchainned, HNil] = {
+    new DeleteQuery(table, st.ignore, rowFunc)
   }
 }
 
-class MySQLDeleteQuery[T <: BaseTable[T, _, Row],
+class DeleteQuery[T <: BaseTable[T, _, Row],
   R,
   Group <: GroupBind,
   Order <: OrderBind,
@@ -79,7 +80,7 @@ class MySQLDeleteQuery[T <: BaseTable[T, _, Row],
   Chain <: ChainBind,
   AssignChain <: AssignBind,
   Status <: HList
-](table: T, query: SQLBuiltQuery, rowFunc: Row => R) extends DeleteQuery[T, R, Row, Group, Order, Limit, Chain, AssignChain, Status](table, query,
+](table: T, query: SQLBuiltQuery, rowFunc: Row => R) extends engine.query.DeleteQuery[T, R, Row, Group, Order, Limit, Chain, AssignChain, Status](table, query,
   rowFunc) {
 
 }

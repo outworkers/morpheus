@@ -33,13 +33,17 @@ import com.outworkers.morpheus.mysql.{Row, Syntax}
 import com.outworkers.morpheus.builder.SQLBuiltQuery
 import com.outworkers.morpheus.column.AbstractColumn
 import com.outworkers.morpheus.dsl.BaseTable
+import com.outworkers.morpheus.engine
 import com.outworkers.morpheus.engine.query._
 import com.outworkers.morpheus.engine.query.parts.{ColumnsPart, Defaults, LightweightPart, ValuePart}
 import shapeless.{HList, HNil}
 
 import scala.annotation.implicitNotFound
 
-private[morpheus] class MySQLInsertSyntaxBlock(query: String, tableName: String) extends RootInsertSyntaxBlock(query, tableName) {
+private[morpheus] class InsertSyntaxBlock(
+  query: String,
+  tableName: String
+) extends engine.query.RootInsertSyntaxBlock(query, tableName) {
   override val syntax = Syntax
 
   private[this] def insertOption(option: String, table: String): SQLBuiltQuery = {
@@ -67,28 +71,28 @@ private[morpheus] class MySQLInsertSyntaxBlock(query: String, tableName: String)
 }
 
 
-class MySQLRootInsertQuery[T <: BaseTable[T, _, Row], R](table: T, st: MySQLInsertSyntaxBlock, rowFunc: Row => R)
-  extends RootInsertQuery[T, R, Row](table, st, rowFunc) {
+class RootInsertQuery[T <: BaseTable[T, _, Row], R](table: T, st: InsertSyntaxBlock, rowFunc: Row => R)
+  extends engine.query.RootInsertQuery[T, R, Row](table, st, rowFunc) {
 
-  def delayed: MySQLInsertQuery.Default[T, R] = {
-    new MySQLInsertQuery(table, st.delayed, rowFunc)
+  def delayed: InsertQuery.Default[T, R] = {
+    new InsertQuery(table, st.delayed, rowFunc)
   }
 
-  def lowPriority: MySQLInsertQuery.Default[T, R] = {
-    new MySQLInsertQuery(table, st.lowPriority, rowFunc)
+  def lowPriority: InsertQuery.Default[T, R] = {
+    new InsertQuery(table, st.lowPriority, rowFunc)
   }
 
-  def highPriority: MySQLInsertQuery.Default[T, R] = {
-    new MySQLInsertQuery(table, st.highPriority, rowFunc)
+  def highPriority: InsertQuery.Default[T, R] = {
+    new InsertQuery(table, st.highPriority, rowFunc)
   }
 
-  def ignore: MySQLInsertQuery.Default[T, R] = {
-    new MySQLInsertQuery(table, st.ignore, rowFunc)
+  def ignore: InsertQuery.Default[T, R] = {
+    new InsertQuery(table, st.ignore, rowFunc)
   }
 
 }
 
-class MySQLInsertQuery[T <: BaseTable[T, _, Row],
+class InsertQuery[T <: BaseTable[T, _, Row],
   R,
   Group <: GroupBind,
   Order <: OrderBind,
@@ -102,7 +106,7 @@ class MySQLInsertQuery[T <: BaseTable[T, _, Row],
   columnsPart: ColumnsPart = Defaults.EmptyColumnsPart,
   valuePart: ValuePart = Defaults.EmptyValuePart,
   lightweightPart: LightweightPart = Defaults.EmptyLightweightPart
-) extends InsertQuery[T, R, Row, Group, Order, Limit, Chain, AssignChain, Status](table: T, init, rowFunc) {
+) extends engine.query.InsertQuery[T, R, Row, Group, Order, Limit, Chain, AssignChain, Status](table: T, init, rowFunc) {
 
   override def query: SQLBuiltQuery = (columnsPart merge valuePart merge lightweightPart) build init
 
@@ -114,7 +118,7 @@ class MySQLInsertQuery[T <: BaseTable[T, _, Row],
     C <: AssignBind,
     P <: HList
   ](t: T, q: SQLBuiltQuery, r: Row => R): QueryType[G, O, L, S, C, P] = {
-    new MySQLInsertQuery(t, q, r, columnsPart, valuePart, lightweightPart)
+    new InsertQuery(t, q, r, columnsPart, valuePart, lightweightPart)
   }
 
   /**
@@ -137,8 +141,8 @@ class MySQLInsertQuery[T <: BaseTable[T, _, Row],
     "value calls than columns in your table, which would result in an invalid MySQL query.")
   override def value[RR : DataType](
     insertion: T => AbstractColumn[RR], obj: RR
-  ): MySQLInsertQuery[T, R, Group, Order, Limit, Chain, AssignChain, Status] = {
-    new MySQLInsertQuery[T, R, Group, Order, Limit, Chain, AssignChain, Status](
+  ): InsertQuery[T, R, Group, Order, Limit, Chain, AssignChain, Status] = {
+    new InsertQuery[T, R, Group, Order, Limit, Chain, AssignChain, Status](
       table,
       init,
       fromRow,
@@ -149,8 +153,8 @@ class MySQLInsertQuery[T <: BaseTable[T, _, Row],
   }
 }
 
-object MySQLInsertQuery {
-  type Default[T <: BaseTable[T, _, Row], R] = MySQLInsertQuery[
+object InsertQuery {
+  type Default[T <: BaseTable[T, _, Row], R] = InsertQuery[
     T,
     R,
     Ungroupped,

@@ -55,7 +55,7 @@ abstract class SQLTable[Owner <: BaseTable[Owner, Record, DefaultRow], Record] e
     new DefaultRootSelectQuery[A, B](table, block, rowFunc)
   }
 
-  protected[this] def createSelectSyntaxBlock(
+  protected[this] def selectBlock(
     query: String,
     tableName: String,
     cols: List[String] = List("*")

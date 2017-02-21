@@ -29,15 +29,16 @@ package com.outworkers.morpheus.mysql.query
 
 import com.outworkers.morpheus.mysql.{Row, Syntax}
 import com.outworkers.morpheus.builder.AbstractSQLSyntax
-import com.outworkers.morpheus.mysql._
-import com.outworkers.morpheus.engine.query.{RootCreateQuery, RootCreateSyntaxBlock}
+import com.outworkers.morpheus.dsl.BaseTable
+import com.outworkers.morpheus.engine
 
 
-class MySQLCreateSyntaxBlock(query: String, tableName: String) extends RootCreateSyntaxBlock(query, tableName) {
+class CreateSyntaxBlock(query: String, tableName: String) extends engine.query.RootCreateSyntaxBlock(query, tableName) {
   override def syntax: AbstractSQLSyntax = Syntax
 }
 
-class MySQLRootCreateQuery[T <: BaseTable[T, _, Row], R](table: T, st: RootCreateSyntaxBlock, rowFunc: Row => R)
-  extends RootCreateQuery[T, R, Row](table, st, rowFunc){
-
-}
+class RootCreateQuery[T <: BaseTable[T, _, Row], R](
+  table: T,
+  st: CreateSyntaxBlock,
+  rowFunc: Row => R
+) extends engine.query.RootCreateQuery[T, R, Row](table, st, rowFunc)

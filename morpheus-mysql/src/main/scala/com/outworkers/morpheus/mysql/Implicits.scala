@@ -31,10 +31,11 @@ package com.outworkers
 package morpheus
 package mysql
 
-import com.outworkers.morpheus.mysql.query.{MySQLInsertQuery, MySQLRootInsertQuery, MySQLRootUpdateQuery, UpdateQuery}
+import com.outworkers.morpheus.mysql.query.{ RootInsertQuery, RootUpdateQuery, UpdateQuery}
 import com.outworkers.morpheus.engine.query.{AssignBind, AssignUnchainned}
 import com.outworkers.morpheus.builder.SQLBuiltQuery
 import com.outworkers.morpheus.column.{AbstractColumn, AbstractModifyColumn, Column, SelectColumn}
+import com.outworkers.morpheus.dsl.BaseTable
 import com.outworkers.morpheus.engine.query._
 import com.outworkers.morpheus.{Row => MorpheusRow}
 import shapeless.{HList, HNil}
@@ -75,10 +76,9 @@ trait Implicits extends DefaultSQLEngines {
    * @return An executable SelectQuery.
    */
   implicit def rootInsertQueryToQuery[T <: BaseTable[T, _, mysql.Row], R](
-    root: MySQLRootInsertQuery[T, R]
-  ): MySQLInsertQuery[T, R, Ungroupped,
-    Unordered, Unlimited, Unchainned, AssignUnchainned, HNil] = {
-    new MySQLInsertQuery(
+    root: RootInsertQuery[T, R]
+  ): InsertQuery[T, R, Ungroupped, Unordered, Unlimited, Unchainned, AssignUnchainned, HNil] = {
+    new InsertQuery(
       root.table,
       root.st.into,
       root.rowFunc
@@ -105,7 +105,7 @@ trait Implicits extends DefaultSQLEngines {
   implicit def defaultUpdateQueryToUpdateQuery[
     T <: BaseTable[T, R, Row],
     R
-  ](root: MySQLRootUpdateQuery[T, R]): UpdateQuery[T, R,
+  ](root: RootUpdateQuery[T, R]): UpdateQuery[T, R,
     Ungroupped, Unordered, Unlimited, Unchainned, AssignUnchainned, HNil] = {
     new UpdateQuery(
       root.table,
