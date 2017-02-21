@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2015 Websudos, Limited.
+ * Copyright 2013 - 2017 Outworkers, Limited.
  *
  * All rights reserved.
  *
@@ -54,19 +54,19 @@ import scala.util.Try
  */
 trait DefaultImportsDefinition extends DefaultForeignKeyConstraints {
 
-  type SQLPrimitive[T] = morpheus.SQLPrimitive[T]
+  type DataType[T] = morpheus.DataType[T]
 
   object SQLPrimitive {
-    def apply[T <: Enumeration](enum: T)(implicit ev: SQLPrimitive[String]): SQLPrimitive[T#Value] = {
-      new SQLPrimitive[T#Value] {
+    def apply[T <: Enumeration](enum: T)(implicit ev: DataType[String]): DataType[T#Value] = {
+      new DataType[T#Value] {
 
         override def sqlType: String = ev.sqlType
 
-        override def fromRow(row: com.outworkers.morpheus.Row, name: String): Try[T#Value] = {
-          Try { enum.withName(row.string(name)) }
+        override def deserialize(row: com.outworkers.morpheus.Row, name: String): Try[T#Value] = {
+          row.string(name) map { s => enum.withName(s) }
         }
 
-        override def toSQL(value: T#Value): String = ev.toSQL(value.toString)
+        override def serialize(value: T#Value): String = ev.serialize(value.toString)
       }
     }
   }
@@ -83,7 +83,7 @@ trait DefaultImportsDefinition extends DefaultForeignKeyConstraints {
   type Autoincrement = com.outworkers.morpheus.keys.Autoincrement
   type Zerofill[ValueType] = com.outworkers.morpheus.keys.Zerofill[ValueType]
 
-  implicit def columnToQueryColumn[T: SQLPrimitive](col: AbstractColumn[T]): AbstractQueryColumn[T]
+  implicit def columnToQueryColumn[T : DataType](col: AbstractColumn[T]): AbstractQueryColumn[T]
 
 }
 

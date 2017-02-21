@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2015 Websudos, Limited.
+ * Copyright 2013 - 2017 Outworkers, Limited.
  *
  * All rights reserved.
  *
@@ -39,7 +39,7 @@ import org.scalatest.concurrent.{PatienceConfiguration, ScalaFutures, Waiters}
 import org.scalatest.time.{Millis, Seconds, Span}
 import org.scalatest.{BeforeAndAfterAll, Matchers, OptionValues, Suite}
 
-object MySQLConnector {
+object Connector {
 
   def isRunningUnderTravis: Boolean = sys.env.contains("TRAVIS")
 
@@ -55,7 +55,7 @@ object MySQLConnector {
     .newRichClient("127.0.0.1:3306")
 }
 
-trait MySQLSuite extends Waiters
+trait BaseSuite extends Waiters
   with ScalaFutures
   with OptionValues
   with Matchers
@@ -63,7 +63,7 @@ trait MySQLSuite extends Waiters
 
   this: Suite =>
 
-  implicit lazy val client: Client[MySQLRow, MySQLResult] = new MySQLClient(MySQLConnector.client)
+  implicit lazy val client: Client[MySQLRow, MySQLResult] = new MySQLClient(Connector.client)
 
   protected[this] val defaultScalaTimeoutSeconds = 10
 

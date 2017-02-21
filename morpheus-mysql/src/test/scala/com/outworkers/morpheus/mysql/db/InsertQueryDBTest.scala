@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2015 Websudos, Limited.
+ * Copyright 2013 - 2017 Outworkers, Limited.
  *
  * All rights reserved.
  *
@@ -38,7 +38,7 @@ import org.scalatest.FlatSpec
 import scala.concurrent.Await
 import scala.concurrent.duration._
 
-class InsertQueryDBTest extends FlatSpec with MySQLSuite {
+class InsertQueryDBTest extends FlatSpec with BaseSuite {
 
   override def beforeAll(): Unit = {
     super.beforeAll()

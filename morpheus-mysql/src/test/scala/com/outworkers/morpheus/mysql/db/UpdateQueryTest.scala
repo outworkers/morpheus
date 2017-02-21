@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2015 Websudos, Limited.
+ * Copyright 2013 - 2017 Outworkers, Limited.
  *
  * All rights reserved.
  *
@@ -31,6 +31,6 @@ package com.outworkers.morpheus.mysql.db
 
 import org.scalatest.FlatSpec
 
-class UpdateQueryTest extends FlatSpec with MySQLSuite {
+class UpdateQueryTest extends FlatSpec with BaseSuite {
 
 }

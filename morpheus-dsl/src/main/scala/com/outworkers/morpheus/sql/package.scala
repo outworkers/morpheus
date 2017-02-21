@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2015 Websudos, Limited.
+ * Copyright 2013 - 2017 Outworkers, Limited.
  *
  * All rights reserved.
  *
@@ -35,7 +35,7 @@ import com.outworkers.morpheus.operators.SQLOperatorSet
 import com.outworkers.morpheus.query.{DefaultSQLEngines, SQLQueryColumn}
 
 package object sql extends DefaultImportsDefinition
-  with MaterialisedPrimitives
+  with DefaultDataTypes
   with DefaultSQLEngines
   with SQLOperatorSet
   with SqlColumns
@@ -43,7 +43,7 @@ package object sql extends DefaultImportsDefinition
   with SqlKeys
   with DefaultSQLImplicits {
 
-  override implicit def columnToQueryColumn[T : SQLPrimitive](col: AbstractColumn[T]): SQLQueryColumn[T] = new SQLQueryColumn[T](col)
+  override implicit def columnToQueryColumn[T : DataType](col: AbstractColumn[T]): SQLQueryColumn[T] = new SQLQueryColumn[T](col)
 
   type Table[Owner <: BaseTable[Owner, Record, DefaultRow], Record] = SQLTable[Owner, Record]
 

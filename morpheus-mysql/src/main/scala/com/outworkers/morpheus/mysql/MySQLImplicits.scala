@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2015 Websudos, Limited.
+ * Copyright 2013 - 2017 Outworkers, Limited.
  *
  * All rights reserved.
  *
@@ -51,8 +51,8 @@ trait MySQLImplicits extends DefaultSQLEngines {
   }
 
 
-  implicit class ModifyColumn[RR: SQLPrimitive](col: AbstractColumn[RR]) extends AbstractModifyColumn[RR](col)
-  implicit class OrderingColumn[RR: SQLPrimitive](col: AbstractColumn[RR]) extends AbstractOrderingColumn[RR](col)
+  implicit class ModifyColumn[RR: DataType](col: AbstractColumn[RR]) extends AbstractModifyColumn[RR](col)
+  implicit class OrderingColumn[RR: DataType](col: AbstractColumn[RR]) extends AbstractOrderingColumn[RR](col)
 
   implicit def selectOperatorClauseToSelectColumn[T](clause: SelectOperatorClause[T]): SelectColumn[T] = new SelectColumn[T](clause.qb) {
     def apply(row: MorpheusRow): T = clause.fromRow(row)
@@ -120,17 +120,17 @@ trait MySQLImplicits extends DefaultSQLEngines {
     new MySQLUpdateQuery[T, R, Group, Order, Limit, Chain, AssignChain, Status](query.table, query.query, query.rowFunc)
   }
 
-  def enumPrimitive[T <: Enumeration](enum: T): SQLPrimitive[T#Value] = {
-    new SQLPrimitive[T#Value] {
+  def enumPrimitive[T <: Enumeration](enum: T): DataType[T#Value] = {
+    new DataType[T#Value] {
 
-      private[this] val primitive = implicitly[SQLPrimitive[String]]
+      private[this] val primitive = implicitly[DataType[String]]
 
       override val sqlType: String = primitive.sqlType
 
-      override def toSQL(value: T#Value): String = primitive.toSQL(value.toString)
+      override def toSQL(value: T#Value): String = primitive.serialize(value.toString)
 
       override def fromRow(row: MorpheusRow, name: String): Try[T#Value] = {
-        primitive.fromRow(row, name) map (x => enum.withName(x))
+        primitive.deserialize(row, name) map (x => enum.withName(x))
       }
     }
   }

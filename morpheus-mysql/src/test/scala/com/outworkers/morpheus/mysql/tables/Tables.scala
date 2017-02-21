@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2015 Websudos, Limited.
+ * Copyright 2013 - 2017 Outworkers, Limited.
  *
  * All rights reserved.
  *
@@ -197,7 +197,7 @@ class EnumerationTable extends Table[EnumerationTable, EnumerationRecord] {
 
 object EnumerationTable extends EnumerationTable {
 
-  implicit val primitive: SQLPrimitive[TestEnumeration#Value] = enumPrimitive(TestEnumeration)
+  implicit val primitive: DataType[TestEnumeration#Value] = enumPrimitive(TestEnumeration)
 
   def store(record: EnumerationRecord): MySQLInsertQuery.Default[EnumerationTable, EnumerationRecord] = {
     insert

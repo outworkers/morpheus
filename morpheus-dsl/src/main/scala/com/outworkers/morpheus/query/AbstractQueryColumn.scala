@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2015 Websudos, Limited.
+ * Copyright 2013 - 2017 Outworkers, Limited.
  *
  * All rights reserved.
  *
@@ -30,7 +30,7 @@
 
 package com.outworkers.morpheus.query
 
-import com.outworkers.morpheus.SQLPrimitive
+import com.outworkers.morpheus.DataType
 import com.outworkers.morpheus.builder.{DefaultQueryBuilder, DefaultSQLSyntax, SQLBuiltQuery}
 import com.outworkers.morpheus.Row
 import com.outworkers.morpheus.column.AbstractColumn
@@ -40,7 +40,7 @@ private[morpheus] abstract class BaseQueryCondition(val clause: SQLBuiltQuery)
 
 case class QueryAssignment(clause: SQLBuiltQuery)
 
-abstract class SelectOperatorClause[T : SQLPrimitive](val qb: SQLBuiltQuery) {
+abstract class SelectOperatorClause[T : DataType](val qb: SQLBuiltQuery) {
   def fromRow(row: Row): T
 }
 
@@ -85,13 +85,13 @@ case class QueryCondition(override val clause: SQLBuiltQuery, count: Int = 0) ex
 }
 
 
-case class BetweenClause[T: SQLPrimitive](qb: SQLBuiltQuery) {
+case class BetweenClause[T: DataType](qb: SQLBuiltQuery) {
 
   def and(value: T): QueryCondition = {
     QueryCondition(
       qb.forcePad
         .append(DefaultSQLSyntax.and)
-        .forcePad.append(implicitly[SQLPrimitive[T]].toSQL(value))
+        .forcePad.append(implicitly[DataType[T]].serialize(value))
     )
   }
 }
@@ -101,7 +101,7 @@ case class BetweenClause[T: SQLPrimitive](qb: SQLBuiltQuery) {
  * @param col The column to cast to an IndexedColumn.
  * @tparam T The type of the value the column holds.
  */
-private[morpheus] abstract class AbstractQueryColumn[T: SQLPrimitive](col: AbstractColumn[T]) {
+private[morpheus] abstract class AbstractQueryColumn[T: DataType](col: AbstractColumn[T]) {
 
   /**
    * The equals operator. Will return a match if the value equals the database value.
@@ -153,23 +153,23 @@ private[morpheus] abstract class AbstractQueryColumn[T: SQLPrimitive](col: Abstr
   }
 
   def in(values: List[T]) : QueryCondition = {
-    val primitive = implicitly[SQLPrimitive[T]]
-    QueryCondition(col.table.queryBuilder.in(col.name, values.map(primitive.toSQL)))
+    val primitive = implicitly[DataType[T]]
+    QueryCondition(col.table.queryBuilder.in(col.name, values.map(primitive.serialize)))
   }
 
   def in(values: T*): QueryCondition = {
-    val primitive = implicitly[SQLPrimitive[T]]
-    QueryCondition(col.table.queryBuilder.in(col.name, values.map(primitive.toSQL)))
+    val primitive = implicitly[DataType[T]]
+    QueryCondition(col.table.queryBuilder.in(col.name, values.map(primitive.serialize)))
   }
 
   def notIn(values: List[T]) : QueryCondition = {
-    val primitive = implicitly[SQLPrimitive[T]]
-    QueryCondition(col.table.queryBuilder.notIn(col.name, values.map(primitive.toSQL)))
+    val primitive = implicitly[DataType[T]]
+    QueryCondition(col.table.queryBuilder.notIn(col.name, values.map(primitive.serialize)))
   }
 
   def notIn(values: T*) : QueryCondition = {
-    val primitive = implicitly[SQLPrimitive[T]]
-    QueryCondition(col.table.queryBuilder.notIn(col.name, values.map(primitive.toSQL)))
+    val primitive = implicitly[DataType[T]]
+    QueryCondition(col.table.queryBuilder.notIn(col.name, values.map(primitive.serialize)))
   }
 
   def isNull: QueryCondition = {
@@ -193,12 +193,12 @@ private[morpheus] abstract class AbstractQueryColumn[T: SQLPrimitive](col: Abstr
   }
 }
 
-class SQLQueryColumn[T: SQLPrimitive](col: AbstractColumn[T]) extends AbstractQueryColumn[T](col)
+class SQLQueryColumn[T: DataType](col: AbstractColumn[T]) extends AbstractQueryColumn[T](col)
 
 
 case class QueryOrder(clause: SQLBuiltQuery)
 
-abstract class AbstractOrderingColumn[T: SQLPrimitive](col: AbstractColumn[T]) {
+abstract class AbstractOrderingColumn[T: DataType](col: AbstractColumn[T]) {
   def asc: QueryOrder = QueryOrder(col.table.queryBuilder.asc(col.name))
   def desc: QueryOrder = QueryOrder(col.table.queryBuilder.desc(col.name))
 }

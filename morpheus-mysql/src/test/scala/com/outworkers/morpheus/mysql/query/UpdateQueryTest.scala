@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2015 Websudos, Limited.
+ * Copyright 2013 - 2017 Outworkers, Limited.
  *
  * All rights reserved.
  *
@@ -33,7 +33,7 @@ import com.outworkers.morpheus.mysql.tables.BasicTable
 import org.scalatest.{FlatSpec, Matchers}
 import com.outworkers.morpheus.mysql._
 
-class MySQLUpdateQueryTest extends FlatSpec with Matchers {
+class UpdateQueryTest extends FlatSpec with Matchers {
   
   it should "serialise a simple UPDATE LOW_PRIORITY query" in {
     BasicTable.update

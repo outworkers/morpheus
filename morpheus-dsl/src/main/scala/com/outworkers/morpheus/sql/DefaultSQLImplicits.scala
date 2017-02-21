@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2015 Websudos, Limited.
+ * Copyright 2013 - 2017 Outworkers, Limited.
  *
  * All rights reserved.
  *
@@ -44,8 +44,8 @@ private[morpheus] trait DefaultSQLImplicits extends JoinImplicits {
   }
 
 
-  implicit class ModifyColumn[RR: SQLPrimitive](col: AbstractColumn[RR]) extends AbstractModifyColumn[RR](col)
-  implicit class OrderingColumn[RR: SQLPrimitive](col: AbstractColumn[RR]) extends AbstractOrderingColumn[RR](col)
+  implicit class ModifyColumn[RR: DataType](col: AbstractColumn[RR]) extends AbstractModifyColumn[RR](col)
+  implicit class OrderingColumn[RR: DataType](col: AbstractColumn[RR]) extends AbstractOrderingColumn[RR](col)
 
   implicit def selectOperatorClauseToSelectColumn[T](clause: SelectOperatorClause[T]): SelectColumn[T] = new SelectColumn[T](clause.qb) {
     def apply(row: MorpheusRow): T = clause.fromRow(row)

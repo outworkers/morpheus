@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2015 Websudos, Limited.
+ * Copyright 2013 - 2017 Outworkers, Limited.
  *
  * All rights reserved.
  *
@@ -45,56 +45,56 @@ trait SqlKeys {
 
 
 trait SqlPrimitiveColumns {
-  class LongColumn[T <: BaseTable[T, R, DefaultRow], R](t: BaseTable[T, R, DefaultRow])(implicit ev: SQLPrimitive[Long])
+  class LongColumn[T <: BaseTable[T, R, DefaultRow], R](t: BaseTable[T, R, DefaultRow])(implicit ev: DataType[Long])
     extends AbstractLongColumn[T, R, DefaultRow](t)
 }
 
 
 trait SqlColumns {
 
-  class IntColumn[T <: BaseTable[T, R, DefaultRow], R](t: BaseTable[T, R, DefaultRow], limit: Int = 0)(implicit ev: SQLPrimitive[Int])
+  class IntColumn[T <: BaseTable[T, R, DefaultRow], R](t: BaseTable[T, R, DefaultRow], limit: Int = 0)(implicit ev: DataType[Int])
     extends AbstractIntColumn[T, R, DefaultRow](t, limit)
 
-  class MediumIntColumn[T <: BaseTable[T, R, DefaultRow], R](t: BaseTable[T, R, DefaultRow], limit: Int = 0)(implicit ev: SQLPrimitive[Int])
+  class MediumIntColumn[T <: BaseTable[T, R, DefaultRow], R](t: BaseTable[T, R, DefaultRow], limit: Int = 0)(implicit ev: DataType[Int])
     extends AbstractMediumIntColumn[T, R, DefaultRow](t, limit)
 
-  class SmallIntColumn[T <: BaseTable[T, R, DefaultRow], R](t: BaseTable[T, R, DefaultRow], limit: Int = 0)(implicit ev: SQLPrimitive[Int])
+  class SmallIntColumn[T <: BaseTable[T, R, DefaultRow], R](t: BaseTable[T, R, DefaultRow], limit: Int = 0)(implicit ev: DataType[Int])
     extends AbstractSmallIntColumn[T, R, DefaultRow](t, limit)
 
-  class TinyIntColumn[T <: BaseTable[T, R, DefaultRow], R](t: BaseTable[T, R, DefaultRow], limit: Int = 0)(implicit ev: SQLPrimitive[Int])
+  class TinyIntColumn[T <: BaseTable[T, R, DefaultRow], R](t: BaseTable[T, R, DefaultRow], limit: Int = 0)(implicit ev: DataType[Int])
     extends AbstractTinyIntColumn[T, R, DefaultRow](t, limit)
 
-  class YearColumn[T <: BaseTable[T, R, DefaultRow], R](t: BaseTable[T, R, DefaultRow])(implicit ev: SQLPrimitive[Int])
+  class YearColumn[T <: BaseTable[T, R, DefaultRow], R](t: BaseTable[T, R, DefaultRow])(implicit ev: DataType[Int])
     extends AbstractYearColumn[T, R, DefaultRow](t)
 
 
-  class BlobColumn[T <: BaseTable[T, R, DefaultRow], R](t: BaseTable[T, R, DefaultRow], limit: Int = 0)(implicit ev: SQLPrimitive[String])
+  class BlobColumn[T <: BaseTable[T, R, DefaultRow], R](t: BaseTable[T, R, DefaultRow], limit: Int = 0)(implicit ev: DataType[String])
     extends AbstractBlobColumn[T, R, DefaultRow](t, limit)
 
-  class LongTextColumn[T <: BaseTable[T, R, DefaultRow], R](t: BaseTable[T, R, DefaultRow], limit: Int = KnownTypeLimits.longTextLimit)(implicit ev: SQLPrimitive[String])
+  class LongTextColumn[T <: BaseTable[T, R, DefaultRow], R](t: BaseTable[T, R, DefaultRow], limit: Int = KnownTypeLimits.longTextLimit)(implicit ev: DataType[String])
     extends AbstractLongTextColumn[T, R, DefaultRow](t, limit)
 
-  class MediumBlobColumn[T <: BaseTable[T, R, DefaultRow], R](t: BaseTable[T, R, DefaultRow], limit: Int = 0)(implicit ev: SQLPrimitive[String])
+  class MediumBlobColumn[T <: BaseTable[T, R, DefaultRow], R](t: BaseTable[T, R, DefaultRow], limit: Int = 0)(implicit ev: DataType[String])
     extends AbstractMediumBlobColumn[T, R, DefaultRow](t, limit)
 
-  class MediumTextColumn[T <: BaseTable[T, R, DefaultRow], R](t: BaseTable[T, R, DefaultRow], limit: Int = KnownTypeLimits.mediumTextLimit)(implicit ev: SQLPrimitive[String])
+  class MediumTextColumn[T <: BaseTable[T, R, DefaultRow], R](t: BaseTable[T, R, DefaultRow], limit: Int = KnownTypeLimits.mediumTextLimit)(implicit ev: DataType[String])
     extends AbstractMediumTextColumn[T, R, DefaultRow](t, limit)
 
-  class TextColumn[T <: BaseTable[T, R, DefaultRow], R](t: BaseTable[T, R, DefaultRow], limit: Int = KnownTypeLimits.textLimit)(implicit ev: SQLPrimitive[String])
+  class TextColumn[T <: BaseTable[T, R, DefaultRow], R](t: BaseTable[T, R, DefaultRow], limit: Int = KnownTypeLimits.textLimit)(implicit ev: DataType[String])
     extends AbstractTextColumn[T, R, DefaultRow](t)
 
-  class TinyBlobColumn[T <: BaseTable[T, R, DefaultRow], R](t: BaseTable[T, R, DefaultRow], limit: Int = 0)(implicit ev: SQLPrimitive[String])
+  class TinyBlobColumn[T <: BaseTable[T, R, DefaultRow], R](t: BaseTable[T, R, DefaultRow], limit: Int = 0)(implicit ev: DataType[String])
     extends AbstractTinyBlobColumn[T, R, DefaultRow](t, limit)
 
-  class TinyTextColumn[T <: BaseTable[T, R, DefaultRow], R](t: BaseTable[T, R, DefaultRow], limit: Int = 0)(implicit ev: SQLPrimitive[String])
+  class TinyTextColumn[T <: BaseTable[T, R, DefaultRow], R](t: BaseTable[T, R, DefaultRow], limit: Int = 0)(implicit ev: DataType[String])
     extends AbstractTinyTextColumn[T, R, DefaultRow](t, limit)
 
-  class VarcharColumn[T <: BaseTable[T, R, DefaultRow], R](t: BaseTable[T, R, DefaultRow], limit: Int = KnownTypeLimits.varcharLimit)(implicit ev: SQLPrimitive[String])
+  class VarcharColumn[T <: BaseTable[T, R, DefaultRow], R](t: BaseTable[T, R, DefaultRow], limit: Int = KnownTypeLimits.varcharLimit)(implicit ev: DataType[String])
     extends AbstractVarcharColumn[T, R, DefaultRow](t, limit)
 
-  class CharColumn[T <: BaseTable[T, R, DefaultRow], R](t: BaseTable[T, R, DefaultRow], limit: Int = KnownTypeLimits.charLimit)(implicit ev: SQLPrimitive[String])
+  class CharColumn[T <: BaseTable[T, R, DefaultRow], R](t: BaseTable[T, R, DefaultRow], limit: Int = KnownTypeLimits.charLimit)(implicit ev: DataType[String])
     extends AbstractCharColumn[T, R, DefaultRow](t, limit)
 
-  class LongBlobColumn[T <: BaseTable[T, R, DefaultRow], R](t: BaseTable[T, R, DefaultRow], limit: Int = 0)(implicit ev: SQLPrimitive[String])
+  class LongBlobColumn[T <: BaseTable[T, R, DefaultRow], R](t: BaseTable[T, R, DefaultRow], limit: Int = 0)(implicit ev: DataType[String])
     extends AbstractLongBlobColumn[T, R, DefaultRow](t, limit)
 }

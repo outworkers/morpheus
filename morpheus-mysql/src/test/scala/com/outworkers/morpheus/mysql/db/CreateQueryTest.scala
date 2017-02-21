@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2015 Websudos, Limited.
+ * Copyright 2013 - 2017 Outworkers, Limited.
  *
  * All rights reserved.
  *
@@ -27,44 +27,23 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
+package com.outworkers.morpheus.mysql.db
 
-package com.outworkers.morpheus.mysql
+import com.outworkers.morpheus.mysql.tables.BasicTable
+import org.scalatest.FlatSpec
+import com.outworkers.util.testing._
+import com.outworkers.morpheus.mysql._
 
-import java.util.Date
+class CreateQueryTest extends FlatSpec with BaseSuite {
 
-import com.outworkers.morpheus._
-import com.outworkers.morpheus._
-import org.joda.time.DateTime
-
-trait MySQLPrimitives {
-
-  def apply[RR : SQLPrimitive]: SQLPrimitive[RR] = implicitly[SQLPrimitive[RR]]
-
-  implicit object IntPrimitive extends DefaultIntPrimitive {
-    def fromRow(row: MySQLRow, name: String): Option[Int] = Some(row.int(name))
+  it should "create a new table in the MySQL database" in {
+    whenReady(BasicTable.create.temporary.engine(InnoDB).future) {
+      res =>
+    }
   }
 
-  implicit object FloatPrimitive extends DefaultFloatPrimitive {
-    def fromRow(row: MySQLRow, name: String): Option[Float] = Some(row.float(name))
+  it should "create a new table in the database if the table doesn't exist" in {
+    whenReady(BasicTable.create.ifNotExists.engine(InnoDB).future) { _ => }
   }
 
-  implicit object DoublePrimitive extends DefaultDoublePrimitive {
-    def fromRow(row: MySQLRow, name: String): Option[Double] = Some(row.double(name))
-  }
-
-  implicit object LongPrimitive extends DefaultLongPrimitive {
-    def fromRow(row: MySQLRow, name: String): Option[Long] = Some(row.long(name))
-  }
-
-  implicit object DatePrimitive extends DefaultDatePrimitive {
-    def fromRow(row: MySQLRow, name: String): Option[Date] = Some(row.date(name))
-  }
-
-  implicit object DateTimePrimitive extends DefaultDateTimePrimitive {
-    def fromRow(row: MySQLRow, name: String): Option[DateTime] = Some(row.datetime(name))
-  }
-
-  implicit object StringPrimitive extends DefaultStringPrimitive {
-    def fromRow(row: MySQLRow, name: String): Option[String] = Some(row.string(name))
-  }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2015 Websudos, Limited.
+ * Copyright 2013 - 2017 Outworkers, Limited.
  *
  * All rights reserved.
  *
@@ -39,19 +39,19 @@ class SQLPrimitivesTest extends FlatSpec with Matchers {
 
   "The SQL String primitive" should "always use '(apostrophes) around the serialised strings" in {
     val name = gen[ShortString].value
-    val query = implicitly[SQLPrimitive[String]].toSQL(name)
+    val query = implicitly[DataType[String]].serialize(name)
     query shouldEqual s"'$name'"
   }
 
   "The SQL Long primitive" should "serialise a Long value to its string value" in {
     val value = gen[Long]
-    val query = implicitly[SQLPrimitive[Long]].toSQL(value)
+    val query = implicitly[DataType[Long]].serialize(value)
     query shouldEqual s"${value.toString}"
   }
 
   "The SQL Int primitive" should "serialise a Int value to its string value" in {
     val value = gen[Int]
-    val query = implicitly[SQLPrimitive[Int]].toSQL(value)
+    val query = implicitly[DataType[Int]].serialize(value)
     query shouldEqual s"${value.toString}"
   }
 

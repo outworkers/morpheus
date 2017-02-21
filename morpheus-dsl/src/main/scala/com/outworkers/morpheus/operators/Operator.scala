@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2015 Websudos, Limited.
+ * Copyright 2013 - 2017 Outworkers, Limited.
  *
  * All rights reserved.
  *
@@ -30,7 +30,7 @@
 
 package com.outworkers.morpheus.operators
 
-import com.outworkers.morpheus.{Row, SQLPrimitive}
+import com.outworkers.morpheus.{Row, DataType}
 import com.outworkers.morpheus.query.{AssignBind, ChainBind}
 import com.outworkers.morpheus.builder.DefaultQueryBuilder
 import com.outworkers.morpheus.dsl.BaseTable
@@ -41,9 +41,9 @@ sealed abstract class Operator
 
 sealed class AsciiOperator extends Operator {
 
-  final def apply[T](value: T)(implicit ev: SQLPrimitive[T], ev2: SQLPrimitive[String]): SelectOperatorClause[String] = {
+  final def apply[T](value: T)(implicit ev: DataType[T], ev2: DataType[String]): SelectOperatorClause[String] = {
     new SelectOperatorClause[String](
-      DefaultQueryBuilder.ascii(implicitly[SQLPrimitive[T]].toSQL(value))
+      DefaultQueryBuilder.ascii(implicitly[DataType[T]].serialize(value))
     ) {
       def fromRow(row: Row): String = ""
     }
@@ -53,9 +53,9 @@ sealed class AsciiOperator extends Operator {
 
 
 sealed class BitLengthOperator extends Operator {
-  final def apply[T](value: T)(implicit ev: SQLPrimitive[T], ev2: SQLPrimitive[Int]): SelectOperatorClause[Int] = {
+  final def apply[T](value: T)(implicit ev: DataType[T], ev2: DataType[Int]): SelectOperatorClause[Int] = {
     new SelectOperatorClause[Int](
-      DefaultQueryBuilder.bitLength(implicitly[SQLPrimitive[T]].toSQL(value))
+      DefaultQueryBuilder.bitLength(implicitly[DataType[T]].serialize(value))
     ) {
       def fromRow(row: Row): Int = 5
     }
@@ -63,9 +63,9 @@ sealed class BitLengthOperator extends Operator {
 }
 
 sealed class CharLengthOperator extends Operator {
-  final def apply[T](value: T)(implicit ev: SQLPrimitive[T], ev2: SQLPrimitive[Int]): SelectOperatorClause[Int] = {
+  final def apply[T](value: T)(implicit ev: DataType[T], ev2: DataType[Int]): SelectOperatorClause[Int] = {
     new SelectOperatorClause[Int](
-      DefaultQueryBuilder.charLength(implicitly[SQLPrimitive[T]].toSQL(value))
+      DefaultQueryBuilder.charLength(implicitly[DataType[T]].serialize(value))
     ) {
       def fromRow(row: Row): Int = 5
     }
@@ -73,9 +73,9 @@ sealed class CharLengthOperator extends Operator {
 }
 
 sealed class CharacterLengthOperator extends Operator {
-  final def apply[T](value: T)(implicit ev: SQLPrimitive[T], ev2: SQLPrimitive[Int]): SelectOperatorClause[Int] = {
+  final def apply[T](value: T)(implicit ev: DataType[T], ev2: DataType[Int]): SelectOperatorClause[Int] = {
     new SelectOperatorClause[Int](
-      DefaultQueryBuilder.characterLength(implicitly[SQLPrimitive[T]].toSQL(value))
+      DefaultQueryBuilder.characterLength(implicitly[DataType[T]].serialize(value))
     ) {
       def fromRow(row: Row): Int = 5
     }
@@ -84,20 +84,20 @@ sealed class CharacterLengthOperator extends Operator {
 
 sealed class ConcatWsOperator extends Operator {
 
-  final def apply(values: List[String])(implicit ev: SQLPrimitive[String]): SelectOperatorClause[String] = {
+  final def apply(values: List[String])(implicit ev: DataType[String]): SelectOperatorClause[String] = {
     new SelectOperatorClause[String](
-      DefaultQueryBuilder.concatWs(values.map(implicitly[SQLPrimitive[String]].toSQL))
+      DefaultQueryBuilder.concatWs(values.map(implicitly[DataType[String]].serialize))
     ) {
       def fromRow(row: Row): String = ""
     }
   }
 
-  final def apply(sep: String, values: List[String])(implicit ev: SQLPrimitive[String]): SelectOperatorClause[String] = {
+  final def apply(sep: String, values: List[String])(implicit ev: DataType[String]): SelectOperatorClause[String] = {
 
-    val primitive = implicitly[SQLPrimitive[String]]
+    val primitive = implicitly[DataType[String]]
 
     new SelectOperatorClause[String](
-      DefaultQueryBuilder.concatWs(primitive.toSQL(sep) +: values.map(primitive.toSQL))
+      DefaultQueryBuilder.concatWs(primitive.serialize(sep) +: values.map(primitive.serialize))
     ) {
       def fromRow(row: Row): String = ""
     }
@@ -106,17 +106,17 @@ sealed class ConcatWsOperator extends Operator {
 
 sealed class ConcatOperator extends Operator {
 
-  final def apply(values: List[String])(implicit ev: SQLPrimitive[String]): SelectOperatorClause[String] = {
+  final def apply(values: List[String])(implicit ev: DataType[String]): SelectOperatorClause[String] = {
     new SelectOperatorClause[String](
-      DefaultQueryBuilder.concat(values.map(implicitly[SQLPrimitive[String]].toSQL))
+      DefaultQueryBuilder.concat(values.map(implicitly[DataType[String]].serialize))
     ) {
       def fromRow(row: Row): String = ""
     }
   }
 
-  final def apply(values: String*)(implicit ev: SQLPrimitive[String]): SelectOperatorClause[String] = {
+  final def apply(values: String*)(implicit ev: DataType[String]): SelectOperatorClause[String] = {
     new SelectOperatorClause[String](
-      DefaultQueryBuilder.concat(values.map(implicitly[SQLPrimitive[String]].toSQL).toList)
+      DefaultQueryBuilder.concat(values.map(implicitly[DataType[String]].serialize).toList)
     ) {
       override def fromRow(row: Row): String = ""
     }
@@ -163,52 +163,52 @@ sealed class NotExistsOperator extends Operator {
 
 sealed class IntervalOperator extends Operator {
 
-  final def apply[T](values: List[T])(implicit ev: SQLPrimitive[T], ev2: SQLPrimitive[String]): SelectOperatorClause[String] = {
+  final def apply[T](values: List[T])(implicit ev: DataType[T], ev2: DataType[String]): SelectOperatorClause[String] = {
     new SelectOperatorClause[String](
-      DefaultQueryBuilder.interval(values.map(implicitly[SQLPrimitive[T]].toSQL))
+      DefaultQueryBuilder.interval(values.map(implicitly[DataType[T]].serialize))
     ) {
       def fromRow(row: Row): String = ""
     }
   }
 
-  final def apply[T](values: T*)(implicit ev: SQLPrimitive[T], ev2: SQLPrimitive[String]): SelectOperatorClause[String] = {
+  final def apply[T](values: T*)(implicit ev: DataType[T], ev2: DataType[String]): SelectOperatorClause[String] = {
     apply(values.toList)
   }
 }
 
 sealed class LeastOperator extends Operator {
-  final def apply[T](values: List[T])(implicit ev: SQLPrimitive[T], ev2: SQLPrimitive[String]): SelectOperatorClause[String] = {
+  final def apply[T](values: List[T])(implicit ev: DataType[T], ev2: DataType[String]): SelectOperatorClause[String] = {
     new SelectOperatorClause[String](
-      DefaultQueryBuilder.least(values.map(implicitly[SQLPrimitive[T]].toSQL))
+      DefaultQueryBuilder.least(values.map(implicitly[DataType[T]].serialize))
     ) {
       def fromRow(row: Row): String = ""
     }
   }
 
-  final def apply[T](values: T*)(implicit ev: SQLPrimitive[T], ev2: SQLPrimitive[String]): SelectOperatorClause[String] = {
-    apply(values.toList.map(implicitly[SQLPrimitive[T]].toSQL))
+  final def apply[T](values: T*)(implicit ev: DataType[T], ev2: DataType[String]): SelectOperatorClause[String] = {
+    apply(values.toList.map(implicitly[DataType[T]].serialize))
   }
 }
 
 sealed class GreatestOperator extends Operator {
-  final def apply[T](values: List[T])(implicit ev: SQLPrimitive[T], ev2: SQLPrimitive[String]): SelectOperatorClause[String] = {
+  final def apply[T](values: List[T])(implicit ev: DataType[T], ev2: DataType[String]): SelectOperatorClause[String] = {
     new SelectOperatorClause[String](
-      DefaultQueryBuilder.greatest(values.map(implicitly[SQLPrimitive[T]].toSQL))
+      DefaultQueryBuilder.greatest(values.map(implicitly[DataType[T]].serialize))
     ) {
       def fromRow(row: Row): String = ""
     }
   }
 
-  final def apply[T](values: T*)(implicit ev: SQLPrimitive[T], ev2: SQLPrimitive[String]): SelectOperatorClause[String] = {
-    apply(values.toList.map(implicitly[SQLPrimitive[T]].toSQL))
+  final def apply[T](values: T*)(implicit ev: DataType[T], ev2: DataType[String]): SelectOperatorClause[String] = {
+    apply(values.toList.map(implicitly[DataType[T]].serialize))
   }
 }
 
 sealed class CoalesceOperator extends Operator {
 
-  final def apply[T](values: List[T])(implicit ev: SQLPrimitive[T], ev2: SQLPrimitive[String]): SelectOperatorClause[String] = {
+  final def apply[T](values: List[T])(implicit ev: DataType[T], ev2: DataType[String]): SelectOperatorClause[String] = {
     new SelectOperatorClause[String](
-      DefaultQueryBuilder.greatest(values.map(implicitly[SQLPrimitive[T]].toSQL))
+      DefaultQueryBuilder.greatest(values.map(implicitly[DataType[T]].serialize))
     ) {
       def fromRow(row: Row): String = ""
     }
@@ -216,9 +216,9 @@ sealed class CoalesceOperator extends Operator {
 }
 
 sealed class BinOperator extends Operator {
-  final def apply[T](value: T)(implicit ev: SQLPrimitive[T], ev2: SQLPrimitive[Int], ev3: Numeric[T]): SelectOperatorClause[Int] = {
+  final def apply[T](value: T)(implicit ev: DataType[T], ev2: DataType[Int], ev3: Numeric[T]): SelectOperatorClause[Int] = {
     new SelectOperatorClause[Int](
-      DefaultQueryBuilder.bin(ev.toSQL(value))
+      DefaultQueryBuilder.bin(ev.serialize(value))
     ) {
       def fromRow(row: Row): Int = 5
     }

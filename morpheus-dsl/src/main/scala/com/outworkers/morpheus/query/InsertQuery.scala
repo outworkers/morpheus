@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2015 Websudos, Limited.
+ * Copyright 2013 - 2017 Outworkers, Limited.
  *
  * All rights reserved.
  *
@@ -29,7 +29,7 @@
  */
 package com.outworkers.morpheus.query
 
-import com.outworkers.morpheus.SQLPrimitive
+import com.outworkers.morpheus.DataType
 import com.outworkers.morpheus.sql.DefaultRow
 import com.outworkers.morpheus.builder.{AbstractSQLSyntax, AbstractSyntaxBlock, DefaultSQLSyntax, SQLBuiltQuery}
 import com.outworkers.morpheus.column.AbstractColumn
@@ -132,7 +132,7 @@ class InsertQuery[
    */
   @implicitNotFound(msg = "To use the value method this query needs to be an insert query and the query needs to be HNil. You probably have more " +
     "value calls than columns in your table, which would result in an invalid MySQL query.")
-  def value[RR : SQLPrimitive](
+  def value[RR : DataType](
     insertion: T => AbstractColumn[RR],
     obj: RR
   ): QueryType[Group, Order, Limit, Chain, AssignChain, Status] = {
@@ -141,7 +141,7 @@ class InsertQuery[
       init,
       fromRow,
       columnsPart append SQLBuiltQuery(insertion(table).name),
-      valuePart append SQLBuiltQuery(implicitly[SQLPrimitive[RR]].toSQL(obj)),
+      valuePart append SQLBuiltQuery(implicitly[DataType[RR]].serialize(obj)),
       lightweightPart
     )
   }

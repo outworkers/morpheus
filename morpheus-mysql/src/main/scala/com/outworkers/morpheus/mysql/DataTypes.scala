@@ -27,32 +27,46 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-package com.outworkers.morpheus.query
 
-import com.outworkers.morpheus.sql._
-import com.outworkers.morpheus.dsl._
-import org.scalatest.{FlatSpec, Matchers}
+package com.outworkers.morpheus.mysql
 
-class InsertQuerySerialisationTest extends FlatSpec with Matchers {
+import java.util.Date
 
-  it should "serialise an INSERT INTO query to the correct query and convert using an implicit" in {
-    BasicTable.insert.queryString shouldEqual "INSERT INTO `BasicTable`;"
+import com.outworkers.morpheus._
+import com.outworkers.morpheus._
+import org.joda.time.DateTime
+
+import scala.util.Try
+
+trait DataTypes {
+
+  def apply[RR](implicit ev: DataType[RR]): DataType[RR] = ev
+
+  implicit object IntPrimitive extends DefaultIntPrimitive {
+    def fromRow(row: MySQLRow, name: String): Try[Int] = row.int(name)
   }
 
-  it should "serialise an INSERT INTO query to the correct query" in {
-    BasicTable.insert.into.queryString shouldEqual "INSERT INTO `BasicTable`;"
+  implicit object FloatPrimitive extends DefaultFloatPrimitive {
+    def fromRow(row: MySQLRow, name: String): Try[Float] = row.float(name)
   }
 
-  it should "serialise an INSERT query with a single value defined" in {
-    BasicTable.insert
-      .value(_.count, 5L)
-      .queryString shouldEqual "INSERT INTO `BasicTable` (count) VALUES(5);"
+  implicit object DoublePrimitive extends DefaultDoublePrimitive {
+    def fromRow(row: MySQLRow, name: String): Try[Double] = row.double(name)
   }
 
-  it should "serialise an INSERT query with multiple values defined" in {
-    BasicTable.insert
-      .value(_.count, 5L)
-      .value(_.name, "test")
-      .queryString shouldEqual "INSERT INTO `BasicTable` (count, name) VALUES(5, 'test');"
+  implicit object LongPrimitive extends DefaultLongPrimitive {
+    def fromRow(row: MySQLRow, name: String): Try[Long] = row.long(name)
+  }
+
+  implicit object DatePrimitive extends DefaultDatePrimitive {
+    def fromRow(row: MySQLRow, name: String): Try[Date] = row.date(name)
+  }
+
+  implicit object DateTimePrimitive extends DefaultDateTimePrimitive {
+    def fromRow(row: MySQLRow, name: String): Try[DateTime] = row.datetime(name)
+  }
+
+  implicit object StringPrimitive extends DefaultStringPrimitive {
+    def fromRow(row: MySQLRow, name: String): Try[String] = row.string(name)
   }
 }

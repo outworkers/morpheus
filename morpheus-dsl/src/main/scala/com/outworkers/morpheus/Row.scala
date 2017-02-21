@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2015 Websudos, Limited.
+ * Copyright 2013 - 2017 Outworkers, Limited.
  *
  * All rights reserved.
  *
@@ -33,36 +33,38 @@ import java.nio.ByteBuffer
 import java.util.Date
 
 import com.twitter.util.Future
-import org.joda.time.DateTime
+import org.joda.time.{DateTime, DateTimeZone}
+
+import scala.util.Try
 
 trait Row {
 
-  def bool(name: String): Boolean = ???
+  def bool(name: String): Try[Boolean]
 
-  def byte(name: String): Byte = ???
+  def byte(name: String): Try[Byte]
 
-  def string(name: String): String = ???
+  def string(name: String): Try[String]
 
-  def byteBuffer(name: String): ByteBuffer = ???
+  def byteBuffer(name: String): Try[ByteBuffer]
 
-  def int(name: String): Int = ???
+  def int(name: String): Try[Int]
 
-  def double(name: String): Double = ???
+  def double(name: String): Try[Double]
 
-  def short(name: String): Short = ???
+  def short(name: String): Try[Short]
 
-  def date(name: String): Date = ???
+  def date(name: String): Try[Date]
 
-  def datetime(name: String): DateTime = new DateTime(date(name))
+  def datetime(name: String): Try[DateTime] = date(name) map(d => new DateTime(d, DateTimeZone.UTC))
 
-  def float(name: String): Float = ???
+  def float(name: String): Try[Float]
 
-  def long(name: String): Long = ???
+  def long(name: String): Try[Long]
 
-  def bigDecimal(name: String): BigDecimal = ???
+  def bigDecimal(name: String): Try[BigDecimal]
 }
 
-trait Result {}
+trait Result
 
 trait Client[+DBRow, DBResult] {
 

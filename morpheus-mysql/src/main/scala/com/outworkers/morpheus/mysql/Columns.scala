@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2015 Websudos, Limited.
+ * Copyright 2013 - 2017 Outworkers, Limited.
  *
  * All rights reserved.
  *
@@ -48,52 +48,52 @@ trait MySQLKeys {
 
 trait MySQLPrimitiveColumns {
 
-  class IntColumn[T <: BaseTable[T, R, MySQLRow], R](t: BaseTable[T, R, MySQLRow], limit: Int = 0)(implicit ev: SQLPrimitive[Int])
+  class IntColumn[T <: BaseTable[T, R, MySQLRow], R](t: BaseTable[T, R, MySQLRow], limit: Int = 0)(implicit ev: DataType[Int])
     extends AbstractIntColumn[T, R, MySQLRow](t, limit)
 
-  class SmallIntColumn[T <: BaseTable[T, R, MySQLRow], R](t: BaseTable[T, R, MySQLRow], limit: Int = 0)(implicit ev: SQLPrimitive[Int])
+  class SmallIntColumn[T <: BaseTable[T, R, MySQLRow], R](t: BaseTable[T, R, MySQLRow], limit: Int = 0)(implicit ev: DataType[Int])
     extends AbstractSmallIntColumn[T, R, MySQLRow](t, limit)
 
-  class TinyIntColumn[T <: BaseTable[T, R, MySQLRow], R](t: BaseTable[T, R, MySQLRow], limit: Int = 0)(implicit ev: SQLPrimitive[Int])
+  class TinyIntColumn[T <: BaseTable[T, R, MySQLRow], R](t: BaseTable[T, R, MySQLRow], limit: Int = 0)(implicit ev: DataType[Int])
     extends AbstractTinyIntColumn[T, R, MySQLRow](t, limit)
 
-  class MediumIntColumn[T <: BaseTable[T, R, MySQLRow], R](t: BaseTable[T, R, MySQLRow], limit: Int = 0)(implicit ev: SQLPrimitive[Int])
+  class MediumIntColumn[T <: BaseTable[T, R, MySQLRow], R](t: BaseTable[T, R, MySQLRow], limit: Int = 0)(implicit ev: DataType[Int])
     extends AbstractMediumIntColumn[T, R, MySQLRow](t, limit)
 }
 
 trait MySQLColumns {
 
-  class BlobColumn[T <: BaseTable[T, R, MySQLRow], R](t: BaseTable[T, R, MySQLRow], limit: Int = 0)(implicit ev: SQLPrimitive[String])
+  class BlobColumn[T <: BaseTable[T, R, MySQLRow], R](t: BaseTable[T, R, MySQLRow], limit: Int = 0)(implicit ev: DataType[String])
     extends AbstractBlobColumn[T, R, MySQLRow](t, limit)
 
-  class TextColumn[T <: BaseTable[T, R, MySQLRow], R](t: BaseTable[T, R, MySQLRow], limit: Int = 0)(implicit ev: SQLPrimitive[String])
+  class TextColumn[T <: BaseTable[T, R, MySQLRow], R](t: BaseTable[T, R, MySQLRow], limit: Int = 0)(implicit ev: DataType[String])
     extends AbstractTextColumn[T, R, MySQLRow](t, limit)
 
-  class LongTextColumn[T <: BaseTable[T, R, MySQLRow], R](t: BaseTable[T, R, MySQLRow], limit: Int = 0)(implicit ev: SQLPrimitive[String])
+  class LongTextColumn[T <: BaseTable[T, R, MySQLRow], R](t: BaseTable[T, R, MySQLRow], limit: Int = 0)(implicit ev: DataType[String])
     extends AbstractLongTextColumn[T, R, MySQLRow](t, limit)
 
-  class LongBlobColumn[T <: BaseTable[T, R, MySQLRow], R](t: BaseTable[T, R, MySQLRow], limit: Int = 0)(implicit ev: SQLPrimitive[String])
+  class LongBlobColumn[T <: BaseTable[T, R, MySQLRow], R](t: BaseTable[T, R, MySQLRow], limit: Int = 0)(implicit ev: DataType[String])
     extends AbstractLongBlobColumn[T, R, MySQLRow](t, limit)
 
-  class MediumBlobColumn[T <: BaseTable[T, R, MySQLRow], R](t: BaseTable[T, R, MySQLRow], limit: Int = 0)(implicit ev: SQLPrimitive[String])
+  class MediumBlobColumn[T <: BaseTable[T, R, MySQLRow], R](t: BaseTable[T, R, MySQLRow], limit: Int = 0)(implicit ev: DataType[String])
     extends AbstractMediumBlobColumn[T, R, MySQLRow](t, limit)
 
-  class MediumTextColumn[T <: BaseTable[T, R, MySQLRow], R](t: BaseTable[T, R, MySQLRow], limit: Int = 0)(implicit ev: SQLPrimitive[String])
+  class MediumTextColumn[T <: BaseTable[T, R, MySQLRow], R](t: BaseTable[T, R, MySQLRow], limit: Int = 0)(implicit ev: DataType[String])
     extends AbstractMediumTextColumn[T, R, MySQLRow](t, limit)
 
-  class TinyBlobColumn[T <: BaseTable[T, R, MySQLRow], R](t: BaseTable[T, R, MySQLRow], limit: Int = 0)(implicit ev: SQLPrimitive[String])
+  class TinyBlobColumn[T <: BaseTable[T, R, MySQLRow], R](t: BaseTable[T, R, MySQLRow], limit: Int = 0)(implicit ev: DataType[String])
     extends AbstractTinyBlobColumn[T, R, MySQLRow](t, limit)
 
-  class TinyTextColumn[T <: BaseTable[T, R, MySQLRow], R](t: BaseTable[T, R, MySQLRow], limit: Int = 0)(implicit ev: SQLPrimitive[String])
+  class TinyTextColumn[T <: BaseTable[T, R, MySQLRow], R](t: BaseTable[T, R, MySQLRow], limit: Int = 0)(implicit ev: DataType[String])
     extends AbstractTinyTextColumn[T, R, MySQLRow](t, limit)
 
-  class VarcharColumn[T <: BaseTable[T, R, MySQLRow], R](t: BaseTable[T, R, MySQLRow], limit: Int = 0)(implicit ev: SQLPrimitive[String])
+  class VarcharColumn[T <: BaseTable[T, R, MySQLRow], R](t: BaseTable[T, R, MySQLRow], limit: Int = 0)(implicit ev: DataType[String])
     extends AbstractVarcharColumn[T, R, MySQLRow](t, limit)
 
-  class CharColumn[T <: BaseTable[T, R, MySQLRow], R](t: BaseTable[T, R, MySQLRow], limit: Int = 0)(implicit ev: SQLPrimitive[String])
+  class CharColumn[T <: BaseTable[T, R, MySQLRow], R](t: BaseTable[T, R, MySQLRow], limit: Int = 0)(implicit ev: DataType[String])
     extends AbstractCharColumn[T, R, MySQLRow](t, limit)
 
-  class EnumColumn[T <: BaseTable[T, R, MySQLRow], R, EnumType <: Enumeration](t: BaseTable[T, R, MySQLRow], enum: EnumType)(implicit ev: SQLPrimitive[String])
+  class EnumColumn[T <: BaseTable[T, R, MySQLRow], R, EnumType <: Enumeration](t: BaseTable[T, R, MySQLRow], enum: EnumType)(implicit ev: DataType[String])
     extends AbstractEnumColumn[T, R, MySQLRow, EnumType](t, enum) {
   }
 

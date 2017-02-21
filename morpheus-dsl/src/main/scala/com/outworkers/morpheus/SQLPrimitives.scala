@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2015 Websudos, Limited.
+ * Copyright 2013 - 2017 Outworkers, Limited.
  *
  * All rights reserved.
  *
@@ -60,77 +60,75 @@ case class InvalidTypeDefinitionException(msg: String = "Invalid SQL type declar
  *
  * @tparam T The primitive SQL data type to create a type class for.
  */
-trait SQLPrimitive[T] {
+trait DataType[T] {
 
   def sqlType: String
 
-  def toSQL(value: T): String
+  def serialize(value: T): String
 
-  def fromRow(row: Row, name: String): Try[T]
+  def deserialize(row: Row, name: String): Try[T]
 }
 
-class DefaultIntPrimitive extends SQLPrimitive[Int] {
+class DefaultIntPrimitive extends DataType[Int] {
   override def sqlType: String = DefaultSQLDataTypes.int
 
-  override def toSQL(value: Int): String = {
+  override def serialize(value: Int): String = {
     value.toString
   }
 
-  def fromRow(row: Row, name: String): Try[Int] = Try(row.int(name))
+  def deserialize(row: Row, name: String): Try[Int] = row.int(name)
 }
 
-class DefaultFloatPrimitive extends SQLPrimitive[Float] {
+class DefaultFloatPrimitive extends DataType[Float] {
   override def sqlType: String = DefaultSQLDataTypes.float
 
-  override def toSQL(value: Float): String = value.toString
+  override def serialize(value: Float): String = value.toString
 
-  def fromRow(row: Row, name: String): Try[Float] = Try(row.float(name))
+  def deserialize(row: Row, name: String): Try[Float] = row.float(name)
 }
 
-class DefaultDoublePrimitive extends SQLPrimitive[Double] {
+class DefaultDoublePrimitive extends DataType[Double] {
   override def sqlType: String = DefaultSQLDataTypes.double
 
-  override def toSQL(value: Double): String = value.toString
+  override def serialize(value: Double): String = value.toString
 
-  def fromRow(row: Row, name: String): Try[Double] = Try(row.double(name))
+  def deserialize(row: Row, name: String): Try[Double] = row.double(name)
 }
 
-class DefaultLongPrimitive extends SQLPrimitive[Long] {
+class DefaultLongPrimitive extends DataType[Long] {
   override def sqlType: String = DefaultSQLDataTypes.long
 
-  override def toSQL(value: Long): String = value.toString
+  override def serialize(value: Long): String = value.toString
 
-  def fromRow(row: Row, name: String): Try[Long] = Try(row.long(name))
+  def deserialize(row: Row, name: String): Try[Long] = row.long(name)
 }
 
-class DefaultDatePrimitive extends SQLPrimitive[Date] {
+class DefaultDatePrimitive extends DataType[Date] {
   def sqlType: String = DefaultSQLDataTypes.date
 
-  def toSQL(value: Date): String = value.toString
+  def serialize(value: Date): String = value.toString
 
-  def fromRow(row: Row, name: String): Try[Date] = Try(row.date(name))
+  def deserialize(row: Row, name: String): Try[Date] = row.date(name)
 }
 
-class DefaultDateTimePrimitive extends SQLPrimitive[DateTime] {
+class DefaultDateTimePrimitive extends DataType[DateTime] {
   def sqlType: String = DefaultSQLDataTypes.dateTime
 
-  def toSQL(value: DateTime): String = value.toString
+  def serialize(value: DateTime): String = value.toString
 
-  def fromRow(row: Row, name: String): Try[DateTime] = Try(row.datetime(name))
+  def deserialize(row: Row, name: String): Try[DateTime] = row.datetime(name)
 }
 
-class DefaultStringPrimitive extends SQLPrimitive[String] {
+class DefaultStringPrimitive extends DataType[String] {
 
   override def sqlType: String = DefaultSQLDataTypes.text
 
-  override def toSQL(value: String): String = DefaultQueryBuilder.escape(value)
+  override def serialize(value: String): String = DefaultQueryBuilder.escape(value)
 
-  def fromRow(row: Row, name: String): Try[String] = {
-    Try(row.string(name))
-  }
+  def deserialize(row: Row, name: String): Try[String] = row.string(name)
 }
 
-trait MaterialisedPrimitives {
+trait DefaultDataTypes {
   implicit case object IntPrimitive extends DefaultIntPrimitive
 
   implicit case object StringPrimitive extends DefaultStringPrimitive

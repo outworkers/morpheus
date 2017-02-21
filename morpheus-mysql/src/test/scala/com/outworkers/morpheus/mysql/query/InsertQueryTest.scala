@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2015 Websudos, Limited.
+ * Copyright 2013 - 2017 Outworkers, Limited.
  *
  * All rights reserved.
  *
@@ -27,23 +27,39 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-package com.outworkers.morpheus.mysql.db
+package com.outworkers.morpheus.mysql.query
 
 import com.outworkers.morpheus.mysql.tables.BasicTable
-import org.scalatest.FlatSpec
 import com.outworkers.util.testing._
 import com.outworkers.morpheus.mysql._
+import com.outworkers.morpheus.mysql.tables.{EnumerationRecord, EnumerationTable}
+import org.scalatest.{FlatSpec, Matchers}
 
-class CreateQueryDBTest extends FlatSpec with MySQLSuite {
+class InsertQueryTest extends FlatSpec with Matchers {
 
-  it should "create a new table in the MySQL database" in {
-    whenReady(BasicTable.create.temporary.engine(InnoDB).future) {
-      res =>
-    }
+  it should "serialise an INSERT IGNORE INTO query to the correct query" in {
+    BasicTable.insert.ignore.queryString shouldEqual "INSERT IGNORE INTO BasicTable;"
   }
 
-  it should "create a new table in the database if the table doesn't exist" in {
-    whenReady(BasicTable.create.ifNotExists.engine(InnoDB).future) { _ => }
+  it should "serialise an INSERT HIGH_PRIORITY INTO query to the correct query" in {
+    BasicTable.insert.highPriority.queryString shouldEqual "INSERT HIGH_PRIORITY INTO BasicTable;"
+  }
+
+  it should "serialise an INSERT LOW_PRIORITY INTO query to the correct query" in {
+    BasicTable.insert.lowPriority.queryString shouldEqual "INSERT LOW_PRIORITY INTO BasicTable;"
+  }
+
+  it should "serialise an INSERT DELAYED INTO query to the correct query" in {
+    BasicTable.insert.delayed.queryString shouldEqual "INSERT DELAYED INTO BasicTable;"
+  }
+
+  it should "serialise an INSERT value query with a single value clause" in {
+    BasicTable.insert.value(_.name, "test").queryString shouldEqual "INSERT INTO `BasicTable` (name) VALUES('test');"
+  }
+
+  it should "serialise an INSERT value query with a multiple value clauses" in {
+    BasicTable.insert.value(_.name, "test").value(_.count, 5)
+      .queryString shouldEqual "INSERT INTO `BasicTable` (name, count) VALUES('test', 5);"
   }
 
 }

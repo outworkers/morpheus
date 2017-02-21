@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2015 Websudos, Limited.
+ * Copyright 2013 - 2017 Outworkers, Limited.
  *
  * All rights reserved.
  *
@@ -29,7 +29,7 @@
  */
 package com.outworkers.morpheus.query
 
-import com.outworkers.morpheus.SQLPrimitive
+import com.outworkers.morpheus.DataType
 import com.outworkers.morpheus.sql.DefaultRow
 import com.outworkers.morpheus.builder.{AbstractSQLSyntax, AbstractSyntaxBlock, DefaultSQLSyntax, SQLBuiltQuery}
 import com.outworkers.morpheus.column.{AbstractColumn, ForeignKeyDefinition}
@@ -240,7 +240,7 @@ class OnJoinQuery[T <: BaseTable[T, _, TableRow],
 
 private[morpheus] trait JoinImplicits {
 
-  implicit class JoinColumn[T : SQLPrimitive](val origin: AbstractColumn[T] with ForeignKeyDefinition) {
+  implicit class JoinColumn[T : DataType](val origin: AbstractColumn[T] with ForeignKeyDefinition) {
 
     final def eqs(col: AbstractColumn[_]): JoinClause = {
       JoinClause(

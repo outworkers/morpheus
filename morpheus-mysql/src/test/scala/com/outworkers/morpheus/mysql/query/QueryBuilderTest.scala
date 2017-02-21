@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2015 Websudos, Limited.
+ * Copyright 2013 - 2017 Outworkers, Limited.
  *
  * All rights reserved.
  *
@@ -36,7 +36,7 @@ import org.scalatest.{FlatSpec, Matchers}
 import com.outworkers.util.testing._
 
 
-class MySQLQueryBuilderTest extends FlatSpec with Matchers {
+class QueryBuilderTest extends FlatSpec with Matchers {
 
   it should "serialise a simple equals condition" in {
     val name = gen[String]

@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2015 Websudos, Limited.
+ * Copyright 2013 - 2017 Outworkers, Limited.
  *
  * All rights reserved.
  *
@@ -29,9 +29,9 @@
  */
 package com.outworkers.morpheus.mysql.db.specialized
 
-import com.outworkers.morpheus.SQLPrimitive
+import com.outworkers.morpheus.DataType
 import com.outworkers.morpheus.mysql._
-import com.outworkers.morpheus.mysql.db.MySQLSuite
+import com.outworkers.morpheus.mysql.db.BaseSuite
 import com.outworkers.morpheus.mysql.tables.{EnumerationRecord, EnumerationTable, TestEnumeration}
 import com.outworkers.util.samplers.{Generators, Sample}
 import com.outworkers.util.testing._
@@ -40,7 +40,7 @@ import org.scalatest.FlatSpec
 import scala.concurrent.Await
 import scala.concurrent.duration._
 
-class EnumerationColumnTest extends FlatSpec with MySQLSuite {
+class EnumerationColumnTest extends FlatSpec with BaseSuite {
 
   override def beforeAll(): Unit = {
     super.beforeAll()
@@ -51,7 +51,7 @@ class EnumerationColumnTest extends FlatSpec with MySQLSuite {
     override def sample: EnumerationRecord = EnumerationRecord(gen[Int], Generators.oneOf(TestEnumeration))
   }
 
-  implicit val enumPrimitive: SQLPrimitive[TestEnumeration#Value] = SQLPrimitive(TestEnumeration)
+  implicit val enumPrimitive: DataType[TestEnumeration#Value] = SQLPrimitive(TestEnumeration)
 
   it should "store a record with an enumeration defined inside it" in {
     val record = gen[EnumerationRecord]
