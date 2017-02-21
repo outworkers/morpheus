@@ -35,8 +35,11 @@ import com.outworkers.morpheus.builder.{DefaultQueryBuilder, DefaultSQLDataTypes
 import org.joda.time.DateTime
 
 import scala.util.Try
+import scala.util.control.NoStackTrace
 
-case class InvalidTypeDefinitionException(msg: String = "Invalid SQL type declared for column") extends RuntimeException(msg)
+case class InvalidTypeDefinitionException(
+  msg: String = "Invalid SQL type declared for column"
+) extends RuntimeException(msg) with NoStackTrace
 
 
 /**
