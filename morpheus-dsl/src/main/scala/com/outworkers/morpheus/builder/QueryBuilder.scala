@@ -27,7 +27,6 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-
 package com.outworkers.morpheus.builder
 
 /**
@@ -331,10 +330,9 @@ private[morpheus] trait AbstractQueryBuilder {
    *
    * @param name The name of the column to match inside the "IN" operator list.
    * @param values The collection of values to pass as an argument to the list of values.
-   * @tparam T A type argument requiring a view bound to a traversable.
    * @return An SQL query.
    */
-  def in[T <: TraversableOnce[String]](name: String, values: T): SQLBuiltQuery = {
+  def in[M[X] <: TraversableOnce[X]](name: String, values: M[String]): SQLBuiltQuery = {
     SQLBuiltQuery(name).pad.append(operators.in).wrap(values)
   }
 
@@ -347,10 +345,9 @@ private[morpheus] trait AbstractQueryBuilder {
    *
    * @param name The name of the column to match inside the "NOT IN" operator list.
    * @param values The collection of values to pass as an argument to the list of values.
-   * @tparam T A type argument requiring a view bound to a traversable.
    * @return An SQL query.
    */
-  def notIn[T <: TraversableOnce[String]](name: String, values: T): SQLBuiltQuery = {
+  def notIn[M[X] <: TraversableOnce[X]](name: String, values: M[String]): SQLBuiltQuery = {
     SQLBuiltQuery(name).pad.append(operators.notIn).wrap(values)
   }
 
