@@ -32,7 +32,6 @@ resolvers ++= Seq(
   "Twitter Repo" at "http://maven.twttr.com/",
   Resolver.sonatypeRepo("releases"),
   Resolver.bintrayRepo("outworkers", "oss-releases"),
-  Resolver.url("scoverage-bintray", url("https://dl.bintray.com/sksamuel/sbt-plugins/"))(Resolver.ivyStylePatterns),
   Resolver.url("Websudos OSS", url("http://dl.bintray.com/websudos/oss-releases"))(Resolver.ivyStylePatterns),
   Classpaths.sbtPluginReleases
 )
@@ -53,3 +52,4 @@ addSbtPlugin("me.lessis" % "bintray-sbt" % "0.3.0")
 
 addSbtPlugin("com.websudos" % "sbt-package-dist" % "1.2.0")
 
+libraryDependencies += "org.slf4j" % "slf4j-nop" % "1.7.22"

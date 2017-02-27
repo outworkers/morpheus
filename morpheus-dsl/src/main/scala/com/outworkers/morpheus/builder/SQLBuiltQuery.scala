@@ -29,10 +29,8 @@
  */
 package com.outworkers.morpheus.builder
 
-import com.outworkers.diesel.engine.query.AbstractQuery
-
 case class SQLBuiltQuery(override val queryString: String) extends AbstractQuery[SQLBuiltQuery](queryString) {
-  def create(st: String): SQLBuiltQuery = SQLBuiltQuery(st)
+  def instance(st: String): SQLBuiltQuery = SQLBuiltQuery(st)
 }
 
 object SQLBuiltQuery {
