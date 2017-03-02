@@ -17,17 +17,11 @@ package com.outworkers.morpheus.engine.query.parts
 
 import com.outworkers.morpheus.builder.{DefaultQueryBuilder, SQLBuiltQuery}
 
-class SQLMergeList(override val list: List[SQLBuiltQuery]) extends MergedQueryList(list) {
-
-  override def apply(list: List[SQLBuiltQuery]): MergedQueryList = new SQLMergeList(list)
-
-  override def apply(str: String): SQLBuiltQuery = SQLBuiltQuery(str)
+abstract class SQLQueryPart[
+  Part <: SQLQueryPart[Part]
+](override val list: List[SQLBuiltQuery]) extends QueryPart[Part](list) {
+  override def mergeList(list: List[SQLBuiltQuery]): MergeList = new MergeList(list)
 }
-
-abstract class SQLQueryPart[Part <: SQLQueryPart[Part]](override val list: List[SQLBuiltQuery]) extends QueryPart[Part](list) {
-  override def mergeList(list: List[SQLBuiltQuery]): MergedQueryList = new SQLMergeList(list)
-}
-
 
 sealed class WherePart(override val list: List[SQLBuiltQuery] = Nil) extends SQLQueryPart[WherePart](list) {
   override def qb: SQLBuiltQuery = DefaultQueryBuilder.clauses(list)

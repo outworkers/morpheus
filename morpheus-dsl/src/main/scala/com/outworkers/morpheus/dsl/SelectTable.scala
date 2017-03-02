@@ -119,8 +119,11 @@ private[morpheus] trait SelectTable[
    * This is the SELECT column1 column2 column3 query, where 3 columns are specified to be partially selected.
    * @return An instance of a RootSelectQuery.
    */
-  def select[T1, T2, T3](f1: Owner => SelectColumn[T1], f2: Owner => SelectColumn[T2], f3: Owner => SelectColumn[T3]): RootSelectQuery[Owner, (T1, T2, T3)]
-  = {
+  def select[T1, T2, T3](
+    f1: Owner => SelectColumn[T1],
+    f2: Owner => SelectColumn[T2],
+    f3: Owner => SelectColumn[T3]
+  ): RootSelectQuery[Owner, (T1, T2, T3)] = {
 
     val t = this.asInstanceOf[Owner]
     val c1: SelectColumn[T1] = f1(t)
@@ -140,8 +143,12 @@ private[morpheus] trait SelectTable[
    * This is the SELECT column1 column2 column3 column4 query, where 4 columns are specified to be partially selected.
    * @return An instance of a RootSelectQuery.
    */
-  def select[T1, T2, T3, T4](f1: Owner => SelectColumn[T1], f2: Owner => SelectColumn[T2], f3: Owner => SelectColumn[T3],
-                             f4: Owner => SelectColumn[T4]): RootSelectQuery[Owner, (T1, T2,
+  def select[T1, T2, T3, T4](
+    f1: Owner => SelectColumn[T1],
+    f2: Owner => SelectColumn[T2],
+    f3: Owner => SelectColumn[T3],
+    f4: Owner => SelectColumn[T4]
+  ): RootSelectQuery[Owner, (T1, T2,
     T3, T4)] = {
 
     val t = this.asInstanceOf[Owner]
@@ -168,7 +175,8 @@ private[morpheus] trait SelectTable[
     f2: Owner => SelectColumn[T2],
     f3: Owner => SelectColumn[T3],
     f4: Owner => SelectColumn[T4],
-    f5: Owner => SelectColumn[T5]): RootSelectQuery[Owner, (T1, T2, T3, T4, T5)] = {
+    f5: Owner => SelectColumn[T5]
+  ): RootSelectQuery[Owner, (T1, T2, T3, T4, T5)] = {
 
     val t = this.asInstanceOf[Owner]
     val c1: SelectColumn[T1] = f1(t)

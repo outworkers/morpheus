@@ -37,9 +37,9 @@ abstract class QueryPart[T <: QueryPart[T]](val list: List[SQLBuiltQuery] = Nil)
 
   def append(q: List[SQLBuiltQuery]): T = instance(q ::: list)
 
-  def mergeList(list: List[SQLBuiltQuery]): MergedQueryList
+  def mergeList(list: List[SQLBuiltQuery]): MergeList
 
-  def merge[X <: QueryPart[X]](part: X): MergedQueryList = {
+  def merge[X <: QueryPart[X]](part: X): MergeList = {
     val list = if (part.qb.nonEmpty) List(qb, part.qb) else List(qb)
 
     mergeList(list)
@@ -47,13 +47,14 @@ abstract class QueryPart[T <: QueryPart[T]](val list: List[SQLBuiltQuery] = Nil)
 }
 
 
-abstract class MergedQueryList(val list: List[SQLBuiltQuery]) {
+class MergeList(val list: List[SQLBuiltQuery]) {
 
   def this(query: SQLBuiltQuery) = this(List(query))
 
-  def apply(list: List[SQLBuiltQuery]): MergedQueryList
+  def apply(list: List[SQLBuiltQuery]): MergeList = new MergeList(list)
 
-  def apply(str: String): SQLBuiltQuery
+  def apply(str: String): SQLBuiltQuery = SQLBuiltQuery(str)
+
 
   def build: SQLBuiltQuery = apply(list.map(_.queryString).mkString(" "))
 
@@ -73,7 +74,7 @@ abstract class MergedQueryList(val list: List[SQLBuiltQuery]) {
     init
   }
 
-  def merge[X <: QueryPart[X]](part: X, init: SQLBuiltQuery = apply("")): MergedQueryList = {
+  def merge[X <: QueryPart[X]](part: X, init: SQLBuiltQuery = apply("")): MergeList = {
     val appendable = part build init
 
     if (appendable.nonEmpty) {

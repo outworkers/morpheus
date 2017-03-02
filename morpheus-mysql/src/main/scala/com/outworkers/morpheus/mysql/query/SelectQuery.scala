@@ -175,6 +175,5 @@ class SelectQuery[T <: BaseTable[T, _, Row],
    * @return A Twitter future wrapping the result.
    */
   override def get()(implicit client: Client[Row, Result], ev: Limit =:= Unlimited): Future[Option[R]] = {
-    client.select(limit(1).queryString)(fromRow) map (_.headOption)
-  }
+    client.select(limit(1).queryString)(fromRow) map {s => Console.println(s.mkString("\n")); s.headOption}
 }
