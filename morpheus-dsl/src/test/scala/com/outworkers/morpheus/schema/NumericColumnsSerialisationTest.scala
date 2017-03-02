@@ -54,4 +54,8 @@ class NumericColumnsSerialisationTest extends FlatSpec with Matchers {
   }
 
 
+  it should "serialise a year column definition" in {
+    NumericsTable.yearCol.qb.queryString shouldEqual "yearCol YEAR"
+  }
+
 }

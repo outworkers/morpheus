@@ -18,7 +18,6 @@ package com.outworkers.morpheus.mysql.query
 import com.outworkers.morpheus.mysql.tables.BasicTable
 import com.outworkers.util.testing._
 import com.outworkers.morpheus.mysql.dsl._
-import com.outworkers.morpheus.mysql.tables.{EnumerationRecord, EnumerationTable}
 import org.scalatest.{FlatSpec, Matchers}
 
 class InsertQueryTest extends FlatSpec with Matchers {
@@ -44,8 +43,9 @@ class InsertQueryTest extends FlatSpec with Matchers {
   }
 
   it should "serialise an INSERT value query with a multiple value clauses" in {
-    BasicTable.insert.value(_.name, "test").value(_.count, 5)
-      .queryString shouldEqual "INSERT INTO `BasicTable` (name, count) VALUES('test', 5);"
+    val num = gen[Int]
+    BasicTable.insert.value(_.name, "test").value(_.count, num)
+      .queryString shouldEqual s"INSERT INTO `BasicTable` (name, count) VALUES('test', $num);"
   }
 
 }

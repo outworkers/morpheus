@@ -109,6 +109,7 @@ class NumericsTable extends Table[NumericsTable, Int] {
 
   object int extends IntColumn(this)
   object intLimited extends IntColumn(this, 100)
+  object yearCol extends YearColumn(this)
 
   def fromRow(row: Row): Int = int(row)
 }
