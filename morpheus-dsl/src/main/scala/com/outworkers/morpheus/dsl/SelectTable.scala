@@ -1,33 +1,18 @@
 /*
- * Copyright 2013 - 2017 Outworkers, Limited.
+ * Copyright 2013 - 2017 Outworkers Ltd.
  *
- * All rights reserved.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
- * - Redistributions of source code must retain the above copyright notice,
- * this list of conditions and the following disclaimer.
- *
- * - Redistributions in binary form must reproduce the above copyright
- * notice, this list of conditions and the following disclaimer in the
- * documentation and/or other materials provided with the distribution.
- *
- * - Explicit consent must be obtained from the copyright owner, Websudos Limited before any redistribution is made.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
- * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
- * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
- * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
- * POSSIBILITY OF SUCH DAMAGE.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
-
 package com.outworkers.morpheus.dsl
 
 import com.outworkers.morpheus.Row
@@ -134,8 +119,11 @@ private[morpheus] trait SelectTable[
    * This is the SELECT column1 column2 column3 query, where 3 columns are specified to be partially selected.
    * @return An instance of a RootSelectQuery.
    */
-  def select[T1, T2, T3](f1: Owner => SelectColumn[T1], f2: Owner => SelectColumn[T2], f3: Owner => SelectColumn[T3]): RootSelectQuery[Owner, (T1, T2, T3)]
-  = {
+  def select[T1, T2, T3](
+    f1: Owner => SelectColumn[T1],
+    f2: Owner => SelectColumn[T2],
+    f3: Owner => SelectColumn[T3]
+  ): RootSelectQuery[Owner, (T1, T2, T3)] = {
 
     val t = this.asInstanceOf[Owner]
     val c1: SelectColumn[T1] = f1(t)
@@ -155,8 +143,12 @@ private[morpheus] trait SelectTable[
    * This is the SELECT column1 column2 column3 column4 query, where 4 columns are specified to be partially selected.
    * @return An instance of a RootSelectQuery.
    */
-  def select[T1, T2, T3, T4](f1: Owner => SelectColumn[T1], f2: Owner => SelectColumn[T2], f3: Owner => SelectColumn[T3],
-                             f4: Owner => SelectColumn[T4]): RootSelectQuery[Owner, (T1, T2,
+  def select[T1, T2, T3, T4](
+    f1: Owner => SelectColumn[T1],
+    f2: Owner => SelectColumn[T2],
+    f3: Owner => SelectColumn[T3],
+    f4: Owner => SelectColumn[T4]
+  ): RootSelectQuery[Owner, (T1, T2,
     T3, T4)] = {
 
     val t = this.asInstanceOf[Owner]
@@ -183,7 +175,8 @@ private[morpheus] trait SelectTable[
     f2: Owner => SelectColumn[T2],
     f3: Owner => SelectColumn[T3],
     f4: Owner => SelectColumn[T4],
-    f5: Owner => SelectColumn[T5]): RootSelectQuery[Owner, (T1, T2, T3, T4, T5)] = {
+    f5: Owner => SelectColumn[T5]
+  ): RootSelectQuery[Owner, (T1, T2, T3, T4, T5)] = {
 
     val t = this.asInstanceOf[Owner]
     val c1: SelectColumn[T1] = f1(t)

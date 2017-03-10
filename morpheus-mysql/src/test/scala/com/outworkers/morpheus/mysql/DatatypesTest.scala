@@ -13,10 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.outworkers.morpheus.postgres
+package com.outworkers.morpheus.mysql
 
-import com.outworkers.morpheus.builder.AbstractSQLSyntax
+import org.scalatest.{FlatSpec, Matchers}
 
-sealed trait PostgresSyntax extends AbstractSQLSyntax {}
-
-object PostgresSyntax extends PostgresSyntax
+class DatatypesTest extends FlatSpec with Matchers {
+  it should "parse an int from a row" in {
+    val row = com.twitter.finagle.exp.mysql.StringValue
+  }
+}

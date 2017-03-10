@@ -13,10 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.outworkers.morpheus.postgres
+package com.outworkers.morpheus.testkit
 
-import com.outworkers.morpheus.builder.AbstractSQLSyntax
+import org.scalatest.{BeforeAndAfterAll, Suite}
 
-sealed trait PostgresSyntax extends AbstractSQLSyntax {}
-
-object PostgresSyntax extends PostgresSyntax
+trait MySQLSuite extends Suite with BeforeAndAfterAll

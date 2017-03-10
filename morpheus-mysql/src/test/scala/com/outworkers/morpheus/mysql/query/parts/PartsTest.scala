@@ -13,10 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.outworkers.morpheus.postgres
+package com.outworkers.morpheus.mysql.query.parts
 
-import com.outworkers.morpheus.builder.AbstractSQLSyntax
+import org.scalatest.prop.GeneratorDrivenPropertyChecks
+import org.scalatest.{FlatSpec, Matchers}
 
-sealed trait PostgresSyntax extends AbstractSQLSyntax {}
-
-object PostgresSyntax extends PostgresSyntax
+class PartsTest extends FlatSpec with Matchers with GeneratorDrivenPropertyChecks {
+  it should "evaluate nonEmpty to true on a merge list of the inner list is empty" in {
+    forAll { l: List[String] =>
+      val part = MergeList()
+    }
+  }
+}
