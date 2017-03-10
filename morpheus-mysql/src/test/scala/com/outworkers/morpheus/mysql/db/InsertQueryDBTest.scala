@@ -31,7 +31,7 @@
 package com.outworkers.morpheus.mysql.db
 
 import com.outworkers.morpheus.mysql.dsl._
-import com.outworkers.morpheus.mysql.tables.{BasicRecord, BasicTable}
+import com.outworkers.morpheus.mysql.tables.{BasicRecord, BasicTable, PrimitiveRecord, PrimitivesTable}
 import com.outworkers.util.testing._
 import org.scalatest.FlatSpec
 
@@ -51,6 +51,19 @@ class InsertQueryDBTest extends FlatSpec with BaseSuite {
     val chain = for {
       store <- BasicTable.insert.value(_.name, sample.name).value(_.count, sample.count).future()
       one <- BasicTable.select.where(_.name eqs sample.name).one()
+    } yield one
+
+    whenReady(chain) { res =>
+      res.value shouldEqual sample
+    }
+  }
+
+  it should "insert and select a record with all the primitive types in MySQL" in {
+    val sample = gen[PrimitiveRecord]
+
+    val chain = for {
+      store <- PrimitivesTable.store(sample).future()
+      one <- PrimitivesTable.select.where(_.id eqs sample.id).one()
     } yield one
 
     whenReady(chain) { res =>

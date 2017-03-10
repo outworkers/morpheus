@@ -18,7 +18,6 @@ package mysql
 package tables
 
 import com.outworkers.morpheus.mysql.dsl._
-import com.outworkers.morpheus.mysql.query.InsertQuery$
 
 case class IndexedRecord(id: Int, value: Long)
 
@@ -153,7 +152,6 @@ class BasicTable extends Table[BasicTable, BasicRecord] {
 }
 
 object BasicTable extends BasicTable
-
 
 trait TestEnumeration extends Enumeration {
   val EnumOne = Value("One")

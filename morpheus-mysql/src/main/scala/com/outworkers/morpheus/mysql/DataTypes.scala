@@ -36,6 +36,14 @@ import org.joda.time.DateTime
 
 import scala.util.Try
 
+object DataTypes {
+  object Real {
+    val float = "FLOAT"
+    val double = "DOUBLE"
+    val decimal = "REAL"
+  }
+}
+
 trait DataTypes {
 
   def apply[RR](implicit ev: DataType[RR]): DataType[RR] = ev

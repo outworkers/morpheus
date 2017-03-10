@@ -29,6 +29,7 @@
 package com.outworkers.morpheus.mysql
 
 import com.outworkers.morpheus.DataType
+import com.outworkers.morpheus.builder.DefaultSQLDataTypes
 import com.outworkers.morpheus.column._
 import com.outworkers.morpheus.dsl.BaseTable
 import shapeless.{<:!<, =:!=}
@@ -52,6 +53,30 @@ trait Keys {
 
 trait PrimitiveColumns {
 
+  class DoubleColumn[T <: BaseTable[T, R, Row], R](t: BaseTable[T, R, Row], limit: Int = 0)(
+    implicit ev: DataType[Double]
+  ) extends NumericColumn[T, R, Row, Double](t, limit) {
+    override protected[this] def numericType: String = DataTypes.Real.double
+  }
+
+  class RealColumn[T <: BaseTable[T, R, Row], R](t: BaseTable[T, R, Row], limit: Int = 0)(
+    implicit ev: DataType[Double]
+  ) extends NumericColumn[T, R, Row, Double](t, limit) {
+    override protected[this] def numericType: String = DataTypes.Real.double
+  }
+
+  class FloatColumn[T <: BaseTable[T, R, Row], R](t: BaseTable[T, R, Row], limit: Int = 0)(
+    implicit ev: DataType[Float]
+  ) extends NumericColumn[T, R, Row, Float](t, limit) {
+    override protected[this] def numericType: String = DataTypes.Real.float
+  }
+
+  class LongColumn[T <: BaseTable[T, R, Row], R](t: BaseTable[T, R, Row], limit: Int = 0)(
+    implicit ev: DataType[Long]
+  ) extends NumericColumn[T, R, Row, Long](t, limit) {
+    override protected[this] def numericType: String = DefaultSQLDataTypes.long
+  }
+
   class IntColumn[T <: BaseTable[T, R, Row], R](t: BaseTable[T, R, Row], limit: Int = 0)(implicit ev: DataType[Int])
     extends AbstractIntColumn[T, R, Row](t, limit)
 
@@ -63,6 +88,15 @@ trait PrimitiveColumns {
 
   class MediumIntColumn[T <: BaseTable[T, R, Row], R](t: BaseTable[T, R, Row], limit: Int = 0)(implicit ev: DataType[Int])
     extends AbstractMediumIntColumn[T, R, Row](t, limit)
+
+  class DateColumn[T <: BaseTable[T, R, Row], R](t: BaseTable[T, R, Row], limit: Int = 0)(
+    implicit ev: DataType[java.util.Date]
+  ) extends AbstractDateColumn[T, R, Row](t)
+
+  class DateTimeColumn[T <: BaseTable[T, R, Row], R](t: BaseTable[T, R, Row], limit: Int = 0)(
+    implicit ev: DataType[org.joda.time.DateTime]
+  ) extends AbstractDateTimeColumn[T, R, Row](t)
+
 }
 
 trait Columns {
