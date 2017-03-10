@@ -55,10 +55,7 @@ case class MergeList(list: List[SQLBuiltQuery]) {
 
   def apply(list: List[SQLBuiltQuery]): MergeList = new MergeList(list)
 
-  def apply(str: String): SQLBuiltQuery = SQLBuiltQuery(str)
-
-
-  def build: SQLBuiltQuery = apply(list.map(_.queryString).mkString(" "))
+  def build: SQLBuiltQuery = SQLBuiltQuery(list.map(_.queryString).mkString(" "))
 
   /**
     * This will build a merge list into a final executable query.
@@ -76,7 +73,7 @@ case class MergeList(list: List[SQLBuiltQuery]) {
     init
   }
 
-  def merge[X <: QueryPart[X]](part: X, init: SQLBuiltQuery = apply("")): MergeList = {
+  def merge[X <: QueryPart[X]](part: X, init: SQLBuiltQuery = SQLBuiltQuery.empty): MergeList = {
     val appendable = part build init
 
     if (appendable.nonEmpty) {
@@ -88,6 +85,5 @@ case class MergeList(list: List[SQLBuiltQuery]) {
 }
 
 object MergeList {
-
   def empty: MergeList = new MergeList(Nil)
 }

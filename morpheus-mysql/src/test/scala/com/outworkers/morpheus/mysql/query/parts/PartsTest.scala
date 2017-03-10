@@ -21,7 +21,7 @@ import org.scalatest.prop.GeneratorDrivenPropertyChecks
 import org.scalatest.{FlatSpec, Matchers}
 
 class PartsTest extends FlatSpec with Matchers with GeneratorDrivenPropertyChecks {
-  
+
   it should "evaluate nonEmpty to true on a merge list of the inner list is empty" in {
     forAll { l: List[String] =>
       val part = MergeList(l.map(SQLBuiltQuery.apply))
