@@ -47,9 +47,11 @@ abstract class QueryPart[T <: QueryPart[T]](val list: List[SQLBuiltQuery] = Nil)
 }
 
 
-class MergeList(val list: List[SQLBuiltQuery]) {
+case class MergeList(list: List[SQLBuiltQuery]) {
 
   def this(query: SQLBuiltQuery) = this(List(query))
+
+  def nonEmpty: Boolean = list.nonEmpty
 
   def apply(list: List[SQLBuiltQuery]): MergeList = new MergeList(list)
 
@@ -83,4 +85,9 @@ class MergeList(val list: List[SQLBuiltQuery]) {
       this
     }
   }
+}
+
+object MergeList {
+
+  def empty: MergeList = new MergeList(Nil)
 }

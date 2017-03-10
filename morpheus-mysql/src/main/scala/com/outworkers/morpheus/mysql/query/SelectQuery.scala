@@ -28,8 +28,10 @@ import scala.annotation.implicitNotFound
 import scala.concurrent.{Future => ScalaFuture}
 
 private[morpheus] class SelectSyntaxBlock(
-  query: String, tableName: String,
-  columns: List[String] = List("*")) extends engine.query.AbstractSelectSyntaxBlock(query, tableName, columns) {
+  query: String,
+  tableName: String,
+  columns: List[String] = "*" :: Nil
+) extends engine.query.AbstractSelectSyntaxBlock(query, tableName, columns) {
   override val syntax = Syntax
 
   private[this] def selector(quantifier: String, columns: List[String], table: String): SQLBuiltQuery = {
@@ -77,8 +79,14 @@ private[morpheus] class SelectSyntaxBlock(
 }
 
 
-private[morpheus] class RootSelectQuery[T <: BaseTable[T, _, Row], R](table: T, st: SelectSyntaxBlock, rowFunc: Row => R)
-  extends engine.query.AbstractRootSelectQuery[T, R, Row](table, st, rowFunc) {
+private[morpheus] class RootSelectQuery[
+  T <: BaseTable[T, _, Row],
+  R
+](
+  table: T,
+  st: SelectSyntaxBlock,
+  rowFunc: Row => R
+) extends engine.query.AbstractRootSelectQuery[T, R, Row](table, st, rowFunc) {
 
   type BaseSelectQuery = SelectQuery[T, R, Ungroupped, Unordered, Unlimited, Unchainned, AssignUnchainned, HNil]
 
@@ -149,7 +157,7 @@ class SelectQuery[T <: BaseTable[T, _, Row],
   @implicitNotFound("You need to use the where method first")
   override def and(condition: T => QueryCondition)(
     implicit ev: Chain =:= Chainned
-  ): SelectQuery[T, R, Group, Order, Limit, Chain, AssignChainned, Status]  = {
+  ): SelectQuery[T, R, Group, Order, Limit, Chain, AssignChainned, Status] = {
     new SelectQuery(table, table.queryBuilder.and(query, condition(table).clause), rowFunc)
   }
 
@@ -161,19 +169,22 @@ class SelectQuery[T <: BaseTable[T, _, Row],
   }
 
   /**
-   * Returns the first row from the select ignoring everything else.
-   * @param client The MySQL client in use.
-   * @return
-   */
+    * Returns the first row from the select ignoring everything else.
+    *
+    * @param client The MySQL client in use.
+    * @return
+    */
   override def one()(implicit client: Client[Row, Result], ev: Limit =:= Unlimited): ScalaFuture[Option[R]] = {
     twitterToScala(get)
   }
 
   /**
-   * Get the result of an operation as a Twitter Future.
-   * @param client The MySQL client in use.
-   * @return A Twitter future wrapping the result.
-   */
+    * Get the result of an operation as a Twitter Future.
+    *
+    * @param client The MySQL client in use.
+    * @return A Twitter future wrapping the result.
+    */
   override def get()(implicit client: Client[Row, Result], ev: Limit =:= Unlimited): Future[Option[R]] = {
-    client.select(limit(1).queryString)(fromRow) map {s => Console.println(s.mkString("\n")); s.headOption}
+    client.select(limit(1).queryString)(fromRow) map (_.headOption)
+  }
 }
