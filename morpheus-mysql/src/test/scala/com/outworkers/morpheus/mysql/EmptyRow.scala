@@ -13,3 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package com.outworkers.morpheus.mysql
+
+import com.twitter.finagle.exp.mysql.{ Field, Value, Row => FinagleRow }
+
+class EmptyRow(fn: String => Option[Value]) extends FinagleRow {
+  override val fields: IndexedSeq[Field] = IndexedSeq.empty[Field]
+  override val values: IndexedSeq[Value] = IndexedSeq.empty[Value]
+
+  override def apply(columnName: String): Option[Value] = fn(columnName)
+
+  override def indexOf(columnName: String): Option[Int] = None
+}
