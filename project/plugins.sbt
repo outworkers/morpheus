@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 - 2017 Outworkers Ltd.
+ * Copyright 2013 - 2019 Outworkers Ltd.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,9 +18,10 @@ resolvers ++= Seq(
   "Twitter Repo" at "http://maven.twttr.com/",
   Resolver.sonatypeRepo("releases"),
   Resolver.bintrayRepo("outworkers", "oss-releases"),
-  Resolver.url("Outworkers OSS", url("http://dl.bintray.com/websudos/oss-releases"))(Resolver.ivyStylePatterns),
   Classpaths.sbtPluginReleases
 )
+
+addSbtPlugin("org.tpolecat" % "tut-plugin" % "0.5.6")
 
 addSbtPlugin("net.virtual-void" % "sbt-dependency-graph" % "0.8.2")
 
@@ -34,8 +35,10 @@ addSbtPlugin("org.scalastyle" %% "scalastyle-sbt-plugin" % "0.7.0")
 
 addSbtPlugin("com.typesafe.sbt" % "sbt-git" % "0.8.5")
 
-addSbtPlugin("me.lessis" % "bintray-sbt" % "0.3.0")
+addSbtPlugin("org.foundweekends" % "sbt-bintray" % "0.5.4")
 
-addSbtPlugin("com.websudos" % "sbt-package-dist" % "1.2.0")
+addSbtPlugin("com.eed3si9n" % "sbt-doge" % "0.1.5")
+
+addSbtPlugin("com.github.gseitz" % "sbt-release" % "1.0.5")
 
 libraryDependencies += "org.slf4j" % "slf4j-nop" % "1.7.22"

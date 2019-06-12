@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2015 Websudos, Limited.
+ * Copyright 2013-2019 Outworkers, Limited.
  *
  * All rights reserved.
  *
@@ -13,8 +13,6 @@
  * notice, this list of conditions and the following disclaimer in the
  * documentation and/or other materials provided with the distribution.
  *
- * - Explicit consent must be obtained from the copyright owner, Websudos Limited before any redistribution is made.
- *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -27,10 +25,11 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-import com.twitter.sbt.{GitProject, VersionManagement}
+import Publishing.{ciSkipSequence, releaseTutFolder}
+import sbtrelease.ReleaseStateTransformations._
 
 lazy val Versions = new {
-  val util = "0.30.1"
+  val util = "0.50.0"
   val spark = "1.2.1"
   val FinaglePostgres = "0.1.0"
   val shapeless = "2.3.2"
@@ -38,7 +37,9 @@ lazy val Versions = new {
   val lift = "3.0"
   val slf4j = "1.7.21"
   val joda = "2.9.4"
+  val scalatest = "3.0.5"
   val jodaConvert = "1.8.1"
+  val scalacheck = "1.14.0"
 
   val finagle: String => String = { s =>
     CrossVersion.partialVersion(s) match {
@@ -62,10 +63,30 @@ val liftVersion: String => String = {
   }
 }
 
-val sharedSettings: Seq[Def.Setting[_]] = Seq(
+lazy val releaseSettings = Seq(
+  releaseTutFolder := baseDirectory.value / "docs",
+  releaseIgnoreUntrackedFiles := true,
+  releaseVersionBump := sbtrelease.Version.Bump.Minor,
+  releaseTagComment := s"Releasing ${(version in ThisBuild).value} $ciSkipSequence",
+  releaseCommitMessage := s"Setting version to ${(version in ThisBuild).value} $ciSkipSequence",
+  releaseProcess := Seq[ReleaseStep](
+    checkSnapshotDependencies,
+    inquireVersions,
+    setReleaseVersion,
+    Publishing.commitTutFilesAndVersion,
+    releaseStepCommandAndRemaining("such publishSigned"),
+    releaseStepCommandAndRemaining("sonatypeReleaseAll"),
+    tagRelease,
+    setNextVersion,
+    commitNextVersion,
+    pushChanges
+  )
+)
+
+lazy val sharedSettings: Seq[Def.Setting[_]] = Seq(
   organization := "com.outworkers",
-  scalaVersion := "2.11.8",
-  crossScalaVersions := Seq("2.10.6", "2.11.8"),
+  scalaVersion := "2.11.12",
+  crossScalaVersions := Seq("2.10.6", "2.11.12"),
   resolvers ++= Seq(
     Resolver.typesafeRepo("releases"),
     Resolver.sonatypeRepo("releases"),
@@ -86,9 +107,7 @@ val sharedSettings: Seq[Def.Setting[_]] = Seq(
   ),
   fork in Test := true,
   javaOptions in Test ++= Seq("-Xmx2G")
-) ++ Publishing.effectiveSettings ++
-  VersionManagement.newSettings ++
-  GitProject.gitSettings
+) ++ Publishing.effectiveSettings ++ releaseSettings
 
 lazy val morpheus = (project in file("."))
   .settings(sharedSettings: _*)
@@ -97,8 +116,7 @@ lazy val morpheus = (project in file("."))
     moduleName := "morpheus"
   ).aggregate(
     morpheusDsl,
-    morpheusMySQL,
-    morpheusTestkit
+    morpheusMySQL
   )
 
   lazy val morpheusDsl = (project in file("morpheus-dsl"))
@@ -107,16 +125,17 @@ lazy val morpheus = (project in file("."))
       name := "morpheus-dsl",
       moduleName := "morpheus-dsl",
       libraryDependencies ++= Seq(
+        "org.scala-lang" % "scala-compiler" % scalaVersion.value % "provided",
         "com.twitter" %% "util-core" % Versions.twitterUtil(scalaVersion.value),
-        "com.outworkers" %% "diesel-reflection" % Versions.diesel,
         "org.slf4j" % "slf4j-api" % Versions.slf4j,
         "com.chuusai" %% "shapeless" % Versions.shapeless,
         "joda-time" % "joda-time" % Versions.joda,
         "org.joda" % "joda-convert" % Versions.jodaConvert,
-        "net.liftweb" %% "lift-json" % liftVersion(scalaVersion.value) % Test
+        "net.liftweb" %% "lift-json" % liftVersion(scalaVersion.value) % Test,
+        "com.outworkers"               %% "util-samplers"                     % Versions.util % Test,
+        "org.scalatest"                %% "scalatest"                         % Versions.scalatest % Test,
+        "org.scalacheck"               %% "scalacheck"                        % Versions.scalacheck % Test
       )
-    ).dependsOn(
-      morpheusTestkit % Test
     )
 
   lazy val morpheusMySQL = (project in file("morpheus-mysql"))
@@ -125,21 +144,11 @@ lazy val morpheus = (project in file("."))
       moduleName := "morpheus-mysql",
       name := "morpheus-mysql",
       libraryDependencies ++= Seq(
-        "com.twitter" %% "finagle-mysql" % Versions.finagle(scalaVersion.value)
+        "com.twitter"                  %% "finagle-mysql"                     % Versions.finagle(scalaVersion.value),
+        "com.outworkers"               %% "util-samplers"                     % Versions.util % Test,
+        "org.scalatest"                %% "scalatest"                         % Versions.scalatest % Test,
+        "org.scalacheck"               %% "scalacheck"                        % Versions.scalacheck % Test
       )
     ).dependsOn(
-      morpheusDsl % "compile->compile;test->test;",
-      morpheusTestkit % Test
+      morpheusDsl % "compile->compile;test->test;"
     )
-
-  lazy val morpheusTestkit = (project in file("morpheus-testkit"))
-    .settings(sharedSettings: _*)
-    .settings(
-    name := "morpheus-testkit",
-    libraryDependencies ++= Seq(
-      "com.h2database"                   % "h2"                        % "1.4.181",
-      "com.outworkers"                   %% "util-testing"             % Versions.util excludeAll {
-        ExclusionRule("org.scala-lang", "scala-reflect")
-      }
-    )
-  )
